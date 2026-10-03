@@ -8,6 +8,7 @@ This is a documentation-first implementation brief. It is sufficiently detailed 
 
 | Document | Authoritative subject |
 | --- | --- |
+| [Implementation status](status.md) | What is built and verified, deliberate differences, remaining release work |
 | [Decisions](decisions.md) | Confirmed choices, proposals, open questions, superseded assumptions |
 | [Product](product.md) | Audience, MVP boundaries, player experience, launch acceptance |
 | [Monetization](monetization.md) | Creator Fund assumptions, eligibility evidence and operating costs |

@@ -115,6 +115,7 @@ Root values are flat; bounded `log` and `top5` arrays are intentionally nested. 
 | `top5` | Max 5 `{ rank, name, hero_name, level, class, score }` entries; `name` is owner alias |
 | `attention` | String/null, <=120 supported characters: service pause > unlinked > delayed updates > death/revival > inventory sleep/held-find or scheduled-wake guidance > otherwise null; gameplay status remains visible independently |
 | `plugin_instance_name` | Sanitized <=40-character label or “Desk Crawler” |
+| `scene_url`, `scene_url_small` | Public versioned scene images (`/art/scene/v<N>/<biome>/<pose>/<subject>/<scale>.png`) for the full (760×200) and smaller (304×80) layouts; empty when no art origin is configured. Additive v1 fields (revision 12) |
 | `game_as_of_label` | <=48-character local completed-run date/time with UTC offset, or “Awaiting first game tick”; present on every layout |
 | `leaderboard_as_of_label` | Same format for published board, or “Ranking within the hour”; shown with ranks |
 

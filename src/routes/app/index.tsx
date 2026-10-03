@@ -33,7 +33,7 @@ function HeroHome() {
   return (
     <>
       <div className="overflow-hidden rounded-lg border-2 border-stone-900 bg-white dark:border-stone-300">
-        <img src={artUrl(hero.scenePath)} alt={`${hero.name} in the ${biomeName}`} className="block w-full [image-rendering:pixelated]" width={608} height={160} />
+        <img src={artUrl(hero.scenePath)} alt={`${hero.name} in the ${biomeName}`} className="block w-full [image-rendering:pixelated]" width={760} height={200} />
       </div>
 
       <Card>

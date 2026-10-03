@@ -92,18 +92,18 @@ export const campfire = sprite(`
 `)
 
 export const levelUp = sprite(`
-          #
-          #
-    #    ###    #
-     #  #www#  #
-       #wwwww#
-  ###########w#####
-   #wwwwwwwwwwwww#
-     #wwwwwwwww#
-      #wwwwwww#
-     #www###www#
-    #ww#     #ww#
-    ##         ##
+  #        #        #
+        ######
+       ##wwww##
+  #   ##wwwwww##   #
+     ##wwwwwwww##
+    ######ww######
+        #wwww#
+        #wwww#
+   #    #wwww#    #
+        #wwww#
+        ######
+   #  #   #   #  #
 `)
 
 export const eliteCrown = sprite(`

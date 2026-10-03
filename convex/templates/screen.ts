@@ -5,7 +5,7 @@
  * Deploy-time constants: user text only arrives through merge_variables and is
  * escaped here. Each string is self-contained (no shared-template registration).
  */
-export const TEMPLATE_VERSION = 5
+export const TEMPLATE_VERSION = 6
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -84,11 +84,11 @@ export const markupFull = `
   {% if status == "unlinked" %}${setup('scene_url')}
   {% else %}${scene('scene_url')}${divider}
   <div class="grid stretch-x">
-    <div class="col--span-5 flex flex--col flex--left gap--small">${newestStory(3, 'title title--small')}${olderStories(1)}
+    <div class="col--span-5 flex flex--col flex--left gap--small">${newestStory(3, 'title')}${olderStories(1)}
     </div>
     <div class="col--span-3 flex flex--col flex--left flex--stretch-x gap--small">
-      <span class="label" data-clamp="1">{{ hero_name | escape }} · L{{ level }}</span>
-      <span class="label label--small" data-clamp="2">{{ status_label | escape }}</span>${hpBar(' progress-bar--small')}${xpBar(' progress-bar--small')}
+      <span class="title title--small" data-clamp="1">{{ hero_name | escape }} · L{{ level }}</span>
+      <span class="label" data-clamp="2">{{ status_label | escape }}</span>${hpBar()}${xpBar()}
     </div>
     <div class="col--span-4 flex flex--col flex--left gap--xsmall">${rankPanel}
     </div>

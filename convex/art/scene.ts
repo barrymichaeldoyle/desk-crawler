@@ -10,14 +10,15 @@ import { eliteCrown, propArt, type PropId } from './props'
  */
 export const STAGE_WIDTH = 152
 export const STAGE_HEIGHT = 40
-/** Full layout renders 152x40 at x4 (608x160); smaller layouts at x2 (304x80). */
-export const FULL_SCALE = 4
+/** Full layout renders 152x40 at x5 (760x200, full content width); smaller layouts at x2 (304x80). */
+export const FULL_SCALE = 5
 export const SMALL_SCALE = 2
 const GROUND = 37
 const HERO_X = 24
 const SUBJECT_X = 92
 
-export const SCENE_VERSION = 1
+/** Bump whenever any art changes: scene URLs are immutable and cached. */
+export const SCENE_VERSION = 2
 export type BiomeArt = 'office_cubicles' | 'server_room' | 'cafeteria_depths'
 export type Subject = { kind: 'monster'; id: keyof typeof monsterArt; elite: boolean } | { kind: 'prop'; id: PropId } | { kind: 'none' }
 
@@ -27,13 +28,14 @@ const star = sprite(`
  #
 `)
 const moon = sprite(`
-  ####
- ##ww
-##ww
+  ###
+ ##w
 ##w
-##ww
- ##ww
-  ####
+##
+##
+##w
+ ##w
+  ###
 `)
 const torch = sprite(`
   #
@@ -111,8 +113,9 @@ function serverRoom(c: Canvas): void {
     c.rect(left, top, 14, height, '#')
     c.rect(left + 2, top + 2, 10, height - 4, 'w')
     for (let y = top + 4; y < top + height - 3; y += 3) {
-      c.hline(left + 3, left + 10, y, '=')
-      if ((left + y) % 2 === 0) c.paint(left + 10, y + 1, '#')
+      c.hline(left + 3, left + 7, y, '#')
+      // Blinking status lights, kept clear of the rack border.
+      if ((left + y) % 3 !== 0) c.paint(left + 9, y, '#')
     }
   }
   // Cables sagging from the ceiling.

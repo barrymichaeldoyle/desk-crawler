@@ -1,4 +1,5 @@
 import type { HeroPose } from './hero'
+import { SCENE_VERSION } from './scene'
 
 /**
  * Pure mapping from hero state + latest gameplay event to the scene shown on
@@ -48,4 +49,4 @@ export function subjectSegment(subject: SceneSubject): string {
 }
 
 export const scenePath = (biomeId: string, pose: HeroPose, subject: SceneSubject, scale: number) =>
-  `/art/scene/v1/${biomeId}/${pose}/${subjectSegment(subject)}/${scale}.png`
+  `/art/scene/v${SCENE_VERSION}/${biomeId}/${pose}/${subjectSegment(subject)}/${scale}.png`

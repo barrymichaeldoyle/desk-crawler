@@ -11,10 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as SupportRouteImport } from './routes/support'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppInventoryRouteImport } from './routes/app/inventory'
 import { Route as AppLeaderboardRouteImport } from './routes/app/leaderboard'
 import { Route as AppSettingsRouteImport } from './routes/app/settings'
+import { Route as HelpTrmnlRouteImport } from './routes/help/trmnl'
 import { Route as ConnectTrmnlInstallRouteImport } from './routes/connect/trmnl/install'
 import { Route as ConnectTrmnlManageRouteImport } from './routes/connect/trmnl/manage'
 
@@ -26,6 +29,16 @@ const IndexRoute = IndexRouteImport.update({
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SupportRoute = SupportRouteImport.update({
+  id: '/support',
+  path: '/support',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -48,6 +61,11 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AppRoute,
 } as any)
+const HelpTrmnlRoute = HelpTrmnlRouteImport.update({
+  id: '/help/trmnl',
+  path: '/help/trmnl',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ConnectTrmnlInstallRoute = ConnectTrmnlInstallRouteImport.update({
   id: '/connect/trmnl/install',
   path: '/connect/trmnl/install',
@@ -62,18 +80,24 @@ const ConnectTrmnlManageRoute = ConnectTrmnlManageRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/privacy': typeof PrivacyRoute
+  '/support': typeof SupportRoute
   '/app/inventory': typeof AppInventoryRoute
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/settings': typeof AppSettingsRoute
+  '/help/trmnl': typeof HelpTrmnlRoute
   '/app/': typeof AppIndexRoute
   '/connect/trmnl/install': typeof ConnectTrmnlInstallRoute
   '/connect/trmnl/manage': typeof ConnectTrmnlManageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/privacy': typeof PrivacyRoute
+  '/support': typeof SupportRoute
   '/app/inventory': typeof AppInventoryRoute
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/settings': typeof AppSettingsRoute
+  '/help/trmnl': typeof HelpTrmnlRoute
   '/app': typeof AppIndexRoute
   '/connect/trmnl/install': typeof ConnectTrmnlInstallRoute
   '/connect/trmnl/manage': typeof ConnectTrmnlManageRoute
@@ -82,9 +106,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/privacy': typeof PrivacyRoute
+  '/support': typeof SupportRoute
   '/app/inventory': typeof AppInventoryRoute
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/settings': typeof AppSettingsRoute
+  '/help/trmnl': typeof HelpTrmnlRoute
   '/app/': typeof AppIndexRoute
   '/connect/trmnl/install': typeof ConnectTrmnlInstallRoute
   '/connect/trmnl/manage': typeof ConnectTrmnlManageRoute
@@ -94,18 +121,24 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
+    | '/privacy'
+    | '/support'
     | '/app/inventory'
     | '/app/leaderboard'
     | '/app/settings'
+    | '/help/trmnl'
     | '/app/'
     | '/connect/trmnl/install'
     | '/connect/trmnl/manage'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/privacy'
+    | '/support'
     | '/app/inventory'
     | '/app/leaderboard'
     | '/app/settings'
+    | '/help/trmnl'
     | '/app'
     | '/connect/trmnl/install'
     | '/connect/trmnl/manage'
@@ -113,9 +146,12 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/app'
+    | '/privacy'
+    | '/support'
     | '/app/inventory'
     | '/app/leaderboard'
     | '/app/settings'
+    | '/help/trmnl'
     | '/app/'
     | '/connect/trmnl/install'
     | '/connect/trmnl/manage'
@@ -124,6 +160,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
+  PrivacyRoute: typeof PrivacyRoute
+  SupportRoute: typeof SupportRoute
+  HelpTrmnlRoute: typeof HelpTrmnlRoute
   ConnectTrmnlInstallRoute: typeof ConnectTrmnlInstallRoute
   ConnectTrmnlManageRoute: typeof ConnectTrmnlManageRoute
 }
@@ -142,6 +181,20 @@ declare module '@tanstack/react-router' {
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/support': {
+      id: '/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof SupportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -171,6 +224,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/settings'
       preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/help/trmnl': {
+      id: '/help/trmnl'
+      path: '/help/trmnl'
+      fullPath: '/help/trmnl'
+      preLoaderRoute: typeof HelpTrmnlRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/connect/trmnl/install': {
       id: '/connect/trmnl/install'
@@ -208,6 +268,9 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
+  PrivacyRoute: PrivacyRoute,
+  SupportRoute: SupportRoute,
+  HelpTrmnlRoute: HelpTrmnlRoute,
   ConnectTrmnlInstallRoute: ConnectTrmnlInstallRoute,
   ConnectTrmnlManageRoute: ConnectTrmnlManageRoute,
 }

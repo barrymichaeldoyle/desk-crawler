@@ -31,6 +31,12 @@ function Landing() {
       <p className="text-stone-600 dark:text-stone-400">
         Desk Crawler is in development. It will be installable from the TRMNL plugin marketplace once it is approved.
       </p>
+      <nav aria-label="More" className="flex flex-wrap gap-4 text-sm underline underline-offset-4">
+        <a href="/app">Companion</a>
+        <a href="/help/trmnl">TRMNL help</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/support">Support</a>
+      </nav>
     </main>
   )
 }

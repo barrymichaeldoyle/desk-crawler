@@ -1,0 +1,37 @@
+import { createFileRoute } from '@tanstack/react-router'
+import { ProsePage, SUPPORT_EMAIL } from '../../lib/prose'
+
+export const Route = createFileRoute('/help/trmnl')({
+  head: () => ({ meta: [{ title: 'TRMNL help · Desk Crawler' }] }),
+  component: () => (
+    <ProsePage title="Desk Crawler on TRMNL">
+      <h2>Getting started</h2>
+      <ul>
+        <li>Install Desk Crawler from the TRMNL plugin marketplace and choose Install.</li>
+        <li>Sign in to Desk Crawler, pick a public name and a hero name, and connect the installation.</li>
+        <li>Back in TRMNL, click Save. Saving starts your hero's adventures from the next world tick.</li>
+        <li>Add the plugin to a playlist, or to a mashup if you want your hero beside other plugins. All four layout sizes are supported.</li>
+      </ul>
+      <h2>How time works</h2>
+      <p>
+        The game world advances every 15 minutes whether or not your screen is on. Your TRMNL shows a dated snapshot: the time in the corner is when the
+        game last updated, not when the screen refreshed. Sleep Mode, slower refresh and other playlist items never reduce your hero's progress.
+      </p>
+      <h2>If the screen looks old</h2>
+      <ul>
+        <li>"Updates delayed" means the game service is late; your progress is safe and nothing needs doing.</li>
+        <li>If the companion website is current but the screen is not, check the plugin's refresh setting and playlist position in TRMNL.</li>
+        <li>If you disconnected or uninstalled, install again from TRMNL. Your hero keeps all progress.</li>
+      </ul>
+      <h2>Disconnecting and removing</h2>
+      <p>
+        Disconnecting stops new screens for that installation. TRMNL may keep showing the last image until you remove the plugin from your playlist; we
+        cannot erase an image already on your device.
+      </p>
+      <h2>Help</h2>
+      <p>
+        Email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> for account or connection help. We aim to reply within two business days.
+      </p>
+    </ProsePage>
+  ),
+})

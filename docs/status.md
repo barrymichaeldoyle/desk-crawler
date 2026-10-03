@@ -18,6 +18,8 @@ Updated 2026-10-03 (night). Live on the Convex dev deployment `superb-bobcat-74`
 | A09 companion | Shell, hero page (scene, stats, travel, potion, pause), bag (equip, bulk sell, claim, resume with destination), rankings (3 tabs), settings (timezone, pause, installations), help/privacy/support pages | Playwright walkthrough with the Clerk test identity |
 | A11 operations | Daily bounded retention cleanup; account deletion with durable purge, revocation hashes and Clerk user deletion | convex-test; live deletion ([evidence](evidence/deletion.md)) |
 | D27 incident notices | One incident per stalled run, deduplicated alert + recovery via Resend with idempotency keys and bounded retries; disabled until `RESEND_API_KEY` is set on Convex | convex-test |
+| D23 admin | Server-side allowlist, health view, audited name repair / suspend / restore / release / resume-run, owner name replacement | convex-test |
+| Layout matrix | Local framework preview of ten states × four sizes (template v7) | [layouts](evidence/trmnl-layouts.md) |
 | D25 return recap | Single server checkpoint, guarded visible acknowledgement | convex-test; live browser check |
 
 ## Deliberate differences from the plan
@@ -30,10 +32,10 @@ Updated 2026-10-03 (night). Live on the Convex dev deployment `superb-bobcat-74`
 
 ## Remaining before public release
 
-- Clerk `user.deleted` webhook reconciliation (V09); admin health, name repair, suspension (D23).
+- Clerk `user.deleted` webhook reconciliation (V09).
 - Set `RESEND_API_KEY` on Convex to turn on incident/recovery emails (barry@barrymichaeldoyle.com from `desk-crawler@grandprixpicks.com`, D27/D38), then send one staging test.
 - Production: Convex prod deployment, Clerk production instance with Google/GitHub OAuth credentials, Workers deploy on `desk-crawler.grandprixpicks.com`, **daily backups enabled** (the privacy page states this), `DEV_SEED_ENABLED` unset, plugin URLs switched from localhost/dev, real plugin icon.
 - V06 lifecycle matrix live: uninstall, second instance, reinstall, expired attempt, wrong owner, lost callback.
-- Layout screenshot matrix across states (dead, travelling, sleeping, quarantined, stale, long text) and mashup sizes; art polish after Barry's review.
+- Confirm template v7 and scene art v3 on the real TRMNL X; mashups beside other plugins; art polish after Barry's review.
 - Capacity measurement at 100/1,000 heroes (V05) and the zero-revenue cost report; Creator Fund eligibility (V10).
 - Marketplace review package and submission (needs Barry's explicit go-ahead).

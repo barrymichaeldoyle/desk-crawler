@@ -16,7 +16,8 @@ Updated 2026-10-03 (night). Live on the Convex dev deployment `superb-bobcat-74`
 | A08 payload | v1 payload incl. ranks, Top 5 with name masking, `rank_status`, `scene_url`/`scene_url_small` | Live TRMNL renders |
 | A10 art + layouts | Hand-authored 1-bit pixel art (6 hero poses, 12 monsters, props, 3 backdrops), on-demand scene composer (`/art/scene/v2/...`), scene-window layouts for all four sizes | Real TRMNL X renders |
 | A09 companion | Shell, hero page (scene, stats, travel, potion, pause), bag (equip, bulk sell, claim, resume with destination), rankings (3 tabs), settings (timezone, pause, installations), help/privacy/support pages | Playwright walkthrough with the Clerk test identity |
-| A11 operations | Daily bounded retention cleanup | convex-test |
+| A11 operations | Daily bounded retention cleanup; account deletion with durable purge, revocation hashes and Clerk user deletion | convex-test; live deletion ([evidence](evidence/deletion.md)) |
+| D25 return recap | Single server checkpoint, guarded visible acknowledgement | convex-test; live browser check |
 
 ## Deliberate differences from the plan
 
@@ -28,7 +29,7 @@ Updated 2026-10-03 (night). Live on the Convex dev deployment `superb-bobcat-74`
 
 ## Remaining before public release
 
-- Companion return recap (D25) and visit acknowledgement; account deletion with dedicated-Clerk purge and revocation (D22/V09); admin health, name repair, suspension (D23).
+- Clerk `user.deleted` webhook reconciliation (V09); admin health, name repair, suspension (D23).
 - Incident/recovery emails to barry@barrymichaeldoyle.com from `desk-crawler@grandprixpicks.com` (D27/D38).
 - Production: Convex prod deployment, Clerk production instance with Google/GitHub OAuth credentials, Workers deploy on `desk-crawler.grandprixpicks.com`, **daily backups enabled** (the privacy page states this), `DEV_SEED_ENABLED` unset, plugin URLs switched from localhost/dev, real plugin icon.
 - V06 lifecycle matrix live: uninstall, second instance, reinstall, expired attempt, wrong owner, lost callback.

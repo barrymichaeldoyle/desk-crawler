@@ -51,6 +51,7 @@ export default defineSchema({
     createdAt: v.number(),
     publicNameVersion: v.number(),
     activeHeroId: v.optional(v.id('heroes')),
+    deletionRequestedAt: v.optional(v.number()),
   })
     .index('by_tokenIdentifier', ['tokenIdentifier'])
     .index('by_normalizedAlias', ['normalizedAlias'])
@@ -295,6 +296,32 @@ export default defineSchema({
   })
     .index('by_key_and_windowStart', ['key', 'windowStart'])
     .index('by_expiresAt', ['expiresAt']),
+
+  accountDeletionJobs: defineTable({
+    userId: v.optional(v.id('users')),
+    clerkUserId: v.optional(v.string()),
+    state: v.union(v.literal('running'), v.literal('blocked'), v.literal('completed')),
+    phase: v.union(v.literal('connections'), v.literal('gameplay'), v.literal('provider'), v.literal('finalize'), v.literal('done')),
+    providerAttempts: v.number(),
+    createdAt: v.number(),
+    lastProgressAt: v.number(),
+    completedAt: v.optional(v.number()),
+    reasonCode: v.optional(v.string()),
+  })
+    .index('by_userId', ['userId'])
+    .index('by_state_and_lastProgressAt', ['state', 'lastProgressAt']),
+
+  revokedTrmnlCredentials: defineTable({
+    tokenHash: v.string(),
+    revokedAt: v.number(),
+    reasonCode: v.string(),
+  }).index('by_tokenHash', ['tokenHash']),
+
+  revokedAuthIdentities: defineTable({
+    identityHash: v.string(),
+    revokedAt: v.number(),
+    reasonCode: v.string(),
+  }).index('by_identityHash', ['identityHash']),
 
   tickLogs: defineTable({
     heroId: v.id('heroes'),

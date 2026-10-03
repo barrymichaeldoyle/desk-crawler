@@ -1,6 +1,8 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
+import { useClerk } from '@clerk/tanstack-react-start'
 import { createFileRoute } from '@tanstack/react-router'
+import { useState } from 'react'
 import { api } from '../../../convex/_generated/api'
 import { useIntent } from '../../lib/intent'
 import { Button, Card, ErrorNote } from '../../lib/ui'
@@ -14,6 +16,9 @@ function Settings() {
   const pause = useIntent(api.heroes.pause)
   const { data: connections } = useQuery(convexQuery(api.connections.mine, {}))
   const disconnect = useIntent(api.connections.disconnect)
+  const deletion = useIntent(api.deletion.requestDeletion)
+  const clerk = useClerk()
+  const [confirmText, setConfirmText] = useState('')
   const resume = useIntent(api.heroes.resume)
   const browserZone = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC'
   if (!me?.user || !hero) return <p className="text-stone-500">Loading settings…</p>
@@ -76,6 +81,28 @@ function Settings() {
           <p>No installations yet.</p>
         )}
         <ErrorNote message={disconnect.error} />
+      </Card>
+      <Card title="Delete account">
+        <p>
+          Deleting removes your hero, items, history and TRMNL connections, and deletes your Desk Crawler sign-in. It cannot be undone. Your public name
+          disappears from leaderboards straight away. TRMNL may keep showing the last image until you remove the plugin from your playlist, and backups
+          expire within about a week.
+        </p>
+        <label className="mt-3 flex flex-col gap-1 text-sm">
+          <span className="font-semibold">Type DELETE to confirm</span>
+          <input value={confirmText} onChange={(e) => setConfirmText(e.target.value)} className="min-h-11 rounded-md border border-stone-400 bg-white px-3 text-stone-900" autoComplete="off" />
+        </label>
+        <Button
+          className="mt-3"
+          variant="secondary"
+          disabled={confirmText !== 'DELETE' || deletion.pending}
+          onClick={async () => {
+            if (await deletion.run({ confirm: 'DELETE' })) await clerk.signOut({ redirectUrl: '/' })
+          }}
+        >
+          Delete my account
+        </Button>
+        <ErrorNote message={deletion.error} />
       </Card>
       <Card title="Help">
         <p className="text-sm">Your TRMNL shows a dated snapshot of the game and refreshes on its own schedule. Sleep Mode and slower refresh never reduce your hero's progress.</p>

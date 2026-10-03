@@ -22,6 +22,7 @@ import type * as content_v1 from "../content/v1.js";
 import type * as content_v2 from "../content/v2.js";
 import type * as content_validate from "../content/validate.js";
 import type * as crons from "../crons.js";
+import type * as deletion from "../deletion.js";
 import type * as devSeed from "../devSeed.js";
 import type * as heroes from "../heroes.js";
 import type * as http from "../http.js";
@@ -75,6 +76,7 @@ declare const fullApi: ApiFromModules<{
   "content/v2": typeof content_v2;
   "content/validate": typeof content_validate;
   crons: typeof crons;
+  deletion: typeof deletion;
   devSeed: typeof devSeed;
   heroes: typeof heroes;
   http: typeof http;

@@ -8,6 +8,7 @@ import { appError } from './lib/errors'
 import { sha256Hex } from './lib/hash'
 import { ALIAS_RULE, HERO_NAME_RULE, normalizeAlias, validateName, validateTimezone } from './lib/names'
 import { getOrCreateWorld } from './world'
+import { assertNotRevoked, identityHash } from './deletion'
 
 /** Install attempts stay valid for 20 minutes (data-model.md). */
 export const INSTALL_ATTEMPT_MS = 20 * 60 * 1000
@@ -75,6 +76,11 @@ export const linkInstall = internalMutation({
   returns: linkResult,
   handler: async (ctx, args) => {
     const now = Date.now()
+    // Deleted accounts: replayed Clerk tokens and old TRMNL codes/tokens never regain authority (D22/V09).
+    assertNotRevoked(await ctx.db.query('revokedAuthIdentities').withIndex('by_identityHash', (q) => q.eq('identityHash', identityHash(args.tokenIdentifier))).first())
+    if (await ctx.db.query('revokedTrmnlCredentials').withIndex('by_tokenHash', (q) => q.eq('tokenHash', args.tokenHash)).first()) {
+      throw appError('CONNECTION_UNAVAILABLE', 'This TRMNL installation belonged to a deleted account. Install Desk Crawler again from TRMNL.')
+    }
     let user = await ctx.db
       .query('users')
       .withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', args.tokenIdentifier))

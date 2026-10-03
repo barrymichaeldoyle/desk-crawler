@@ -323,6 +323,19 @@ export default defineSchema({
     reasonCode: v.string(),
   }).index('by_identityHash', ['identityHash']),
 
+  operationalIncidents: defineTable({
+    incidentKey: v.string(),
+    runId: v.id('simulationRuns'),
+    state: v.union(v.literal('open'), v.literal('recovered')),
+    openedAt: v.number(),
+    recoveredAt: v.optional(v.number()),
+    alert: v.object({ state: v.union(v.literal('pending'), v.literal('sent'), v.literal('failed'), v.literal('disabled')), attempts: v.number(), lastAttemptAt: v.optional(v.number()) }),
+    recovery: v.optional(v.object({ state: v.union(v.literal('pending'), v.literal('sent'), v.literal('failed'), v.literal('disabled')), attempts: v.number(), lastAttemptAt: v.optional(v.number()) })),
+  })
+    .index('by_incidentKey', ['incidentKey'])
+    .index('by_runId_and_state', ['runId', 'state'])
+    .index('by_state_and_openedAt', ['state', 'openedAt']),
+
   tickLogs: defineTable({
     heroId: v.id('heroes'),
     source: v.union(v.literal('tick'), v.literal('command'), v.literal('lifecycle')),

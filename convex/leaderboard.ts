@@ -6,6 +6,7 @@ import { currentUser } from './lib/intent'
 import { maskedEntries } from './lib/rankingRead'
 import { readWorld } from './world'
 import { levelGroup } from './sim/core/stats'
+import { recoverIncidents } from './incidents'
 
 /**
  * Immutable hourly leaderboard publications (leaderboards.md, ranking.md, D31/D32).
@@ -194,6 +195,7 @@ async function publish(ctx: MutationCtx, publication: Doc<'leaderboardPublicatio
   if (world === null) throw new Error('world missing during publication')
   await ctx.db.patch(publication._id, { state: 'published', globalTotalPlayers: globalRanked, builtAt: now, publishedAt: now, batchSequence: publication.batchSequence + 1, nextScheduledFunctionId: undefined, cursor: undefined })
   await ctx.db.patch(run._id, { state: 'completed', finishedAt: now })
+  await recoverIncidents(ctx, run._id, now)
   await ctx.db.patch(world._id, {
     activeRunId: undefined,
     publishedPublicationId: publication._id,

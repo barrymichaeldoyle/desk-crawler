@@ -26,6 +26,7 @@ import type * as deletion from "../deletion.js";
 import type * as devSeed from "../devSeed.js";
 import type * as heroes from "../heroes.js";
 import type * as http from "../http.js";
+import type * as incidents from "../incidents.js";
 import type * as inventory from "../inventory.js";
 import type * as leaderboard from "../leaderboard.js";
 import type * as lib_errors from "../lib/errors.js";
@@ -80,6 +81,7 @@ declare const fullApi: ApiFromModules<{
   devSeed: typeof devSeed;
   heroes: typeof heroes;
   http: typeof http;
+  incidents: typeof incidents;
   inventory: typeof inventory;
   leaderboard: typeof leaderboard;
   "lib/errors": typeof lib_errors;

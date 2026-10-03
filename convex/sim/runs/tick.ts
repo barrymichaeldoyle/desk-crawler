@@ -10,6 +10,7 @@ import { deriveStreamSeeds, SEED_VERSION } from '../seed'
 import { getOrCreateWorld } from '../../world'
 import { applyResult, storedDetail, toHeroState, toInventory } from './adapter'
 import { beginBuild, writeRankInput } from '../../leaderboard'
+import { openIncident, recoverIncidents } from '../../incidents'
 
 /**
  * Tick orchestration (simulation.md). One logical tick per accepted wall slot;
@@ -232,6 +233,7 @@ export const simulateBatch = internalMutation({
     }
     await ctx.db.patch(runId, { ...progress, state: 'completed', finishedAt: now, nextScheduledFunctionId: undefined })
     await ctx.db.patch(world._id, { activeRunId: undefined, lastCompletedTick: run.tick, lastCompletedAt: now })
+    await recoverIncidents(ctx, runId, now)
     return null
   },
 })
@@ -288,6 +290,7 @@ export const watchdog = internalMutation({
         .withIndex('by_runId', (q) => q.eq('runId', run._id))
         .unique()
       if (publication === null || publication.state !== 'building' || now - publication.lastProgressAt < STALL_MS) return null
+      await openIncident(ctx, run._id, 'stall', now)
       const job = publication.nextScheduledFunctionId ? await ctx.db.system.get(publication.nextScheduledFunctionId) : null
       if (job?.state.kind === 'pending' || job?.state.kind === 'inProgress') return null
       if (run.recoveryAttempts >= MAX_RECOVERY_ATTEMPTS) {
@@ -301,6 +304,7 @@ export const watchdog = internalMutation({
     }
     if (run.state !== 'simulating') return null
     if (now - run.lastProgressAt < STALL_MS) return null
+    await openIncident(ctx, run._id, 'stall', now)
     const job = run.nextScheduledFunctionId ? await ctx.db.system.get(run.nextScheduledFunctionId) : null
     const kind = job?.state.kind
     if (kind === 'pending' || kind === 'inProgress') return null

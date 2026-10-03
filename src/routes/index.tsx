@@ -15,17 +15,21 @@ function Landing() {
         </p>
       </header>
 
-      <section aria-labelledby="sample-heading" className="rounded-lg border-2 border-stone-900 bg-white p-5 font-mono text-stone-900 dark:border-stone-300">
-        <h2 id="sample-heading" className="mb-3 text-xs uppercase tracking-widest text-stone-500">
-          Sample screen · not a real hero
-        </h2>
-        <p className="text-xl font-bold">Steve · Level 5 Warrior</p>
-        <p>Exploring the Server Room · HP 142/148</p>
-        <ul className="mt-3 flex flex-col gap-1 text-sm">
-          <li>12:13 Unplugged a Cable Serpent. +14 XP, +5 gold.</li>
-          <li>11:58 Found a Rare Keyboard Mace.</li>
-          <li>11:43 Cooled off by the air conditioning. +30 HP.</li>
-        </ul>
+      <section aria-labelledby="sample-heading" className="overflow-hidden rounded-lg border-2 border-stone-900 bg-white text-stone-900 dark:border-stone-300">
+        <img
+          src={`${import.meta.env.VITE_CONVEX_SITE_URL ?? ''}/art/scene/v3/server_room/fight/elite-legacy_mainframe/5.png`}
+          alt="Sample scene: the Warrior faces an elite Legacy Mainframe in the Server Room"
+          width={760}
+          height={200}
+          className="block w-full [image-rendering:pixelated]"
+        />
+        <div className="p-5 font-mono">
+          <h2 id="sample-heading" className="mb-3 text-xs uppercase tracking-widest text-stone-500">
+            Sample screen · not a real hero
+          </h2>
+          <p className="text-xl font-bold">An elite Legacy Mainframe went offline! +64 XP, +15 gold.</p>
+          <p className="mt-2 text-sm">Steve · Level 5 Warrior · Exploring the Server Room · #3 of 41 this week</p>
+        </div>
       </section>
 
       <p className="text-stone-600 dark:text-stone-400">

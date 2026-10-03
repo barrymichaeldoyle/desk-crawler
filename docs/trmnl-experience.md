@@ -70,7 +70,7 @@ Missing optional text falls back safely; missing required stats never render as 
 
 Cut lower-priority content before reducing primary text. In full-screen Top 5, rank + one public alias + level is sufficient; both alias and hero name are optional. No permanently empty panels for zero/one-player populations.
 
-Baseline proof is four layouts on OG 1-bit landscape, plus four on TRMNL X (D37). TRMNL X is the physical check device; OG proof comes from TRMNL-rendered previews/screenshots unless OG hardware is available. Record the X's actual resolution/bit depth from the live render. Check inherited dark/theme/text-scale behavior on representative worst cases. Portrait/color/fluid layouts are supported only after their own evidence; listing/help reports the tested matrix. Color must not be required to distinguish HP, XP, danger or rarity.
+Baseline proof is four layouts on OG 1-bit landscape, plus four on TRMNL X (D37). TRMNL X is the physical check device; OG proof comes from TRMNL-rendered screenshots. Record the X's actual resolution/bit depth from the live render. Check inherited dark/theme/text-scale behavior on representative worst cases. Portrait/color/fluid layouts are supported only after their own evidence; listing/help reports the tested matrix. Color must not be required to distinguish HP, XP, danger or rarity.
 
 ## Diagnosis without guesswork
 

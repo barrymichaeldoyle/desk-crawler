@@ -5,7 +5,7 @@
  * Deploy-time constants: user text only arrives through merge_variables and is
  * escaped here. Each string is self-contained (no shared-template registration).
  */
-export const TEMPLATE_VERSION = 4
+export const TEMPLATE_VERSION = 5
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -60,7 +60,14 @@ const olderStories = (count: number) => `
       {% for entry in log offset: 1 limit: ${count} %}<span class="label label--small label--gray" data-clamp="1">{{ entry.t | escape }} · {{ entry.s | escape }}</span>{% endfor %}`
 
 const rankLine = `
-      {% if rank %}<span class="label label--small">#{{ rank }} of {{ total_players }} · Last 7 days</span>{% else %}<span class="label label--small label--gray">{{ leaderboard_as_of_label | escape }}</span>{% endif %}`
+      {% if rank %}<span class="label label--small">#{{ rank }} of {{ total_players }} · {{ leaderboard_cohort_label | escape }}</span>{% elsif rank_status == "dormant" %}<span class="label label--small label--gray">Unranked while adventures are stopped</span>{% else %}<span class="label label--small label--gray">{{ leaderboard_as_of_label | escape }}</span>{% endif %}`
+
+const rankPanel = `
+      <span class="label label--small">Last 7 days{% if leaderboard_cohort_label != "" %} · {{ leaderboard_cohort_label | escape }}{% endif %}</span>
+      {% if rank %}<span class="value value--xsmall">#{{ rank }} <span class="label label--small">of {{ total_players }}</span></span>
+      {% elsif rank_status == "dormant" %}<span class="label label--small label--gray">Unranked while adventures are stopped</span>
+      {% else %}<span class="label label--small label--gray">{{ leaderboard_as_of_label | escape }}</span>{% endif %}
+      {% for row in top5 %}<span class="label label--small" data-clamp="1">{{ row.rank }}. {{ row.name | escape }} · {{ row.score }} XP</span>{% endfor %}`
 
 const attentionLine = `
   {% if attention %}<span class="label label--small label--underline" data-clamp="1">{{ attention | escape }}</span>{% endif %}`
@@ -77,11 +84,13 @@ export const markupFull = `
   {% if status == "unlinked" %}${setup('scene_url')}
   {% else %}${scene('scene_url')}${divider}
   <div class="grid stretch-x">
-    <div class="col--span-8 flex flex--col flex--left gap--small">${newestStory(2, 'title title--small')}${olderStories(2)}
+    <div class="col--span-5 flex flex--col flex--left gap--small">${newestStory(3, 'title title--small')}${olderStories(1)}
     </div>
-    <div class="col--span-4 flex flex--col flex--left flex--stretch-x gap--small">
-      <span class="label" data-clamp="1">{{ hero_name | escape }} · Level {{ level }} Warrior</span>
-      <span class="label label--small" data-clamp="1">{{ status_label | escape }}</span>${hpBar(' progress-bar--small')}${xpBar(' progress-bar--small')}${rankLine}
+    <div class="col--span-3 flex flex--col flex--left flex--stretch-x gap--small">
+      <span class="label" data-clamp="1">{{ hero_name | escape }} · L{{ level }}</span>
+      <span class="label label--small" data-clamp="2">{{ status_label | escape }}</span>${hpBar(' progress-bar--small')}${xpBar(' progress-bar--small')}
+    </div>
+    <div class="col--span-4 flex flex--col flex--left gap--xsmall">${rankPanel}
     </div>
   </div>${attentionLine}
   {% endif %}

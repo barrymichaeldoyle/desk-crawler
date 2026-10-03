@@ -9,6 +9,7 @@ import { creditTick, projectAtPublication, type ScoreAccumulator, type ScoreBuck
 import { deriveStreamSeeds, SEED_VERSION } from '../seed'
 import { getOrCreateWorld } from '../../world'
 import { applyResult, storedDetail, toHeroState, toInventory } from './adapter'
+import { beginBuild, writeRankInput } from '../../leaderboard'
 
 /**
  * Tick orchestration (simulation.md). One logical tick per accepted wall slot;
@@ -119,7 +120,10 @@ export const simulateBatch = internalMutation({
       if (hero.simulationState === 'quarantined') {
         counts.quarantined += 1
         await ctx.db.patch(hero._id, { lastTick: run.tick })
-        if (run.publishes) await foldScore(ctx, hero, run, { scoreHourXp: hero.scoreHourXp, ...(hero.scoreHour === undefined ? {} : { scoreHour: hero.scoreHour }) })
+        if (run.publishes) {
+          const scores = await foldScore(ctx, hero, run, { scoreHourXp: hero.scoreHourXp, ...(hero.scoreHour === undefined ? {} : { scoreHour: hero.scoreHour }) })
+          await writeRankInput(ctx, run, (await ctx.db.get(hero._id))!, owner, scores)
+        }
         continue
       }
 
@@ -142,6 +146,10 @@ export const simulateBatch = internalMutation({
         if (!(error instanceof SimulationInvariantError)) throw error
         counts.quarantined += 1
         await ctx.db.patch(hero._id, { simulationState: 'quarantined', quarantineReasonCode: error.code, lastTick: run.tick })
+        if (run.publishes) {
+          const scores = await foldScore(ctx, hero, run, { scoreHourXp: hero.scoreHourXp, ...(hero.scoreHour === undefined ? {} : { scoreHour: hero.scoreHour }) })
+          await writeRankInput(ctx, run, (await ctx.db.get(hero._id))!, owner, scores)
+        }
         await ctx.db.insert('simulationFailures', {
           runId,
           heroId: hero._id,
@@ -188,7 +196,11 @@ export const simulateBatch = internalMutation({
       markers.scoreHourXp = credited.accumulator.scoreHourXp
       markers.scoreHour = credited.accumulator.scoreHour
       await ctx.db.patch(hero._id, markers)
-      if (run.publishes) await foldScore(ctx, (await ctx.db.get(hero._id))!, run, credited.accumulator)
+      if (run.publishes) {
+        const updated = (await ctx.db.get(hero._id))!
+        const scores = await foldScore(ctx, updated, run, credited.accumulator)
+        await writeRankInput(ctx, run, (await ctx.db.get(hero._id))!, owner, scores)
+      }
 
       counts.deaths += result.metrics.deaths
       counts.levelUps += result.metrics.levelUps
@@ -212,15 +224,14 @@ export const simulateBatch = internalMutation({
       await ctx.db.patch(runId, { ...progress, nextScheduledFunctionId: scheduled })
       return null
     }
-    // Ranking publication (A06) will add a ranking phase here for publication runs.
+    if (run.publishes) {
+      // Publication run: freeze progress, then build and atomically publish all three boards.
+      await ctx.db.patch(runId, progress)
+      await beginBuild(ctx, (await ctx.db.get(runId))!, world, now)
+      return null
+    }
     await ctx.db.patch(runId, { ...progress, state: 'completed', finishedAt: now, nextScheduledFunctionId: undefined })
-    await ctx.db.patch(world._id, {
-      activeRunId: undefined,
-      lastCompletedTick: run.tick,
-      lastCompletedAt: now,
-      // Score windows were folded this run; A06 will set this after board publication instead.
-      ...(run.publishes ? { lastPublishedAt: run.scoreAt } : {}),
-    })
+    await ctx.db.patch(world._id, { activeRunId: undefined, lastCompletedTick: run.tick, lastCompletedAt: now })
     return null
   },
 })
@@ -239,7 +250,7 @@ async function addBucket(ctx: MutationCtx, heroId: Id<'heroes'>, bucket: ScoreBu
 }
 
 /** Publication run: fold the accumulator, expire, and materialize both window totals (D31). */
-async function foldScore(ctx: MutationCtx, hero: Doc<'heroes'>, run: Doc<'simulationRuns'>, accumulator: ScoreAccumulator): Promise<void> {
+async function foldScore(ctx: MutationCtx, hero: Doc<'heroes'>, run: Doc<'simulationRuns'>, accumulator: ScoreAccumulator): Promise<{ xp24h: number; xp7d: number }> {
   const existing = await ctx.db
     .query('heroScoreWindows')
     .withIndex('by_heroId', (q) => q.eq('heroId', hero._id))
@@ -249,6 +260,7 @@ async function foldScore(ctx: MutationCtx, hero: Doc<'heroes'>, run: Doc<'simula
   if (existing) await ctx.db.patch(existing._id, doc)
   else await ctx.db.insert('heroScoreWindows', { heroId: hero._id, ...doc })
   await ctx.db.patch(hero._id, { scoreHourXp: 0, scoreHour: undefined })
+  return { xp24h: projected.xp24h, xp7d: projected.xp7d }
 }
 
 async function block(ctx: MutationCtx, run: Doc<'simulationRuns'>, _world: Doc<'worldState'>, code: string): Promise<void> {
@@ -268,8 +280,26 @@ export const watchdog = internalMutation({
     const world = await getOrCreateWorld(ctx)
     if (world.activeRunId === undefined) return null
     const run = await ctx.db.get(world.activeRunId)
-    if (run === null || run.state !== 'simulating') return null
+    if (run === null) return null
     const now = Date.now()
+    if (run.state === 'ranking') {
+      const publication = await ctx.db
+        .query('leaderboardPublications')
+        .withIndex('by_runId', (q) => q.eq('runId', run._id))
+        .unique()
+      if (publication === null || publication.state !== 'building' || now - publication.lastProgressAt < STALL_MS) return null
+      const job = publication.nextScheduledFunctionId ? await ctx.db.system.get(publication.nextScheduledFunctionId) : null
+      if (job?.state.kind === 'pending' || job?.state.kind === 'inProgress') return null
+      if (run.recoveryAttempts >= MAX_RECOVERY_ATTEMPTS) {
+        await block(ctx, run, world, 'RANKING_STALLED_AFTER_RECOVERY')
+        return null
+      }
+      const scheduled = await ctx.scheduler.runAfter(0, internal.leaderboard.buildBatch, { publicationId: publication._id, expectedSequence: publication.batchSequence })
+      await ctx.db.patch(publication._id, { nextScheduledFunctionId: scheduled, lastProgressAt: now })
+      await ctx.db.patch(run._id, { recoveryAttempts: run.recoveryAttempts + 1 })
+      return null
+    }
+    if (run.state !== 'simulating') return null
     if (now - run.lastProgressAt < STALL_MS) return null
     const job = run.nextScheduledFunctionId ? await ctx.db.system.get(run.nextScheduledFunctionId) : null
     const kind = job?.state.kind

@@ -118,6 +118,7 @@ export default defineSchema({
     currentTick: v.number(),
     lastStartedWallSlot: v.optional(v.number()),
     activeRunId: v.optional(v.id('simulationRuns')),
+    publishedPublicationId: v.optional(v.id('leaderboardPublications')),
     lastCompletedTick: v.optional(v.number()),
     lastCompletedAt: v.optional(v.number()),
     lastPublishedAt: v.optional(v.number()),
@@ -182,6 +183,90 @@ export default defineSchema({
     lastFoldedRunId: v.optional(v.id('simulationRuns')),
     scoreVersion: v.number(),
   }).index('by_heroId', ['heroId']),
+
+  rankInputs: defineTable({
+    runId: v.id('simulationRuns'),
+    heroId: v.id('heroes'),
+    userId: v.id('users'),
+    heroKey: v.string(),
+    cohortKey: v.string(),
+    ranked24h: v.boolean(),
+    ranked7d: v.boolean(),
+    negativeScore24h: v.number(),
+    negativeScore7d: v.number(),
+    activatedAt: v.number(),
+    negativeLevel: v.number(),
+    negativeXp: v.number(),
+    lastLevelUpTick: v.number(),
+    heroCreatedAt: v.number(),
+    heroName: v.string(),
+    ownerAlias: v.string(),
+    publicNameVersion: v.number(),
+    level: v.number(),
+    xp: v.number(),
+  })
+    .index('by_runId_and_heroId', ['runId', 'heroId'])
+    .index('by_run_order', ['runId', 'negativeLevel', 'negativeXp', 'lastLevelUpTick', 'heroCreatedAt', 'heroKey'])
+    .index('by_run_recent24', ['runId', 'ranked24h', 'cohortKey', 'negativeScore24h', 'activatedAt', 'heroKey'])
+    .index('by_run_recent7', ['runId', 'ranked7d', 'cohortKey', 'negativeScore7d', 'activatedAt', 'heroKey']),
+
+  leaderboardPublications: defineTable({
+    runId: v.id('simulationRuns'),
+    state: v.union(v.literal('building'), v.literal('published'), v.literal('obsolete')),
+    previousPublicationId: v.optional(v.id('leaderboardPublications')),
+    scoreAt: v.number(),
+    asOfTick: v.number(),
+    globalTotalPlayers: v.number(),
+    currentBoard: v.union(v.literal('overall'), v.literal('recent_24h'), v.literal('recent_7d')),
+    currentGenerationId: v.optional(v.id('leaderboardGenerations')),
+    cursor: v.optional(v.string()),
+    batchSequence: v.number(),
+    nextScheduledFunctionId: v.optional(v.id('_scheduled_functions')),
+    lastProgressAt: v.number(),
+    builtAt: v.optional(v.number()),
+    publishedAt: v.optional(v.number()),
+  })
+    .index('by_runId', ['runId'])
+    .index('by_state', ['state']),
+
+  leaderboardGenerations: defineTable({
+    publicationId: v.id('leaderboardPublications'),
+    board: v.union(v.literal('overall'), v.literal('recent_24h'), v.literal('recent_7d')),
+    cohortKey: v.string(),
+    totalPlayers: v.number(),
+    nextRank: v.number(),
+    entries: v.array(
+      v.object({
+        rank: v.number(),
+        heroId: v.id('heroes'),
+        userId: v.id('users'),
+        ownerAlias: v.string(),
+        heroName: v.string(),
+        publicNameVersion: v.number(),
+        level: v.number(),
+        xp: v.number(),
+        score: v.optional(v.number()),
+      }),
+    ),
+    scoreAt: v.number(),
+    state: v.union(v.literal('building'), v.literal('ready')),
+  })
+    .index('by_publicationId_and_board_and_cohortKey', ['publicationId', 'board', 'cohortKey'])
+    .index('by_publicationId', ['publicationId']),
+
+  heroRanks: defineTable({
+    publicationId: v.id('leaderboardPublications'),
+    generationId: v.id('leaderboardGenerations'),
+    board: v.union(v.literal('overall'), v.literal('recent_24h'), v.literal('recent_7d')),
+    cohortKey: v.string(),
+    heroId: v.id('heroes'),
+    rank: v.number(),
+    rankDelta: v.optional(v.number()),
+    score: v.optional(v.number()),
+    level: v.number(),
+  })
+    .index('by_publicationId_and_board_and_heroId', ['publicationId', 'board', 'heroId'])
+    .index('by_publicationId', ['publicationId']),
 
   tickLogs: defineTable({
     heroId: v.id('heroes'),

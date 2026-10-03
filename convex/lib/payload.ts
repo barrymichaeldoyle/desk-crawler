@@ -56,6 +56,24 @@ export interface PayloadInput {
   /** Public origin serving `/art/...` scene images (the Convex site URL). */
   readonly artBaseUrl: string | null
   readonly latestEvent: LatestEvent | null
+  /** Seven-day own-group ranking from the published set; null before any publication. */
+  readonly ranking: PayloadRanking | null
+}
+
+export interface PayloadRanking {
+  readonly rank: number | null
+  readonly rankDelta: number | null
+  readonly status: 'ranked' | 'awaiting' | 'dormant'
+  readonly cohortKey: string | null
+  readonly cohortLabel: string
+  readonly score: number | null
+  readonly scoreAt: number
+  readonly asOfTick: number
+  readonly builtAt: number
+  readonly windowStart: number
+  readonly totalPlayers: number
+  readonly globalTotalPlayers: number
+  readonly top5: ReadonlyArray<{ rank: number; name: string; hero_name: string; level: number; score: number }>
 }
 
 const iso = (timestamp: number) => new Date(timestamp).toISOString().replace(/\.\d{3}Z$/, 'Z')
@@ -89,6 +107,46 @@ const sanitizeLabel = (raw: string | null, max: number, fallback: string) => {
   return cleaned === '' ? fallback : [...cleaned].slice(0, max).join('')
 }
 
+function rankingFields(ranking: PayloadRanking | null, unlinked: boolean, timeZone: string) {
+  if (ranking === null || unlinked) {
+    return {
+      rank: null as number | null,
+      rank_delta: null as number | null,
+      rank_status: 'awaiting' as 'ranked' | 'awaiting' | 'dormant',
+      leaderboard_board: 'recent_7d' as const,
+      leaderboard_cohort: null as string | null,
+      leaderboard_cohort_label: '',
+      leaderboard_score: null as number | null,
+      leaderboard_window_start: null as string | null,
+      leaderboard_window_end: null as string | null,
+      leaderboard_tick: null as number | null,
+      leaderboard_built_at: null as string | null,
+      total_players: 0,
+      global_total_players: unlinked ? 0 : (ranking?.globalTotalPlayers ?? 0),
+      top5: [] as Array<{ rank: number; name: string; hero_name: string; level: number; class: string; score: number }>,
+      leaderboard_as_of_label: 'Ranking within the hour',
+    }
+  }
+  const asOf = formatLocal(ranking.scoreAt, timeZone)
+  return {
+    rank: ranking.rank,
+    rank_delta: ranking.rankDelta,
+    rank_status: ranking.status,
+    leaderboard_board: 'recent_7d' as const,
+    leaderboard_cohort: ranking.cohortKey,
+    leaderboard_cohort_label: ranking.cohortLabel,
+    leaderboard_score: ranking.score,
+    leaderboard_window_start: iso(ranking.windowStart),
+    leaderboard_window_end: iso(ranking.scoreAt),
+    leaderboard_tick: ranking.asOfTick,
+    leaderboard_built_at: iso(ranking.builtAt),
+    total_players: ranking.totalPlayers,
+    global_total_players: ranking.globalTotalPlayers,
+    top5: ranking.top5.map((row) => ({ ...row, class: 'warrior' })),
+    leaderboard_as_of_label: `${asOf.label} ${asOf.offset}`,
+  }
+}
+
 export function buildPayload(input: PayloadInput) {
   const { now, world, hero, content } = input
   const biomeName = (id: string | undefined) => content.biomes.find((b) => b.id === id)?.name ?? ''
@@ -107,22 +165,7 @@ export function buildPayload(input: PayloadInput) {
     stale,
     plugin_instance_name: sanitizeLabel(input.instanceName, 40, 'Desk Crawler'),
     game_as_of_label: gameAsOf ? `${gameAsOf.label} ${gameAsOf.offset}` : 'Awaiting first game tick',
-    // Ranking arrives with A06; until then the coherent empty state.
-    rank: null,
-    rank_delta: null,
-    rank_status: 'awaiting' as const,
-    leaderboard_board: 'recent_7d' as const,
-    leaderboard_cohort: null,
-    leaderboard_cohort_label: '',
-    leaderboard_score: null,
-    leaderboard_window_start: null,
-    leaderboard_window_end: null,
-    leaderboard_tick: null,
-    leaderboard_built_at: null,
-    total_players: 0,
-    global_total_players: 0,
-    top5: [] as Array<{ rank: number; name: string; hero_name: string; level: number; class: string; score: number }>,
-    leaderboard_as_of_label: 'Ranking within the hour',
+    ...rankingFields(input.ranking, hero === null, input.timezone),
   }
 
   const sceneUrls = (biomeId: string, scene: ReturnType<typeof sceneFor>) =>

@@ -4,6 +4,7 @@ import { ACTIVE_CONTENT, catalogs } from './content'
 import { bagGearCount } from './sim/core/invariants'
 import { buildPayload } from './lib/payload'
 import { readWorld } from './world'
+import { readDeviceRanking } from './lib/rankingRead'
 
 /**
  * Fixed-cost canonical payload for one authorized instance (trmnl.md "Query
@@ -111,6 +112,7 @@ export const forInstance = internalQuery({
       spriteBaseUrl: process.env.SPRITE_BASE_URL ?? null,
       artBaseUrl: process.env.CONVEX_SITE_URL ?? null,
       latestEvent,
+      ranking: hero ? await readDeviceRanking(ctx, world, hero) : null,
     })
     return { outcome: 'payload' as const, payload }
   },

@@ -5,7 +5,7 @@
  * Deploy-time constants: user text only arrives through merge_variables and is
  * escaped here. Each string is self-contained (no shared-template registration).
  */
-export const TEMPLATE_VERSION = 6
+export const TEMPLATE_VERSION = 7
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -69,8 +69,9 @@ const rankPanel = `
       {% else %}<span class="label label--small label--gray">{{ leaderboard_as_of_label | escape }}</span>{% endif %}
       {% for row in top5 %}<span class="label label--small" data-clamp="1">{{ row.rank }}. {{ row.name | escape }} · {{ row.score }} XP</span>{% endfor %}`
 
-const attentionLine = `
-  {% if attention %}<span class="label label--small label--underline" data-clamp="1">{{ attention | escape }}</span>{% endif %}`
+/** The one quiet attention message (service, delay, death, inventory sleep): never clipped, shown in every size. */
+const attention = (classes: string, clamp: number) => `
+      {% if attention %}<span class="${classes} label--underline" data-clamp="${clamp}">{{ attention | escape }}</span>{% endif %}`
 
 const setup = (field: 'scene_url' | 'scene_url_small') => `${scene(field)}
   <div class="flex flex--col flex--center-x gap--small">
@@ -84,7 +85,8 @@ export const markupFull = `
   {% if status == "unlinked" %}${setup('scene_url')}
   {% else %}${scene('scene_url')}${divider}
   <div class="grid stretch-x">
-    <div class="col--span-5 flex flex--col flex--left gap--small">${newestStory(3, 'title')}${olderStories(1)}
+    <div class="col--span-5 flex flex--col flex--left flex--top gap--small">${newestStory(3, 'title')}
+      {% if attention %}${attention('label', 2)}{% else %}${olderStories(1)}{% endif %}
     </div>
     <div class="col--span-3 flex flex--col flex--left flex--stretch-x gap--small">
       <span class="title title--small" data-clamp="1">{{ hero_name | escape }} · L{{ level }}</span>
@@ -92,7 +94,7 @@ export const markupFull = `
     </div>
     <div class="col--span-4 flex flex--col flex--left gap--xsmall">${rankPanel}
     </div>
-  </div>${attentionLine}
+  </div>
   {% endif %}
 </div>${titleBar}`
 
@@ -104,7 +106,8 @@ export const markupHalfHorizontal = `
     <div class="col--span-5 flex flex--col flex--center-x">${scene('scene_url_small')}
     </div>
     <div class="col--span-7 flex flex--col flex--left flex--stretch-x gap--small">
-      <span class="label" data-clamp="1">{{ hero_name | escape }} · L{{ level }} · {{ status_label | escape }}</span>${hpBar(' progress-bar--xsmall')}${newestStory(2, 'description')}
+      <span class="label" data-clamp="1">{{ hero_name | escape }} · L{{ level }} · {{ status_label | escape }}</span>${hpBar(' progress-bar--xsmall')}
+      {% if attention %}${attention('label label--small', 1)}${newestStory(1, 'description')}{% else %}${newestStory(2, 'description')}{% endif %}
     </div>
   </div>
   {% endif %}
@@ -116,9 +119,9 @@ export const markupHalfVertical = `
   {% else %}${scene('scene_url_small')}
   <div class="flex flex--col flex--left flex--stretch-x gap--small">
     <span class="label" data-clamp="1">{{ hero_name | escape }} · Level {{ level }} Warrior</span>
-    <span class="label label--small" data-clamp="1">{{ status_label | escape }}</span>${hpBar(' progress-bar--small')}${xpBar(' progress-bar--small')}
+    <span class="label label--small" data-clamp="1">{{ status_label | escape }}</span>${attention('label label--small', 2)}${hpBar(' progress-bar--small')}${xpBar(' progress-bar--small')}
   </div>${divider}
-  <div class="flex flex--col flex--left gap--small">${newestStory(3, 'description')}${olderStories(1)}${rankLine}
+  <div class="flex flex--col flex--left gap--small">${newestStory(3, 'title title--small')}${olderStories(3)}${rankLine}
   </div>
   {% endif %}
 </div>${titleBar}`
@@ -127,7 +130,8 @@ export const markupQuadrant = `
 <div class="layout layout--col layout--top layout--stretch-x gap--xsmall">
   {% if status == "unlinked" %}${setup('scene_url_small')}
   {% else %}${scene('scene_url_small')}
-    <span class="label label--small" data-clamp="1">{{ hero_name | escape }} · L{{ level }} · HP {{ hp }}/{{ max_hp }}</span>${newestStory(1, 'label label--small')}
+    <span class="label" data-clamp="1">{{ hero_name | escape }} · L{{ level }} · HP {{ hp }}/{{ max_hp }}</span>
+    {% if attention %}${attention('label label--small', 2)}{% else %}${newestStory(2, 'label label--small')}{% endif %}
   {% endif %}
 </div>${titleBar}`
 

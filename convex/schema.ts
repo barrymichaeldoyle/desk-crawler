@@ -268,6 +268,33 @@ export default defineSchema({
     .index('by_publicationId_and_board_and_heroId', ['publicationId', 'board', 'heroId'])
     .index('by_publicationId', ['publicationId']),
 
+  operationReceipts: defineTable({
+    userId: v.id('users'),
+    operationId: v.string(),
+    operation: v.string(),
+    argumentHash: v.string(),
+    result: v.object({
+      changed: v.boolean(),
+      gold: v.optional(v.number()),
+      hp: v.optional(v.number()),
+      count: v.optional(v.number()),
+      tick: v.optional(v.number()),
+    }),
+    createdAt: v.number(),
+    expiresAt: v.number(),
+  })
+    .index('by_userId_and_operationId', ['userId', 'operationId'])
+    .index('by_expiresAt', ['expiresAt']),
+
+  rateLimitBuckets: defineTable({
+    key: v.string(),
+    windowStart: v.number(),
+    count: v.number(),
+    expiresAt: v.number(),
+  })
+    .index('by_key_and_windowStart', ['key', 'windowStart'])
+    .index('by_expiresAt', ['expiresAt']),
+
   tickLogs: defineTable({
     heroId: v.id('heroes'),
     source: v.union(v.literal('tick'), v.literal('command'), v.literal('lifecycle')),

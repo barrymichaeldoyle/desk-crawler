@@ -1,0 +1,133 @@
+{
+  "v": 1,
+  "generated_at": "2026-10-03T10:15:00Z",
+  "tick": 120,
+  "last_completed_tick": 120,
+  "last_completed_at": "2026-10-03T10:13:08Z",
+  "hero_tick": 120,
+  "hero_updated_at": "2026-10-03T10:13:03Z",
+  "data_state": "service_paused",
+  "stale": false,
+  "hero_name": "Steve",
+  "owner_name": "Barry",
+  "class": "warrior",
+  "level": 4,
+  "xp": 80,
+  "xp_to_next": 459,
+  "xp_pct": 17,
+  "hp": 88,
+  "max_hp": 136,
+  "hp_pct": 65,
+  "gold": 120,
+  "status": "exploring",
+  "status_label": "Service paused; your progress is safe",
+  "status_eta_ticks": 0,
+  "biome_id": "server_room",
+  "biome_name": "Server Room",
+  "sprite": "warrior_idle_v1",
+  "sprite_url": "https://desk-crawler.example/sprites/warrior-idle-v1.png",
+  "weapon": "Cable Cutter",
+  "armor": "Insulated Cardigan",
+  "potions": 2,
+  "log": [
+    {
+      "t": "03 Oct 12:13",
+      "k": "combat",
+      "s": "Slew a Cable Serpent (+24 XP, +10 gold).",
+      "at": "2026-10-03T10:13:00Z"
+    },
+    {
+      "t": "03 Oct 11:58",
+      "k": "loot",
+      "s": "Found an Uncommon Insulated Cardigan.",
+      "at": "2026-10-03T09:58:00Z"
+    },
+    {
+      "t": "03 Oct 11:43",
+      "k": "trap",
+      "s": "A loose wire sparked (-16 HP).",
+      "at": "2026-10-03T09:43:00Z"
+    },
+    {
+      "t": "03 Oct 11:28",
+      "k": "rest",
+      "s": "Rested beside a quiet server rack (+34 HP).",
+      "at": "2026-10-03T09:28:00Z"
+    },
+    {
+      "t": "03 Oct 11:13",
+      "k": "combat",
+      "s": "Slew a Dust Daemon (+22 XP, +9 gold).",
+      "at": "2026-10-03T09:13:00Z"
+    },
+    {
+      "t": "03 Oct 10:58",
+      "k": "travel",
+      "s": "Arrived in the Server Room.",
+      "at": "2026-10-03T08:58:00Z"
+    }
+  ],
+  "rank": 6,
+  "rank_delta": 2,
+  "rank_status": "ranked",
+  "leaderboard_tick": 119,
+  "leaderboard_built_at": "2026-10-03T09:58:08Z",
+  "total_players": 7,
+  "top5": [
+    {
+      "rank": 1,
+      "name": "Alice",
+      "hero_name": "Pip",
+      "level": 7,
+      "class": "warrior",
+      "score": 2100
+    },
+    {
+      "rank": 2,
+      "name": "Bob",
+      "hero_name": "Staple",
+      "level": 6,
+      "class": "warrior",
+      "score": 1800
+    },
+    {
+      "rank": 3,
+      "name": "Cy",
+      "hero_name": "Mug",
+      "level": 5,
+      "class": "warrior",
+      "score": 900
+    },
+    {
+      "rank": 4,
+      "name": "Dee",
+      "hero_name": "Clip",
+      "level": 5,
+      "class": "warrior",
+      "score": 800
+    },
+    {
+      "rank": 5,
+      "name": "Eve",
+      "hero_name": "Fax",
+      "level": 4,
+      "class": "warrior",
+      "score": 600
+    }
+  ],
+  "attention": "Your hero is paused by the service. Open Desk Crawler for help.",
+  "plugin_instance_name": "Desk Crawler",
+  "game_as_of_label": "03 Oct 12:13 UTC+02:00",
+  "leaderboard_as_of_label": "03 Oct 11:58 UTC+02:00",
+  "bag_used": 6,
+  "bag_capacity": 30,
+  "held_item": "",
+  "wake_at_tick": null,
+  "leaderboard_board": "recent_7d",
+  "leaderboard_cohort": "4-7",
+  "leaderboard_cohort_label": "Levels 4-7",
+  "leaderboard_score": 500,
+  "leaderboard_window_start": "2026-09-26T10:00:00Z",
+  "leaderboard_window_end": "2026-10-03T09:58:00Z",
+  "global_total_players": 19
+}

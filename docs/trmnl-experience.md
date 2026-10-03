@@ -1,0 +1,93 @@
+# The TRMNL player experience
+
+Planning defaults for Month 1. [TRMNL](trmnl.md) owns the wire contract, [gameplay](gameplay.md) owns rules, and [quality](quality.md) owns proof. This document owns the display journey and content priority.
+
+## A useful glance
+
+Within roughly five seconds, a player should understand who their hero is, what the hero is doing, and the latest outcome. This is a design test target, not a measured usability result. The screen should stay pleasant when viewed repeatedly or left untouched for a day.
+
+Priority in every size: connection/service explanation when needed → hero/status → latest story → HP/level → dated game freshness → optional XP/gold/rank/history. Full screen includes seven-day own-group Top 5/score/personal rank with group/period labels, but the leaderboard must not visually dominate the hero or story.
+
+Use one quiet attention message. Inventory-sleep copy explains bag capacity/retained find and manual Resume without blaming inactivity. Death copy reassures that revival is automatic and XP/equipment are safe. Paused copy says the player paused it. Quarantine/global maintenance copy says the service paused it. A service delay must not hide the hero's death/recovery status.
+
+No flashing, animation, urgency badges, streak pressure or instruction to keep the app open. Optional improvements can be made later; every encounter resolves without checking the screen. Ranks are secondary context rather than a request to compete continuously.
+
+## From marketplace to a first screen
+
+| Stage | What the user sees | Completion means |
+| --- | --- | --- |
+| Discover | Calm office adventure exclusively for TRMNL, free gameplay, companion account required, one-time Save activation, progress independent of refresh | Listing accurately explains the game |
+| Link | Current companion alias/hero, account-switch/restart action, explicit connection confirmation | Clerk-authenticated owner authorizes this installation |
+| Save | “Return to TRMNL, name this instance and click Save” | Authenticated success callback or V06-verified recovery confirms a saved instance and activates the prepared hero once |
+| Preview | TRMNL playlist/plugin preview; companion shows the same game payload in its own UI | Preview proves generation only when actually observed; companion UI is not a hardware screenshot |
+| Display | Dated hero/story screen at the next eligible wake/playlist slot | Physical display is verified during the live check |
+| Return | Configure opens owned connection and controls; separate refresh return action | Intents update web state; TRMNL catches up on its schedule |
+
+Normal onboarding verifies code/owner, prepares the pending hero, then returns to TRMNL Save. Only authenticated saved-instance confirmation activates play. The unlinked screen covers no activated hero and remains privacy-safe, not an invitation to create heroes through polling. Public previews use labeled samples; pending companion previews show starter state without earned encounters or a scheduled-play promise.
+
+A linked grant, saved instance, HTTP response, generated TRMNL preview and physical display are different milestones. Do not turn the first milestone into “Your device is connected and showing your hero.” The companion lists installations; it cannot infer device ownership from an installation count.
+
+## Refresh, sleep and playlists
+
+TRMNL currently anticipates device requests using on-demand refresh; its help page labels the older asynchronous section historical. Device, playlist, plugin and account settings influence new-image eligibility. A mixed playlist can show Desk Crawler less often than the device wakes. Website refresh prepares content; hardware must request it. [Current refresh behavior](https://help.trmnl.com/en/articles/10113695-how-refresh-rates-work)
+
+Offer 15-minute plugin refresh as the fastest supported option. After activation, slower intervals, sleep and disconnection are fine and do not reduce earned progress. Recommend a mashup for keeping a hero visible beside useful desk information; avoid advising a faster device interval to farm encounters.
+
+Sleep Mode stops ordinary device fetches during the chosen period. It is a user's battery preference, independent of hero pause. Do not change device settings automatically. [Sleep Mode](https://help.trmnl.com/en/articles/11129379-sleep-mode)
+
+The help page walks through Save, finding the playlist item, seeing its preview, adding a half/quadrant mashup, refresh settings and sleep. It does not promise quarter-hour alignment, instantaneous delivery or an overnight fetch count. The live test includes slower refresh and multiple playlist items.
+
+## A snapshot that ages honestly
+
+Every layout reserves a compact date/time label derived from the last completed game run, including its UTC offset. If no run exists, say “Awaiting first game tick.” Response assembly time never pretends to be gameplay freshness. Rank sections separately show the board's as-of time where it differs.
+
+Use fixed snapshot text such as “Game 03 Oct 12:13 UTC+02:00,” rather than “updated just now” or a live countdown. Revival/travel show remaining logical ticks as of hero evaluation; conversions to minutes are approximate.
+
+When the backend is reachable but progression is delayed, return the last valid state with “Updates delayed.” A total backend outage, failed image render, sleeping/offline device or old playlist image cannot acquire new warning text from us. The visible dated snapshot and help must explain that limitation. We do not control whether TRMNL keeps an old image or shows its own error; capture actual failure behavior in the live spike.
+
+Disconnect/deletion prevents future authorized payloads. It cannot retract an image already cached by TRMNL or visible on an offline e-ink panel. Explain this in account controls/privacy help and give user-controlled removal/playlist replacement steps. Do not promise remote erasure.
+
+## Story and history
+
+Each newest outcome stands alone: concrete actor/object, result and the useful effect. Avoid references such as “again” or “it escaped” that require an earlier tick. Death, revival, arrival and level gains remain comprehensible without the preceding screen.
+
+The device log is the newest six events, including commands. It is not a daily digest or proof the player saw those events. Date-aware labels disambiguate midnight and old entries. Smaller layouts choose the newest outcome deterministically; refreshing does not pick a random joke, rotate content, mark events read or grant rewards.
+
+Clamping must preserve the result. Put consequences early, shorten narrative first, and never clip away “find held”/“bag full” on overflow or “revives” on death. Author compact summaries if 90 characters cannot fit; do not shrink primary text until unreadable. Structured own-history retains full bounded detail.
+
+An absence of hours may skip adventures on the device. The companion retains up to three days of detailed history; beyond that, only persistent hero state/lifetime counters are promised. A daily recap is a later amendment if needed, with bounded aggregation and retention.
+
+## Display rules
+
+| Layout | Must retain | Simplification order |
+| --- | --- | --- |
+| Full | Hero/status, newest story, HP/XP, seven-day group Top 5/score/personal rank, group/period and freshness | Gear → gold → older logs → decorative sprite size |
+| Half horizontal | Hero/status, HP/level, newest story, personal rank and freshness | Second log → XP/gold → sprite size |
+| Half vertical | Hero/status, HP/level, newest story, personal rank and freshness | Older logs → XP/gold → sprite size |
+| Quadrant | Name/level, readable status/HP, newest outcome or recovery/setup message, freshness | Sprite/detail first; no board or second progress bar |
+
+Missing optional text falls back safely; missing required stats never render as zero. HP 0 is real and must survive Liquid default handling. Keep stable positions for hero, status and freshness across normal/recovery states.
+
+Cut lower-priority content before reducing primary text. In full-screen Top 5, rank + one public alias + level is sufficient; both alias and hero name are optional. No permanently empty panels for zero/one-player populations.
+
+Baseline proof is four layouts on OG 1-bit landscape, plus four on the selected larger grayscale model. Check inherited dark/theme/text-scale behavior on representative worst cases. Portrait/color/fluid layouts are supported only after their own evidence; listing/help reports the tested matrix. Color must not be required to distinguish HP, XP, danger or rarity.
+
+## Diagnosis without guesswork
+
+| Observation | Next check |
+| --- | --- |
+| “Waiting for Save” | Return to the validated TRMNL form; save or restart an expired attempt |
+| Wrong companion hero/account | Restart with intended Clerk account; never reassign a linked grant |
+| Game old in web and dated screen | Run health/service status |
+| Web current, TRMNL preview old | Eligible refresh, connection state and plugin logs |
+| Preview current, hardware old | Playlist position/schedule, sleep, connectivity and TRMNL activity logs |
+| One mashup slot blank | That size's template and actual render/asset behavior |
+| Disconnected/uninstalled | Explicit owned repair/new install; old requests cannot reactivate it |
+
+Optional telemetry is labeled “Last data served to TRMNL.” It proves neither Liquid render nor physical display. Support uses a bounded connection reference, timestamps and layout/model; never installation tokens, authorization headers, codes or management JWTs.
+
+## Approved inventory and public-name amendment
+
+Adventures normally continue between occasional visits. First gear overflow retains one find and sleeps encounters/XP until bag management and explicit next-tick Resume. Neither hardware Sleep Mode nor 24-hour companion inactivity triggers this state. Recent XP ages out while sleeping; dated ranks are eligible and can change, and a long sleeper with zero window XP shows as unranked rather than last (D32).
+
+Show taking a break / bag full / find waiting, or Resume scheduled when wake is pending. Keep service quarantine and HP rest separate. Restricted name repair preserves progress; public copied names remain masked on version mismatch until coherent refresh.

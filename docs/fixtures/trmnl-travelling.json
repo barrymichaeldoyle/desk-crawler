@@ -1,0 +1,103 @@
+{
+  "v": 1,
+  "generated_at": "2026-10-03T10:28:05Z",
+  "tick": 121,
+  "last_completed_tick": 120,
+  "last_completed_at": "2026-10-03T10:13:08Z",
+  "hero_tick": 120,
+  "hero_updated_at": "2026-10-03T10:13:03Z",
+  "data_state": "ready",
+  "stale": false,
+  "hero_name": "Steve",
+  "owner_name": "Barry",
+  "class": "warrior",
+  "level": 8,
+  "xp": 80,
+  "xp_to_next": 1392,
+  "xp_pct": 5,
+  "hp": 120,
+  "max_hp": 184,
+  "hp_pct": 65,
+  "gold": 120,
+  "status": "travelling",
+  "status_label": "Travelling to Cafeteria Depths; arrives in 1 tick",
+  "status_eta_ticks": 1,
+  "biome_id": "server_room",
+  "biome_name": "Server Room",
+  "sprite": "warrior_idle_v1",
+  "sprite_url": "https://desk-crawler.example/sprites/warrior-idle-v1.png",
+  "weapon": "Cable Cutter",
+  "armor": "Insulated Cardigan",
+  "potions": 2,
+  "log": [
+    {
+      "at": "2026-10-03T10:14:00Z",
+      "t": "03 Oct 12:14",
+      "k": "travel",
+      "s": "Set off for the Cafeteria Depths. Arrival grants no encounter."
+    }
+  ],
+  "rank": 6,
+  "rank_delta": 2,
+  "rank_status": "ranked",
+  "leaderboard_tick": 119,
+  "leaderboard_built_at": "2026-10-03T09:58:08Z",
+  "total_players": 7,
+  "top5": [
+    {
+      "rank": 1,
+      "name": "Alice",
+      "hero_name": "Pip",
+      "level": 9,
+      "class": "warrior",
+      "score": 5000
+    },
+    {
+      "rank": 2,
+      "name": "Bob",
+      "hero_name": "Staple",
+      "level": 8,
+      "class": "warrior",
+      "score": 4500
+    },
+    {
+      "rank": 3,
+      "name": "Cy",
+      "hero_name": "Mug",
+      "level": 10,
+      "class": "warrior",
+      "score": 4000
+    },
+    {
+      "rank": 4,
+      "name": "Dee",
+      "hero_name": "Clip",
+      "level": 11,
+      "class": "warrior",
+      "score": 3500
+    },
+    {
+      "rank": 5,
+      "name": "Eve",
+      "hero_name": "Fax",
+      "level": 9,
+      "class": "warrior",
+      "score": 3200
+    }
+  ],
+  "attention": null,
+  "plugin_instance_name": "Desk Crawler",
+  "game_as_of_label": "03 Oct 12:13 UTC+02:00",
+  "leaderboard_as_of_label": "03 Oct 11:58 UTC+02:00",
+  "bag_used": 6,
+  "bag_capacity": 30,
+  "held_item": "",
+  "wake_at_tick": null,
+  "leaderboard_board": "recent_7d",
+  "leaderboard_cohort": "8-11",
+  "leaderboard_cohort_label": "Levels 8-11",
+  "leaderboard_score": 3000,
+  "leaderboard_window_start": "2026-09-26T10:00:00Z",
+  "leaderboard_window_end": "2026-10-03T09:58:00Z",
+  "global_total_players": 19
+}

@@ -1,0 +1,103 @@
+{
+  "v": 1,
+  "generated_at": "2026-10-03T10:28:05Z",
+  "tick": 121,
+  "last_completed_tick": 120,
+  "last_completed_at": "2026-10-03T10:13:08Z",
+  "hero_tick": 121,
+  "hero_updated_at": null,
+  "data_state": "ready",
+  "stale": false,
+  "hero_name": "Clip",
+  "owner_name": "Barry",
+  "class": "warrior",
+  "level": 1,
+  "xp": 0,
+  "xp_to_next": 50,
+  "xp_pct": 0,
+  "hp": 100,
+  "max_hp": 100,
+  "hp_pct": 100,
+  "gold": 0,
+  "status": "exploring",
+  "status_label": "Exploring the Office Cubicles",
+  "status_eta_ticks": 0,
+  "biome_id": "office_cubicles",
+  "biome_name": "Office Cubicles",
+  "sprite": "warrior_idle_v1",
+  "sprite_url": "https://desk-crawler.example/sprites/warrior-idle-v1.png",
+  "weapon": "Common Letter Opener",
+  "armor": "Common Cardigan",
+  "potions": 3,
+  "log": [
+    {
+      "at": "2026-10-03T10:28:03Z",
+      "t": "03 Oct 12:28",
+      "k": "system",
+      "s": "Your shift begins in the Office Cubicles."
+    }
+  ],
+  "rank": null,
+  "rank_delta": null,
+  "rank_status": "awaiting",
+  "leaderboard_tick": 119,
+  "leaderboard_built_at": "2026-10-03T09:58:08Z",
+  "total_players": 7,
+  "top5": [
+    {
+      "rank": 1,
+      "name": "Alice",
+      "hero_name": "Pip",
+      "level": 3,
+      "class": "warrior",
+      "score": 400
+    },
+    {
+      "rank": 2,
+      "name": "Bob",
+      "hero_name": "Staple",
+      "level": 3,
+      "class": "warrior",
+      "score": 350
+    },
+    {
+      "rank": 3,
+      "name": "Cy",
+      "hero_name": "Mug",
+      "level": 2,
+      "class": "warrior",
+      "score": 200
+    },
+    {
+      "rank": 4,
+      "name": "Dee",
+      "hero_name": "Clip",
+      "level": 2,
+      "class": "warrior",
+      "score": 100
+    },
+    {
+      "rank": 5,
+      "name": "Eve",
+      "hero_name": "Fax",
+      "level": 1,
+      "class": "warrior",
+      "score": 50
+    }
+  ],
+  "attention": null,
+  "plugin_instance_name": "Desk Crawler",
+  "game_as_of_label": "03 Oct 12:13 UTC+02:00",
+  "leaderboard_as_of_label": "03 Oct 11:58 UTC+02:00",
+  "bag_used": 6,
+  "bag_capacity": 30,
+  "held_item": "",
+  "wake_at_tick": null,
+  "leaderboard_board": "recent_7d",
+  "leaderboard_cohort": "1-3",
+  "leaderboard_cohort_label": "Levels 1-3",
+  "leaderboard_score": null,
+  "leaderboard_window_start": "2026-09-26T10:00:00Z",
+  "leaderboard_window_end": "2026-10-03T09:58:00Z",
+  "global_total_players": 19
+}

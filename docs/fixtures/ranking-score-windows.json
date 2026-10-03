@@ -1,0 +1,43 @@
+{
+  "description": "Documentation-only hourly-bucket example (D31); no generated backend result. Publication run at the last slot of the 09:00 UTC hour folds the hero's accumulator, then expires and sums whole-hour buckets.",
+  "scoreAt": "2026-10-03T09:58:00Z",
+  "scoreHour": "2026-10-03T09:00:00Z",
+  "accumulatorBeforeFold": {
+    "scoreHour": "2026-10-03T09:00:00Z",
+    "scoreHourXp": 80
+  },
+  "bucketsBeforeFold": [
+    {
+      "hourStart": "2026-09-26T09:00:00Z",
+      "xp": 100
+    },
+    {
+      "hourStart": "2026-09-26T10:00:00Z",
+      "xp": 30
+    },
+    {
+      "hourStart": "2026-10-02T09:00:00Z",
+      "xp": 20
+    }
+  ],
+  "expected": {
+    "bucketsAfterFold": [
+      {
+        "hourStart": "2026-09-26T10:00:00Z",
+        "xp": 30
+      },
+      {
+        "hourStart": "2026-10-02T09:00:00Z",
+        "xp": 20
+      },
+      {
+        "hourStart": "2026-10-03T09:00:00Z",
+        "xp": 80
+      }
+    ],
+    "xp24h": 80,
+    "xp7d": 130,
+    "retainedBuckets": 3
+  },
+  "interval": "bucket hourStart in (scoreHour - duration, scoreHour]: start exclusive, end inclusive"
+}

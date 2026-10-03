@@ -43,6 +43,7 @@ export const forInstance = internalQuery({
     let potions = 0
     let bagUsed = 0
     let logs: Array<{ at: number; kind: string; summary: string }> = []
+    let latestEvent: { kind: string; outcome?: { variant: string; [key: string]: unknown } } | null = null
     if (hero) {
       const items = await ctx.db
         .query('items')
@@ -56,13 +57,14 @@ export const forInstance = internalQuery({
       heldItemName = label(named(hero.heldItemId))
       potions = items.find((item) => item.kind === 'potion')?.quantity ?? 0
       bagUsed = bagGearCount(hero.heldItemId === undefined ? {} : { heldItemId: hero.heldItemId }, items.map((item) => ({ ...item, id: item._id })))
-      logs = (
-        await ctx.db
-          .query('tickLogs')
-          .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id))
-          .order('desc')
-          .take(6)
-      ).map((log) => ({ at: log.at, kind: log.kind, summary: log.summary }))
+      const recent = await ctx.db
+        .query('tickLogs')
+        .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id))
+        .order('desc')
+        .take(6)
+      logs = recent.map((log) => ({ at: log.at, kind: log.kind, summary: log.summary }))
+      const newest = recent[0]
+      if (newest) latestEvent = { kind: newest.kind, ...('outcome' in newest.detail ? { outcome: newest.detail.outcome } : {}) }
     }
 
     const payload = buildPayload({
@@ -107,6 +109,8 @@ export const forInstance = internalQuery({
       instanceName: args.instanceName,
       content,
       spriteBaseUrl: process.env.SPRITE_BASE_URL ?? null,
+      artBaseUrl: process.env.CONVEX_SITE_URL ?? null,
+      latestEvent,
     })
     return { outcome: 'payload' as const, payload }
   },

@@ -2,6 +2,7 @@ import { httpRouter } from 'convex/server'
 import { internal } from './_generated/api'
 import { httpAction } from './_generated/server'
 import { sha256Hex } from './lib/hash'
+import { renderScenePng } from './art/route'
 import { screenMarkup } from './templates/screen'
 
 /**
@@ -109,6 +110,17 @@ http.route({
     }
     if (result === null || result.outcome !== 'payload') return notFound()
     return json(200, { ...screenMarkup, merge_variables: result.payload })
+  }),
+})
+
+/** Public, deterministic scene art for TRMNL screens. Immutable per URL (versioned path). */
+http.route({
+  pathPrefix: '/art/',
+  method: 'GET',
+  handler: httpAction(async (_ctx, request) => {
+    const png = renderScenePng(new URL(request.url).pathname)
+    if (png === null) return new Response('Not found', { status: 404 })
+    return new Response(new Blob([png.slice().buffer as ArrayBuffer], { type: 'image/png' }), { status: 200, headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=31536000, immutable' } })
   }),
 })
 

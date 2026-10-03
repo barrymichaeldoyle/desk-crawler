@@ -4,6 +4,8 @@
  */
 import type { ContentCatalog } from '../sim/core/types'
 import { maxHp, xpToLeave } from '../sim/core/stats'
+import { FULL_SCALE, SMALL_SCALE } from '../art/scene'
+import { sceneFor, scenePath, type LatestEvent } from '../art/sceneKey'
 
 export const STALE_AFTER_MS = 30 * 60 * 1000
 const MAX_LOGS = 6
@@ -51,6 +53,9 @@ export interface PayloadInput {
   readonly instanceName: string | null
   readonly content: ContentCatalog
   readonly spriteBaseUrl: string | null
+  /** Public origin serving `/art/...` scene images (the Convex site URL). */
+  readonly artBaseUrl: string | null
+  readonly latestEvent: LatestEvent | null
 }
 
 const iso = (timestamp: number) => new Date(timestamp).toISOString().replace(/\.\d{3}Z$/, 'Z')
@@ -120,9 +125,18 @@ export function buildPayload(input: PayloadInput) {
     leaderboard_as_of_label: 'Ranking within the hour',
   }
 
+  const sceneUrls = (biomeId: string, scene: ReturnType<typeof sceneFor>) =>
+    input.artBaseUrl
+      ? {
+          scene_url: `${input.artBaseUrl}${scenePath(biomeId, scene.pose, scene.subject, FULL_SCALE)}`,
+          scene_url_small: `${input.artBaseUrl}${scenePath(biomeId, scene.pose, scene.subject, SMALL_SCALE)}`,
+        }
+      : { scene_url: '', scene_url_small: '' }
+
   if (hero === null) {
     return {
       ...common,
+      ...sceneUrls(content.safeBiomeId, { pose: 'idle', subject: { kind: 'prop', id: 'signpost' } }),
       hero_tick: null,
       hero_updated_at: null,
       data_state: servicePaused ? ('service_paused' as const) : ('unlinked' as const),
@@ -199,6 +213,7 @@ export function buildPayload(input: PayloadInput) {
 
   return {
     ...common,
+    ...sceneUrls(hero.biomeId, sceneFor(hero.status, hero.wakeAtTick !== undefined, input.latestEvent)),
     hero_tick: hero.lastTick,
     hero_updated_at: hero.lastAdvancedAt === undefined ? null : iso(hero.lastAdvancedAt),
     data_state: hero.quarantined || servicePaused ? ('service_paused' as const) : ('ready' as const),

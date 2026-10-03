@@ -8,6 +8,14 @@
  * @module
  */
 
+import type * as art_canvas from "../art/canvas.js";
+import type * as art_hero from "../art/hero.js";
+import type * as art_monsters from "../art/monsters.js";
+import type * as art_png from "../art/png.js";
+import type * as art_props from "../art/props.js";
+import type * as art_route from "../art/route.js";
+import type * as art_scene from "../art/scene.js";
+import type * as art_sceneKey from "../art/sceneKey.js";
 import type * as content_index from "../content/index.js";
 import type * as content_v1 from "../content/v1.js";
 import type * as content_v2 from "../content/v2.js";
@@ -45,6 +53,14 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  "art/canvas": typeof art_canvas;
+  "art/hero": typeof art_hero;
+  "art/monsters": typeof art_monsters;
+  "art/png": typeof art_png;
+  "art/props": typeof art_props;
+  "art/route": typeof art_route;
+  "art/scene": typeof art_scene;
+  "art/sceneKey": typeof art_sceneKey;
   "content/index": typeof content_index;
   "content/v1": typeof content_v1;
   "content/v2": typeof content_v2;

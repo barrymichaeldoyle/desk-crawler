@@ -1,5 +1,5 @@
 import { Canvas, sprite, type Sprite } from './canvas'
-import { heroPoses, type HeroPose } from './hero'
+import { CLOAKED_POSES, heroCloak, heroPoses, type HeroPose } from './hero'
 import { monsterArt } from './monsters'
 import { eliteCrown, propArt, type PropId } from './props'
 
@@ -18,7 +18,7 @@ const HERO_X = 24
 const SUBJECT_X = 92
 
 /** Bump whenever any art changes: scene URLs are immutable and cached. */
-export const SCENE_VERSION = 2
+export const SCENE_VERSION = 3
 export type BiomeArt = 'office_cubicles' | 'server_room' | 'cafeteria_depths'
 export type Subject = { kind: 'monster'; id: keyof typeof monsterArt; elite: boolean } | { kind: 'prop'; id: PropId } | { kind: 'none' }
 
@@ -168,6 +168,7 @@ export function composeScene(biome: BiomeArt, pose: HeroPose, subject: Subject):
   c.rect(0, GROUND, STAGE_WIDTH, 1, '#')
   c.rect(0, GROUND - 22, STAGE_WIDTH, 0, 'w')
   const hero = heroPoses[pose]
+  if (CLOAKED_POSES.has(pose)) drawWithHalo(c, heroCloak, HERO_X - 5, GROUND - hero.height + 8)
   drawWithHalo(c, hero, HERO_X, GROUND - hero.height)
   if (subject.kind === 'monster') {
     const art = monsterArt[subject.id]

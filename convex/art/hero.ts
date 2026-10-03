@@ -144,6 +144,24 @@ export const heroKnockedOut = sprite(`
           ###############
 `)
 
+/** A flowing cloak drawn behind the standing poses for a touch of the arcane. */
+export const heroCloak = sprite(`
+       ###
+      #:::#
+     #:::::#
+    #::::::#
+    #::::::#
+   #:::::::#
+   #::::::#
+  #::::::#
+  #:::::#
+ #:::::#
+ #::::#
+  ####
+`)
+
+export const CLOAKED_POSES = new Set(['idle', 'fight', 'walk'])
+
 export const heroPoses = {
   idle: heroIdle,
   fight: heroFight,

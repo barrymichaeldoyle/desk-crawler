@@ -52,6 +52,7 @@ export default defineSchema({
     publicNameVersion: v.number(),
     activeHeroId: v.optional(v.id('heroes')),
     deletionRequestedAt: v.optional(v.number()),
+    nameRepairRequired: v.optional(v.boolean()),
   })
     .index('by_tokenIdentifier', ['tokenIdentifier'])
     .index('by_normalizedAlias', ['normalizedAlias'])
@@ -335,6 +336,17 @@ export default defineSchema({
     .index('by_incidentKey', ['incidentKey'])
     .index('by_runId_and_state', ['runId', 'state'])
     .index('by_state_and_openedAt', ['state', 'openedAt']),
+
+  adminAuditEvents: defineTable({
+    actorRef: v.string(),
+    action: v.string(),
+    targetRef: v.string(),
+    reasonCode: v.string(),
+    outcome: v.string(),
+    at: v.number(),
+  })
+    .index('by_at', ['at'])
+    .index('by_targetRef', ['targetRef']),
 
   tickLogs: defineTable({
     heroId: v.id('heroes'),

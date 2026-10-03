@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
 import { api } from '../../convex/_generated/api'
 import { Button, Card } from '../lib/ui'
+import { NameRepair } from './app/-nameRepair'
 
 /** Companion shell: auth gate, setup states and mobile-first navigation (companion.md). */
 export const Route = createFileRoute('/app')({
@@ -87,6 +88,7 @@ function SignedInApp() {
         </ul>
       </nav>
       <main className="flex flex-col gap-4 px-4 py-6">
+        {me.user?.nameRepairRequired ? <NameRepair /> : null}
         <Outlet />
       </main>
     </>

@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as admin from "../admin.js";
 import type * as art_canvas from "../art/canvas.js";
 import type * as art_hero from "../art/hero.js";
 import type * as art_monsters from "../art/monsters.js";
@@ -63,6 +64,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  admin: typeof admin;
   "art/canvas": typeof art_canvas;
   "art/hero": typeof art_hero;
   "art/monsters": typeof art_monsters;

@@ -37,3 +37,17 @@ Do not send emails, contact TRMNL reviewers, publish marketplace entries, or dep
 ## Validation
 
 During planning, validate local links, fixture JSON, cross-document consistency, and skill provenance. During implementation, follow `docs/quality.md`. Mock tests do not replace the required live TRMNL installation/render check.
+
+<!-- convex-ai-start -->
+
+This project uses [Convex](https://convex.dev) as its backend.
+
+When working on Convex code, **always read
+`convex/_generated/ai/guidelines.md` first** for important guidelines on
+how to correctly use Convex APIs and patterns. The file contains rules that
+override what you may have learned about Convex from training data.
+
+Convex agent skills for common tasks can be installed by running
+`npx convex ai-files install`.
+
+<!-- convex-ai-end -->

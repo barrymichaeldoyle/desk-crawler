@@ -1,0 +1,79 @@
+/* eslint-disable */
+/**
+ * Generated `api` utility.
+ *
+ * THIS CODE IS AUTOMATICALLY GENERATED.
+ *
+ * To regenerate, run `npx convex dev`.
+ * @module
+ */
+
+import type * as content_index from "../content/index.js";
+import type * as content_v1 from "../content/v1.js";
+import type * as content_v2 from "../content/v2.js";
+import type * as content_validate from "../content/validate.js";
+import type * as sim_core_apply from "../sim/core/apply.js";
+import type * as sim_core_index from "../sim/core/index.js";
+import type * as sim_core_invariants from "../sim/core/invariants.js";
+import type * as sim_core_narrative from "../sim/core/narrative.js";
+import type * as sim_core_rng from "../sim/core/rng.js";
+import type * as sim_core_simulate from "../sim/core/simulate.js";
+import type * as sim_core_starter from "../sim/core/starter.js";
+import type * as sim_core_stats from "../sim/core/stats.js";
+import type * as sim_core_types from "../sim/core/types.js";
+import type * as sim_score from "../sim/score.js";
+import type * as sim_seed from "../sim/seed.js";
+import type * as users from "../users.js";
+
+import type {
+  ApiFromModules,
+  FilterApi,
+  FunctionReference,
+} from "convex/server";
+
+declare const fullApi: ApiFromModules<{
+  "content/index": typeof content_index;
+  "content/v1": typeof content_v1;
+  "content/v2": typeof content_v2;
+  "content/validate": typeof content_validate;
+  "sim/core/apply": typeof sim_core_apply;
+  "sim/core/index": typeof sim_core_index;
+  "sim/core/invariants": typeof sim_core_invariants;
+  "sim/core/narrative": typeof sim_core_narrative;
+  "sim/core/rng": typeof sim_core_rng;
+  "sim/core/simulate": typeof sim_core_simulate;
+  "sim/core/starter": typeof sim_core_starter;
+  "sim/core/stats": typeof sim_core_stats;
+  "sim/core/types": typeof sim_core_types;
+  "sim/score": typeof sim_score;
+  "sim/seed": typeof sim_seed;
+  users: typeof users;
+}>;
+
+/**
+ * A utility for referencing Convex functions in your app's public API.
+ *
+ * Usage:
+ * ```js
+ * const myFunctionReference = api.myModule.myFunction;
+ * ```
+ */
+export declare const api: FilterApi<
+  typeof fullApi,
+  FunctionReference<any, "public">
+>;
+
+/**
+ * A utility for referencing Convex functions in your app's internal API.
+ *
+ * Usage:
+ * ```js
+ * const myFunctionReference = internal.myModule.myFunction;
+ * ```
+ */
+export declare const internal: FilterApi<
+  typeof fullApi,
+  FunctionReference<any, "internal">
+>;
+
+export declare const components: {};

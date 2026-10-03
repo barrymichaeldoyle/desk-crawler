@@ -22,3 +22,9 @@ playwright-report/
 dist-ssr/
 .dev.vars*
 !.dev.vars.example
+
+# Convex CLI agent skills: reinstall with `npx convex ai-files install`.
+.claude/
+.agents/skills/convex*/
+skills-lock.json
+.playwright-mcp/

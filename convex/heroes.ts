@@ -133,3 +133,53 @@ export const resume = mutation({
       return { changed: true }
     }),
 })
+
+/**
+ * Bounded return recap (D25): progress since the last acknowledged companion
+ * visit from one server checkpoint. No history scan; never changes rewards.
+ */
+export const returnSummary = query({
+  args: {},
+  returns: v.any(),
+  handler: async (ctx) => {
+    const user = await currentUser(ctx)
+    const hero = user?.activeHeroId ? await ctx.db.get(user.activeHeroId) : null
+    if (user === null || hero === null || hero.activationState !== 'active') return null
+    const items = await ctx.db
+      .query('items')
+      .withIndex('by_heroId', (q) => q.eq('heroId', hero._id))
+      .take(40)
+    const unequipped = items.filter((item) => item.kind !== 'potion' && item._id !== hero.weaponId && item._id !== hero.armorId && item._id !== hero.heldItemId).length
+    const baseline = hero.companionVisitBaseline ?? null
+    return {
+      baseline,
+      observed: { level: hero.level, lifetimeXp: hero.lifetimeXp, logSequence: hero.logSequence },
+      xpGained: baseline ? Math.max(0, hero.lifetimeXp - baseline.lifetimeXp) : null,
+      levelsGained: baseline ? Math.max(0, hero.level - baseline.level) : null,
+      newEvents: baseline ? Math.max(0, hero.logSequence - baseline.logSequence) : null,
+      unequipped,
+      held: hero.heldItemId !== undefined,
+      status: hero.status,
+    }
+  },
+})
+
+/**
+ * Acknowledge a visibly rendered recap. Captures current server values only if
+ * the rendered log sequence is still current (RECAP_CHANGED otherwise), so
+ * unseen progress is never hidden; baselines never move backwards.
+ */
+export const recordCompanionVisit = mutation({
+  args: { operationId: v.string(), expectedLogSequence: v.number() },
+  returns: intentResult,
+  handler: async (ctx, args) =>
+    await runIntent(ctx, args.operationId, 'heroes.recordCompanionVisit', { expectedLogSequence: args.expectedLogSequence }, async (user) => {
+      const hero = user.activeHeroId ? await ctx.db.get(user.activeHeroId) : null
+      if (hero === null || hero.activationState !== 'active') throw appError('TRMNL_REQUIRED', 'No active hero yet.')
+      if (hero.logSequence !== args.expectedLogSequence) throw appError('RECAP_CHANGED', 'New adventures arrived. Refreshing.')
+      const previous = hero.companionVisitBaseline
+      if (previous && previous.logSequence > hero.logSequence) return { changed: false }
+      await ctx.db.patch(hero._id, { companionVisitBaseline: { at: Date.now(), level: hero.level, lifetimeXp: hero.lifetimeXp, logSequence: hero.logSequence } })
+      return { changed: true }
+    }),
+})

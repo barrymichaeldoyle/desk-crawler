@@ -25,6 +25,7 @@ export type ErrorCode =
   | 'LEVEL_REQUIREMENT'
   | 'NO_POTION'
   | 'FULL_HP'
+  | 'RECAP_CHANGED'
 
 const RETRYABLE = new Set<ErrorCode>(['RATE_LIMITED'])
 

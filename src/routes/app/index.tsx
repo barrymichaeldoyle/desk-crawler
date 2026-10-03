@@ -5,6 +5,7 @@ import { usePaginatedQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import { artUrl, useIntent } from '../../lib/intent'
 import { Button, Card, ErrorNote, Meter } from '../../lib/ui'
+import { ReturnRecap } from './-recap'
 
 export const Route = createFileRoute('/app/')({ component: HeroHome })
 
@@ -35,6 +36,8 @@ function HeroHome() {
       <div className="overflow-hidden rounded-lg border-2 border-stone-900 bg-white dark:border-stone-300">
         <img src={artUrl(hero.scenePath)} alt={`${hero.name} in the ${biomeName}`} className="block w-full [image-rendering:pixelated]" width={760} height={200} />
       </div>
+
+      <ReturnRecap />
 
       <Card>
         <div className="flex flex-wrap items-baseline justify-between gap-2">

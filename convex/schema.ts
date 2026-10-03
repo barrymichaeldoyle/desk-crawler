@@ -91,6 +91,7 @@ export default defineSchema({
     counters: heroCounters,
     scoreHour: v.optional(v.number()),
     scoreHourXp: v.number(),
+    companionVisitBaseline: v.optional(v.object({ at: v.number(), level: v.number(), lifetimeXp: v.number(), logSequence: v.number() })),
   })
     .index('by_userId_and_isActive', ['userId', 'isActive'])
     .index('by_createdAt', ['createdAt'])

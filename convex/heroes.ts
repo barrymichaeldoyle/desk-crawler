@@ -6,6 +6,8 @@ import { appError } from './lib/errors'
 import { commandLog, currentUser, requirePlayableHero, runIntent } from './lib/intent'
 import { deriveStats } from './sim/core/stats'
 import { readWorld } from './world'
+import { FULL_SCALE } from './art/scene'
+import { sceneFor, scenePath } from './art/sceneKey'
 
 const intentResult = v.object({
   operationId: v.string(),
@@ -31,8 +33,15 @@ export const mine = query({
       .take(40)
     const stats = deriveStats(hero, items.map((item) => ({ ...item, id: item._id })))
     const world = await readWorld(ctx)
+    const newest = await ctx.db
+      .query('tickLogs')
+      .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id))
+      .order('desc')
+      .first()
+    const scene = sceneFor(hero.status, hero.wakeAtTick !== undefined, newest ? { kind: newest.kind, ...('outcome' in newest.detail ? { outcome: newest.detail.outcome } : {}) } : null)
     return {
       id: hero._id,
+      scenePath: scenePath(hero.biomeId, scene.pose, scene.subject, FULL_SCALE),
       name: hero.name,
       alias: user.publicAlias,
       activationState: hero.activationState,
@@ -71,7 +80,7 @@ export const recentLog = query({
       .query('tickLogs')
       .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', user.activeHeroId!))
       .order('desc')
-      .paginate({ ...paginationOpts, numItems: Math.min(50, paginationOpts.numItems) })
+      .paginate(paginationOpts)
     return { ...result, page: result.page.map((log) => ({ id: log._id, at: log.at, kind: log.kind, summary: log.summary, source: log.source, deltas: log.deltas })) }
   },
 })

@@ -11,6 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
+import { Route as AppIndexRouteImport } from './routes/app/index'
+import { Route as AppInventoryRouteImport } from './routes/app/inventory'
+import { Route as AppLeaderboardRouteImport } from './routes/app/leaderboard'
+import { Route as AppSettingsRouteImport } from './routes/app/settings'
 import { Route as ConnectTrmnlInstallRouteImport } from './routes/connect/trmnl/install'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +27,26 @@ const AppRoute = AppRouteImport.update({
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppInventoryRoute = AppInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLeaderboardRoute = AppLeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
 const ConnectTrmnlInstallRoute = ConnectTrmnlInstallRouteImport.update({
   id: '/connect/trmnl/install',
   path: '/connect/trmnl/install',
@@ -31,31 +55,63 @@ const ConnectTrmnlInstallRoute = ConnectTrmnlInstallRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
+  '/app/inventory': typeof AppInventoryRoute
+  '/app/leaderboard': typeof AppLeaderboardRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/': typeof AppIndexRoute
   '/connect/trmnl/install': typeof ConnectTrmnlInstallRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/app/inventory': typeof AppInventoryRoute
+  '/app/leaderboard': typeof AppLeaderboardRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app': typeof AppIndexRoute
   '/connect/trmnl/install': typeof ConnectTrmnlInstallRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
+  '/app/inventory': typeof AppInventoryRoute
+  '/app/leaderboard': typeof AppLeaderboardRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/': typeof AppIndexRoute
   '/connect/trmnl/install': typeof ConnectTrmnlInstallRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/connect/trmnl/install'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/app/inventory'
+    | '/app/leaderboard'
+    | '/app/settings'
+    | '/app/'
+    | '/connect/trmnl/install'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app' | '/connect/trmnl/install'
-  id: '__root__' | '/' | '/app' | '/connect/trmnl/install'
+  to:
+    | '/'
+    | '/app/inventory'
+    | '/app/leaderboard'
+    | '/app/settings'
+    | '/app'
+    | '/connect/trmnl/install'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/app/inventory'
+    | '/app/leaderboard'
+    | '/app/settings'
+    | '/app/'
+    | '/connect/trmnl/install'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRoute: typeof AppRoute
+  AppRoute: typeof AppRouteWithChildren
   ConnectTrmnlInstallRoute: typeof ConnectTrmnlInstallRoute
 }
 
@@ -75,6 +131,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/inventory': {
+      id: '/app/inventory'
+      path: '/inventory'
+      fullPath: '/app/inventory'
+      preLoaderRoute: typeof AppInventoryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/leaderboard': {
+      id: '/app/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/app/leaderboard'
+      preLoaderRoute: typeof AppLeaderboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/connect/trmnl/install': {
       id: '/connect/trmnl/install'
       path: '/connect/trmnl/install'
@@ -85,9 +169,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AppRouteChildren {
+  AppInventoryRoute: typeof AppInventoryRoute
+  AppLeaderboardRoute: typeof AppLeaderboardRoute
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppInventoryRoute: AppInventoryRoute,
+  AppLeaderboardRoute: AppLeaderboardRoute,
+  AppSettingsRoute: AppSettingsRoute,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRoute: AppRoute,
+  AppRoute: AppRouteWithChildren,
   ConnectTrmnlInstallRoute: ConnectTrmnlInstallRoute,
 }
 export const routeTree = rootRouteImport

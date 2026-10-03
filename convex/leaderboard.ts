@@ -1,7 +1,10 @@
 import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import type { Doc, Id } from './_generated/dataModel'
-import { internalMutation, type MutationCtx } from './_generated/server'
+import { internalMutation, query, type MutationCtx } from './_generated/server'
+import { currentUser } from './lib/intent'
+import { maskedEntries } from './lib/rankingRead'
+import { readWorld } from './world'
 import { levelGroup } from './sim/core/stats'
 
 /**
@@ -243,5 +246,48 @@ export const cleanupPublication = internalMutation({
     }
     await ctx.db.delete(publicationId)
     return null
+  },
+})
+
+const boardValidator = v.union(v.literal('overall'), v.literal('recent_24h'), v.literal('recent_7d'))
+
+/**
+ * Companion leaderboard (leaderboards.md "Read contracts"): Top 100 of one
+ * board/group from the published set, plus the viewer's own rank only when it
+ * belongs to that group. Defaults to the viewer's captured seven-day group.
+ */
+export const view = query({
+  args: { board: v.optional(boardValidator), cohortKey: v.optional(v.string()) },
+  returns: v.any(),
+  handler: async (ctx, args) => {
+    const board = args.board ?? 'recent_7d'
+    const world = await readWorld(ctx)
+    const publication = world?.publishedPublicationId ? await ctx.db.get(world.publishedPublicationId) : null
+    if (publication === null || publication.state !== 'published') return { board, published: false as const }
+    const user = await currentUser(ctx)
+    const hero = user?.activeHeroId ? await ctx.db.get(user.activeHeroId) : null
+    const own = hero
+      ? await ctx.db
+          .query('heroRanks')
+          .withIndex('by_publicationId_and_board_and_heroId', (q) => q.eq('publicationId', publication._id).eq('board', board).eq('heroId', hero._id))
+          .unique()
+      : null
+    const cohortKey = board === 'overall' ? 'all' : (args.cohortKey ?? own?.cohortKey ?? (hero ? levelGroup(hero.level).key : '1-3'))
+    const generation = await ctx.db
+      .query('leaderboardGenerations')
+      .withIndex('by_publicationId_and_board_and_cohortKey', (q) => q.eq('publicationId', publication._id).eq('board', board).eq('cohortKey', cohortKey))
+      .unique()
+    return {
+      board,
+      published: true as const,
+      cohortKey,
+      ownCohortKey: own?.cohortKey ?? null,
+      scoreAt: publication.scoreAt,
+      asOfTick: publication.asOfTick,
+      globalTotalPlayers: publication.globalTotalPlayers,
+      totalPlayers: generation?.totalPlayers ?? 0,
+      entries: generation ? await maskedEntries(ctx, generation.entries, TOP_ENTRIES) : [],
+      own: own && own.cohortKey === cohortKey ? { rank: own.rank, rankDelta: own.rankDelta ?? null, score: own.score ?? null } : null,
+    }
   },
 })

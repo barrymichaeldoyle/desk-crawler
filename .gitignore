@@ -16,3 +16,9 @@ playwright-report/
 .buffer/
 
 # The official project-local skill is intentionally tracked.
+.tanstack/
+.nitro/
+.vinxi/
+dist-ssr/
+.dev.vars*
+!.dev.vars.example

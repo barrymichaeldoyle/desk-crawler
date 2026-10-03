@@ -2,7 +2,7 @@
 
 A passive multiplayer office RPG for your desk. A hero explores every 15 minutes, finds equipment, survives mishaps, and climbs a global leaderboard. Built exclusively for TRMNL: install the plugin to start your hero, watch the story on e-ink, and use the companion website for occasional decisions.
 
-**Phase: planning.** This repository contains the product and engineering plan, documentation fixtures, and the official TRMNL skill. Application implementation has not started.
+**Phase: implementation started.** The pure simulator, v2 content catalog, tests and balance harness exist (`convex/sim`, `convex/content`, `tests`, `tools/balance`). The web app, Convex backend and TRMNL integration are next. Run `pnpm install` then `pnpm check` and `pnpm balance`.
 
 Confirmed on 2026-10-03:
 
@@ -37,6 +37,6 @@ Game constants, targets, and estimates are **planning proposals**, not measured 
 | `.agents/skills/trmnl/` | Official TRMNL agent skill and its upstream references |
 | `memory/` | Project decisions recorded for continuity |
 
-Read [AGENTS.md](AGENTS.md) before taking a work package. Coding begins only after Barry asks to begin implementation.
+Read [AGENTS.md](AGENTS.md) before taking a work package.
 
 Also useful: [TRMNL player experience](docs/trmnl-experience.md), [ranking](docs/ranking.md), [inventory](docs/inventory.md) and the [implementation evidence checklist](docs/evidence/README.md). Earlier planning reviews are in [docs/history](docs/history/final-review-2026-10-03.md). Tuning and technical evidence remain open.

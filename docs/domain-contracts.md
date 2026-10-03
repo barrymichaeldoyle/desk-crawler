@@ -27,7 +27,7 @@ The database adapter has already checked current ownership, persisted TRMNL acti
 | `itemChanges` | Bounded directives: decrement an existing potion quantity, add to that stack, create at most one new gear/potion row with bag-vs-held intent, delete a depleted potion row; adapter binds a held-create to its allocated item ID |
 | `event` | Optional single combined tick event with primary kind, <=90-code-point summary, typed detail and net deltas |
 | `metrics` | Fixed counters: encounter kind or none, victory/retreat/death/rescue/level-up/potion/held-find/sleep-start/wake/elite/jackpot counts |
-| `disposition` | `advanced`, `rested`, `arrived`, `revived`, `waiting_dead`, `waiting_travel`, `paused`, `sleeping`, or `inventory_sleep_started` |
+| `disposition` | `advanced`, `rested`, `arrived`, `departed` (D29 wake into travel), `revived`, `waiting_dead`, `waiting_travel`, `paused`, `sleeping`, or `inventory_sleep_started` |
 
 No generic free-form side-effect map, database IDs for newly created items, or complete raw document overwrite. New item directives contain copied content fields; the adapter allocates IDs on insertion. Existing item references may identify only items from the validated input.
 

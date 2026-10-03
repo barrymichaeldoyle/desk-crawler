@@ -165,6 +165,8 @@ Tick summaries have a 90-code-point backend limit, with render-time clamping for
 
 These targets may conflict with the starting numbers. The balance harness decides; record tuned values and observed confidence intervals before calling the game balanced.
 
+The tables above are the v1 planning baseline. The active catalog is the harness-tuned v2 (`convex/content/v2.ts`): lower monster XP/gold and loot gold, rare gear 2% and uncommon 28%. Results and remaining tuning are in [balance evidence](evidence/balance.md).
+
 ## Device narrative acceptance
 
 Each summary is self-contained; players may miss hours. Put consequences before expendable flavor when clamping. Clearly state retained-find sleep, recovery, arrival and level gains; secondary effects remain in detail. No random text selection during render.

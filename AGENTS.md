@@ -4,7 +4,7 @@ The user-provided workspace instructions remain applicable. These instructions a
 
 ## Current phase
 
-Planning only. Do not scaffold the app, install application dependencies, provision services, implement game functions, or deploy until Barry requests implementation. Documentation, research, and documentation fixtures are permitted.
+Implementation authorized by Barry on 2026-10-03. Work follows the work packages and gates in `docs/`. Creating or changing external resources (Convex/Clerk/Cloudflare projects, DNS, TRMNL plugin registration), deploying, sending email and publishing still need explicit confirmation for each action.
 
 ## Read before working
 

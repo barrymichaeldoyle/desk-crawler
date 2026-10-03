@@ -16,6 +16,7 @@ import { Route as AppInventoryRouteImport } from './routes/app/inventory'
 import { Route as AppLeaderboardRouteImport } from './routes/app/leaderboard'
 import { Route as AppSettingsRouteImport } from './routes/app/settings'
 import { Route as ConnectTrmnlInstallRouteImport } from './routes/connect/trmnl/install'
+import { Route as ConnectTrmnlManageRouteImport } from './routes/connect/trmnl/manage'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +53,11 @@ const ConnectTrmnlInstallRoute = ConnectTrmnlInstallRouteImport.update({
   path: '/connect/trmnl/install',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConnectTrmnlManageRoute = ConnectTrmnlManageRouteImport.update({
+  id: '/connect/trmnl/manage',
+  path: '/connect/trmnl/manage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -61,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
   '/connect/trmnl/install': typeof ConnectTrmnlInstallRoute
+  '/connect/trmnl/manage': typeof ConnectTrmnlManageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/app/settings': typeof AppSettingsRoute
   '/app': typeof AppIndexRoute
   '/connect/trmnl/install': typeof ConnectTrmnlInstallRoute
+  '/connect/trmnl/manage': typeof ConnectTrmnlManageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
   '/connect/trmnl/install': typeof ConnectTrmnlInstallRoute
+  '/connect/trmnl/manage': typeof ConnectTrmnlManageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/'
     | '/connect/trmnl/install'
+    | '/connect/trmnl/manage'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app'
     | '/connect/trmnl/install'
+    | '/connect/trmnl/manage'
   id:
     | '__root__'
     | '/'
@@ -107,12 +118,14 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/'
     | '/connect/trmnl/install'
+    | '/connect/trmnl/manage'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   ConnectTrmnlInstallRoute: typeof ConnectTrmnlInstallRoute
+  ConnectTrmnlManageRoute: typeof ConnectTrmnlManageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -166,6 +179,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConnectTrmnlInstallRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/connect/trmnl/manage': {
+      id: '/connect/trmnl/manage'
+      path: '/connect/trmnl/manage'
+      fullPath: '/connect/trmnl/manage'
+      preLoaderRoute: typeof ConnectTrmnlManageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -189,6 +209,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   ConnectTrmnlInstallRoute: ConnectTrmnlInstallRoute,
+  ConnectTrmnlManageRoute: ConnectTrmnlManageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

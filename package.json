@@ -43,6 +43,7 @@
     "@tanstack/react-router-ssr-query": "^1.167.3",
     "@tanstack/react-start": "^1.168.60",
     "convex": "^1.46.0",
+    "jose": "^6.2.12",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   }

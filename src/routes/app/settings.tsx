@@ -12,6 +12,8 @@ function Settings() {
   const { data: hero } = useQuery(convexQuery(api.heroes.mine, {}))
   const setTimezone = useIntent(api.users.setTimezone)
   const pause = useIntent(api.heroes.pause)
+  const { data: connections } = useQuery(convexQuery(api.connections.mine, {}))
+  const disconnect = useIntent(api.connections.disconnect)
   const resume = useIntent(api.heroes.resume)
   const browserZone = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC'
   if (!me?.user || !hero) return <p className="text-stone-500">Loading settings…</p>
@@ -51,6 +53,29 @@ function Settings() {
           </>
         )}
         <ErrorNote message={pause.error ?? resume.error} />
+      </Card>
+      <Card title="TRMNL installations">
+        <p className="mb-3 text-sm text-stone-600 dark:text-stone-400">Plugin installations showing your hero. Your hero keeps adventuring even if all are disconnected.</p>
+        {connections && connections.length > 0 ? (
+          <ul className="flex flex-col divide-y divide-stone-200 dark:divide-stone-800">
+            {connections.map((c) => (
+              <li key={c.id} className="flex items-center justify-between gap-2 py-2">
+                <span>
+                  <span className="font-semibold">Installation {c.uuid.slice(0, 8)}</span>
+                  <span className="ml-2 text-sm text-stone-500">{c.state === 'active' ? 'Connected' : c.state === 'uninstalled' ? 'Uninstalled' : 'Disconnected'}</span>
+                </span>
+                {c.state === 'active' ? (
+                  <Button variant="secondary" disabled={disconnect.pending} onClick={() => disconnect.run({ instanceId: c.id })}>
+                    Disconnect
+                  </Button>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No installations yet.</p>
+        )}
+        <ErrorNote message={disconnect.error} />
       </Card>
       <Card title="Help">
         <p className="text-sm">Your TRMNL shows a dated snapshot of the game and refreshes on its own schedule. Sleep Mode and slower refresh never reduce your hero's progress.</p>

@@ -16,6 +16,7 @@ import type * as art_props from "../art/props.js";
 import type * as art_route from "../art/route.js";
 import type * as art_scene from "../art/scene.js";
 import type * as art_sceneKey from "../art/sceneKey.js";
+import type * as connections from "../connections.js";
 import type * as content_index from "../content/index.js";
 import type * as content_v1 from "../content/v1.js";
 import type * as content_v2 from "../content/v2.js";
@@ -67,6 +68,7 @@ declare const fullApi: ApiFromModules<{
   "art/route": typeof art_route;
   "art/scene": typeof art_scene;
   "art/sceneKey": typeof art_sceneKey;
+  connections: typeof connections;
   "content/index": typeof content_index;
   "content/v1": typeof content_v1;
   "content/v2": typeof content_v2;

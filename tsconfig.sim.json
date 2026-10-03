@@ -18,5 +18,6 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": ["convex/sim/**/*.ts", "convex/content/**/*.ts", "tests/**/*.ts", "tools/**/*.ts"]
+  "include": ["convex/sim/**/*.ts", "convex/content/**/*.ts", "tests/**/*.ts", "tools/**/*.ts"],
+  "exclude": ["convex/sim/runs/**", "tests/convex/**"]
 }

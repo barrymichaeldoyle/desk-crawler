@@ -120,6 +120,7 @@ export default defineSchema({
     activeRunId: v.optional(v.id('simulationRuns')),
     lastCompletedTick: v.optional(v.number()),
     lastCompletedAt: v.optional(v.number()),
+    lastPublishedAt: v.optional(v.number()),
     activeContentVersion: v.string(),
     activeSimulationVersion: v.number(),
     worldSeed: v.string(),
@@ -142,13 +143,45 @@ export default defineSchema({
     state: v.union(v.literal('simulating'), v.literal('ranking'), v.literal('completed'), v.literal('blocked')),
     cursor: v.optional(v.string()),
     batchSequence: v.number(),
+    nextScheduledFunctionId: v.optional(v.id('_scheduled_functions')),
     lastProgressAt: v.number(),
     finishedAt: v.optional(v.number()),
     processed: v.number(),
+    eligible: v.number(),
+    skippedDormant: v.number(),
+    quarantined: v.number(),
+    deaths: v.number(),
+    levelUps: v.number(),
+    heldFinds: v.number(),
+    recoveryAttempts: v.number(),
     failureCode: v.optional(v.string()),
   })
     .index('by_tick', ['tick'])
     .index('by_state_and_startedAt', ['state', 'startedAt']),
+
+  simulationFailures: defineTable({
+    runId: v.id('simulationRuns'),
+    heroId: v.id('heroes'),
+    reasonCode: v.string(),
+    simulationVersion: v.number(),
+    contentVersion: v.string(),
+    tick: v.number(),
+    message: v.string(),
+    createdAt: v.number(),
+    resolvedAt: v.optional(v.number()),
+  })
+    .index('by_runId', ['runId'])
+    .index('by_heroId', ['heroId'])
+    .index('by_createdAt', ['createdAt']),
+
+  heroScoreWindows: defineTable({
+    heroId: v.id('heroes'),
+    buckets: v.array(v.object({ hourStart: v.number(), xp: v.number() })),
+    xp24h: v.number(),
+    xp7d: v.number(),
+    lastFoldedRunId: v.optional(v.id('simulationRuns')),
+    scoreVersion: v.number(),
+  }).index('by_heroId', ['heroId']),
 
   tickLogs: defineTable({
     heroId: v.id('heroes'),

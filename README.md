@@ -27,6 +27,20 @@ The first release includes all four TRMNL layouts because Third Party marketplac
 
 Game constants, targets, and estimates are **planning proposals**, not measured outcomes. Platform facts have references in [research notes](docs/references.md). Future releases are direction, not instructions to build every feature now.
 
+## Running locally
+
+```sh
+pnpm install
+cp .env.example .env.local     # then fill in values (see comments)
+npx convex dev                 # Convex backend, schema and functions
+pnpm dev                       # web app on http://localhost:3000
+pnpm check                     # typecheck + all tests
+pnpm balance                   # balance harness (see docs/evidence/balance.md)
+pnpm tsx tools/trmnl/preview.ts  # local TRMNL layout previews in .previews/
+```
+
+What is built and what remains: [implementation status](docs/status.md).
+
 ## Repository contents
 
 | Path | Purpose |

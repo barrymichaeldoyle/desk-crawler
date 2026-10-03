@@ -1,7 +1,3 @@
-<!-- @bufferapp/cli skill — managed -->
-!buffer context
-<!-- /@bufferapp/cli skill — managed -->
-
 # Desk Crawler project instructions
 
 The user-provided workspace instructions remain applicable. These instructions add project-specific guidance.

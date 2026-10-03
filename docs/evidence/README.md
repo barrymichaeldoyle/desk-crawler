@@ -7,7 +7,7 @@ No live gate is complete yet. Collect these artifacts after implementation is au
 | `platform-spikes.md` | A01 | Exact app/runtime versions; SSR/auth; lifecycle shapes/media types/keys; token/UUID reuse and callback loss; index proof; developer access |
 | `trmnl-lifecycle.md` | A07 | Install, pending/Save activation, direct API denial, callback/first-screen races, abandonment/expiry, second instance/reinstall, wrong owner, delayed callbacks, targeted repair, manage/uninstall; redacted outcomes |
 | `trmnl-layouts.md` + images | A10 | Real merge-variable sample/hash, template version, actual framework/font/runtime, four layouts, model/bit depth/orientation/theme/text scale, case and screenshot result |
-| `trmnl-hardware.md` | A10/A12 | Physical model/firmware/settings, photo/readability, Save → preview → visible screen, mashup, slow refresh/sleep, outage/revocation observation |
+| `trmnl-hardware.md` | A10/A12 | Physical model (TRMNL X, D37)/firmware/settings, photo/readability, Save → preview → visible screen, mashup, slow refresh/sleep, outage/revocation observation |
 | `balance.md` | A03 | Seed/config/versions, cohorts/ticks, distributions/uncertainty, three-to-seven-day bag pressure, useful upgrades/sleep, both recent windows/groups and tuning outcome |
 | `first-path.md` | Lead + A02–A10 | Early real install/Save → activated hero → scheduled encounter → coherent three-view ranks → authorized payload → physical display; minimal onboarding/four layouts; not full launch proof |
 | `return-summary.md` | A04/A09 | First visit/seven-day return, bounded checkpoint/inventory, lifetime XP, stale-sequence/tab/retry guards, no hidden/SSR/device acknowledgement or gameplay effects |

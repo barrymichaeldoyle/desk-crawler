@@ -62,4 +62,4 @@ After coding is requested, complete required runtime/auth/protocol spikes, then 
 
 Record actual display/settings and redacted install-to-display evidence in `docs/evidence/first-path.md`. Do this before bulk content authoring and broad companion polish. This milestone proves integration order, not public release readiness: recovery, deletion, load/cost, complete content and marketplace approval remain release gates. The lead coordinates shared files; packages do not request agents automatically.
 
-Remaining setup choices: dedicated service environments, alert sender domain, Resend tier and headroom, a possible Workers Paid upgrade, and available TRMNL hardware/entitlements. Domain, repository, license and support/alert address are settled (D33/D34/D36). Funding stays a measured-cost decision under O11.
+Remaining setup choices: dedicated service environments, alert sender verification (proposed P24), measured headroom and a possible Workers Paid upgrade. Domain, repository, license, support/alert address, subscription tiers and test hardware are settled (D33/D34/D36/D37). Funding stays a measured-cost decision under O11.

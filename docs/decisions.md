@@ -41,6 +41,7 @@ Status language: **confirmed** means Barry chose it; **proposed** means a docume
 | D33 | Initial production home `desk-crawler.grandprixpicks.com`; public GitHub repository `barrymichaeldoyle/desk-crawler` | Confirmed revision 7; resolves O01. Remote creation/push and DNS changes still need explicit authorization when we get there. The `grandprixpicks.com` zone is on Cloudflare, so a Workers custom domain fits |
 | D34 | MIT license for code; original artwork, authored narrative content and the Desk Crawler name/logo all rights reserved | Confirmed revision 7; resolves O06. See [LICENSE](../LICENSE). Vendored TRMNL skill keeps its own MIT notice |
 | D35 | Luck: mandatory bounded reward rolls plus rare lucky moments | Confirmed revision 7. Every XP/gold reward rolls inside its template range; rare elite foes and gold jackpots create memorable stories and real short-window rank variance. No gear/potions from luck, no streaks or alerts. Rates are tuning proposals; [gameplay](gameplay.md#luck-and-lucky-moments) |
+| D37 | Live checks use Barry's TRMNL X and Developer Edition access | Confirmed revision 9. TRMNL X is the physical and larger-grayscale proof device; OG 1-bit layouts are proven from TRMNL-rendered previews/screenshots unless OG hardware becomes available. Developer Edition covers the V07 entitlement prerequisite; creating/submitting the Third Party plugin still needs live proof |
 | D36 | Support and operational alerts go to barry@barrymichaeldoyle.com | Confirmed revision 8. Private player reports (D23) and incident/recovery emails (D27). The alert sender must be a verified sending domain; staging and restore drills still use a safe test destination or disabled delivery |
 
 Revision 5 details: [approved build refinements](build-readiness.md). These approvals do not authorize implementation or sending email.
@@ -72,6 +73,7 @@ Revision 5 details: [approved build refinements](build-readiness.md). These appr
 | P20 | Initial bag capacity 30; quiet warning at 24; target about five gear/day | Approved tuning baseline, not measured/permanent balance; validate capacity distributions and useful upgrades |
 | P21 | Loot baseline 15% gear / 20% potion / 65% gold; combat gear drop 3% | Working content weights replacing the old high-acquisition sketch. Full potion stacks select a gold outcome before generating a potion; measure supply/undergeared survival |
 | P22 | Bounded recent-XP history and one atomic hourly board publication | Up to 168 hourly buckets per hero (D31) plus a small current-hour accumulator on the hero, folded at publication; pinned run time, exact integer sums; V04/V05 verify bytes/CPU |
+| P24 | Alert sender `desk-crawler@grandprixpicks.com` via Resend | Proposed. Sending needs the domain verified in Resend (SPF/DKIM DNS records in Cloudflare), not a mailbox. Reuse an existing Resend verification of `grandprixpicks.com` if there is one. Optionally add Cloudflare Email Routing for that address to forward to barry@barrymichaeldoyle.com so replies/bounce notices land somewhere |
 | P23 | Read only the equipped gear, potion row and denormalized bag count per tick | Proposed cost refinement: the core needs equipped stats, potion quantity and bag usage, not all 32 rows. Keep `bagGearCount` on the hero, maintained in the same transaction as every item insert/delete/claim. Intents still read full inventory; A05 measures both shapes under V05 before choosing |
 
 ## Verification gates before implementation commitments
@@ -99,7 +101,7 @@ O01, O06 and O07–O10 are resolved; their technical verification gates remain o
 | --- | --- | --- |
 | O01 — resolved | Project domain and GitHub owner/repository name | D33 |
 | O02 | Which existing Clerk/Convex applications and environments should this use? | Dedicated Desk Crawler app/deployments within existing subscriptions; infrastructure |
-| O04 — partly resolved | Actual subscription tiers and available headroom? | Convex Pro and Clerk Pro confirmed (covers Convex daily backups for D27). Cloudflare is on the free plan; Barry approved moving to Workers Paid (from $5/month, usage-based above its included allowance) if the V01 spike or staging shows the free plan's CPU/request limits are too tight for SSR. Resend tier still to confirm; measure costs before launch |
+| O04 — resolved (tiers) | Actual subscription tiers and available headroom? | Convex Pro and Clerk Pro confirmed (covers Convex daily backups for D27). Cloudflare is on the free plan; Barry approved moving to Workers Paid (from $5/month, usage-based above its included allowance) if the V01 spike or staging shows the free plan's CPU/request limits are too tight for SSR. Resend Pro confirmed. Measure actual headroom/costs before launch |
 | O05 | Public launch scale expectations? | No beta or hard signup cap; measure 1,000 heroes and establish capacity before publication |
 | O06 — resolved | Project license | D34 |
 | O07 — resolved | Deletion scope/retention/return policy | D22; V09 still proves Clerk deletion, minimal revocation and replay-safe fresh authorization |
@@ -144,3 +146,5 @@ D24–D28 resolve final pacing/content/recap/incident/recovery-policy recommenda
 2026-10-03, revision 7: Barry confirmed agents will carry full Month 1 scope, Convex/Clerk Pro, the production domain and public repository (D33), MIT code with reserved art/content (D34) and luck mechanics (D35). Specs were consolidated: revision banners removed, ranking/inventory renamed from `-proposal`, superseded reviews moved to `history/`. Planning only; no remote, DNS or deployment created.
 
 2026-10-03, revision 8: Barry confirmed the `grandprixpicks.com` zone is on Cloudflare, the Workers Paid upgrade if needed, and barry@barrymichaeldoyle.com for support and alerts (D36). He authorized the first commit and public GitHub publication of this planning repository. No deployment, DNS change or email sending.
+
+2026-10-03, revision 9: Resend Pro confirmed (O04 tiers resolved); TRMNL X and Developer Edition for live checks (D37); proposed alert sender P24. Removed a tool-managed block from AGENTS.md.

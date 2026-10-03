@@ -1,0 +1,22 @@
+import { ConvexError } from 'convex/values'
+
+/** Stable error codes from api.md. */
+export type ErrorCode =
+  | 'UNAUTHENTICATED'
+  | 'ACCOUNT_UNAVAILABLE'
+  | 'HERO_EXISTS'
+  | 'HERO_NOT_FOUND'
+  | 'INVALID_INPUT'
+  | 'ALIAS_TAKEN'
+  | 'INVALID_STATE'
+  | 'INSTALL_INVALID'
+  | 'TRMNL_REQUIRED'
+  | 'CONNECTION_CONFLICT'
+  | 'CONNECTION_UNAVAILABLE'
+  | 'SERVICE_PAUSED'
+  | 'RATE_LIMITED'
+
+const RETRYABLE = new Set<ErrorCode>(['RATE_LIMITED'])
+
+/** Structured, user-safe error: `{ code, message, retryable }`. Never includes tokens or identities. */
+export const appError = (code: ErrorCode, message: string) => new ConvexError({ code, message, retryable: RETRYABLE.has(code) })

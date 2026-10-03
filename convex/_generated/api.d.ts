@@ -12,6 +12,12 @@ import type * as content_index from "../content/index.js";
 import type * as content_v1 from "../content/v1.js";
 import type * as content_v2 from "../content/v2.js";
 import type * as content_validate from "../content/validate.js";
+import type * as http from "../http.js";
+import type * as lib_errors from "../lib/errors.js";
+import type * as lib_hash from "../lib/hash.js";
+import type * as lib_logDetail from "../lib/logDetail.js";
+import type * as lib_names from "../lib/names.js";
+import type * as lib_payload from "../lib/payload.js";
 import type * as sim_core_apply from "../sim/core/apply.js";
 import type * as sim_core_index from "../sim/core/index.js";
 import type * as sim_core_invariants from "../sim/core/invariants.js";
@@ -23,7 +29,11 @@ import type * as sim_core_stats from "../sim/core/stats.js";
 import type * as sim_core_types from "../sim/core/types.js";
 import type * as sim_score from "../sim/score.js";
 import type * as sim_seed from "../sim/seed.js";
+import type * as templates_screen from "../templates/screen.js";
+import type * as trmnl from "../trmnl.js";
+import type * as trmnlPayload from "../trmnlPayload.js";
 import type * as users from "../users.js";
+import type * as world from "../world.js";
 
 import type {
   ApiFromModules,
@@ -36,6 +46,12 @@ declare const fullApi: ApiFromModules<{
   "content/v1": typeof content_v1;
   "content/v2": typeof content_v2;
   "content/validate": typeof content_validate;
+  http: typeof http;
+  "lib/errors": typeof lib_errors;
+  "lib/hash": typeof lib_hash;
+  "lib/logDetail": typeof lib_logDetail;
+  "lib/names": typeof lib_names;
+  "lib/payload": typeof lib_payload;
   "sim/core/apply": typeof sim_core_apply;
   "sim/core/index": typeof sim_core_index;
   "sim/core/invariants": typeof sim_core_invariants;
@@ -47,7 +63,11 @@ declare const fullApi: ApiFromModules<{
   "sim/core/types": typeof sim_core_types;
   "sim/score": typeof sim_score;
   "sim/seed": typeof sim_seed;
+  "templates/screen": typeof templates_screen;
+  trmnl: typeof trmnl;
+  trmnlPayload: typeof trmnlPayload;
   users: typeof users;
+  world: typeof world;
 }>;
 
 /**

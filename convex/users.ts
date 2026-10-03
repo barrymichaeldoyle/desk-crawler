@@ -15,6 +15,10 @@ export const me = query({
         v.null(),
         v.object({ publicAlias: v.string(), timezone: v.string(), state: v.string() }),
       ),
+      hero: v.union(
+        v.null(),
+        v.object({ name: v.string(), activationState: v.union(v.literal('pending_trmnl'), v.literal('active')) }),
+      ),
     }),
   ),
   handler: async (ctx) => {
@@ -24,9 +28,11 @@ export const me = query({
       .query('users')
       .withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', identity.tokenIdentifier))
       .unique()
+    const hero = user?.activeHeroId ? await ctx.db.get(user.activeHeroId) : null
     return {
       signedIn: true as const,
       user: user === null ? null : { publicAlias: user.publicAlias, timezone: user.timezone, state: user.state },
+      hero: hero === null ? null : { name: hero.name, activationState: hero.activationState },
     }
   },
 })

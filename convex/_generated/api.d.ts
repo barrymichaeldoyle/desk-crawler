@@ -34,6 +34,7 @@ import type * as lib_logDetail from "../lib/logDetail.js";
 import type * as lib_names from "../lib/names.js";
 import type * as lib_payload from "../lib/payload.js";
 import type * as lib_rankingRead from "../lib/rankingRead.js";
+import type * as maintenance from "../maintenance.js";
 import type * as sim_core_apply from "../sim/core/apply.js";
 import type * as sim_core_index from "../sim/core/index.js";
 import type * as sim_core_invariants from "../sim/core/invariants.js";
@@ -86,6 +87,7 @@ declare const fullApi: ApiFromModules<{
   "lib/names": typeof lib_names;
   "lib/payload": typeof lib_payload;
   "lib/rankingRead": typeof lib_rankingRead;
+  maintenance: typeof maintenance;
   "sim/core/apply": typeof sim_core_apply;
   "sim/core/index": typeof sim_core_index;
   "sim/core/invariants": typeof sim_core_invariants;

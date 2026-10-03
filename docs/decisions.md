@@ -17,7 +17,7 @@ Status language: **confirmed** means Barry chose it; **proposed** means a docume
 | D09 | TRMNL-exclusive MVP; verified saved installation required once to activate a persistent hero | Confirmed in revision 3; supersedes web-only entry. Companion controls remain; after activation, hardware refresh/Sleep Mode/disconnection never govern progression or ranking eligibility. D19 adds a separate capacity-triggered gameplay sleep |
 | D10 | Death: lose 10% gold, retain XP/equipment, revive after 8 game ticks in Office Cubicles | Confirmed; no item drops or paid instant revival in MVP |
 | D11 | Clerk email + Google + GitHub sign-in | Confirmed; exact email code/link configuration decided during setup |
-| D12 | Required public pseudonym; never import a real name automatically | Confirmed; disclose public board visibility during onboarding |
+| D12 | Required public name chosen by the player; never import a real name automatically | Confirmed; revision 11: players may use a real name or a pseudonym. Onboarding states clearly that the name is public; contact details stay disallowed (D23) |
 | D13 | Include pause/resume; retain ranking eligibility, no rewards/catch-up | Confirmed; allowed states in gameplay |
 | D14 | Publish this existing project folder as a public GitHub repository | Confirmed direction; owner/name and actual remote publication remain to be arranged |
 | D15 | No fixed monthly extra-spend cap beyond current subscriptions | Confirmed; still keep costs low and measure headroom/usage |
@@ -150,3 +150,5 @@ D24–D28 resolve final pacing/content/recap/incident/recovery-policy recommenda
 2026-10-03, revision 9: Resend Pro confirmed (O04 tiers resolved); TRMNL X and Developer Edition for live checks (D37); proposed alert sender P24. Removed a tool-managed block from AGENTS.md.
 
 2026-10-03, revision 10: Barry confirmed the alert sender `desk-crawler@grandprixpicks.com` on the already Resend-verified domain (D38, replacing P24), and that OG coverage uses TRMNL-rendered screenshots. Remaining open items are setup or measurement: O02 (create the dedicated Desk Crawler Convex/Clerk apps at provisioning), O05 launch scale and O11 funding.
+
+2026-10-03, revision 11: first live install. Barry installed the development Desk Crawler plugin end to end: code exchange, owner link, pending hero, Save, success webhook, one-time activation and a TRMNL-rendered screen of the live payload. D12 amended: public names may be real names, with clear public-visibility copy. Findings in `docs/evidence/trmnl-lifecycle.md`.

@@ -88,7 +88,7 @@ function ConnectForm() {
       {needsProfile ? (
         <label className="flex flex-col gap-1">
           <span className="font-semibold">Public name</span>
-          <span className="text-sm text-stone-600 dark:text-stone-400">Shown to other players on leaderboards and devices. Don't use your real name or contact details.</span>
+          <span className="text-sm text-stone-600 dark:text-stone-400">Shown publicly to other players on leaderboards and TRMNL screens. Use any name you're happy to share; never include contact details.</span>
           <input name="publicAlias" required minLength={2} maxLength={20} className="min-h-11 rounded-md border border-stone-400 bg-white px-3 text-stone-900" autoComplete="off" />
         </label>
       ) : (

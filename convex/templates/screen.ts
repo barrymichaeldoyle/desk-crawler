@@ -4,7 +4,7 @@
  * Each string is self-contained (no shared-template registration). Template
  * version is independent of payload v1.
  */
-export const TEMPLATE_VERSION = 1
+export const TEMPLATE_VERSION = 3
 
 const titleBar = `
 <div class="title_bar">
@@ -25,12 +25,24 @@ const heroHeader = (titleSize: string) => `
     <span class="label label--small">Level {{ level }} Warrior</span>
     <span class="label" data-clamp="2">{{ status_label | escape }}</span>`
 
+/**
+ * Framework 3.4 progress bar: content + track + fill. The fill width is the one
+ * documented inline-style exception (P18), always a server-clamped 0-100 integer.
+ */
+const progress = (label: string, value: string, pct: string, size = '') => `
+      <div class="progress-bar${size}">
+        <div class="content">
+          <span class="label label--small">${label}</span>
+          <span class="value value--xxsmall">${value}</span>
+        </div>
+        <div class="track"><div class="fill" style="width: {{ ${pct} | default: 0 }}%"></div></div>
+      </div>`
+
+const hpBar = (size = '') => progress('HP', '{{ hp }}/{{ max_hp }}', 'hp_pct', size)
+const xpBar = (size = '') => progress('XP', '{{ xp }}/{{ xp_to_next }}', 'xp_pct', size)
+
 const bars = `
-    <div class="flex flex--col gap--small">
-      <span class="label label--small">HP {{ hp }}/{{ max_hp }}</span>
-      <div class="progress-bar" data-progress="{{ hp_pct | default: 0 }}"></div>
-      <span class="label label--small">XP {{ xp }}/{{ xp_to_next }}</span>
-      <div class="progress-bar" data-progress="{{ xp_pct | default: 0 }}"></div>
+    <div class="flex flex--col flex--stretch-x gap--small">${hpBar()}${xpBar()}
     </div>`
 
 const attentionLine = `
@@ -62,58 +74,56 @@ const rankPanel = (compact: boolean) => `
       {% endif %}`
 
 export const markupFull = `
-<div class="layout layout--col gap">
+<div class="layout layout--col layout--top layout--stretch-x gap">
   {% if status == "unlinked" %}${setupBlock('large')}
   {% else %}
-  <div class="grid">
-    <div class="col--span-4 flex flex--col gap">${heroHeader('title--base')}${bars}
+  <div class="grid stretch-x">
+    <div class="col--span-4 flex flex--col flex--left flex--stretch-x gap">${heroHeader('title--base')}${bars}
     </div>
-    <div class="col--span-5 flex flex--col gap--small">${logItems(4)}
+    <div class="col--span-5 flex flex--col flex--left flex--stretch-x gap--small">${logItems(4)}
     </div>
-    <div class="col--span-3 flex flex--col gap--small">${rankPanel(false)}
+    <div class="col--span-3 flex flex--col flex--left gap--small">${rankPanel(false)}
     </div>
   </div>${attentionLine}
   {% endif %}
 </div>${titleBar}`
 
 export const markupHalfHorizontal = `
-<div class="layout layout--col gap">
+<div class="layout layout--col layout--top layout--stretch-x gap">
   {% if status == "unlinked" %}${setupBlock('small')}
   {% else %}
-  <div class="grid">
-    <div class="col--span-4 flex flex--col gap--small">${heroHeader('title--small')}
-      <span class="label label--small">HP {{ hp }}/{{ max_hp }}</span>
-      <div class="progress-bar" data-progress="{{ hp_pct | default: 0 }}"></div>
+  <div class="grid stretch-x">
+    <div class="col--span-4 flex flex--col flex--left flex--stretch-x gap--small">${heroHeader('title--small')}
+${hpBar(' progress-bar--small')}
     </div>
-    <div class="col--span-5 flex flex--col gap--small">${logItems(2)}
+    <div class="col--span-5 flex flex--col flex--left flex--stretch-x gap--small">${logItems(2)}
     </div>
-    <div class="col--span-3 flex flex--col gap--small">${rankPanel(true)}
+    <div class="col--span-3 flex flex--col flex--left gap--small">${rankPanel(true)}
     </div>
   </div>
   {% endif %}
 </div>${titleBar}`
 
 export const markupHalfVertical = `
-<div class="layout layout--col gap">
+<div class="layout layout--col layout--top layout--stretch-x gap">
   {% if status == "unlinked" %}${setupBlock('small')}
   {% else %}
-  <div class="flex flex--col gap">${heroHeader('title--small')}${bars}
+  <div class="flex flex--col flex--left flex--stretch-x gap">${heroHeader('title--small')}${bars}
   </div>
-  <div class="flex flex--col gap--small">${logItems(3)}
+  <div class="flex flex--col flex--left flex--stretch-x gap--small">${logItems(3)}
   </div>
-  <div class="flex flex--col gap--small">${rankPanel(true)}
+  <div class="flex flex--col flex--left gap--small">${rankPanel(true)}
   </div>
   {% endif %}
 </div>${titleBar}`
 
 export const markupQuadrant = `
-<div class="layout layout--col gap--small">
+<div class="layout layout--col layout--top layout--stretch-x gap--small">
   {% if status == "unlinked" %}${setupBlock('small')}
   {% else %}
     <span class="title title--small" data-clamp="1">{{ hero_name | escape }} · L{{ level }}</span>
     <span class="label label--small" data-clamp="1">{{ status_label | escape }}</span>
-    <span class="label label--small">HP {{ hp }}/{{ max_hp }}</span>
-    <div class="progress-bar" data-progress="{{ hp_pct | default: 0 }}"></div>
+${hpBar(' progress-bar--small')}
     {% if log.size > 0 %}<span class="description" data-clamp="2">{{ log[0].s | escape }}</span>{% endif %}
   {% endif %}
 </div>${titleBar}`

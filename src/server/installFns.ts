@@ -23,7 +23,8 @@ const cookieOptions = {
   httpOnly: true,
   secure: true,
   sameSite: 'lax' as const,
-  path: '/connect/trmnl',
+  // Server functions post to an internal path, so the cookie must cover the whole site.
+  path: '/',
   maxAge: INSTALL_FLOW_TTL_SECONDS,
 }
 

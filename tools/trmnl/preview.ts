@@ -16,7 +16,8 @@ const artBaseUrl = process.argv[2] ?? 'https://superb-bobcat-74.convex.site'
 const NOW = Date.UTC(2026, 9, 4, 8, 20)
 /** TRMNL renders Liquid in UTC; the sample owner is in Johannesburg (UTC+2). */
 const liquid = new Liquid({ timezoneOffset: 0 })
-const trmnl = { user: { utc_offset: 2 * 3600, time_zone_iana: 'Africa/Johannesburg' } }
+/** The screen route adds `utc_offset` from TRMNL's request; markup gets no `trmnl` object, so the preview passes none. */
+const utcOffset = 2 * 3600
 
 const base: PayloadInput = {
   now: NOW,
@@ -93,7 +94,7 @@ let written = 0
 for (const [name, input] of Object.entries(states)) {
   const payload = buildPayload(input) as unknown as Record<string, unknown>
   for (const layout of Object.keys(PREVIEW_LAYOUTS) as PreviewLayout[]) {
-    const inner = await liquid.parseAndRender(screenMarkup[layout], { ...payload, trmnl })
+    const inner = await liquid.parseAndRender(screenMarkup[layout], { ...payload, utc_offset: utcOffset })
     for (const device of Object.keys(PREVIEW_DEVICES) as PreviewDevice[]) {
       writeFileSync(`.previews/${name}--${device}--${layout}.html`, previewDocument(inner, device, layout, `${name} · ${device} · ${PREVIEW_LAYOUTS[layout].label}`))
       written++

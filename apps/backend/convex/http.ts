@@ -5,7 +5,7 @@ import { sha256Hex } from './lib/hash'
 import { verifySvix } from './lib/svix'
 import { renderScenePng } from '@trmnl-games/desk-crawler/art/route'
 import { DEFAULT_COMPANION_ORIGIN, renderQrPng } from '@trmnl-games/desk-crawler/art/qr'
-import { screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
+import { parseUtcOffset, screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
 
 /**
  * TRMNL lifecycle and screen routes (trmnl.md). Every route authenticates the
@@ -111,7 +111,8 @@ http.route({
       result = await ctx.runQuery(internal.trmnlPayload.forInstance, args)
     }
     if (result === null || result.outcome !== 'payload') return notFound()
-    return json(200, { ...screenMarkup, merge_variables: result.payload })
+    // TRMNL does not expose its `trmnl` metadata to third-party Liquid, so pass the owner's offset through (D42).
+    return json(200, { ...screenMarkup, merge_variables: { ...result.payload, utc_offset: parseUtcOffset(form.get('trmnl[user][utc_offset]')) } })
   }),
 })
 

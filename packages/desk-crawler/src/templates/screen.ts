@@ -5,7 +5,7 @@
  * Deploy-time constants: user text only arrives through merge_variables and is
  * escaped here. Each string is self-contained (no shared-template registration).
  */
-export const TEMPLATE_VERSION = 15
+export const TEMPLATE_VERSION = 16
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -62,10 +62,11 @@ const xpBar = (size = '') => progress('XP', '{{ xp }}/{{ xp_to_next }}', 'xp_pct
 
 /**
  * D42: next tick as 24-hour HH:MM in the owner's TRMNL timezone, no zone label.
- * TRMNL renders Liquid in UTC and supplies the offset; without it the line is omitted.
+ * TRMNL renders Liquid in UTC. Third-party markup only sees merge_variables (not the `trmnl` object), so the screen
+ * route copies the request's `trmnl[user][utc_offset]` into the `utc_offset` merge variable; without it the line is omitted.
  */
 const nextTick = (classes: string) => `
-      {% if next_tick_at and trmnl.user.utc_offset != nil %}<span class="${classes}">Next adventure {{ next_tick_at | plus: trmnl.user.utc_offset | date: "%H:%M" }}</span>{% endif %}`
+      {% if next_tick_at and utc_offset != nil %}<span class="${classes}">Next adventure {{ next_tick_at | plus: utc_offset | date: "%H:%M" }}</span>{% endif %}`
 
 /** Full layout: on the OG the next tick (D42) sits in the title bar's instance slot; the body has no spare line for it. */
 const titleBarFull = `
@@ -232,3 +233,16 @@ export const screenMarkup = {
   markup_half_vertical: markupHalfVertical,
   markup_quadrant: markupQuadrant,
 } as const
+
+/** Largest real UTC offsets are -12:00 and +14:00. */
+const MAX_UTC_OFFSET_SECONDS = 14 * 3600
+
+/**
+ * The `utc_offset` merge variable from TRMNL's `trmnl[user][utc_offset]` form field (seconds). Anything that is not a
+ * whole number of seconds within ±14 hours is treated as absent, which omits the next-tick line.
+ */
+export function parseUtcOffset(raw: string | null): number | null {
+  if (raw === null || !/^-?\d{1,5}$/.test(raw.trim())) return null
+  const seconds = Number(raw.trim())
+  return Math.abs(seconds) <= MAX_UTC_OFFSET_SECONDS ? seconds : null
+}

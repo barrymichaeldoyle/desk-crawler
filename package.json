@@ -17,7 +17,7 @@
     "test:watch": "vitest",
     "balance": "tsx tools/balance/run.ts",
     "check": "pnpm typecheck && pnpm test",
-    "build:deploy": "pnpm check && convex deploy -y --cmd 'pnpm build'"
+    "build:deploy": "node tools/deploy/check-target.mjs && pnpm check && convex deploy -y --cmd 'pnpm build'"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.62.5",

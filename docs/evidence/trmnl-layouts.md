@@ -4,6 +4,8 @@
 
 Live TRMNL renders of setting 495747 and test setting 495979 never showed "Next adventure". TRMNL's screen-generation docs state that only `merge_variables` reach Liquid for third-party markup; the `trmnl` metadata does not. v14–v15 read `trmnl.user.utc_offset`, so D42's line was always omitted on devices, while the local preview injected a `trmnl` object and hid the gap. The screen route now passes the request's `trmnl[user][utc_offset]` as `utc_offset`, templates v16 use it, and the preview supplies only merge variables like TRMNL. A unit test renders the template with merge variables only and asserts the line appears with `utc_offset` and not with `trmnl.user.utc_offset` alone. All 88 previews still pass; the line appears in the 24 adventuring full/half cases.
 
+Live check after deploy: a forced refresh of setting 495747 at 17:27 UTC rendered "Next adventure 19:30" on TRMNL's own renderer, which is the next :30 tick in Barry's SAST (UTC+2) timezone.
+
 ## Preview pass, template v15 (2026-10-04)
 
 Barry made previews the layout gate (D43). All 88 cases (11 states × four sizes × OG/X) were rendered in Chrome via Playwright against production art and checked for content outside the view or under the title bar, broken images and clock/UTC text, then inspected visually as contact sheets.

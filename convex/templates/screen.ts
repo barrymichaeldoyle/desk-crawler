@@ -5,7 +5,7 @@
  * Deploy-time constants: user text only arrives through merge_variables and is
  * escaped here. Each string is self-contained (no shared-template registration).
  */
-export const TEMPLATE_VERSION = 8
+export const TEMPLATE_VERSION = 9
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -63,12 +63,16 @@ const xpBar = (size = '') => progress('XP', '{{ xp }}/{{ xp_to_next }}', 'xp_pct
 const newestStory = (clamp: number, classes: string) => `
       {% if log.size > 0 %}<span class="${classes}" data-clamp="${clamp}">{{ log[0].s | escape }}</span>{% else %}<span class="${classes}">The first adventure starts soon.</span>{% endif %}`
 
-/** Older log lines. `extra` lines only appear on large screens (TRMNL X). */
+/**
+ * Older log lines, newest first. No timestamps: ticks are a uniform 15 minutes
+ * apart and the title bar already dates the screen. Lines wrap to two rows so
+ * a whole outcome stays readable. `extra` lines only appear on large screens.
+ */
 const olderStories = (count: number, extra = 0) => `
-      {% for entry in log offset: 1 limit: ${count} %}<span class="label 4bit:label--gray lg:title--small" data-clamp="1">{{ entry.t | escape }}&ensp;{{ entry.s | escape }}</span>{% endfor %}${
+      {% for entry in log offset: 1 limit: ${count} %}<span class="label 4bit:label--gray lg:title--small" data-clamp="2">{{ entry.s | escape }}</span>{% endfor %}${
         extra > 0
           ? `
-      {% for entry in log offset: ${1 + count} limit: ${extra} %}<span class="hidden lg:block label 4bit:label--gray lg:title--small" data-clamp="1">{{ entry.t | escape }}&ensp;{{ entry.s | escape }}</span>{% endfor %}`
+      {% for entry in log offset: ${1 + count} limit: ${extra} %}<span class="hidden lg:block label 4bit:label--gray lg:title--small" data-clamp="2">{{ entry.s | escape }}</span>{% endfor %}`
           : ''
       }`
 

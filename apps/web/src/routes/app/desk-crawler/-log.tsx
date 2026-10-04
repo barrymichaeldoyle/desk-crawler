@@ -1,6 +1,7 @@
 import { usePaginatedQuery } from 'convex/react'
 import { useMemo, useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
+import { keepUnitsTogether } from '@trmnl-games/desk-crawler/payload'
 import { markedRuns } from '@trmnl-games/desk-crawler/sim/core/narrative'
 import { Button } from '../../../lib/ui'
 import { PixelIcon } from './-pixelIcon'
@@ -106,7 +107,7 @@ export function AdventureLog() {
                         <li key={entry.id} className="flex gap-2">
                           <PixelIcon kind={entry.kind} className="mt-1" />
                           <div>
-                            <p>{markedRuns(entry.summary).map((run, i) => (run.bold ? <strong key={i}>{run.text}</strong> : run.text))}</p>
+                            <p>{markedRuns(keepUnitsTogether(entry.summary)).map((run, i) => (run.bold ? <strong key={i}>{run.text}</strong> : run.text))}</p>
                             <Deltas deltas={entry.deltas} />
                           </div>
                         </li>

@@ -153,10 +153,14 @@ function rankingFields(ranking: PayloadRanking | null, unlinked: boolean, timeZo
 
 /**
  * Joins numbers to their units with a no-break space so wrapped log lines never
- * strand "+2" at the end of a row and "gold" at the start of the next.
+ * strand "+2" at the end of a row and "gold" at the start of the next. A reward
+ * run ("+7 XP, +2 gold") also stays together across its comma.
  */
 export const keepUnitsTogether = (text: string) =>
-  text.replace(/([+-]?\d+) (XP|gold|HP|ticks?)\b/g, '$1\u00a0$2').replace(/\b(level|Level) (\d+)/g, '$1\u00a0$2')
+  text
+    .replace(/([+-]?\d+) (XP|gold|HP|ticks?)\b/g, '$1\u00a0$2')
+    .replace(/\b(level|Level) (\d+)/g, '$1\u00a0$2')
+    .replace(/([+-]\d+\u00a0(?:XP|gold|HP)), (?=[+-]\d)/g, '$1,\u00a0')
 
 /**
  * A short cheer for the newest event when it is a big moment: a level-up, an elite win, a jackpot or a rare find.

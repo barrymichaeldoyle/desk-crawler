@@ -109,7 +109,7 @@ describe('screen log wrapping', () => {
   it('keeps values with their units', async () => {
     const { keepUnitsTogether } = await import('@trmnl-games/desk-crawler/payload')
     expect(keepUnitsTogether('Beat a Paper Imp. +14 XP, +2 gold. Reached level 12! Revives in 8 ticks. -5 HP.')).toBe(
-      'Beat a Paper Imp. +14 XP, +2 gold. Reached level 12! Revives in 8 ticks. -5 HP.',
+      'Beat a Paper Imp. +14 XP, +2 gold. Reached level 12! Revives in 8 ticks. -5 HP.',
     )
   })
 })

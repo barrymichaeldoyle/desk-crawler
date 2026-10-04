@@ -57,7 +57,7 @@ Submission materials:
 - **Review email:** [draft](review-email.md) updated with correct testing steps. Barry fills in the owner email (must match the sender), video URL and promotion answer, and confirms the TRMNL account is not on a BYOD free trial.
 - **Submit:** Barry clicks Submit for Review in My Plugins and sends the email.
 
-Operational hardening (not reviewer-facing, recommended before wider promotion): V06 live lifecycle variants (expired/abandoned attempt, wrong owner, delayed callbacks), notice delivery to an inbox rather than API acceptance, and the post-backup deletion/revocation recovery proof. Cloudflare Workers Builds deploys on push to `main`; a push is a production action.
+Operational hardening (not reviewer-facing, recommended before wider promotion): V06 live lifecycle variants (expired/abandoned attempt, wrong owner, delayed callbacks), and the post-backup deletion/revocation recovery proof. Cloudflare Workers Builds deploys on push to `main`; a push is a production action.
 
 ## Latest preparation completed
 

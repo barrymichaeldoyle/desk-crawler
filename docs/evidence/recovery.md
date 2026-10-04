@@ -34,6 +34,10 @@ One synthetic incident was opened twice, recovered twice, and produced one alert
 
 This verifies real API acceptance and deduplication. Delivery events/inbox receipt were not verified because automatic browser review rejected the Resend dashboard. Existing automated tests cover retry/failed-notice behavior; live retry exhaustion remains open. Production has its approved sender/recipient and Resend key configured.
 
+## Production alert sender check, 2026-10-04
+
+After the sender moved to `TRMNL Games <alerts@trmnlgames.com>` (decisions revision 24; Resend domain verified, DMARC `p=none` published), `npx convex run --prod incidents:sendTestNotice` sent one `[TEST]` message through the production key, sender and recipient without writing any data. Resend email `01a10821-ac90-783f-8ab5-e5c7440700b1` recorded Sent and Delivered at 20:16 SAST to barry@barrymichaeldoyle.com. Delivered means the recipient server accepted it; inbox versus spam placement is Barry's observation. Live retry exhaustion remains covered by automated tests only.
+
 ## Recovery procedure and reproduction
 
 1. Keep serving and cron starts disabled during restore; retain the pre-restore state for rollback.

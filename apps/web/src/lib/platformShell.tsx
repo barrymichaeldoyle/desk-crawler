@@ -7,7 +7,7 @@ export function PlatformHeader() {
   return (
     <header className="border-b border-stone-300 dark:border-stone-800">
       <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-5">
-      <Link to="/" className="font-semibold">TRMNL Games</Link>
+      <Link to="/" className="flex items-center gap-2 font-semibold"><img src="/favicon.svg" alt="" width={20} height={20} className="[image-rendering:pixelated]" />TRMNL Games</Link>
       <nav aria-label="Platform" className="flex items-center gap-4 text-sm">
         <Link to="/app" className="underline underline-offset-4">My games</Link>
         <Link to="/account" className="underline underline-offset-4">Account</Link>

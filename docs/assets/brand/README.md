@@ -1,6 +1,6 @@
 # Sign-in provider branding
 
-Square logos of the Warrior icon on white, padded so circular crops stay clear of the rune circle. Regenerate with `pnpm tsx tools/art/brand.ts`; the art lives in `tools/art/iconArt.ts`, shared with the [marketplace icon](../plugin-icon.png) and the companion's `public/` icons.
+Square TRMNL Games logos on white: a desk display showing a d-pad and two buttons, padded so circular crops stay clear of it. Regenerate with `pnpm tsx tools/art/brand.ts`; the art lives in `tools/art/platformArt.ts`, shared with the site's `public/` icons. Desk Crawler keeps its Warrior icon (`tools/art/iconArt.ts`) for the [marketplace icon](../plugin-icon.png) and `public/games/desk-crawler/`.
 
 | Where | File | Notes |
 | --- | --- | --- |
@@ -13,12 +13,12 @@ Square logos of the Warrior icon on white, padded so circular crops stay clear o
 
 | Field | Value |
 | --- | --- |
-| App name | Desk Crawler |
-| Short description | An office RPG that plays itself on your TRMNL e-ink display. |
-| Homepage | https://desk-crawler.grandprixpicks.com |
-| Privacy policy | https://desk-crawler.grandprixpicks.com/privacy |
-| Terms of service | https://desk-crawler.grandprixpicks.com/terms |
-| Support page | https://desk-crawler.grandprixpicks.com/support |
+| App name | TRMNL Games |
+| Short description | Games that play themselves on your TRMNL e-ink display. |
+| Homepage | https://trmnlgames.com |
+| Privacy policy | https://trmnlgames.com/privacy |
+| Terms of service | https://trmnlgames.com/terms |
+| Support page | https://trmnlgames.com/support |
 | Support/developer email | barry@barrymichaeldoyle.com (D36) |
-| Authorized domain (Google) | grandprixpicks.com |
-| OAuth callback / redirect URI | Copy it from the Clerk dashboard's Google and GitHub connection settings for the production instance |
+| Authorized domain (Google) | trmnlgames.com |
+| OAuth callback / redirect URI | `https://clerk.trmnlgames.com/v1/oauth_callback` (shown in the Clerk dashboard's Google and GitHub connection settings for the production instance) |

@@ -17,9 +17,8 @@ Square logos of the Warrior icon on white, padded so circular crops stay clear o
 | Short description | An office RPG that plays itself on your TRMNL e-ink display. |
 | Homepage | https://desk-crawler.grandprixpicks.com |
 | Privacy policy | https://desk-crawler.grandprixpicks.com/privacy |
+| Terms of service | https://desk-crawler.grandprixpicks.com/terms |
 | Support page | https://desk-crawler.grandprixpicks.com/support |
 | Support/developer email | barry@barrymichaeldoyle.com (D36) |
 | Authorized domain (Google) | grandprixpicks.com |
 | OAuth callback / redirect URI | Copy it from the Clerk dashboard's Google and GitHub connection settings for the production instance |
-
-There is no terms-of-service page yet. Google's consent screen treats it as optional.

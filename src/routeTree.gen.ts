@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SupportRouteImport } from './routes/support'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppInventoryRouteImport } from './routes/app/inventory'
 import { Route as AppLeaderboardRouteImport } from './routes/app/leaderboard'
@@ -45,6 +46,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const SupportRoute = SupportRouteImport.update({
   id: '/support',
   path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
+  '/terms': typeof TermsRoute
   '/app/inventory': typeof AppInventoryRoute
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/settings': typeof AppSettingsRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
+  '/terms': typeof TermsRoute
   '/app/inventory': typeof AppInventoryRoute
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/settings': typeof AppSettingsRoute
@@ -117,6 +125,7 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
+  '/terms': typeof TermsRoute
   '/app/inventory': typeof AppInventoryRoute
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/settings': typeof AppSettingsRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/privacy'
     | '/support'
+    | '/terms'
     | '/app/inventory'
     | '/app/leaderboard'
     | '/app/settings'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/privacy'
     | '/support'
+    | '/terms'
     | '/app/inventory'
     | '/app/leaderboard'
     | '/app/settings'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/privacy'
     | '/support'
+    | '/terms'
     | '/app/inventory'
     | '/app/leaderboard'
     | '/app/settings'
@@ -175,6 +187,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   PrivacyRoute: typeof PrivacyRoute
   SupportRoute: typeof SupportRoute
+  TermsRoute: typeof TermsRoute
   HelpTrmnlRoute: typeof HelpTrmnlRoute
   ConnectTrmnlInstallRoute: typeof ConnectTrmnlInstallRoute
   ConnectTrmnlManageRoute: typeof ConnectTrmnlManageRoute
@@ -215,6 +228,13 @@ declare module '@tanstack/react-router' {
       path: '/support'
       fullPath: '/support'
       preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -291,6 +311,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   PrivacyRoute: PrivacyRoute,
   SupportRoute: SupportRoute,
+  TermsRoute: TermsRoute,
   HelpTrmnlRoute: HelpTrmnlRoute,
   ConnectTrmnlInstallRoute: ConnectTrmnlInstallRoute,
   ConnectTrmnlManageRoute: ConnectTrmnlManageRoute,

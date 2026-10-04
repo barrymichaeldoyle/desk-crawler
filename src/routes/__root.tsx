@@ -7,6 +7,7 @@ import { createServerFn } from '@tanstack/react-start'
 import type { ConvexReactClient } from 'convex/react'
 import { ConvexProviderWithClerk } from 'convex/react-clerk'
 import type { ReactNode } from 'react'
+import { SiteLinks } from '../lib/prose'
 import { SITE_NAME, SITE_ORIGIN, seo } from '../lib/seo'
 import appCss from '../styles.css?url'
 
@@ -59,11 +60,12 @@ function NotFound() {
     <main id="main" className="mx-auto flex max-w-2xl flex-col gap-4 px-4 py-16">
       <h1 className="text-3xl font-bold">This corridor is empty</h1>
       <p>There's no page at this address. It may have moved, or the link may be mistyped.</p>
-      <p className="flex flex-wrap gap-4 underline underline-offset-4">
-        <Link to="/">Home</Link>
-        <Link to="/app">Companion</Link>
-        <Link to="/help/trmnl">TRMNL help</Link>
+      <p>
+        <Link to="/" className="underline underline-offset-4">
+          Back to the home page
+        </Link>
       </p>
+      <SiteLinks className="mt-4" />
     </main>
   )
 }

@@ -25,7 +25,7 @@ Use semantic HTML, visible focus, labeled buttons, sufficient contrast, 44px tou
 | `/connect/trmnl/install` | TRMNL landing | Pending install → auth/onboarding → hero link → callback |
 | `/connect/trmnl/manage` | TRMNL landing | Verified short-lived management handoff → auth → owned connection |
 | `/help/trmnl` | Public | Setup, save/playlist step, delayed refresh, reconnect/uninstall |
-| `/privacy`, `/support`, `/changelog` | Public | Minimal launch support and release notes |
+| `/privacy`, `/terms`, `/support`, `/changelog` | Public | Privacy policy, terms of use, launch support and release notes |
 | `/admin` | Verified admin | Tick/board health, failures, cleanup, guarded recovery |
 
 Mobile navigation: Hero, Bag, Rankings, Connections; settings under account menu. Desktop may use a compact side navigation. No guild/daily/merchant placeholders in MVP.

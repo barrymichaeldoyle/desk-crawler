@@ -1,4 +1,5 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
+import { SiteLinks } from '../lib/prose'
 import { seo } from '../lib/seo'
 
 export const Route = createFileRoute('/')({ head: () => seo({ path: '/' }), component: Landing })
@@ -37,12 +38,7 @@ function Landing() {
       <p className="text-stone-600 dark:text-stone-400">
         Desk Crawler is still in development. It will appear in the TRMNL plugin directory after review.
       </p>
-      <nav aria-label="Site" className="flex flex-wrap gap-4 text-sm underline underline-offset-4">
-        <Link to="/app">Companion</Link>
-        <Link to="/help/trmnl">TRMNL help</Link>
-        <Link to="/privacy">Privacy</Link>
-        <Link to="/support">Support</Link>
-      </nav>
+      <SiteLinks />
     </main>
   )
 }

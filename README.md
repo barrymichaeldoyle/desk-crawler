@@ -43,11 +43,12 @@ What is built and what remains: [implementation status](docs/status.md).
 
 ## Deploying
 
-Pushes to `main` deploy production through GitHub Actions (`.github/workflows/ci.yml`) once typecheck, tests and the build pass: Convex first (`exciting-cormorant-948`), then the companion Worker on `desk-crawler.grandprixpicks.com`. Pull requests run the checks only.
+Cloudflare Workers Builds deploys production on every push to `main`:
 
-- Repository secrets: `CONVEX_DEPLOY_KEY` (Convex production deploy key) and `CLOUDFLARE_API_TOKEN` (Workers deploy).
+- Build command: `pnpm build:deploy` (typecheck, tests, then `convex deploy` to `exciting-cormorant-948`, which runs `pnpm build` once the backend is live). Deploy command: `npx wrangler deploy` (companion on `desk-crawler.grandprixpicks.com`).
+- Build variable (secret): `CONVEX_DEPLOY_KEY`. Non-production branch builds are off, because any build deploys production Convex.
 - Public build values live in `.env.production`. Server secrets live on the platforms: Convex env (`npx convex env set --prod ...`) and Worker secrets (`npx wrangler secret put ...`: `CLERK_SECRET_KEY`, `INSTALL_FLOW_KEY`).
-- Backend changes must stay additive: the Worker briefly runs against the new Convex functions before it redeploys.
+- Backend changes must stay additive: the old companion briefly runs against the new Convex functions before the Worker redeploys.
 
 ## Repository contents
 

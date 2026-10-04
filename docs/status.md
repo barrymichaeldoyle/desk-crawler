@@ -34,7 +34,7 @@ Updated 2026-10-03 (night). Live on the Convex dev deployment `superb-bobcat-74`
 
 - Clerk `user.deleted` webhook: `POST /auth/clerk/webhook` is built and tested (Svix signature, 5-minute tolerance, idempotent purge, revocation hash for unknown subjects). Still needed: the endpoint registered in the Clerk dev instance with `CLERK_WEBHOOK_SECRET` set on Convex, then the same for production.
 - Set `RESEND_API_KEY` on Convex to turn on incident/recovery emails (barry@barrymichaeldoyle.com from `desk-crawler@grandprixpicks.com`, D27/D38), then send one staging test.
-- Production: Convex prod `exciting-cormorant-948` and Clerk prod (`clerk.desk-crawler.grandprixpicks.com`, DNS added 2026-10-04) are configured; CI deploys on push to `main` once `CONVEX_DEPLOY_KEY` and `CLOUDFLARE_API_TOKEN` are set as repository secrets. Still to do: first deploy, **daily backups enabled** (the privacy page states this), plugin URLs switched to prod, real plugin icon.
+- Production: Convex prod `exciting-cormorant-948` and Clerk prod (`clerk.desk-crawler.grandprixpicks.com`, DNS added 2026-10-04) are configured; Cloudflare Workers Builds deploys on push to `main` (build `pnpm build:deploy`, `CONVEX_DEPLOY_KEY` build secret). Still to do: first deploy, **daily backups enabled** (the privacy page states this), plugin URLs switched to prod, real plugin icon.
 - V06 lifecycle matrix live: uninstall, second instance, reinstall, expired attempt, wrong owner, lost callback.
 - Confirm template v8 and scene art v3 on the real TRMNL X (check the ×6 scene edges); mashups beside other plugins; art polish after Barry's review.
 - Capacity measurement at 100/1,000 heroes (V05) and the zero-revenue cost report; Creator Fund eligibility (V10).

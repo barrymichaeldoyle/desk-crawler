@@ -7,12 +7,16 @@ import { encodePng1Bit } from './png'
  * Base scale suits the OG (1 logical px = 1 device px); the large scale gives
  * the TRMNL X whole device pixels per module (5 x 1.8 = 9).
  */
-export const QR_VERSION = 2
+export const QR_VERSION = 3
 export const QR_SCALE = 3
 export const QR_LARGE_SCALE = 5
 /** Every served scale: layouts pick one per size and screen (3-5 on the OG, up to 7 on the X). */
 export const QR_SCALES = new Set([3, 4, 5, 7])
-const QUIET_MODULES = 4
+/**
+ * v3: low error correction and a two-module quiet zone keep the codes compact on the screen (the bag link drops from
+ * 33 to 29 modules). The 1-bit render is crisp and the layout leaves white space around every code, so both hold up.
+ */
+const QUIET_MODULES = 2
 
 export const QR_TARGETS = { app: '/app/desk-crawler', bag: '/app/desk-crawler/inventory' } as const
 export type QrTarget = keyof typeof QR_TARGETS
@@ -38,9 +42,9 @@ export function renderQrPng(path: string, origin: string): Uint8Array | null {
   return encodePng1Bit(size, size, ink)
 }
 
-/** Square 1-bit bitmap (1 = black) with a four-module quiet zone. */
+/** Square 1-bit bitmap (1 = black) with a two-module quiet zone. */
 export function qrInk(text: string, scale: number): { size: number; ink: Uint8Array } {
-  const qr = qrcode(0, 'M')
+  const qr = qrcode(0, 'L')
   qr.addData(text)
   qr.make()
   const modules = qr.getModuleCount() + QUIET_MODULES * 2

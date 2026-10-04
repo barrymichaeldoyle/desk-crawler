@@ -1,11 +1,11 @@
 /**
- * Four TRMNL layouts built around the scene window (revision 13, template v17 adds the standing bag QR;
+ * Four TRMNL layouts built around the scene window (revision 13, template v17 adds the standing bag QR, v18 the ordinal rank and compact QR v3;
  * trmnl-experience.md priorities: setup/service message, hero and the living
  * scene, newest story, HP/level, service warnings, then rank).
  * Deploy-time constants: user text only arrives through merge_variables and is
  * escaped here. Each string is self-contained (no shared-template registration).
  */
-export const TEMPLATE_VERSION = 17
+export const TEMPLATE_VERSION = 18
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -96,12 +96,15 @@ const olderStories = (count: number, extra = 0) => `
 const rankLine = `
       {% if rank %}<span class="label">Rank {{ rank }} of {{ total_players }}, {{ leaderboard_cohort_label | escape }}</span>{% elsif rank_status == "dormant" %}<span class="label 4bit:label--gray">Not ranked while paused</span>{% else %}<span class="label 4bit:label--gray">Ranking within the hour</span>{% endif %}`
 
+/** English ordinal suffix for `rank` (1st, 2nd, 3rd, 4th, 11th-13th, 21st...), assigned to `rank_suffix`. */
+const rankSuffix = `{% assign rank_mod100 = rank | modulo: 100 %}{% assign rank_mod10 = rank | modulo: 10 %}{% if rank_mod100 >= 11 and rank_mod100 <= 13 %}{% assign rank_suffix = "th" %}{% elsif rank_mod10 == 1 %}{% assign rank_suffix = "st" %}{% elsif rank_mod10 == 2 %}{% assign rank_suffix = "nd" %}{% elsif rank_mod10 == 3 %}{% assign rank_suffix = "rd" %}{% else %}{% assign rank_suffix = "th" %}{% endif %}`
+
 /**
- * Own rank as a big "#3" with its context stacked beside it ("of 41 this week" over the level group).
+ * Own rank as a big "3rd" with its context stacked beside it ("of 41 this week" over the level group).
  * Top 5 is cut to three rows on the OG so every row stays at a readable size.
  */
 const rankPanel = `
-      {% if rank %}<div class="flex flex--row flex--left flex--center-y gap--small"><span class="value value--small lg:value--large">#{{ rank }}</span><div><div><span class="label lg:title--small">of {{ total_players }} this week</span></div>{% if leaderboard_cohort_label != "" %}<div><span class="label lg:title--small 4bit:label--gray" data-clamp="1">{{ leaderboard_cohort_label | escape }}</span></div>{% endif %}</div></div>
+      {% if rank %}${rankSuffix}<div class="flex flex--row flex--left flex--center-y gap--small"><span class="value value--small lg:value--large">{{ rank }}{{ rank_suffix }}</span><div><div><span class="label lg:title--small">of {{ total_players }} this week</span></div>{% if leaderboard_cohort_label != "" %}<div><span class="label lg:title--small 4bit:label--gray" data-clamp="1">{{ leaderboard_cohort_label | escape }}</span></div>{% endif %}</div></div>
       {% else %}<span class="label lg:title--small">This week{% if leaderboard_cohort_label != "" %}, {{ leaderboard_cohort_label | escape }}{% endif %}</span>
       {% if rank_status == "dormant" %}<span class="label 4bit:label--gray">Not ranked while paused</span>{% else %}<span class="label 4bit:label--gray">Ranking within the hour</span>{% endif %}{% endif %}
       {% for row in top5 %}<div class="{% if forloop.index > 3 %}hidden lg:flex {% endif %}flex flex--row flex--between stretch-x gap--small"><span class="label lg:title--small grow" data-clamp="1">{{ row.rank }}. {{ row.name | escape }}</span><span class="label lg:title--small no-shrink">{{ row.score }}&nbsp;XP</span></div>{% endfor %}`

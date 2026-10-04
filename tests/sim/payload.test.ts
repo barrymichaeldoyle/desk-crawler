@@ -27,7 +27,7 @@ const pick = (p: unknown) => p as { first_run: boolean; qr_base: string; qr_labe
 
 describe('first-run and companion QR fields', () => {
   it('welcomes a brand-new hero with a QR to the companion', () => {
-    expect(pick(buildPayload(input))).toMatchObject({ first_run: true, qr_base: 'https://art.test/art/qr/v2/app', qr_label: 'Scan to open your companion' })
+    expect(pick(buildPayload(input))).toMatchObject({ first_run: true, qr_base: 'https://art.test/art/qr/v3/app', qr_label: 'Scan to open your companion' })
   })
 
   it('drops the welcome once the first adventure is logged', () => {
@@ -36,13 +36,13 @@ describe('first-run and companion QR fields', () => {
   })
 
   it('points a full bag at the bag, and setup at the companion', () => {
-    expect(pick(buildPayload({ ...input, hero: { ...input.hero!, status: 'sleeping' }, heldItemName: 'Rare Mace' })).qr_base).toBe('https://art.test/art/qr/v2/bag')
-    expect(pick(buildPayload({ ...input, hero: null }))).toMatchObject({ status: 'unlinked', first_run: false, qr_base: 'https://art.test/art/qr/v2/app' })
+    expect(pick(buildPayload({ ...input, hero: { ...input.hero!, status: 'sleeping' }, heldItemName: 'Rare Mace' })).qr_base).toBe('https://art.test/art/qr/v3/bag')
+    expect(pick(buildPayload({ ...input, hero: null }))).toMatchObject({ status: 'unlinked', first_run: false, qr_base: 'https://art.test/art/qr/v3/app' })
   })
 
   it('always links an active hero to the bag, with nothing needing doing', () => {
     const p = pick(buildPayload({ ...input, logs: [{ at: NOW - 60_000, kind: 'combat', summary: 'Beat a Paper Imp. +8 XP, +3 gold.' }] }))
-    expect(p).toMatchObject({ qr_base: '', companion_qr_base: 'https://art.test/art/qr/v2/bag' })
+    expect(p).toMatchObject({ qr_base: '', companion_qr_base: 'https://art.test/art/qr/v3/bag' })
     expect(pick(buildPayload({ ...input, hero: null })).companion_qr_base).toBe('')
     expect(pick(buildPayload({ ...input, artBaseUrl: null })).companion_qr_base).toBe('')
   })

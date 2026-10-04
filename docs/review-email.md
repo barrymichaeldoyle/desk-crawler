@@ -16,9 +16,9 @@ Desk Crawler puts a quiet office adventure on a TRMNL. A hero explores automatic
 
 Video demonstration: [insert an accessible hosted URL after approval to publish the video]. The local [installation walkthrough](evidence/install-demo/README.md) covers a fresh plugin installation for a returning signed-in owner. A new-account signup recording remains to be added if you require that path in the video.
 
-Testing: open https://desk-crawler.grandprixpicks.com and sign up using an email address your team owns, such as team@trmnl.com. Clerk supports an email verification code, Google or GitHub. Create a hero, install plugin 564 on a test TRMNL, connect the account and Save. The first-run display explains the initial adventure wait; adventures start on the next eligible 15-minute tick. Configure opens the companion management page. Removing an installation preserves the hero and other installations. No shared owner credentials or authentication bypass are required.
+Testing: open https://trmnlgames.com and sign up using an email address your team owns, such as team@trmnl.com. Clerk supports an email verification code, Google or GitHub. Create a hero, install plugin 564 on a test TRMNL, connect the account and Save. The first-run display explains the initial adventure wait; adventures start on the next eligible 15-minute tick. Configure opens the companion management page. Removing an installation preserves the hero and other installations. No shared owner credentials or authentication bypass are required.
 
-Documentation: https://desk-crawler.grandprixpicks.com/help/trmnl  
+Documentation: https://trmnlgames.com/help/desk-crawler  
 Source: https://github.com/barrymichaeldoyle/desk-crawler
 
 Promotion: [Barry to confirm intended channels; no promotion has been sent or promised].

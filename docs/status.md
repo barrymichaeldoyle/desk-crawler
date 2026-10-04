@@ -1,13 +1,14 @@
 # Implementation status
 
-Updated 2026-10-04. Production companion is live at `desk-crawler.grandprixpicks.com`, Convex `exciting-cormorant-948`, Clerk production, TRMNL plugin 564. Review preparation is in progress; [release evidence](evidence/release.md) records verified behavior and open checks. Candidate template v12 and web brand assets are local changes awaiting visual verification and deployment approval.
+Updated 2026-10-04. Production companion is live at `trmnlgames.com` (TRMNL Games platform, Desk Crawler under `/app/desk-crawler`), Convex `exciting-cormorant-948`, the TRMNL Games Clerk production instance, TRMNL plugin 564. The old `desk-crawler.grandprixpicks.com` host no longer serves the companion. Review preparation resumes after the migration; [release evidence](evidence/release.md) records verified behavior and open checks.
 
-Barry subsequently requested a plan to share infrastructure across future games on his newly owned `trmnlgames.com`. The [TRMNL Games migration proposal](trmnl-games-migration.md) stages the monorepo/platform/domain work before final marketplace submission. Detailed architecture and deletion-policy changes await acceptance; no production changes were made for this planning request.
+Barry asked for shared infrastructure across future games on `trmnlgames.com` (D40). The [TRMNL Games migration plan](trmnl-games-migration.md) staged the monorepo, platform and domain work before final marketplace submission. This was a pre-launch migration with no public player base (D41). That exception does not relax progress preservation for later public releases.
 
-Barry clarified that this is a pre-launch migration with no public player base. Preserving his current identity/hero is best effort; fresh onboarding is acceptable if preservation becomes complicated. The proposal now uses a single coordinated cutover without a mandatory identity bridge or extended compatibility period. This does not relax progress preservation for later public releases or authorize a production reset now.
+Migration progress:
 
-Migration progress: M1 (monorepo move) and M2 (platform boundaries, two deletion levels, per-game handoff cookies) are committed locally on `main`, not pushed. The M3 rehearsal on the Convex/Clerk dev instances passed; see [platform rehearsal](evidence/platform-rehearsal.md) for results and the items left for the M4 cutover.
-
+- M0–M3 done. Monorepo move, platform boundaries (two deletion levels, per-game handoff cookies) and the dev rehearsal ([platform rehearsal](evidence/platform-rehearsal.md)).
+- M4 done. Clerk domain moved to `trmnlgames.com`, `main` deployed at 13:58 UTC, ticks continued on the new :00 slot, data backfilled and Barry's account rebound with hero "Baz" kept (decisions revisions 18–19). Email-code, Google and GitHub sign-in work on the new domain; plugin 564's installation, management and knowledge-base URLs point at `trmnlgames.com`; signed Clerk webhook delivered; prod `COMPANION_ORIGIN` unset, so QR codes use the `https://trmnlgames.com` default (revision 20). Fresh install → Save → Configure → render → uninstall passed as Baz with setting 495979 (revision 21).
+- M5 not started: all four layouts and mashups verified through rendered previews (D43, no per-view device check), cost/health monitoring, optional old-page redirects, marketplace image and reviewer recording, repository rename.
 ## Built and verified
 
 | Package | State | Evidence |

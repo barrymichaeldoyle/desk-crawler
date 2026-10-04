@@ -10,7 +10,7 @@
 | Candidate template | v12, generated locally; visual verification blocked |
 | Brand | simpler hero, sword and circular border; separate 16px favicon; TRMNL icon updated |
 | Plugin | 564, `desk_crawler`, Third Party / games / development |
-| Companion | https://desk-crawler.grandprixpicks.com |
+| Companion | https://trmnlgames.com (Desk Crawler under `/app/desk-crawler`) |
 | Production backend | `exciting-cormorant-948` |
 
 ## Verified in this pass

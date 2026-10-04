@@ -10,7 +10,7 @@ Third Party plugins use their own installation, management, screen-generation an
 
 ## Planned endpoint map
 
-`APP_ORIGIN` is the Cloudflare-hosted app; `API_ORIGIN` is the Convex `.convex.site` deployment. Production `APP_ORIGIN` is `https://desk-crawler.grandprixpicks.com` (D33); plugin registration is still open.
+`APP_ORIGIN` is the Cloudflare-hosted app; `API_ORIGIN` is the Convex `.convex.site` deployment. Production `APP_ORIGIN` is `https://trmnlgames.com` (D40); plugin 564 is registered with the game-scoped routes under `/connect/trmnl/desk-crawler/`.
 
 | Registered/public route | Location | Purpose |
 | --- | --- | --- |

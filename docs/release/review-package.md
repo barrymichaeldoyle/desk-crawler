@@ -11,12 +11,12 @@
 | Icon | [`docs/assets/plugin-icon.png`](../assets/plugin-icon.png) (512×512, 1-bit pixel art), draft |
 | Categories | games, entertainment |
 | Supported refresh | Every 15 minutes (slower is fine; progress never depends on refresh) |
-| Installation URL | `https://desk-crawler.grandprixpicks.com/connect/trmnl/install` |
-| Installation success webhook | `https://<prod-convex>.convex.site/trmnl/install/success` |
-| Management URL | `https://desk-crawler.grandprixpicks.com/connect/trmnl/manage` |
-| Markup URL | `https://<prod-convex>.convex.site/trmnl/v1/screen` |
-| Uninstall webhook | `https://<prod-convex>.convex.site/trmnl/uninstall` |
-| Knowledge base | `https://desk-crawler.grandprixpicks.com/help/trmnl` |
+| Installation URL | `https://trmnlgames.com/connect/trmnl/desk-crawler/install` |
+| Installation success webhook | `https://exciting-cormorant-948.convex.site/trmnl/install/success` |
+| Management URL | `https://trmnlgames.com/connect/trmnl/desk-crawler/manage` |
+| Markup URL | `https://exciting-cormorant-948.convex.site/trmnl/v1/screen` |
+| Uninstall webhook | `https://exciting-cormorant-948.convex.site/trmnl/uninstall` |
+| Knowledge base | `https://trmnlgames.com/help/desk-crawler` |
 
 ## Focus-first rationale
 
@@ -26,7 +26,7 @@ Desk Crawler is designed to be glanced at, not played. The hero adventures every
 
 - Install from the plugin page; sign up on the companion with any email (one-time code), Google or GitHub. No passwords to share and no special bypass.
 - Pick a public name and hero name, click Connect, then Save in TRMNL. The first adventure appears on the next world tick (within 15 minutes).
-- Companion: `https://desk-crawler.grandprixpicks.com/app`. Support: barry@barrymichaeldoyle.com.
+- Companion: `https://trmnlgames.com/app/desk-crawler`. Support: barry@barrymichaeldoyle.com.
 
 ## Install video script (≈90 seconds)
 

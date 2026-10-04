@@ -6,7 +6,7 @@ Local development: current pinned app dependencies, local Workers-compatible run
 
 Staging: separate Convex state + Worker deployment + dedicated Clerk configuration. Use an owner's development TRMNL plugin/instance for live protocol and screenshot checks. Staging is an engineering environment, not a player beta program. Do not copy private production user data into it.
 
-Production: `https://desk-crawler.grandprixpicks.com` (D33), Convex `exciting-cormorant-948`, dedicated Clerk production and Cloudflare Worker, TRMNL plugin 564. These are configured and live as of 2026-10-04. Daily backups and the corrected deletion webhook were verified; [release evidence](evidence/release.md) records current open gates. Original planning sections below describe policies, not the current provisioning checklist.
+Production: `https://trmnlgames.com` (D40, moved from `desk-crawler.grandprixpicks.com` in the M4 cutover), Convex `exciting-cormorant-948`, the TRMNL Games Clerk production instance and Cloudflare Worker, TRMNL plugin 564. These are configured and live as of 2026-10-04. Daily backups and the corrected deletion webhook were verified; [release evidence](evidence/release.md) records current open gates. Original planning sections below describe policies, not the current provisioning checklist.
 
 Each environment uses explicit app/API origins and a matching Clerk issuer. Development and production tokens must never share a database or grant identity. A preview deployment must not accidentally run production mutations or register production cron jobs.
 

@@ -61,7 +61,7 @@ function Inventory() {
   return (
     <>
       {hero.status === 'sleeping' ? (
-        <Card title="Taking a break">
+        <Card title="Bag full">
           {held ? (
             <>
               <p>
@@ -99,7 +99,7 @@ function Inventory() {
         </Card>
       ) : null}
 
-      <Card title={`Bag · ${bag.used}/${bag.capacity}`}>
+      <Card title={`Bag (${bag.used}/${bag.capacity})`}>
         {!manageable ? (
           <p className="mb-3 text-sm font-semibold">
             {hero.status === 'paused' ? 'Resume adventures to change or sell gear.' : 'Gear can be changed when your hero is exploring, resting or taking a break.'}

@@ -53,7 +53,7 @@ Each newest outcome stands alone: concrete actor/object, result and the useful e
 
 The device log is the newest six events, including commands. It is not a daily digest or proof the player saw those events. Date-aware labels disambiguate midnight and old entries. Smaller layouts choose the newest outcome deterministically; refreshing does not pick a random joke, rotate content, mark events read or grant rewards.
 
-Clamping must preserve the result. Put consequences early, shorten narrative first, and never clip away “find held”/“bag full” on overflow or “revives” on death. Author compact summaries if 90 characters cannot fit; do not shrink primary text until unreadable. Structured own-history retains full bounded detail.
+Clamping must preserve the result. Put consequences early, shorten narrative first, and never clip away the “bag full” notice on overflow or “revives” on death. Author compact summaries if 90 characters cannot fit; do not shrink primary text until unreadable. Structured own-history retains full bounded detail.
 
 An absence of hours may skip adventures on the device. The companion retains up to three days of detailed history; beyond that, only persistent hero state/lifetime counters are promised. A daily recap is a later amendment if needed, with bounded aggregation and retention.
 

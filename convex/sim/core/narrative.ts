@@ -5,7 +5,12 @@ export type NarrativeVars = Readonly<Record<string, string | number>>
 export const codePoints = (text: string): number => [...text].length
 
 export function fill(template: string, vars: NarrativeVars): string {
-  return template.replace(/\{(\w+)\}/g, (match, key: string) => {
+  // "a {monster}" becomes "an Overheated Rack" when the name starts with a vowel.
+  const articled = template.replace(/\b([Aa]) \{(\w+)\}/g, (match, article: string, key: string) => {
+    const value = vars[key]
+    return typeof value === 'string' && /^[AEIOU]/i.test(value) ? `${article}n {${key}}` : match
+  })
+  return articled.replace(/\{(\w+)\}/g, (match, key: string) => {
     const value = vars[key]
     if (value === undefined) throw new Error(`missing narrative variable ${key} in "${template}"`)
     return String(value)
@@ -37,3 +42,6 @@ export function composeSummary(primary: string, compact: string, consequences: r
 }
 
 export const rarityLabel = (rarity: string): string => rarity.charAt(0).toUpperCase() + rarity.slice(1)
+
+/** "a Rare Mace", "an Uncommon Cable Cutter". */
+export const withArticle = (name: string) => `${/^[AEIOU]/i.test(name) ? 'an' : 'a'} ${name}`

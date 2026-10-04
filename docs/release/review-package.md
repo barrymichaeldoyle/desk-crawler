@@ -1,4 +1,4 @@
-# TRMNL marketplace review package — draft
+# TRMNL marketplace review package (draft)
 
 **Status: draft for Barry's review. Nothing here has been submitted or sent.** Submission, reviewer contact and listing changes need Barry's explicit go-ahead (AGENTS.md).
 
@@ -8,7 +8,7 @@
 | --- | --- |
 | Name | Desk Crawler |
 | Description (≤50) | A calm office RPG that plays itself on your desk |
-| Icon | [`docs/assets/plugin-icon.png`](../assets/plugin-icon.png) (512×512, 1-bit pixel art) — draft |
+| Icon | [`docs/assets/plugin-icon.png`](../assets/plugin-icon.png) (512×512, 1-bit pixel art), draft |
 | Categories | games, entertainment |
 | Supported refresh | Every 15 minutes (slower is fine; progress never depends on refresh) |
 | Installation URL | `https://desk-crawler.grandprixpicks.com/connect/trmnl/install` |
@@ -20,7 +20,7 @@
 
 ## Focus-first rationale
 
-Desk Crawler is designed to be glanced at, not played. The hero adventures every 15 minutes on its own; the screen shows one quiet pixel-art scene, the latest outcome and the hero's health. There are no notifications, streaks, timers, urgency badges or reasons to keep refreshing, and nothing is lost by ignoring it for days. Progress never depends on refresh rate, Sleep Mode or playlist position, so it never competes with a user's other plugins. Occasional companion visits (every few days) manage gear; that is optional. Free, no purchases, no ads.
+Desk Crawler is designed to be glanced at, not played. The hero adventures every 15 minutes on its own; the screen shows one pixel-art scene, the latest outcome and the hero's health. A QR code back to the companion appears only when the player has to act (setup, full bag). There are no notifications, streaks, timers, urgency badges or reasons to keep refreshing, and nothing is lost by ignoring it for days. Progress never depends on refresh rate, Sleep Mode or playlist position, so it never competes with a user's other plugins. Occasional companion visits (every few days) manage gear; that is optional. Free, no purchases, no ads.
 
 ## Reviewer access
 
@@ -39,4 +39,4 @@ Desk Crawler is designed to be glanced at, not played. The hero adventures every
 
 ## Before submitting (from [status](../status.md))
 
-Production deploy and URLs, daily backups enabled, `RESEND_API_KEY` set and one test alert, Clerk production OAuth credentials, real-device photo and mashup check, Creator Fund eligibility notes (V10), final icon approval.
+Production deploy and URLs, daily backups enabled, one test incident alert (`RESEND_API_KEY` is set), Clerk production OAuth credentials, real-device photo and mashup check, Creator Fund eligibility notes (V10), final icon approval.

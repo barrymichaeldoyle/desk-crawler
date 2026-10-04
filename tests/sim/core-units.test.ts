@@ -94,3 +94,13 @@ describe('hourly score projection (D31)', () => {
     expect(later).toEqual({ accumulator: { scoreHour: 12 * h, scoreHourXp: 7 }, fold: { hourStart: 10 * h, xp: 25 } })
   })
 })
+
+describe('narrative articles', () => {
+  it('uses "an" before vowel-initial names and leaves other text alone', async () => {
+    const { fill } = await import('../../convex/sim/core/narrative')
+    expect(fill('Rebooted a {monster}. +{xp} XP.', { monster: 'Overheated Rack', xp: 3 })).toBe('Rebooted an Overheated Rack. +3 XP.')
+    expect(fill('A {monster} crashed.', { monster: 'Overheated Rack' })).toBe('An Overheated Rack crashed.')
+    expect(fill('Beat a {monster}.', { monster: 'Paper Imp' })).toBe('Beat a Paper Imp.')
+    expect(fill('Found a {item} and {gold} gold.', { item: 'Rare Mace', gold: 4 })).toBe('Found a Rare Mace and 4 gold.')
+  })
+})

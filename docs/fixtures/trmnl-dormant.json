@@ -20,7 +20,7 @@
   "hp_pct": 65,
   "gold": 120,
   "status": "sleeping",
-  "status_label": "Taking a break: bag full. A new find is waiting.",
+  "status_label": "Bag full, holding a new find",
   "status_eta_ticks": 0,
   "biome_id": "server_room",
   "biome_name": "Server Room",
@@ -34,7 +34,7 @@
       "at": "2026-09-25T10:13:00Z",
       "t": "25 Sep 12:13",
       "k": "loot",
-      "s": "Found a Rare Cable Cutter; held safely. Taking a break: bag full."
+      "s": "Found a Rare Cable Cutter; held safely. Bag full. Holding it until you make room."
     }
   ],
   "rank": null,
@@ -85,7 +85,7 @@
       "score": 600
     }
   ],
-  "attention": "Your find is safe. Manage gear in the companion, then resume adventures.",
+  "attention": "Make room in your bag in the companion, then resume.",
   "plugin_instance_name": "Desk Crawler",
   "game_as_of_label": "03 Oct 12:13 UTC+02:00",
   "leaderboard_as_of_label": "03 Oct 11:58 UTC+02:00",

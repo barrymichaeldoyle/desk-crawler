@@ -25,7 +25,7 @@ export const Route = createFileRoute('/admin')({
   ),
 })
 
-const when = (ts: number | null | undefined) => (ts ? new Date(ts).toLocaleString() : '—')
+const when = (ts: number | null | undefined) => (ts ? new Date(ts).toLocaleString() : 'none')
 
 function AdminGate() {
   const { data: isAdmin } = useQuery(convexQuery(api.admin.isAdmin, {}))
@@ -57,10 +57,10 @@ function Health() {
     <Card title="Health">
       <dl className="grid grid-cols-2 gap-2 text-sm">
         <dt>World tick</dt>
-        <dd>{data.world?.currentTick ?? '—'}</dd>
+        <dd>{data.world?.currentTick ?? 'none'}</dd>
         <dt>Last completed</dt>
         <dd>
-          tick {data.world?.lastCompletedTick ?? '—'} at {when(data.world?.lastCompletedAt)}
+          tick {data.world?.lastCompletedTick ?? 'none'} at {when(data.world?.lastCompletedAt)}
         </dd>
         <dt>Last ranking publication</dt>
         <dd>{when(data.world?.lastPublishedAt)}</dd>
@@ -134,7 +134,7 @@ function UserTools() {
       {user ? (
         <div className="mt-3">
           <p>
-            <strong>{user.alias}</strong> · {user.state} · hero {user.heroName ?? '—'}
+            <strong>{user.alias}</strong> · {user.state} · hero {user.heroName ?? 'none'}
             {user.nameRepairRequired ? ' · name repair pending' : ''}
           </p>
           <div className="mt-2 flex flex-wrap gap-2">

@@ -29,7 +29,7 @@ Commands do not advance gameplay evaluation markers or XP. Pending wake shows �
 
 Inventory sleep is distinct from HP rest, voluntary pause and service quarantine. Manual potions/travel/pause cannot run while sleeping. Death/travel cannot occur simultaneously with sleep; overflow arises from an exploring loot/victory outcome after survival/level-up processing. Existing auto-revival and one-tick travel rules remain unchanged.
 
-Device text when held: “Taking a break: bag full. A new find is waiting.” After claim/full bag: explain free-space requirement. Keep status distinct from service failure; use the idle sprite. Recent rank remains eligible, though XP accrual stops and old XP ages out; once window XP reaches zero the sleeping hero is dormant and leaves recent boards until it resumes (D32). Hardware Sleep Mode/offline/uninstall still never determine progress.
+Device text when held: “Bag full, holding a new find” with the attention line “Make room in your bag in the companion, then resume.” and a QR code to the bag. After claim/full bag: explain free-space requirement. Keep status distinct from service failure; use the idle sprite. Recent rank remains eligible, though XP accrual stops and old XP ages out; once window XP reaches zero the sleeping hero is dormant and leaves recent boards until it resumes (D32). Hardware Sleep Mode/offline/uninstall still never determine progress.
 
 ## Acceptance
 

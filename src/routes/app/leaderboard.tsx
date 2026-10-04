@@ -46,7 +46,7 @@ function Leaderboard() {
           <p>Rankings publish every hour. Check back soon.</p>
         </Card>
       ) : (
-        <Card title={`${groupLabel(data.cohortKey)} · ${data.totalPlayers} ${data.totalPlayers === 1 ? 'hero' : 'heroes'}`}>
+        <Card title={`${groupLabel(data.cohortKey)}, ${data.totalPlayers} ${data.totalPlayers === 1 ? 'hero' : 'heroes'}`}>
           <p className="mb-3 text-sm text-stone-600 dark:text-stone-400">
             {board === 'overall' ? 'Ranked by level and XP.' : 'XP earned in the period among heroes of similar level.'} Updated{' '}
             {new Date(data.scoreAt).toLocaleString(undefined, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}.

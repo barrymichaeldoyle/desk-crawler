@@ -1,6 +1,6 @@
 import { applyItemChanges } from './apply'
 import { assertHeroInvariants, bagGearCount, SimulationInvariantError } from './invariants'
-import { codePoints, composeSummary, fill, rarityLabel, variant } from './narrative'
+import { codePoints, composeSummary, fill, rarityLabel, variant, withArticle } from './narrative'
 import { createRng, pickOne, pickWeighted, type Rng } from './rng'
 import { applyXp, deriveStats, maxHp, pctOf } from './stats'
 import type {
@@ -421,14 +421,14 @@ class TickRun {
         this.metrics.heldFinds = 1
         this.metrics.sleepStarts = 1
         disposition = 'inventory_sleep_started'
-        consequences.unshift('Bag full: find held, taking a break.')
+        consequences.unshift('Bag full. Holding it until you make room.')
       }
       if (outcome.variant === 'loot') {
         primary = variant(this.rng.narrative, shared.lootGear, { item })
-        compact = `Found a ${item}.`
+        compact = `Found ${withArticle(item)}.`
         outcome = { ...outcome, templateId: gear.templateId, rarity: gear.rarity, destination: heldFind ? 'held' : 'bag' }
       } else {
-        consequences.push(`Found a ${item}.`)
+        consequences.push(`Found ${withArticle(item)}.`)
       }
     }
     consequences.push(...potionSuffix)

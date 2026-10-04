@@ -61,7 +61,7 @@ export function ReturnRecap() {
   if (shown.baseline === null) {
     return (
       <Card title="Welcome">
-        <p>Your hero adventures every 15 minutes, even when this page and your TRMNL are off. Check back every few days to manage gear.</p>
+        <p>Your hero keeps adventuring every 15 minutes, even with this page closed and your TRMNL asleep. Check back every few days to sort gear.</p>
       </Card>
     )
   }

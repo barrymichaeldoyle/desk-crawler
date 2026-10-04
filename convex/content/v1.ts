@@ -33,7 +33,7 @@ const office: BiomeNarrative = {
   trapHit: [
     'Tripped over a loose cable. -{damage} HP.',
     'A paper avalanche from the shelf. -{damage} HP.',
-    'Swivel chair ambush! -{damage} HP.',
+    'Ambushed by a swivel chair. -{damage} HP.',
     'Stapled a thumb on a jammed stapler. -{damage} HP.',
   ],
   rest: [
@@ -42,7 +42,7 @@ const office: BiomeNarrative = {
     'A decent cup of coffee. +{heal} HP.',
     'Stretched by the window. +{heal} HP.',
   ],
-  eliteVictory: ['An elite {monster} fell in the cubicles! +{xp} XP, +{gold} gold.'],
+  eliteVictory: ['An elite {monster} fell in the cubicles. +{xp} XP, +{gold} gold.'],
   jackpot: ['Jackpot! A lost expense refund: {gold} gold.'],
 }
 
@@ -71,7 +71,7 @@ const serverRoom: BiomeNarrative = {
     'Sipped from a forbidden coffee mug. +{heal} HP.',
     'Listened to the soothing fan hum. +{heal} HP.',
   ],
-  eliteVictory: ['An elite {monster} went offline! +{xp} XP, +{gold} gold.'],
+  eliteVictory: ['An elite {monster} went offline for good. +{xp} XP, +{gold} gold.'],
   jackpot: ['Jackpot! A forgotten crypto wallet: {gold} gold.'],
 }
 
@@ -97,10 +97,10 @@ const cafeteria: BiomeNarrative = {
   rest: [
     'Ate a surprisingly good pudding. +{heal} HP.',
     'Rested in an empty booth. +{heal} HP.',
-    'Free soup day! +{heal} HP.',
+    'Free soup day. +{heal} HP.',
     'Napped behind the pantry door. +{heal} HP.',
   ],
-  eliteVictory: ['An elite {monster} was served justice! +{xp} XP, +{gold} gold.'],
+  eliteVictory: ['Sent an elite {monster} back to the kitchen. +{xp} XP, +{gold} gold.'],
   jackpot: ['Jackpot! The vending machine paid out: {gold} gold.'],
 }
 

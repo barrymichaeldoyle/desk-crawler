@@ -12,7 +12,7 @@ export function Button({ variant = 'primary', className = '', ...props }: Button
 export function Card({ title, children, className = '' }: { title?: string; children: ReactNode; className?: string }) {
   return (
     <section className={`rounded-lg border border-stone-300 bg-white p-4 dark:border-stone-700 dark:bg-stone-900 ${className}`}>
-      {title ? <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-stone-500">{title}</h2> : null}
+      {title ? <h2 className="mb-3 text-base font-semibold text-stone-700 dark:text-stone-300">{title}</h2> : null}
       {children}
     </section>
   )

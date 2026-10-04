@@ -13,9 +13,9 @@ const STATUS_TEXT: Record<string, (hero: { biomeName: string; targetName: string
   exploring: (h) => `Exploring the ${h.biomeName}`,
   resting: (h) => `Resting in the ${h.biomeName}`,
   travelling: (h) => `Travelling to the ${h.targetName}`,
-  dead: () => 'Knocked out. Revival is automatic.',
+  dead: () => 'Knocked out.',
   paused: () => 'Paused by you',
-  sleeping: () => 'Taking a break: bag full',
+  sleeping: () => 'Bag full. Make room to resume.',
 }
 
 function HeroHome() {
@@ -48,7 +48,7 @@ function HeroHome() {
           {STATUS_TEXT[hero.status]?.({ biomeName, targetName })}
           {hero.status === 'dead' && ticksTo(hero.reviveAtTick) !== null ? ` Revives in ${ticksTo(hero.reviveAtTick)} ticks.` : ''}
         </p>
-        {hero.simulationState === 'quarantined' ? <p className="mt-2 text-sm">Desk Crawler paused this hero for a service check. Progress is safe.</p> : null}
+        {hero.simulationState === 'quarantined' ? <p className="mt-2 text-sm">Paused for a service check. Nothing is lost.</p> : null}
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <Meter label="HP" value={hero.hp} max={hero.maxHp} />
           <Meter label="XP" value={hero.xp} max={hero.xpToNext} />
@@ -67,11 +67,11 @@ function HeroHome() {
             <dd className="text-lg font-bold tabular-nums">{hero.gold}</dd>
           </div>
         </dl>
-        <p className="mt-2 text-xs text-stone-500">Gold is saved for the merchant arriving in a future update.</p>
+        <p className="mt-2 text-xs text-stone-500">Gold will be spendable once the merchant arrives in a later update.</p>
         <div className="mt-4 flex flex-wrap gap-2">
           {hero.status === 'sleeping' ? (
             <Link to="/app/inventory" className="inline-flex min-h-11 items-center rounded-md bg-stone-900 px-4 font-semibold text-white dark:bg-stone-100 dark:text-stone-900">
-              Manage bag to resume
+              Open bag
             </Link>
           ) : null}
           {canAct ? (
@@ -94,7 +94,7 @@ function HeroHome() {
       </Card>
 
       <Card title="Where to explore">
-        <p className="mb-3 text-sm text-stone-600 dark:text-stone-400">Travel arrives on the following world tick. Harder places give more XP and better gear, with more risk.</p>
+        <p className="mb-3 text-sm text-stone-600 dark:text-stone-400">Travel takes one tick. Harder areas give more XP and better gear, and hit harder.</p>
         <ul className="flex flex-col gap-2">
           {hero.biomes.map((biome: { id: string; name: string; unlocked: boolean; unlockLevel: number }) => (
             <li key={biome.id} className="flex items-center justify-between gap-2">

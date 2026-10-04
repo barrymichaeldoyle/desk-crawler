@@ -23,7 +23,7 @@ function AppShell() {
   return (
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col">
       <header className="flex items-center justify-between gap-4 px-4 py-4">
-        <Link to="/" className="font-mono text-sm font-bold uppercase tracking-widest">
+        <Link to="/" className="font-semibold">
           Desk Crawler
         </Link>
         <Show when="signed-in">
@@ -32,8 +32,8 @@ function AppShell() {
       </header>
       <Show when="signed-out">
         <main className="flex flex-col gap-4 px-4 py-8">
-          <h1 className="text-2xl font-bold">Your hero awaits</h1>
-          <p>Sign in to manage your Desk Crawler hero.</p>
+          <h1 className="text-2xl font-bold">Desk Crawler companion</h1>
+          <p>Sign in to check on your hero and sort out gear.</p>
           <SignInButton mode="modal">
             <Button>Sign in</Button>
           </SignInButton>
@@ -61,7 +61,7 @@ function SignedInApp() {
   if (me.hero.activationState === 'pending_trmnl') {
     return (
       <main className="px-4 py-8">
-        <Card title="Almost there">
+        <Card title="One more step">
           <p>
             <strong>{me.hero.name}</strong> is ready. Return to TRMNL and click <strong>Save</strong> on the Desk Crawler plugin to start adventures.
           </p>

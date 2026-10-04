@@ -19,7 +19,7 @@ export const Route = createFileRoute('/help/trmnl')({
       </p>
       <h2>If the screen looks old</h2>
       <ul>
-        <li>"Updates delayed" means the game service is late; your progress is safe and nothing needs doing.</li>
+        <li>"Updates delayed" means the game service is running late. Nothing is lost and you don't need to do anything.</li>
         <li>If the companion website is current but the screen is not, check the plugin's refresh setting and playlist position in TRMNL.</li>
         <li>If you disconnected or uninstalled, install again from TRMNL. Your hero keeps all progress.</li>
       </ul>

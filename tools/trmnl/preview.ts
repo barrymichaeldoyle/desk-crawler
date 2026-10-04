@@ -31,9 +31,9 @@ const base: PayloadInput = {
     { at: NOW - 7 * 60_000, kind: 'combat', summary: 'Unplugged a Cable Serpent. +14 XP, +5 gold.' },
     { at: NOW - 22 * 60_000, kind: 'loot', summary: 'Found a Rare Keyboard Mace.' },
     { at: NOW - 37 * 60_000, kind: 'rest', summary: 'Cooled off by the air conditioning. +30 HP.' },
-    { at: NOW - 52 * 60_000, kind: 'combat', summary: 'Rebooted a Blinking Router. +11 XP, +4 gold.' },
+    { at: NOW - 52 * 60_000, kind: 'combat', summary: 'Rebooted an Overheated Rack. +11 XP, +4 gold.' },
     { at: NOW - 67 * 60_000, kind: 'loot', summary: 'Found 22 gold under a raised floor tile.' },
-    { at: NOW - 82 * 60_000, kind: 'combat', summary: 'Untangled a Patch Cable Knot. +9 XP.' },
+    { at: NOW - 82 * 60_000, kind: 'combat', summary: 'Unplugged a Cable Serpent. +9 XP, +3 gold.' },
   ],
   instanceName: 'Desk Crawler',
   content: contentV2,
@@ -66,10 +66,10 @@ const base: PayloadInput = {
 const hero = (patch: Partial<NonNullable<PayloadInput['hero']>>) => ({ ...base.hero!, ...patch })
 const states: Record<string, PayloadInput> = {
   normal: base,
-  elite: { ...base, latestEvent: { kind: 'combat', outcome: { variant: 'combat', monsterId: 'legacy_mainframe', elite: true } }, logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'An elite Legacy Mainframe went offline! +64 XP, +15 gold.' }, ...base.logs] },
+  elite: { ...base, latestEvent: { kind: 'combat', outcome: { variant: 'combat', monsterId: 'legacy_mainframe', elite: true } }, logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'An elite Legacy Mainframe went offline for good. +64 XP, +15 gold.' }, ...base.logs] },
   dead: { ...base, hero: hero({ status: 'dead', hp: 0, reviveAtTick: 125 }), latestEvent: { kind: 'death', outcome: { variant: 'combat', monsterId: 'firewall_gremlin', elite: false } }, logs: [{ at: NOW - 7 * 60_000, kind: 'death', summary: 'Fell to a Firewall Gremlin. Revives in the Office in 8 ticks. Lost 64 gold.' }, ...base.logs] },
   travelling: { ...base, hero: hero({ status: 'travelling', targetBiomeId: 'cafeteria_depths', arriveAtTick: 121 }), latestEvent: { kind: 'system' } },
-  sleeping: { ...base, hero: hero({ status: 'sleeping' }), heldItemName: 'Rare Spork Halberd', bagUsed: 30, latestEvent: { kind: 'loot', outcome: { variant: 'loot', found: 'gear' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'loot', summary: 'Found a Rare Spork Halberd. Bag full: find held, taking a break.' }, ...base.logs] },
+  sleeping: { ...base, hero: hero({ status: 'sleeping' }), heldItemName: 'Rare Spork Halberd', bagUsed: 30, latestEvent: { kind: 'loot', outcome: { variant: 'loot', found: 'gear' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'loot', summary: 'Found a Rare Spork Halberd. Bag full. Holding it until you make room.' }, ...base.logs] },
   paused: { ...base, hero: hero({ status: 'paused' }), ranking: { ...base.ranking!, rank: null, rankDelta: null, status: 'dormant', score: null } },
   quarantined: { ...base, hero: hero({ quarantined: true }) },
   stale: { ...base, world: { ...base.world!, lastCompletedAt: NOW - 3 * 3_600_000 } },
@@ -77,7 +77,7 @@ const states: Record<string, PayloadInput> = {
     ...base,
     hero: hero({ name: 'Sir Staplington' }),
     ownerAlias: 'A_Very_Long_Alias__',
-    logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'An elite Microwave Wraith was served justice! +188 XP, +57 gold. Reached level 12! Found a Rare Ladle of Ruin.' }, ...base.logs],
+    logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'Sent an elite Microwave Wraith back to the kitchen. +188 XP, +57 gold. Reached level 12! Found a Rare Ladle of Ruin.' }, ...base.logs],
   },
   unlinked: { ...base, hero: null, ranking: null, logs: [], latestEvent: null },
 }

@@ -10,10 +10,13 @@ import { Liquid } from 'liquidjs'
 import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
 import { buildPayload, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
 import { screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
+import { PREVIEW_DEVICES, PREVIEW_LAYOUTS, previewDocument, type PreviewDevice, type PreviewLayout } from '@trmnl-games/desk-crawler/templates/preview'
 
 const artBaseUrl = process.argv[2] ?? 'https://superb-bobcat-74.convex.site'
 const NOW = Date.UTC(2026, 9, 4, 8, 20)
-const liquid = new Liquid()
+/** TRMNL renders Liquid in UTC; the sample owner is in Johannesburg (UTC+2). */
+const liquid = new Liquid({ timezoneOffset: 0 })
+const trmnl = { user: { utc_offset: 2 * 3600, time_zone_iana: 'Africa/Johannesburg' } }
 
 const base: PayloadInput = {
   now: NOW,
@@ -83,30 +86,14 @@ const states: Record<string, PayloadInput> = {
   firstRun: { ...base, hero: hero({ level: 1, xp: 0, hp: 60, gold: 0, biomeId: 'office_cubicles', lastTick: 0 }), logs: [], latestEvent: null, ranking: { ...base.ranking!, rank: null, rankDelta: null, status: 'awaiting', score: null, top5: [] } },
 }
 
-/** OG (800x480, 1-bit) and X (1040x780 logical, 4-bit) screen classes from framework 3.4. */
-const DEVICES = [
-  { key: 'og', classes: 'screen screen--og screen--md screen--1bit screen--landscape' },
-  { key: 'x', classes: 'screen screen--v2 screen--lg screen--4bit screen--landscape' },
-] as const
-
-const SIZES = [
-  { key: 'markup', wrapper: (inner: string) => `<div class="view view--full">${inner}</div>`, label: 'Full' },
-  { key: 'markup_half_horizontal', wrapper: (inner: string) => `<div class="mashup mashup--1Tx1B"><div class="view view--half_horizontal">${inner}</div><div class="view view--half_horizontal"></div></div>`, label: 'Half horizontal' },
-  { key: 'markup_half_vertical', wrapper: (inner: string) => `<div class="mashup mashup--1Lx1R"><div class="view view--half_vertical">${inner}</div><div class="view view--half_vertical"></div></div>`, label: 'Half vertical' },
-  { key: 'markup_quadrant', wrapper: (inner: string) => `<div class="mashup mashup--2x2"><div class="view view--quadrant">${inner}</div><div class="view view--quadrant"></div><div class="view view--quadrant"></div><div class="view view--quadrant"></div></div>`, label: 'Quadrant' },
-] as const
-
 mkdirSync('.previews', { recursive: true })
 let written = 0
 for (const [name, input] of Object.entries(states)) {
   const payload = buildPayload(input) as unknown as Record<string, unknown>
-  for (const size of SIZES) {
-    const inner = await liquid.parseAndRender(screenMarkup[size.key], payload)
-    for (const device of DEVICES) {
-      const html = `<!doctype html><html><head><meta charset="utf-8"><title>${name} · ${device.key} · ${size.label}</title>
-<link rel="stylesheet" href="https://trmnl.com/css/3.4.0/plugins.css"><script src="https://trmnl.com/js/3.4.0/plugins.js"></script>
-</head><body class="environment trmnl"><div class="${device.classes}">${size.wrapper(inner)}</div></body></html>`
-      writeFileSync(`.previews/${name}--${device.key}--${size.key}.html`, html)
+  for (const layout of Object.keys(PREVIEW_LAYOUTS) as PreviewLayout[]) {
+    const inner = await liquid.parseAndRender(screenMarkup[layout], { ...payload, trmnl })
+    for (const device of Object.keys(PREVIEW_DEVICES) as PreviewDevice[]) {
+      writeFileSync(`.previews/${name}--${device}--${layout}.html`, previewDocument(inner, device, layout, `${name} · ${device} · ${PREVIEW_LAYOUTS[layout].label}`))
       written++
     }
   }

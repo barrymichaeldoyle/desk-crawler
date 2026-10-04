@@ -18,7 +18,7 @@ This keeps "of N players" meaningful as abandoned heroes accumulate, and the dev
 
 ## Hourly windows and publication (D31)
 
-Simulation stays every 15 minutes. Rankings publish once per UTC hour: a run publishes when its accepted wall slot is the last quarter-hour slot of its UTC hour (minute 58 under P01), or when no publication has completed for more than 60 minutes (one catch-up after an outage, never a burst). A publication pins `scoreAt` to its run's accepted scheduled wall-slot time and `scoreHour = floor_to_hour(scoreAt)`.
+Simulation stays every 15 minutes. Rankings publish once per UTC hour: a run publishes when its accepted wall slot is the last quarter-hour slot of its UTC hour (minute 45 under D42), or when no publication has completed for more than 60 minutes (one catch-up after an outage, never a burst). A publication pins `scoreAt` to its run's accepted scheduled wall-slot time and `scoreHour = floor_to_hour(scoreAt)`.
 
 Score is granted XP before current-level subtraction, never current XP, visits or gold. Each run credits granted XP to the hour bucket of that run's `scoreAt`, at most once per hero per run, even during later recovery. Published windows are whole UTC hour buckets: 24 hours covers buckets with start in `(scoreHour - 24h, scoreHour]`, and seven days covers `(scoreHour - 168h, scoreHour]`. Device labels disclose the snapshot/window cutoff; they are not live scores between publications or during an outage.
 

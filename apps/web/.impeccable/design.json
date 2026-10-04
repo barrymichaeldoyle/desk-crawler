@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-04T12:00:00Z",
+  "title": "Design System: Desk Crawler Companion",
+  "extensions": {
+    "colorMeta": {
+      "paper": { "role": "neutral", "displayName": "Paper", "canonical": "var(--color-stone-50)", "tonalRamp": ["#0c0a09", "#1c1917", "#292524", "#44403c", "#57534e", "#a8a29e", "#d6d3d1", "#fafaf9"] },
+      "ink": { "role": "primary", "displayName": "Ink", "canonical": "var(--color-stone-900)", "tonalRamp": ["#0c0a09", "#1c1917", "#292524", "#44403c", "#57534e", "#a8a29e", "#d6d3d1", "#fafaf9"] },
+      "ink-soft": { "role": "primary", "displayName": "Soft Ink", "canonical": "var(--color-stone-700)", "tonalRamp": ["#0c0a09", "#1c1917", "#292524", "#44403c", "#57534e", "#a8a29e", "#d6d3d1", "#fafaf9"] },
+      "graphite": { "role": "neutral", "displayName": "Graphite", "canonical": "var(--color-stone-600)", "tonalRamp": ["#0c0a09", "#1c1917", "#292524", "#44403c", "#57534e", "#a8a29e", "#d6d3d1", "#fafaf9"] },
+      "pencil": { "role": "neutral", "displayName": "Pencil", "canonical": "var(--color-stone-400)", "tonalRamp": ["#0c0a09", "#1c1917", "#292524", "#44403c", "#57534e", "#a8a29e", "#d6d3d1", "#fafaf9"] },
+      "rule-grey": { "role": "neutral", "displayName": "Rule Grey", "canonical": "var(--color-stone-300)", "tonalRamp": ["#0c0a09", "#1c1917", "#292524", "#44403c", "#57534e", "#a8a29e", "#d6d3d1", "#fafaf9"] },
+      "screen-white": { "role": "neutral", "displayName": "Screen White", "canonical": "#ffffff", "tonalRamp": ["#0c0a09", "#1c1917", "#292524", "#44403c", "#57534e", "#a8a29e", "#d6d3d1", "#ffffff"] },
+      "night-paper": { "role": "neutral", "displayName": "Night Paper", "canonical": "var(--color-stone-950)", "tonalRamp": ["#0c0a09", "#1c1917", "#292524", "#44403c", "#57534e", "#a8a29e", "#d6d3d1", "#fafaf9"] },
+      "night-ink": { "role": "neutral", "displayName": "Night Ink", "canonical": "var(--color-stone-100)", "tonalRamp": ["#0c0a09", "#1c1917", "#292524", "#44403c", "#57534e", "#a8a29e", "#d6d3d1", "#fafaf9"] },
+      "night-rule": { "role": "neutral", "displayName": "Night Rule", "canonical": "var(--color-stone-700)", "tonalRamp": ["#0c0a09", "#1c1917", "#292524", "#44403c", "#57534e", "#a8a29e", "#d6d3d1", "#fafaf9"] },
+      "alert-red": { "role": "error", "displayName": "Alert Red", "canonical": "var(--color-red-700)", "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#f87171", "#fecaca", "#fef2f2"] },
+      "alert-red-night": { "role": "error", "displayName": "Alert Red (night)", "canonical": "var(--color-red-400)", "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#f87171", "#fecaca", "#fef2f2"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero name and seven-day rank number. Pixelify Sans, self-hosted, OFL." },
+      "headline": { "displayName": "Headline", "purpose": "Section heads: Since you left, Adventure log, Records." },
+      "title": { "displayName": "Title", "purpose": "Subsection heads inside a section." },
+      "body": { "displayName": "Body", "purpose": "Sentences, log entries, biome names; prose capped at 65ch." },
+      "figure": { "displayName": "Figure", "purpose": "Ledger values and hero stats in tabular numerals." },
+      "label": { "displayName": "Label", "purpose": "Small-caps ledger and meter labels." },
+      "meta": { "displayName": "Meta", "purpose": "Footnotes under a block, in graphite." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "eink-refresh", "value": "eink-refresh 420ms steps(6, end) both", "purpose": "Device preview only: ink flash, then white, then the new screen, replayed when a new render loads." },
+      { "name": "scene-crossfade", "value": "opacity 500ms", "purpose": "Pixel scene stand-in fades out once the live device render is ready." },
+      { "name": "reduced-motion", "value": "animation/transition duration 0.01ms", "purpose": "Global prefers-reduced-motion override; the refresh becomes effectively instant." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ink-filled rectangle for the single positive decision in a group.",
+      "html": "<button class=\"ds-btn-primary\">Resume adventures</button>",
+      "css": ".ds-btn-primary { min-height: 44px; padding: 0 16px; font: 600 1rem/1.5 ui-sans-serif, system-ui, sans-serif; background: #1c1917; color: #ffffff; border: none; border-radius: 0; cursor: pointer; } .ds-btn-primary:hover { background: #44403c; } .ds-btn-primary:focus-visible { outline: 2px solid #1c1917; outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Ink-outlined rectangle for routine actions; inverts to ink on hover.",
+      "html": "<button class=\"ds-btn-secondary\">Drink potion</button>",
+      "css": ".ds-btn-secondary { min-height: 44px; padding: 0 16px; font: 600 1rem/1.5 ui-sans-serif, system-ui, sans-serif; background: transparent; color: #1c1917; border: 1px solid #1c1917; border-radius: 0; cursor: pointer; } .ds-btn-secondary:hover { background: #1c1917; color: #fafaf9; } .ds-btn-secondary:focus-visible { outline: 2px solid #1c1917; outline-offset: 2px; }"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Underlined text action for continuations such as loading older entries.",
+      "html": "<button class=\"ds-btn-quiet\">Load older entries</button>",
+      "css": ".ds-btn-quiet { min-height: 44px; padding: 0 16px; font: 600 1rem/1.5 ui-sans-serif, system-ui, sans-serif; background: none; border: none; color: #44403c; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; } .ds-btn-quiet:hover { color: #1c1917; } .ds-btn-quiet:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }"
+    },
+    {
+      "name": "Segmented Tabs",
+      "kind": "chip",
+      "refersTo": "segmented-tab",
+      "description": "Square cells in one ink outline; pressed cell fills with ink. Device layout switch.",
+      "html": "<div class=\"ds-seg\" role=\"group\" aria-label=\"Layout\"><button aria-pressed=\"false\">Full</button><button aria-pressed=\"true\">Half</button><button aria-pressed=\"false\">Side</button><button aria-pressed=\"false\">Quarter</button></div>",
+      "css": ".ds-seg { display: inline-flex; border: 1px solid #1c1917; } .ds-seg button { min-height: 40px; padding: 0 12px; font: 600 0.875rem/1.4 ui-sans-serif, system-ui, sans-serif; color: #44403c; background: transparent; border: none; border-radius: 0; cursor: pointer; } .ds-seg button:not(:last-child) { border-right: 1px solid #1c1917; } .ds-seg button[aria-pressed=\"true\"] { background: #1c1917; color: #ffffff; } .ds-seg button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }"
+    },
+    {
+      "name": "Game Navigation",
+      "kind": "nav",
+      "refersTo": "nav-tab",
+      "description": "Sticky paper bar with equal-width tabs; active tab is ink with a heavy underline.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\" class=\"is-active\">Hero</a><a href=\"#\">Bag</a><a href=\"#\">Rankings</a><a href=\"#\">Settings</a></nav>",
+      "css": ".ds-nav { display: flex; background: #fafaf9; border-bottom: 1px solid #d6d3d1; } .ds-nav a { flex: 1; min-height: 44px; display: flex; align-items: center; justify-content: center; font: 600 0.875rem/1.4 ui-sans-serif, system-ui, sans-serif; color: #57534e; text-decoration: none; } .ds-nav a:hover { color: #1c1917; } .ds-nav a.is-active { color: #1c1917; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 8px; } .ds-nav a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }"
+    },
+    {
+      "name": "Ledger",
+      "kind": "custom",
+      "refersTo": "ledger",
+      "description": "Ruled label/value rows in place of cards: ink top rule, grey hairlines, small-caps labels, tabular figures.",
+      "html": "<dl class=\"ds-ledger\"><div><dt>XP</dt><dd>+412</dd></div><div><dt>Levels</dt><dd>+1</dd></div><div><dt>Fights won</dt><dd>+23</dd></div><div><dt>Knockouts</dt><dd class=\"is-zero\">0</dd></div></dl>",
+      "css": ".ds-ledger { display: grid; grid-template-columns: 1fr 1fr; margin: 0; border-top: 1px solid #1c1917; font-family: ui-sans-serif, system-ui, sans-serif; color: #1c1917; } .ds-ledger > div { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 8px 0; border-bottom: 1px solid #d6d3d1; } .ds-ledger > div:nth-child(odd) { padding-right: 16px; } .ds-ledger dt { font-size: 0.875rem; font-variant-caps: all-small-caps; letter-spacing: 0.04em; color: #57534e; } .ds-ledger dd { margin: 0; font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; } .ds-ledger dd.is-zero { color: #a8a29e; }"
+    },
+    {
+      "name": "Meter",
+      "kind": "custom",
+      "refersTo": "meter-track",
+      "description": "Square ink-bordered track with proportional ink fill; small-caps label and tabular value above.",
+      "html": "<div class=\"ds-meter\"><div class=\"ds-meter-head\"><span>HP</span><span>120/136</span></div><div class=\"ds-meter-track\" role=\"meter\" aria-valuenow=\"120\" aria-valuemin=\"0\" aria-valuemax=\"136\"><div style=\"width:88%\"></div></div></div>",
+      "css": ".ds-meter { font-family: ui-sans-serif, system-ui, sans-serif; color: #1c1917; } .ds-meter-head { display: flex; justify-content: space-between; font-size: 0.875rem; } .ds-meter-head span:first-child { font-weight: 600; font-variant-caps: all-small-caps; letter-spacing: 0.04em; } .ds-meter-head span:last-child { font-variant-numeric: tabular-nums; } .ds-meter-track { margin-top: 4px; height: 12px; overflow: hidden; border: 1px solid #1c1917; } .ds-meter-track > div { height: 100%; background: #1c1917; }"
+    },
+    {
+      "name": "Pulse Strip",
+      "kind": "custom",
+      "refersTo": "pulse-strip",
+      "description": "Ink band under the device: pixel glyph and status sentence, countdown in tabular figures.",
+      "html": "<div class=\"ds-pulse\"><p><svg viewBox=\"0 0 8 8\" width=\"16\" height=\"16\" shape-rendering=\"crispEdges\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M6 0h2v1H6zM5 1h3v1H5zM4 2h3v1H4zM0 3h1v1H0zM3 3h3v1H3zM1 4h4v1H1zM2 5h2v1H2zM1 6h1v1H1zM3 6h2v1H3zM0 7h1v1H0zM4 7h1v1H4z\"/></svg>Exploring the Office Cubicles</p><p class=\"ds-pulse-detail\">Next adventure in 7:00</p></div>",
+      "css": ".ds-pulse { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; padding: 12px 16px; background: #1c1917; color: #fafaf9; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-pulse p { margin: 0; display: flex; align-items: center; gap: 8px; font-weight: 700; } .ds-pulse p.ds-pulse-detail { font-weight: 400; font-size: 0.875rem; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Device Bezel",
+      "kind": "custom",
+      "refersTo": "device-bezel",
+      "description": "Thick rounded ink frame around a white e-ink screen at the device aspect ratio; the only rounded shape in the system.",
+      "html": "<div class=\"ds-bezel\"><div class=\"ds-screen\"></div></div>",
+      "css": ".ds-bezel { background: #1c1917; border-radius: 1.4rem; padding: clamp(0.5rem, 2.5vw, 1rem); max-width: 420px; } .ds-screen { aspect-ratio: 800 / 480; background: #ffffff; border-radius: 0.375rem; image-rendering: pixelated; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Logbook Beside the Screen",
+    "overview": "The owner's TRMNL is a 1-bit e-ink panel; the companion is the paper logbook kept next to it. The page borrows the device's material honestly: warm off-white paper, near-black ink, one grey for rules, pixel art drawn at integer scale, and a pixel display face for the few names and headings that should feel like they came off the device. Everything else is set in the system sans so the reading stays quiet and fast.\n\nDensity is ledger-like rather than dashboard-like. Facts sit in hairline-ruled rows with small-caps labels on the left and tabular figures on the right, grouped under a heavy ink rule, instead of each fact getting its own white box. The device preview is the anchor of the hero page: drawn in a thick, rounded ink bezel, pinned in the left column on wide screens, with a solid ink strip beneath it carrying the hero's status and the next-adventure countdown.\n\nThe mood is calm and steady. Nothing pulses, nothing glows, no colour asks for attention. The only motion that belongs to the world is the e-ink refresh flash when a new screen lands in the preview.",
+    "keyCharacteristics": [
+      "Paper, ink, one grey; no decorative accent colour.",
+      "Pixel display face for names and section heads; system sans for reading.",
+      "Ledger rows: heavy ink rule on top, grey hairlines between rows, small-caps labels, tabular figures.",
+      "Square controls: ink-filled or ink-outlined rectangles.",
+      "Pixel art and 8x8 SVG glyphs rendered crisp, never smoothed.",
+      "Flat: no shadows anywhere in the world.",
+      "Dark mode is a straight inversion: night paper, night ink, darker rules."
+    ],
+    "rules": [
+      { "name": "The One Grey Rule", "body": "Structure is ink or rule grey. A row separator is rule grey; a group boundary is ink. There is no third weight of line.", "section": "colors" },
+      { "name": "The No Accent Rule", "body": "No hue carries emphasis. Emphasis is ink fill, weight, or underline. Red appears only inside an error alert.", "section": "colors" },
+      { "name": "The Device Voice Rule", "body": "Pixelify Sans is reserved for names, section heads and headline numbers. Never set running text, buttons or labels in it.", "section": "typography" },
+      { "name": "The Ledger Figure Rule", "body": "Every number that can change sits in tabular numerals, so counts and countdowns do not jitter as they tick.", "section": "typography" },
+      { "name": "The Drawn Depth Rule", "body": "If something needs to sit above something else, give it an ink fill or an ink rule. Never a blur.", "section": "elevation" },
+      { "name": "The Only Curve Is the Device Rule", "body": "Rounded corners describe the TRMNL hardware. Nothing the owner taps is rounded.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do group facts in ledgers: ink top rule, rule-grey hairlines, small-caps label left, tabular figure right.",
+      "Do express emphasis with ink fill, weight or underline only.",
+      "Do keep every interactive control square-cornered and at least 44px tall (40px for segmented tabs and text filters).",
+      "Do set the hero name, section heads and headline numbers in Pixelify Sans; set everything else in the system sans.",
+      "Do render pixel art and icons with crisp edges at integer scale, drawing icons as SVG cell grids in the current colour.",
+      "Do provide the dark inversion for every ink, paper and rule colour you use."
+    ],
+    "donts": [
+      "Don't wrap facts in bordered, rounded white cards; that is the stacked-card dashboard this world replaced.",
+      "Don't add a hue for emphasis, status or decoration; red exists only inside error alerts.",
+      "Don't use shadows, blurs or glows for depth.",
+      "Don't round buttons, tabs, chips or inputs; the bezel and its screen are the only rounded shapes.",
+      "Don't smooth-scale pixel art or set running text in the pixel face."
+    ]
+  }
+}

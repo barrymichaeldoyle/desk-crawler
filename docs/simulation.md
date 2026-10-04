@@ -4,7 +4,7 @@ One run per UTC hour publishes both grouped recent-XP views and lifetime as one 
 
 ## Time semantics
 
-Game ticks are monotonically increasing logical integers. Proposed cron: UTC minutes 13, 28, 43, 58. The world advances every 15 minutes when healthy, regardless of connected hardware or browser sessions.
+Game ticks are monotonically increasing logical integers. Cron (D42): on the hour and at UTC minutes 15, 30 and 45. The world advances every 15 minutes when healthy, regardless of connected hardware or browser sessions.
 
 There are three independent clocks: simulation schedule, TRMNL screen generation, and hardware wake/playlist display. Do not promise that offsetting the game cron guarantees fresh data immediately before a device refresh.
 

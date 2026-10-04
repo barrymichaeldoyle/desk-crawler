@@ -13,7 +13,7 @@ export const Route = createFileRoute('/app/')({ head: () => seo({ title: 'My gam
 function Library() {
   const { data: me, isPending } = useQuery(convexQuery(api.users.me, {}))
   return (
-    <main id="main" className="flex flex-col gap-6 px-4 py-8">
+    <main id="main" className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
       <h1 className="text-3xl font-bold">My games</h1>
       {isPending ? <p role="status">Loading your games…</p> : (
         <section className="flex flex-col gap-4 border-y border-stone-300 py-6 dark:border-stone-800" aria-labelledby="library-dc">

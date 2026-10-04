@@ -65,7 +65,15 @@ export const mine = query({
       lastTick: hero.lastTick,
       counters: hero.counters,
       biomes: content.biomes.map((biome) => ({ id: biome.id, name: biome.name, unlockLevel: biome.unlockLevel, unlocked: biome.unlockLevel <= hero.level })),
-      world: world ? { currentTick: world.currentTick, lastCompletedAt: world.lastCompletedAt ?? null, lastCompletedTick: world.lastCompletedTick ?? null } : null,
+      world: world
+        ? {
+            currentTick: world.currentTick,
+            lastCompletedAt: world.lastCompletedAt ?? null,
+            lastCompletedTick: world.lastCompletedTick ?? null,
+            lastStartedWallSlot: world.lastStartedWallSlot ?? null,
+            paused: world.ticksPaused || world.maintenanceMode,
+          }
+        : null,
     }
   },
 })
@@ -83,7 +91,7 @@ export const recentLog = query({
       .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id))
       .order('desc')
       .paginate(paginationOpts)
-    return { ...result, page: result.page.map((log) => ({ id: log._id, at: log.at, kind: log.kind, summary: log.summary, source: log.source, deltas: log.deltas })) }
+    return { ...result, page: result.page.map((log) => ({ id: log._id, at: log.at, tick: log.tick ?? null, kind: log.kind, summary: log.summary, source: log.source, deltas: log.deltas })) }
   },
 })
 
@@ -159,6 +167,15 @@ export const returnSummary = query({
       xpGained: baseline ? Math.max(0, hero.lifetimeXp - baseline.lifetimeXp) : null,
       levelsGained: baseline ? Math.max(0, hero.level - baseline.level) : null,
       newEvents: baseline ? Math.max(0, hero.logSequence - baseline.logSequence) : null,
+      // Baselines recorded before counters were captured only support the XP/level recap.
+      counters: baseline?.counters
+        ? {
+            combatWins: Math.max(0, hero.counters.combatWins - baseline.counters.combatWins),
+            goldEarned: Math.max(0, hero.counters.goldEarned - baseline.counters.goldEarned),
+            itemsFound: Math.max(0, hero.counters.itemsFound - baseline.counters.itemsFound),
+            deaths: Math.max(0, hero.counters.deaths - baseline.counters.deaths),
+          }
+        : null,
       unequipped,
       held: hero.heldItemId !== undefined,
       status: hero.status,
@@ -181,7 +198,7 @@ export const recordCompanionVisit = mutation({
       if (hero.logSequence !== args.expectedLogSequence) throw appError('RECAP_CHANGED', 'New adventures arrived. Refreshing.')
       const previous = hero.companionVisitBaseline
       if (previous && previous.logSequence > hero.logSequence) return { changed: false }
-      await ctx.db.patch(hero._id, { companionVisitBaseline: { at: Date.now(), level: hero.level, lifetimeXp: hero.lifetimeXp, logSequence: hero.logSequence } })
+      await ctx.db.patch(hero._id, { companionVisitBaseline: { at: Date.now(), level: hero.level, lifetimeXp: hero.lifetimeXp, logSequence: hero.logSequence, counters: hero.counters } })
       return { changed: true }
     }),
 })

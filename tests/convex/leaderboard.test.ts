@@ -5,7 +5,7 @@ import schema from '../../apps/backend/convex/schema'
 import { runTick, seedHero, seedWorld, world, type T } from './helpers'
 
 const modules = import.meta.glob('../../apps/backend/convex/**/*.ts')
-const PUBLISH_SLOT = Date.UTC(2026, 9, 3, 10, 58, 1)
+const PUBLISH_SLOT = Date.UTC(2026, 9, 3, 10, 45, 1)
 const HOUR = 3_600_000
 
 describe('hourly leaderboard publication', () => {

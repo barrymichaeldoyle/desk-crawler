@@ -9,7 +9,7 @@ import { starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
 import { runTick, seedHero, seedWorld, type T } from './helpers'
 
 const modules = import.meta.glob('../../apps/backend/convex/**/*.ts')
-const SLOT = Date.UTC(2026, 9, 3, 10, 13, 2)
+const SLOT = Date.UTC(2026, 9, 3, 10, 0, 2)
 let op = 0
 const opId = () => `op-${String(++op).padStart(6, '0')}`
 const as = (t: T, alias: string) => t.withIdentity({ issuer: 'issuer', subject: alias })

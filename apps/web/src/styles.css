@@ -1,6 +1,15 @@
 @import "tailwindcss";
 
+/* Pixelify Sans, SIL OFL 1.1 (public/fonts/PixelifySans-OFL.txt): the 1-bit display voice. */
+@font-face {
+  font-family: "Pixelify Sans";
+  src: url("/fonts/pixelify-sans-latin.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+
 @theme {
+  --font-display: "Pixelify Sans", ui-sans-serif, system-ui, sans-serif;
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
@@ -10,10 +19,44 @@
 }
 
 @layer base {
+  ::selection {
+    background: var(--color-stone-900);
+    color: var(--color-stone-50);
+  }
+  @media (prefers-color-scheme: dark) {
+    ::selection {
+      background: var(--color-stone-100);
+      color: var(--color-stone-900);
+    }
+  }
+  html {
+    accent-color: var(--color-stone-900);
+    caret-color: currentColor;
+  }
   :focus-visible {
     outline: 2px solid currentColor;
     outline-offset: 2px;
   }
+}
+
+/* Small-caps ledger labels. */
+@utility caps {
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.04em;
+}
+
+/* 1-bit checkerboard dither in the current text colour, for empty tracks and slots. */
+@utility dither {
+  background-image: conic-gradient(currentColor 25%, transparent 0 50%, currentColor 0 75%, transparent 0);
+  background-size: 4px 4px;
+}
+
+/* E-ink full refresh: the panel flashes to ink, then paper, then shows the new image. */
+@keyframes eink-refresh {
+  0% { background: var(--color-stone-900); opacity: 1; }
+  35% { background: var(--color-stone-900); opacity: 1; }
+  45% { background: #fff; opacity: 1; }
+  100% { background: #fff; opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

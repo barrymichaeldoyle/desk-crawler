@@ -5,7 +5,6 @@ import { ConvexError } from 'convex/values'
 import { useMutation } from 'convex/react'
 import { useEffect, useRef, useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
-import { Card } from '../../../lib/ui'
 
 type Summary = {
   baseline: { at: number } | null
@@ -13,6 +12,7 @@ type Summary = {
   xpGained: number | null
   levelsGained: number | null
   newEvents: number | null
+  counters: { combatWins: number; goldEarned: number; itemsFound: number; deaths: number } | null
   unequipped: number
   held: boolean
   status: string
@@ -58,49 +58,76 @@ export function ReturnRecap() {
   }, [shown, record, refetch])
 
   if (!shown) return null
-  if (shown.baseline === null) {
+  return <Ledger summary={shown} />
+}
+
+function Ledger({ summary }: { summary: Summary }) {
+  const bag = summary.held ? (
+    <p className="mt-3 font-semibold">
+      A new find is waiting.{' '}
+      <Link to="/app/desk-crawler/inventory" className="underline underline-offset-4">
+        Manage your bag
+      </Link>
+    </p>
+  ) : summary.unequipped > 0 ? (
+    <p className="mt-3 text-sm text-stone-700 dark:text-stone-300">
+      {summary.unequipped} unequipped {summary.unequipped === 1 ? 'item' : 'items'} in your bag.{' '}
+      <Link to="/app/desk-crawler/inventory" className="underline underline-offset-4">
+        Review gear
+      </Link>
+    </p>
+  ) : null
+
+  if (summary.baseline === null) {
     return (
-      <Card title="Welcome">
-        <p>Your hero keeps adventuring every 15 minutes, even with this page closed and your TRMNL asleep. Check back every few days to sort gear.</p>
-      </Card>
+      <section aria-labelledby="ledger-title">
+        <h2 id="ledger-title" className="font-display text-xl font-semibold">
+          Your first visit
+        </h2>
+        <p className="mt-2 max-w-prose">Your hero adventures every 15 minutes, even with this page closed and your TRMNL asleep. Come back in a few days and this is where you will see what they got up to.</p>
+        {bag}
+      </section>
     )
   }
-  const since = new Date(shown.baseline.at).toLocaleString(undefined, { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
-  const quiet = !shown.xpGained && !shown.levelsGained
+
+  const since = new Date(summary.baseline.at).toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+  const rows: Array<[string, number]> = [
+    ['XP', summary.xpGained ?? 0],
+    ['Levels', summary.levelsGained ?? 0],
+    ...(summary.counters
+      ? ([
+          ['Fights won', summary.counters.combatWins],
+          ['Gold earned', summary.counters.goldEarned],
+          ['Items found', summary.counters.itemsFound],
+          ...(summary.counters.deaths > 0 ? ([['Knockouts', summary.counters.deaths]] as Array<[string, number]>) : []),
+        ] as Array<[string, number]>)
+      : []),
+  ]
+  const quiet = rows.every(([, value]) => value === 0)
   return (
-    <Card title={`Since ${since}`}>
+    <section aria-labelledby="ledger-title">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+        <h2 id="ledger-title" className="font-display text-xl font-semibold">
+          Since you left
+        </h2>
+        <p className="text-sm text-stone-600 dark:text-stone-400">
+          {since}
+          {summary.newEvents && !quiet ? ` · ${summary.newEvents} log ${summary.newEvents === 1 ? 'entry' : 'entries'}` : ''}
+        </p>
+      </div>
       {quiet ? (
-        <p>No new progress since your last visit.</p>
+        <p className="mt-2">Nothing new yet. Your hero is still at it.</p>
       ) : (
-        <p>
-          {shown.xpGained ? <strong>+{shown.xpGained} XP</strong> : null}
-          {shown.levelsGained ? (
-            <>
-              {' '}
-              and{' '}
-              <strong>
-                {shown.levelsGained} new {shown.levelsGained === 1 ? 'level' : 'levels'}
-              </strong>
-            </>
-          ) : null}
-          {shown.newEvents ? ` across ${shown.newEvents} adventures.` : '.'}
-        </p>
+        <dl className="mt-2 grid grid-cols-2 border-t border-stone-900 sm:grid-cols-3 dark:border-stone-300">
+          {rows.map(([label, value]) => (
+            <div key={label} className="flex items-baseline justify-between gap-2 border-b border-stone-300 py-2 odd:pr-4 sm:pr-4 dark:border-stone-700">
+              <dt className="caps text-sm text-stone-600 dark:text-stone-400">{label}</dt>
+              <dd className={`text-xl font-bold tabular-nums ${value === 0 ? 'text-stone-400 dark:text-stone-600' : ''}`}>{value > 0 ? `+${value.toLocaleString()}` : '0'}</dd>
+            </div>
+          ))}
+        </dl>
       )}
-      {shown.held ? (
-        <p className="mt-2 font-semibold">
-          A new find is waiting.{' '}
-          <Link to="/app/desk-crawler/inventory" className="underline">
-            Manage your bag
-          </Link>
-        </p>
-      ) : shown.unequipped > 0 ? (
-        <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
-          {shown.unequipped} unequipped {shown.unequipped === 1 ? 'item' : 'items'} in your bag.{' '}
-          <Link to="/app/desk-crawler/inventory" className="underline">
-            Review gear
-          </Link>
-        </p>
-      ) : null}
-    </Card>
+      {bag}
+    </section>
   )
 }

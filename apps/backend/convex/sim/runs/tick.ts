@@ -12,6 +12,9 @@ import { getOrCreateWorld } from '../../world'
 import { applyResult, storedDetail, toHeroState, toInventory } from './adapter'
 import { beginBuild, writeRankInput } from '../../leaderboard'
 import { openIncident, recoverIncidents } from '../../incidents'
+import { SLOT_MS, SLOT_OFFSET_MS, wallSlotFor } from '@trmnl-games/desk-crawler/sim/schedule'
+
+export { SLOT_MS, SLOT_OFFSET_MS, wallSlotFor }
 
 /**
  * Tick orchestration (simulation.md). One logical tick per accepted wall slot;
@@ -20,20 +23,14 @@ import { openIncident, recoverIncidents } from '../../incidents'
  * same pinned versions and never increments the tick.
  */
 
-export const SLOT_MS = 15 * 60 * 1000
-/** P01: cron minutes 13, 28, 43, 58. */
-export const SLOT_OFFSET_MS = 13 * 60 * 1000
 export const PAGE_SIZE = 25
 export const STALL_MS = 5 * 60 * 1000
 export const MAX_RECOVERY_ATTEMPTS = 3
 const HOUR_MS = 60 * 60 * 1000
 
-/** The scheduled wall slot a timestamp belongs to (e.g. 10:13:04 -> 10:13:00). */
-export const wallSlotFor = (now: number): number => Math.floor((now - SLOT_OFFSET_MS) / SLOT_MS) * SLOT_MS + SLOT_OFFSET_MS
-
 /** D31: publish on the last slot of each UTC hour, or once after >60 minutes without a publication. */
 export function shouldPublish(scoreAt: number, lastPublishedAt: number | undefined): boolean {
-  const lastSlotOfHour = new Date(scoreAt).getUTCMinutes() === 58
+  const lastSlotOfHour = new Date(scoreAt).getUTCMinutes() === 45
   return lastSlotOfHour || lastPublishedAt === undefined || scoreAt - lastPublishedAt > HOUR_MS
 }
 

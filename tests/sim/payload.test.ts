@@ -40,3 +40,18 @@ describe('first-run and companion QR fields', () => {
     expect(pick(buildPayload({ ...input, hero: null }))).toMatchObject({ status: 'unlinked', first_run: false, qr_base: 'https://art.test/art/qr/v2/app' })
   })
 })
+
+describe('next tick time (D42)', () => {
+  const next = (p: unknown) => (p as { next_tick_at: number | null }).next_tick_at
+  it('gives the next quarter-hour slot in UTC seconds while the hero adventures', () => {
+    expect(next(buildPayload(input))).toBe(Date.UTC(2026, 9, 4, 8, 30) / 1000)
+    expect(next(buildPayload({ ...input, hero: { ...input.hero!, status: 'travelling', targetBiomeId: 'server_room', arriveAtTick: 2 } }))).toBe(Date.UTC(2026, 9, 4, 8, 30) / 1000)
+  })
+
+  it('promises nothing when the hero is stopped or the service is behind', () => {
+    for (const status of ['paused', 'sleeping', 'dead'] as const) expect(next(buildPayload({ ...input, hero: { ...input.hero!, status } }))).toBeNull()
+    expect(next(buildPayload({ ...input, world: { ...input.world!, lastCompletedAt: NOW - 3_600_000 } }))).toBeNull()
+    expect(next(buildPayload({ ...input, world: { ...input.world!, maintenanceMode: true } }))).toBeNull()
+    expect(next(buildPayload({ ...input, hero: null }))).toBeNull()
+  })
+})

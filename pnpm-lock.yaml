@@ -163,6 +163,9 @@ importers:
       jose:
         specifier: ^6.2.12
         version: 6.2.12
+      liquidjs:
+        specifier: ^10.30.0
+        version: 10.30.0
       qrcode-generator:
         specifier: ^2.0.4
         version: 2.0.4

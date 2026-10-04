@@ -6,7 +6,7 @@ import schema from '../../apps/backend/convex/schema'
 import { seedHero, seedWorld, type T } from './helpers'
 
 const modules = import.meta.glob('../../apps/backend/convex/**/*.ts')
-const SLOT = Date.UTC(2026, 9, 3, 10, 13, 2)
+const SLOT = Date.UTC(2026, 9, 3, 10, 0, 2)
 
 async function stallRun(t: T) {
   const runId = (await t.mutation(internal.sim.runs.tick.startTick, {}))!

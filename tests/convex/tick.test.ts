@@ -10,7 +10,7 @@ import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
 const modules = import.meta.glob('../../apps/backend/convex/**/*.ts')
 
 /** 2026-10-03 10:13:00 UTC: a regular (non-publication) slot. */
-const SLOT = Date.UTC(2026, 9, 3, 10, 13, 0)
+const SLOT = Date.UTC(2026, 9, 3, 10, 0, 0)
 
 type T = ReturnType<typeof convexTest>
 
@@ -135,7 +135,7 @@ describe('tick scheduler', () => {
 
   it('skips dormant heroes between publications without writes', async () => {
     await t.run(async (ctx) => {
-      await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v2', activeSimulationVersion: 1, worldSeed: 'seed', ticksPaused: false, maintenanceMode: false, createdAt: Date.now(), lastPublishedAt: Date.UTC(2026, 9, 3, 9, 58), schemaVersion: 1 })
+      await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v2', activeSimulationVersion: 1, worldSeed: 'seed', ticksPaused: false, maintenanceMode: false, createdAt: Date.now(), lastPublishedAt: Date.UTC(2026, 9, 3, 9, 45), schemaVersion: 1 })
     })
     const sleeper = await seedHero(t, { status: 'sleeping' })
     await runTick(t)
@@ -146,9 +146,9 @@ describe('tick scheduler', () => {
   })
 
   it('folds hourly score on publication runs', async () => {
-    vi.setSystemTime(Date.UTC(2026, 9, 3, 10, 58, 1))
+    vi.setSystemTime(Date.UTC(2026, 9, 3, 10, 45, 1))
     await t.run(async (ctx) => {
-      await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v2', activeSimulationVersion: 1, worldSeed: 'seed', ticksPaused: false, maintenanceMode: false, createdAt: Date.now(), lastPublishedAt: Date.UTC(2026, 9, 3, 9, 58), schemaVersion: 1 })
+      await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v2', activeSimulationVersion: 1, worldSeed: 'seed', ticksPaused: false, maintenanceMode: false, createdAt: Date.now(), lastPublishedAt: Date.UTC(2026, 9, 3, 9, 45), schemaVersion: 1 })
     })
     const heroId = await seedHero(t)
     await runTick(t)
@@ -157,10 +157,10 @@ describe('tick scheduler', () => {
     const [hero, window] = await t.run(async (ctx) => [await ctx.db.get(heroId), await ctx.db.query('heroScoreWindows').first()])
     expect(hero?.scoreHourXp).toBe(0)
     expect(window?.xp7d).toBe(hero?.lifetimeXp)
-    expect((await world(t))?.lastPublishedAt).toBe(Date.UTC(2026, 9, 3, 10, 58))
+    expect((await world(t))?.lastPublishedAt).toBe(Date.UTC(2026, 9, 3, 10, 45))
 
     // The next slot (11:13) is a regular, non-publication run.
-    vi.setSystemTime(Date.UTC(2026, 9, 3, 11, 13, 1))
+    vi.setSystemTime(Date.UTC(2026, 9, 3, 11, 0, 1))
     await runTick(t)
     const runs = await t.run(async (ctx) => await ctx.db.query('simulationRuns').collect())
     expect(runs.map((r) => r.publishes)).toEqual([true, false])

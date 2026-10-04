@@ -7,6 +7,7 @@ import { maxHp, xpToLeave } from '../sim/core/stats'
 import { FULL_SCALE, LARGE_SCALE, MEDIUM_SCALE, SMALL_SCALE } from '../art/scene'
 import { QR_LARGE_SCALE, QR_SCALE, qrBasePath, qrPath, type QrTarget } from '../art/qr'
 import { sceneFor, scenePath, type LatestEvent } from '../art/sceneKey'
+import { nextSlotAfter } from '../sim/schedule'
 
 export const STALE_AFTER_MS = 30 * 60 * 1000
 const MAX_LOGS = 6
@@ -220,6 +221,7 @@ export function buildPayload(input: PayloadInput) {
       status: 'unlinked' as const,
       status_label: 'Setup not finished',
       status_eta_ticks: 0,
+      next_tick_at: null,
       biome_id: '',
       biome_name: '',
       sprite: '',
@@ -280,6 +282,10 @@ export function buildPayload(input: PayloadInput) {
   const needsBag = hero.status === 'sleeping' && hero.wakeAtTick === undefined && !hero.quarantined && !servicePaused
   // A brand-new hero has no adventures yet: the screen welcomes them and links the companion.
   const firstRun = input.logs.length === 0 && attention === null && (hero.status === 'exploring' || hero.status === 'resting')
+  // D42: when the next scheduled tick starts (UTC seconds), only while this hero will take part in it.
+  // The template formats it in the owner's TRMNL timezone; nothing is promised when delayed or stopped.
+  const adventuring = hero.status === 'exploring' || hero.status === 'resting' || hero.status === 'travelling'
+  const nextTickAt = adventuring && attention === null ? Math.floor(nextSlotAfter(now) / 1000) : null
   return {
     ...common,
     ...(needsBag ? qrFields('bag', 'Scan to open your bag') : qrFields(firstRun ? 'app' : null, 'Scan to open your companion')),
@@ -302,6 +308,7 @@ export function buildPayload(input: PayloadInput) {
     status: hero.status,
     status_label: statusLabel,
     status_eta_ticks: etaTicks,
+    next_tick_at: nextTickAt,
     biome_id: hero.biomeId,
     biome_name: biomeName(hero.biomeId),
     sprite: hero.status === 'dead' ? 'warrior_dead_v1' : 'warrior_idle_v1',

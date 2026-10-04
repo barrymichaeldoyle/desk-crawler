@@ -5,7 +5,7 @@
  * Deploy-time constants: user text only arrives through merge_variables and is
  * escaped here. Each string is self-contained (no shared-template registration).
  */
-export const TEMPLATE_VERSION = 13
+export const TEMPLATE_VERSION = 14
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -58,6 +58,13 @@ const progress = (label: string, value: string, pct: string, size = '') => `
 
 const hpBar = (size = '') => progress('HP', '{{ hp }}/{{ max_hp }}', 'hp_pct', size)
 const xpBar = (size = '') => progress('XP', '{{ xp }}/{{ xp_to_next }}', 'xp_pct', size)
+
+/**
+ * D42: next tick as 24-hour HH:MM in the owner's TRMNL timezone, no zone label.
+ * TRMNL renders Liquid in UTC and supplies the offset; without it the line is omitted.
+ */
+const nextTick = (classes: string) => `
+      {% if next_tick_at and trmnl.user.utc_offset != nil %}<span class="${classes}">Next adventure {{ next_tick_at | plus: trmnl.user.utc_offset | date: "%H:%M" }}</span>{% endif %}`
 
 const newestStory = (clamp: number, classes: string) => `
       {% if log.size > 0 %}<span class="${classes}" data-clamp="${clamp}">{{ log[0].s | escape }}</span>{% else %}<span class="${classes}">The first adventure starts soon.</span>{% endif %}`
@@ -143,7 +150,7 @@ export const markupFull = `
   <div class="grid stretch-x gap--medium">
     <div class="col--span-4 flex flex--col flex--left gap--xsmall">
       <span class="title lg:title--large" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
-      <span class="label lg:title--small" data-clamp="2">{{ status_label | escape }}</span>
+      <span class="label lg:title--small" data-clamp="2">{{ status_label | escape }}</span>${nextTick('label lg:title--small')}
       <span class="hidden lg:block label lg:title--small">{{ gold }} gold · {{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}</span>
     </div>
     <div class="col--span-8 grid gap--medium">
@@ -177,7 +184,7 @@ export const markupHalfHorizontal = `
     </div>
     <div class="grow flex flex--col flex--left flex--stretch-x gap--small">
       <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
-      <span class="label lg:title--small" data-clamp="1">{{ status_label | escape }}</span>${hpBar(' progress-bar--small')}
+      <span class="label lg:title--small" data-clamp="1">{{ status_label | escape }}</span>${nextTick('label lg:title--small')}${hpBar(' progress-bar--small')}
       <div class="hidden lg:block">${xpBar(' progress-bar--small')}
       </div>
       {% if attention %}${attention('label lg:title--small', 1)}${newestStory(1, 'label lg:title--small')}{% else %}${newestStory(2, 'label lg:title--small')}{% endif %}${olderStories(0, 2)}
@@ -192,7 +199,7 @@ export const markupHalfVertical = `
   {% else %}
   <div class="flex flex--col flex--left flex--stretch-x gap--small">
     <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
-    <span class="label lg:title--small" data-clamp="1">{{ status_label | escape }}</span>${attention('label lg:title--small', 2)}${hpBar(' progress-bar--small')}${xpBar(' progress-bar--small')}
+    <span class="label lg:title--small" data-clamp="1">{{ status_label | escape }}</span>${nextTick('label lg:title--small')}${attention('label lg:title--small', 2)}${hpBar(' progress-bar--small')}${xpBar(' progress-bar--small')}
   </div>${scene('scene_url_small')}${divider}
   <div class="flex flex--col flex--left gap--small">${newestStory(2, 'title title--small lg:title')}${olderStories(1, 1)}${rankLine}
   </div>

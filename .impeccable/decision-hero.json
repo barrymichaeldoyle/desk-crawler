@@ -1,0 +1,209 @@
+{
+  "title": "Desk Crawler companion: hero page structure",
+  "question": "Three layouts for the new hero page, all in the existing 1-bit e-ink look. Each carries the live TRMNL preview, the since-last-visit summary with countdowns, lifetime records with rank, and a grouped, filterable log. Pick the structure to build, steer it, or re-roll.",
+  "options": [
+    {
+      "id": "desk-and-feed",
+      "label": "Desk and feed",
+      "kicker": "THE ROLL",
+      "lineage": "your desk beside its own logbook",
+      "thesis": "The TRMNL screen is the anchor; everything else is the story of how it got there.",
+      "palette": [
+        "#fafaf9",
+        "#1c1917",
+        "#d6d3d1",
+        "#78716c"
+      ],
+      "materials": [
+        "1-bit pixel art",
+        "e-ink device bezel",
+        "ruled ledger rows"
+      ],
+      "viewport": "Phone: the live device preview fills the width with layout tabs (full, half, quadrant) and a 'next adventure in 7 min' strip on its bezel; directly below, the since-you-left ledger (XP, gold, fights, finds, level-ups). Desktop: the device pins in a left pane while the feed scrolls on the right.",
+      "risk": "The preview dominates the first screen, so the hero's controls (travel, potion, pause) sit one scroll lower.",
+      "wireframe": {
+        "cols": 4,
+        "rows": 16,
+        "regions": [
+          {
+            "label": "TRMNL preview + layout tabs",
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 5,
+            "accent": true
+          },
+          {
+            "label": "next tick countdown",
+            "x": 0,
+            "y": 5,
+            "w": 4,
+            "h": 1
+          },
+          {
+            "label": "since you left: ledger",
+            "x": 0,
+            "y": 6,
+            "w": 4,
+            "h": 3
+          },
+          {
+            "label": "actions: travel, potion, pause",
+            "x": 0,
+            "y": 9,
+            "w": 4,
+            "h": 2
+          },
+          {
+            "label": "encounter log + filters",
+            "x": 0,
+            "y": 11,
+            "w": 4,
+            "h": 3
+          },
+          {
+            "label": "records + rank",
+            "x": 0,
+            "y": 14,
+            "w": 4,
+            "h": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "now-line",
+      "label": "The now line",
+      "lineage": "a shift timeline pinned at the present",
+      "thesis": "One vertical timeline split at NOW: what's about to happen above, what happened below.",
+      "palette": [
+        "#fafaf9",
+        "#1c1917",
+        "#d6d3d1",
+        "#78716c"
+      ],
+      "materials": [
+        "1-bit pixel art",
+        "single ruled timeline",
+        "tick marks every 15 minutes"
+      ],
+      "viewport": "Phone: compact header (scene thumbnail, name, level, HP/XP); the NOW marker with a live countdown; above it the upcoming beats (next tick, arrival, revival); below it a 'since your last visit' band, then encounters grouped by tick with deltas. The device preview and records open from the header.",
+      "risk": "The preview and lifetime records live behind header controls rather than on the page itself.",
+      "wireframe": {
+        "cols": 4,
+        "rows": 16,
+        "regions": [
+          {
+            "label": "header: scene, name, HP/XP",
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 3
+          },
+          {
+            "label": "upcoming: arrival, revive",
+            "x": 0,
+            "y": 3,
+            "w": 4,
+            "h": 2
+          },
+          {
+            "label": "NOW + countdown",
+            "x": 0,
+            "y": 5,
+            "w": 4,
+            "h": 1,
+            "accent": true
+          },
+          {
+            "label": "since your last visit",
+            "x": 0,
+            "y": 6,
+            "w": 4,
+            "h": 3
+          },
+          {
+            "label": "encounters by tick, filters",
+            "x": 0,
+            "y": 9,
+            "w": 4,
+            "h": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": "status-board",
+      "label": "Status board",
+      "lineage": "an office lobby departures board",
+      "thesis": "Answer 'how is my hero doing?' in one glance of labelled rows, then dive into tabs.",
+      "palette": [
+        "#fafaf9",
+        "#1c1917",
+        "#d6d3d1",
+        "#78716c"
+      ],
+      "materials": [
+        "1-bit pixel art",
+        "split-flap rows",
+        "tabular numerals"
+      ],
+      "viewport": "Phone: the scene, then a board of rows: STATUS Exploring Server Room \u00b7 NEXT ADVENTURE 07:12 \u00b7 RANK #3 of 41 \u00b7 HP 118/136 \u00b7 BAG 17/30 \u00b7 SINCE YOU LEFT +412 XP. Below, tabs switch between TRMNL preview, Log and Records; actions sit under the board.",
+      "risk": "Tabs hide two of the three deep views at any moment, so less is visible at once.",
+      "wireframe": {
+        "cols": 4,
+        "rows": 16,
+        "regions": [
+          {
+            "label": "scene",
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 3
+          },
+          {
+            "label": "status board rows",
+            "x": 0,
+            "y": 3,
+            "w": 4,
+            "h": 5,
+            "accent": true
+          },
+          {
+            "label": "actions",
+            "x": 0,
+            "y": 8,
+            "w": 4,
+            "h": 1
+          },
+          {
+            "label": "tabs: Preview \u00b7 Log \u00b7 Records",
+            "x": 0,
+            "y": 9,
+            "w": 4,
+            "h": 1
+          },
+          {
+            "label": "active tab content",
+            "x": 0,
+            "y": 10,
+            "w": 4,
+            "h": 6
+          }
+        ]
+      }
+    }
+  ],
+  "reroll": true,
+  "buildPath": {
+    "value": "code",
+    "toggle": false
+  },
+  "steer": true,
+  "seedKey": "bea3cdb8",
+  "answer": {
+    "optionId": "desk-and-feed",
+    "steer": "",
+    "buildPath": "code"
+  }
+}

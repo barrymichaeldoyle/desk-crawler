@@ -92,7 +92,7 @@ Month 1 success is reliable passive progression and a readable display. Month 2/
 
 ## Display-experience acceptance
 
-Apply [TRMNL experience](trmnl-experience.md) to all sizes. Distinguish linked, saved, generated preview and displayed milestones. Date completed-game freshness; death/pause/delays remain clear after missed refreshes. Mixed playlists, slower intervals and sleeping devices never reduce progress.
+Apply [TRMNL experience](trmnl-experience.md) to all sizes. Distinguish linked, saved, generated preview and displayed milestones. Device layouts omit date/time and timezone labels (D39); death/pause/delays remain clear after missed refreshes. Mixed playlists, slower intervals and sleeping devices never reduce progress.
 
 First release also requires V07 author entitlement/reviewer access and V08 playlist/hardware evidence. Record tested model/bit-depth/orientation/theme settings. Calm glance/story goals are design acceptance; marketplace review establishes publication suitability.
 

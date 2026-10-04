@@ -3,7 +3,7 @@ import { ProsePage, SUPPORT_EMAIL } from '../../lib/prose'
 import { seo } from '../../lib/seo'
 
 export const Route = createFileRoute('/help/trmnl')({
-  head: () => seo({ title: 'TRMNL help', path: '/help/trmnl', description: 'Install Desk Crawler on TRMNL, understand dated snapshots and refresh timing, and fix a screen that looks out of date.' }),
+  head: () => seo({ title: 'TRMNL help', path: '/help/trmnl', description: 'Install Desk Crawler on TRMNL, understand snapshots and refresh timing, and fix a screen that looks out of date.' }),
   component: () => (
     <ProsePage title="Desk Crawler on TRMNL">
       <h2>Getting started</h2>
@@ -15,8 +15,8 @@ export const Route = createFileRoute('/help/trmnl')({
       </ul>
       <h2>How time works</h2>
       <p>
-        The game world advances every 15 minutes whether or not your screen is on. Your TRMNL shows a dated snapshot: the time in the corner is when the
-        game last updated, not when the screen refreshed. Sleep Mode, slower refresh and other playlist items never reduce your hero's progress.
+        The game world advances every 15 minutes whether or not your screen is on. Your TRMNL shows a snapshot and refreshes on its own schedule.
+        Sleep Mode, slower refresh and other playlist items never reduce your hero's progress. Adventure times in the companion use your browser's local timezone.
       </p>
       <h2>If the screen looks old</h2>
       <ul>

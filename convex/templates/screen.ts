@@ -1,11 +1,11 @@
 /**
- * Four TRMNL layouts built around the scene window (revision 12;
+ * Four TRMNL layouts built around the scene window (revision 13;
  * trmnl-experience.md priorities: setup/service message, hero and the living
- * scene, newest story, HP/level, dated freshness, then rank).
+ * scene, newest story, HP/level, service warnings, then rank).
  * Deploy-time constants: user text only arrives through merge_variables and is
  * escaped here. Each string is self-contained (no shared-template registration).
  */
-export const TEMPLATE_VERSION = 10
+export const TEMPLATE_VERSION = 11
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -28,7 +28,6 @@ const titleBar = `
 <div class="title_bar">
   <img class="image image-stroke" src="${TITLE_ICON}" alt="">
   <span class="title">Desk Crawler</span>
-  <span class="instance">{{ game_as_of_label | escape }}</span>
 </div>`
 
 type SceneField = 'scene_url' | 'scene_url_small'
@@ -64,9 +63,9 @@ const newestStory = (clamp: number, classes: string) => `
       {% if log.size > 0 %}<span class="${classes}" data-clamp="${clamp}">{{ log[0].s | escape }}</span>{% else %}<span class="${classes}">The first adventure starts soon.</span>{% endif %}`
 
 /**
- * Older log lines, newest first. No timestamps: ticks are a uniform 15 minutes
- * apart and the title bar already dates the screen. Lines wrap to two rows so
- * a whole outcome stays readable. `extra` lines only appear on large screens.
+ * Older log lines, newest first. No timestamps: the device focuses on the story.
+ * Lines wrap to two rows so a whole outcome stays readable. `extra` lines only
+ * appear on large screens.
  */
 const olderStories = (count: number, extra = 0) => `
       {% for entry in log offset: 1 limit: ${count} %}<span class="label 4bit:label--gray lg:title--small" data-clamp="2">{{ entry.s | escape }}</span>{% endfor %}${
@@ -77,14 +76,14 @@ const olderStories = (count: number, extra = 0) => `
       }`
 
 const rankLine = `
-      {% if rank %}<span class="label">Rank {{ rank }} of {{ total_players }}, {{ leaderboard_cohort_label | escape }}</span>{% elsif rank_status == "dormant" %}<span class="label 4bit:label--gray">Not ranked while paused</span>{% else %}<span class="label 4bit:label--gray">{{ leaderboard_as_of_label | escape }}</span>{% endif %}`
+      {% if rank %}<span class="label">Rank {{ rank }} of {{ total_players }}, {{ leaderboard_cohort_label | escape }}</span>{% elsif rank_status == "dormant" %}<span class="label 4bit:label--gray">Not ranked while paused</span>{% else %}<span class="label 4bit:label--gray">Ranking within the hour</span>{% endif %}`
 
 /** Top 5 is cut to three rows on the OG so every row stays at a readable size. */
 const rankPanel = `
       <span class="label lg:title--small">This week{% if leaderboard_cohort_label != "" %}, {{ leaderboard_cohort_label | escape }}{% endif %}</span>
       {% if rank %}<span class="value value--small lg:value--large">#{{ rank }}<span class="label lg:title--small"> of {{ total_players }}</span></span>
       {% elsif rank_status == "dormant" %}<span class="label 4bit:label--gray">Not ranked while paused</span>
-      {% else %}<span class="label 4bit:label--gray">{{ leaderboard_as_of_label | escape }}</span>{% endif %}
+      {% else %}<span class="label 4bit:label--gray">Ranking within the hour</span>{% endif %}
       {% for row in top5 %}<div class="{% if forloop.index > 3 %}hidden lg:flex {% endif %}flex flex--row flex--between stretch-x gap--small"><span class="label lg:title--small grow" data-clamp="1">{{ row.rank }}. {{ row.name | escape }}</span><span class="label lg:title--small">{{ row.score }} XP</span></div>{% endfor %}`
 
 /** The one quiet attention message (service, delay, death, inventory sleep): never clipped, shown in every size. */

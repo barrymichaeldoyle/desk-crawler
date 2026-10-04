@@ -52,7 +52,7 @@ Deliver exact version pins, redacted protocol shapes, validators and proof artif
 
 Owns build/dependencies/generated types, `convex/schema.ts`, auth config, singleton initialization, `users.ts`, shared ownership/validation/receipts/rate-limit helpers and Convex document/adapter types (pure domain types come from A03). Lead controls shared registrations/lockfile.
 
-Inputs: [data model](data-model.md), [API](api.md), A01 evidence. Deliver current MVP tables/indexes, dedicated Clerk identity, users.ts ensure/timezone/restricted-name-repair functions, alias/timezone validation, one-current-hero invariant including pending drafts, activation fields/helper contract and environment template without secrets.
+Inputs: [data model](data-model.md), [API](api.md), A01 evidence. Deliver current MVP tables/indexes, dedicated Clerk identity, users.ts ensure/restricted-name-repair functions, alias validation and legacy timezone compatibility (D39), one-current-hero invariant including pending drafts, activation fields/helper contract and environment template without secrets.
 
 Done when unauthorized calls fail, duplicate onboarding/creation serializes, no unused future tables exist, receipt/limiter semantics are tested and Worker build succeeds. Excludes UI, encounters and production provisioning unless separately authorized.
 
@@ -122,7 +122,7 @@ Owns `trmnl/**` Liquid, original sprites/license notes, template packaging, `con
 
 Inputs: official skill and current framework docs, [experience](trmnl-experience.md), actual A08 merge variables, A07 authority. Deliver four layouts, correct envelope and idle/dead Warrior sprites.
 
-Done when skill data-first/reference/proportion/screenshot workflow is followed, all relevant sizes/edge states render, no arbitrary CSS/view wrapper/emoji (documented progress fill exception only), envelope budget passes, and physical e-ink is legible. Full layout has Top 5/own rank; smallest layout deliberately cuts detail. Mock fixtures do not replace real merge-variable verification. Package self-contained strings; retain freshness, test fonts/dark/text scale/assets and capture V08 playlist/hardware evidence.
+Done when skill data-first/reference/proportion/screenshot workflow is followed, all relevant sizes/edge states render, no arbitrary CSS/view wrapper/emoji (documented progress fill exception only), envelope budget passes, and physical e-ink is legible. Full layout has Top 5/own rank; smallest layout deliberately cuts detail. Mock fixtures do not replace real merge-variable verification. Package self-contained strings; retain service warnings, test fonts/dark/text scale/assets and capture V08 playlist/hardware evidence.
 
 ## A11 — Operations, cleanup, deletion and capacity
 
@@ -162,4 +162,4 @@ Open issues for integration owner:
 
 Agent output states changes, verification, measurements/limitations and contract changes. A generated code listing alone is not a completed package.
 
-Ownership notes: A02 retains users.ts (timezone and restricted owner name repair); A04 consumes those contracts without editing users.ts. A11 owns admin server/UI and deletion workflow. A03 supplies held-find/sleep and pure XP-window interfaces; A05 persists score history and frozen inputs; A06 owns publication/generations. Lead alone edits shared schema, registrations, validators/lockfile. This is future-assignment guidance, not a request to start agents.
+Ownership notes: A02 retains users.ts (legacy timezone compatibility and restricted owner name repair); A04 consumes those contracts without editing users.ts. A11 owns admin server/UI and deletion workflow. A03 supplies held-find/sleep and pure XP-window interfaces; A05 persists score history and frozen inputs; A06 owns publication/generations. Lead alone edits shared schema, registrations, validators/lockfile. This is future-assignment guidance, not a request to start agents.

@@ -16,12 +16,12 @@ Use semantic HTML, visible focus, labeled buttons, sufficient contrast, 44px tou
 | --- | --- | --- |
 | `/` | Public | TRMNL-focused promise, labeled static/sample adventure, “Install on TRMNL”; no persistent demo hero |
 | `/sign-in`, `/sign-up` | Public | Clerk controls with safe local return destinations |
-| `/onboarding` | Authenticated, no activated hero | Public alias/name/timezone; begin or resume TRMNL installation; pending starter preview and Save guidance |
+| `/onboarding` | Authenticated, no activated hero | Public alias/name; begin or resume TRMNL installation; pending starter preview and Save guidance |
 | `/app` | Authenticated | Hero, latest outcome/log, HP/XP/status, unlocked biome control |
 | `/app/inventory` | Authenticated | Equipped weapon/armor, comparison, bag, potion, overflow explanation |
 | `/app/leaderboard` | Authenticated | 24-hour/seven-day level-group Top 100, secondary lifetime, exact scoped rank/score, period/group/freshness |
 | `/app/connections` | Authenticated | Install TRMNL, existing instances, disconnect, connection help |
-| `/app/settings` | Authenticated | Timezone, pause/resume, account-deletion flow |
+| `/app/settings` | Authenticated | Pause/resume, account-deletion flow |
 | `/connect/trmnl/install` | TRMNL landing | Pending install → auth/onboarding → hero link → callback |
 | `/connect/trmnl/manage` | TRMNL landing | Verified short-lived management handoff → auth → owned connection |
 | `/help/trmnl` | Public | Setup, save/playlist step, delayed refresh, reconnect/uninstall |
@@ -34,7 +34,7 @@ Mobile navigation: Hero, Bag, Rankings, Connections; settings under account menu
 
 Sign in before creating game state. Ask for a public alias separately from imported Clerk/TRMNL real names. Explain that leaderboard/device aliases are public to other players. Hero name has a default suggestion but can be edited before creation.
 
-No class chooser when there is one class. Show the Warrior's simple identity and starter kit. Timezone is inferred in browser and validated server-side, with UTC fallback and an editable control.
+No class chooser when there is one class. Show the Warrior's simple identity and starter kit. No timezone preference is collected or shown (D39). History and board timestamps use the browser's local timezone.
 
 A website visitor begins the TRMNL marketplace installation before creating a hero. Preserve name/alias choices through the secure flow. After explicit owner confirmation and verified server-side code exchange, `heroes.create` consumes the owned install-attempt ID and prepares one pending Warrior with starter kit/welcome. Use an operation ID and disable duplicate clicks.
 
@@ -110,11 +110,11 @@ Warrior: a tiny office adventurer wielding a letter opener and wearing a cardiga
 
 ## Display help and cached images
 
-`/help/trmnl` includes Save/playlist/mashup, dated snapshots, slower refresh/sleep, account mismatch and repair using the [diagnosis table](trmnl-experience.md). A companion preview is game data unless it is an actually generated TRMNL image.
+`/help/trmnl` includes Save/playlist/mashup, snapshots, slower refresh/sleep, account mismatch and repair using the [diagnosis table](trmnl-experience.md). A companion preview is game data unless it is an actually generated TRMNL image.
 
 Disconnect/deletion explains future access is revoked but generated/displayed e-ink images cannot be remotely erased. Provide user-controlled playlist removal/replacement guidance. Keep hero pause separate from Sleep Mode.
 
-Timezone changes call `users.setTimezone` and affect formatting only, not logical deadlines/rewards. Public names have a supported-character policy; imported instance labels fall back/truncate safely.
+The legacy `users.setTimezone` endpoint remains for compatibility; current companion screens do not call it. Public names have a supported-character policy; imported instance labels fall back/truncate safely.
 
 Public-name policy is approved (D23): forbid hateful/slur-based names, sexual abuse content, threats/targeted harassment, private contact details and impersonation. Barry initially handles private reports through the support address barry@barrymichaeldoyle.com (D36), targeting two business days; public GitHub issues are for non-private bugs. Admin temporary masking and restricted owner replacement preserve progress and increment name version; normal rename is deferred. Suspension is separate and audited; provide a private appeal path, no chat/ticketing service.
 

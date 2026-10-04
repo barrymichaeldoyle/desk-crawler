@@ -105,15 +105,15 @@ After launch, tests scale with change: pure balance changes require balance/core
 
 - Actual Save → preview → hardware path, mixed playlist and mashup; HTTP success is not display success.
 - Slower refresh/sleep preserves progress; no cron-aligned display/overnight fetch promises.
-- Physical-scale five-second glance: clear hero/state/story, legible freshness. Check selected font bundles, dark/theme changes and larger text; cut detail first.
+- Physical-scale five-second glance: clear hero/state/story and service warnings; no clock, date or timezone label in any layout (D39). Check selected font bundles, dark/theme changes and larger text; cut detail first.
 - Maximum names/instance/item/monster text, 90-code-point logs, 120-character attention, large valid stats/ranks; HP 0, XP 0%, both 100%, missing optional fields, unavailable sprite.
-- Story works after hours away; midnight/DST/half-hour offsets have correct dates. Six logs are not a daily digest.
+- Story works after hours away; companion dates follow browser local time across midnight/DST/half-hour offsets. Six logs are not a daily digest.
 - Allocated tick ahead of hero revival/arrival evaluation: positive evaluated-tick ETA or pending wording, never invented transition. Old paused/dead progress alone is not stale. Missing first completion eventually becomes stale.
 - Reachable run failure returns delayed/service payload; endpoint/asset/Liquid outage records actual TRMNL behavior. Cached images cannot dynamically acquire our warning.
 - Delayed callbacks after disconnect/uninstall stay tombstoned without current targeted repair. Test pending expiry, competing tabs, restart, grant revocation and callback-loss recovery under V06.
 - Revocation denies future payloads; UI explains cached-image limits. Telemetry failures do not fail valid payloads.
 - Each returned string works without shared-template registration or TRMNL globals. One instance displays correctly across models without server selection from representative metadata.
-- Timezone changes formatting only; expired unknown-outcome intents do not automatically consume another potion. Quarantine preserves settings/disconnect/deletion access.
+- No timezone preference is collected or shown; legacy timezone changes affect formatting only; expired unknown-outcome intents do not automatically consume another potion. Quarantine preserves settings/disconnect/deletion access.
 
 Use the [evidence checklist](evidence/README.md). Documentation fixtures are review inputs, not screenshots or test results.
 

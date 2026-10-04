@@ -8,7 +8,7 @@ Each table gets explicit argument/return validators. Status, item slot, rarity a
 
 ### `users`
 
-Fields: `tokenIdentifier` (Clerk issuer + subject identity), `publicAlias`, `normalizedAlias`, `timezone` (validated IANA, default UTC), `state: active | suspended | deleting`, `createdAt`, `activeHeroId?`, `deletionRequestedAt?`, `publicNameVersion` (initial 1), `nameRepairRequired?` (bounded alias/hero-name field set).
+Fields: `tokenIdentifier` (Clerk issuer + subject identity), `publicAlias`, `normalizedAlias`, `timezone` (legacy compatibility field, validated IANA, UTC for new installs; no current UI preference, D39), `state: active | suspended | deleting`, `createdAt`, `activeHeroId?`, `deletionRequestedAt?`, `publicNameVersion` (initial 1), `nameRepairRequired?` (bounded alias/hero-name field set).
 
 Indexes: `by_identity[tokenIdentifier]`, `by_alias[normalizedAlias]`, `by_state[state]`.
 

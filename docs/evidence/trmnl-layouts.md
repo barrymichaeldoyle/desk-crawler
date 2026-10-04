@@ -1,5 +1,13 @@
 # TRMNL layout evidence: A10 (in progress)
 
+## Device times removed, template v11 (2026-10-04)
+
+D39 removes the completed-game date/time and UTC offset from the shared title bar in all four sizes. Awaiting-rank copy now uses fixed “Ranking within the hour” text instead of the legacy board-time label. Older story rows already omit timestamps. The icon and title remain, following the [official basic title-bar structure](https://trmnl.com/framework/docs/3.4/title_bar).
+
+Validation: `pnpm check` passed all typechecks and 71 tests. `pnpm tsx tools/trmnl/preview.ts` generated 88 pages (11 states × four sizes × OG/X). Playwright checked each for content crossing the title bar/view bounds, failed visible images, and clock/UTC text: zero failures. All eight normal-state screenshots (four sizes × OG/X) were visually inspected; local artifacts are in `.previews/v11-<og|x>-<layout>.png`. Help/settings copy and onboarding now omit the separate timezone preference; the backend and v1 payload keep legacy fields for compatibility.
+
+`pnpm build` also passed for the client and Worker SSR bundle, with existing TanStack `inputValidator` deprecation notices. These are local framework previews. Template v11 has not been deployed or checked on the physical TRMNL; the live release gate remains open.
+
 ## First-run screens, template v10 (2026-10-04)
 
 Two first-run states share one panel in every size, built around a large QR code: setup (an installation with no active hero) and a brand-new hero before its first adventure (`first_run`, new payload field). A new player sees the second one for up to 15 minutes after saving the plugin. QR scales per layout: full ×4 (OG) / ×7 (X), half vertical ×4 / ×5, half horizontal ×3 / ×5, quadrant ×3 / ×4; the payload sends `qr_base` and the markup appends the scale. Rows: setup and first run on OG, then the same on the X: [v10-first-run.png](layouts/v10-first-run.png). No overflow across all 88 renders (eleven states).

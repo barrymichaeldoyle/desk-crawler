@@ -20,7 +20,7 @@ export const Route = createFileRoute('/privacy')({
       <h2>What we store</h2>
       <ul>
         <li>Your sign-in identity from Clerk, our sign-in provider. We do not copy your email address, real name or profile picture into the game.</li>
-        <li>Your public name, time zone, hero, items, adventure log and the recent XP used for rankings.</li>
+        <li>Your public name, hero, items, adventure log and the recent XP used for rankings. Older accounts may also have a saved time zone from previous versions.</li>
         <li>
           For each TRMNL installation: the plugin instance ID, a hash of its access token and the settings link TRMNL gives us. We do not store your TRMNL
           name or email.

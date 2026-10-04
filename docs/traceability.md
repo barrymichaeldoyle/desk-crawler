@@ -26,11 +26,11 @@ Use this table when assigning/reviewing agents. A package is incomplete if it im
 | Low incremental cost | [Operations](operations.md) | A05/A08/A11 | 100/1,000 cohort read/write/function/storage measurements |
 | Recoverable failures / preserved progress | [Simulation](simulation.md), [operations](operations.md) | A05/A06/A11 | Duplicate/recovery/drain/version tests |
 | Bounded storage and account deletion | [Data model](data-model.md), [operations](operations.md) | A11 | Cleanup backlog/protected generations/purge verification |
-| Calm dated display across four sizes | [Experience](trmnl-experience.md), [TRMNL](trmnl.md) | A08/A10 | State/ETA/timezone cases, runtime/model screenshots |
+| Calm display across four sizes without clock/timezone labels (D39) | [Experience](trmnl-experience.md), [TRMNL](trmnl.md) | A08/A10 | State/ETA/service-warning cases, runtime/model screenshots |
 | Save-to-display and sleep/playlist help | [Experience](trmnl-experience.md), [companion](companion.md) | A01/A09/A10/A12 | V08 physical/mashup/slower-refresh evidence |
 | Delayed callbacks cannot resurrect tombstones | [TRMNL](trmnl.md), [data model](data-model.md) | A01/A07 | V06 intent/expiry/repair/replay |
 | Publication prerequisites and reviewer access | [TRMNL](trmnl.md), [decisions](decisions.md) | A01/A12 | V07 entitlement and review package |
-| Timezone setting and bounded retries | [API](api.md) | A04/A09 | Formatting-only mutation and expiry checks |
+| Browser-local companion times and bounded retries (D39) | [API](api.md) | A04/A09 | No timezone control/collection; legacy compatibility and expiry checks |
 | Safe deletion after credential-history purge | [Data model](data-model.md), [decisions](decisions.md) | A07/A11 | V09 token/code replay proof and D22 boundary |
 | Bounded connection history and public-name response | [API](api.md), [companion](companion.md) | A07/A09/A11 | Pagination; D23 policy and admin/support procedure |
 | Later coherent monthly themes | [Roadmap](roadmap.md), [source brief](source-brief.md) | Future RFCs | New feature-specific contracts before assignment |

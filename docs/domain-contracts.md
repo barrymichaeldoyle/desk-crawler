@@ -74,7 +74,7 @@ Every detail has `v=1`, `simulationVersion`, `contentVersion`, `disposition`, `e
 
 Death primary log kind can wrap combat/trap detail; level-up may be secondary. The detail discriminator reflects the underlying resolver while `kind` controls the display narrative priority. Command detail uses a separate versioned validator and may omit simulation version when not applicable.
 
-The device receives only short summary/kind/local time; web own-history can show bounded detail. Target <=1.5 KiB per detail; author content names with explicit length budgets (proposed monster <=24 and item <=32 display characters).
+The device displays only short summary/kind; source timestamps and legacy local labels remain in the v1 payload for compatibility (D39); web own-history can show bounded detail. Target <=1.5 KiB per detail; author content names with explicit length budgets (proposed monster <=24 and item <=32 display characters).
 
 ## Score and held-ID adapter ownership
 

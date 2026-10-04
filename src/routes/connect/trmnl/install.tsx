@@ -71,10 +71,8 @@ function ConnectForm() {
     setSubmitting(true)
     setError(null)
     const form = new FormData(event.currentTarget)
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
     const result = await finishInstall({
       data: {
-        timezone,
         ...(needsProfile ? { publicAlias: String(form.get('publicAlias') ?? '') } : {}),
         ...(needsHero ? { heroName: String(form.get('heroName') ?? '') } : {}),
       },

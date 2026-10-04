@@ -18,7 +18,7 @@ Failures are not receipts for successful operations. Transport retries are bound
 
 | Function | Arguments | Result | Bounded reads |
 | --- | --- | --- | --- |
-| `users.me` | none | public alias, timezone, owner state, active hero ID | Identity index + user |
+| `users.me` | none | public alias, legacy timezone (D39), owner state, active hero ID | Identity index + user |
 | `heroes.mine` | none | sanitized hero state including activation state, derived stats, XP threshold, biome unlocks, server tick/health | User + active hero + bounded equipped items/world/run |
 | `heroes.returnSummary` | none | Nullable visit baseline, observed level/lifetime XP/log sequence, nullable gains, current bag/unequipped counts, held name and status/wake/simulation state | Own user + current hero + <=32 inventory rows; no history scan |
 | `heroes.recentLog` | limit 1–50, cursor? | own log page, bounded detail, continuation | Hero-index page |
@@ -34,7 +34,7 @@ No unbounded public hero lists, arbitrary hero-ID reads, or public token lookup 
 | Function | Arguments (plus operation ID) | Behavior / result | Preconditions |
 | --- | --- | --- | --- |
 | `users.ensure` | `publicAlias`, `timezone` for first onboarding | Upsert server-derived identity; return user ID | Signed in; normalized alias unique |
-| `users.setTimezone` | `timezone` | Validate IANA timezone; update own setting, same value no-op | Active signed-in owner; no game advancement |
+| `users.setTimezone` | `timezone` | Legacy compatibility endpoint; validate IANA timezone, same value no-op; absent from current UI (D39) | Active signed-in owner; no game advancement |
 | `heroes.create` | `name`, `installAttemptId` | Prepare pending Warrior + starter kit/welcome; return hero ID and activation state | Active user; no current hero; owned unexpired server-verified TRMNL attempt and active grant |
 | `heroes.recordCompanionVisit` | `expectedLogSequence` | Capture current server level/lifetime XP/sequence/time; receipt replay idempotent | Active signed-in owner and activated hero; guarded sequence; no game advancement |
 | `heroes.changeBiome` | `biomeId` | Set one-tick travel; return arrival tick | Exploring/resting; destination unlocked |
@@ -114,7 +114,7 @@ Add optional fields/functions without changing existing meaning. Mutations shoul
 
 Receipt idempotency lasts 24 hours. Retain original operation ID/arguments and first-submitted time for a bounded retry. Beyond that horizon stop automatic replay, refresh authoritative state and require a deliberate new intent if desired. An expired receipt cannot prove a potion was not already consumed.
 
-`users.ensure` creates onboarding data; retries never reset an existing alias, timezone or owner state. `users.setTimezone` completes editable settings and uses receipt/authority/validation rules. Settings are not gameplay intents and remain available during quarantine; suspended/deleting accounts still fail authority. Disconnect/deletion likewise remain accessible during quarantine.
+`users.ensure` creates onboarding data; retries never reset an existing alias, timezone or owner state. `users.setTimezone` retains receipt/authority/validation rules for older clients only (D39). Current onboarding supplies UTC to the legacy backend argument without collecting a browser timezone; companion times use the browser's local timezone. Settings are not gameplay intents and remain available during quarantine; suspended/deleting accounts still fail authority. Disconnect/deletion likewise remain accessible during quarantine.
 
 The installation action enforces callback allowlists at its own boundary, not only UI logic, and records the bounded attempt. Management verification uses only configured HTTPS JWKS: bounded fetch/cache, one unknown-key refresh, no JWT-supplied key URLs. It never extends an expired TRMNL token; verified landing creates our handoff.
 

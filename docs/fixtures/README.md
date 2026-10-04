@@ -1,6 +1,6 @@
 # TRMNL documentation fixtures
 
-Illustrative pre-release v1 examples for revision 6: seven-day group rank/score/period from an hourly publication (built at the 09:58 UTC slot, D31), `rank_status`, separate global population and bag/held-find/wake fields. These are not generated backend outcomes, markup envelopes, real merge variables or render evidence. Example sprite URLs are deliberately non-live.
+Illustrative pre-release v1 examples for revision 6: seven-day group rank/score/period from an hourly publication (built at the 09:58 UTC slot, D31), `rank_status`, separate global population and bag/held-find/wake fields. These are not generated backend outcomes, markup envelopes, real merge variables or render evidence. Example sprite URLs are deliberately non-live. The v1 `game_as_of_label`, `leaderboard_as_of_label` and log `t` values remain compatibility examples; template v11 does not display them (D39).
 
 | Case | Purpose |
 | --- | --- |

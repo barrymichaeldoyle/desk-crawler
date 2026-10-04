@@ -50,7 +50,7 @@ export type FinishInstallResult = { ok: true; callbackUrl: string } | { ok: fals
 
 /** Exchange and link through the Clerk-authenticated Convex action, then hand back the validated TRMNL callback. */
 export const finishInstall = createServerFn({ method: 'POST' })
-  .inputValidator((input: { publicAlias?: string; heroName?: string; timezone: string }) => input)
+  .inputValidator((input: { publicAlias?: string; heroName?: string }) => input)
   .handler(async ({ data }): Promise<FinishInstallResult> => {
     const pending = await openPendingInstall(getCookie(INSTALL_COOKIE), flowSecret(), Date.now())
     if (!pending) return { ok: false, code: 'INSTALL_EXPIRED', message: 'This installation expired. Start again from TRMNL.' }
@@ -63,7 +63,8 @@ export const finishInstall = createServerFn({ method: 'POST' })
     try {
       await client.action(api.trmnl.completeInstall, {
         code: pending.code,
-        timezone: data.timezone,
+        // Legacy backend argument: no timezone preference is collected by the companion.
+        timezone: 'UTC',
         ...(data.publicAlias ? { publicAlias: data.publicAlias } : {}),
         ...(data.heroName ? { heroName: data.heroName } : {}),
       })

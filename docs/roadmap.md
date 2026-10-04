@@ -108,6 +108,6 @@ Gate: resets/currency transfers cannot duplicate assets, pre-season progress sur
 
 Monthly themes are a prioritization tool. Bugs, reliability/security repairs and small quality improvements ship as soon as their checks pass.
 
-Month 1 refinement: entitlement/protocol checks precede full implementation; A09/A10 include Save-to-playlist-to-hardware, dated snapshots and missed-refresh states. Use the [evidence checklist](evidence/README.md).
+Month 1 refinement: entitlement/protocol checks precede full implementation; A09/A10 include Save-to-playlist-to-hardware, snapshots without device date/time labels (D39), and missed-refresh states. Use the [evidence checklist](evidence/README.md).
 
 The later themes retain the TRMNL audience and companion role. Wider platform support requires a separate scope/financial decision, rather than appearing implicitly through a web feature.

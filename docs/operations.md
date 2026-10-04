@@ -128,7 +128,7 @@ These are engineering targets, not SLAs or guarantees. First public release evid
 
 Diagnose game run → authorized payload → TRMNL Liquid/assets/preview → device wake/playlist/display separately. Only the first two are directly observable by our backend. Optional `lastScreenServedAt` is throttled response telemetry, not rendering or human attention.
 
-Reachable serving with delayed simulation returns valid state plus delay/service status. During a serving outage our templates cannot add warnings to existing images. Date game freshness in every size and record actual TRMNL failure behavior in V08. Revocation cannot erase already generated/offline images.
+Reachable serving with delayed simulation returns valid state plus delay/service status. During a serving outage our templates cannot add warnings to existing images. Device layouts omit timestamps (D39); companion diagnostics and TRMNL preview/refresh settings help diagnose old images. Record actual TRMNL failure behavior in V08. Revocation cannot erase already generated/offline images.
 
 The 15-minute formula above is a conservative continuous per-instance scenario, not predicted on-demand volume. Measure actual requests per installation/playlist and manual retry traffic; sleep and schedules can change demand. Hero simulation remains independent. Devices and instances are not interchangeable counts.
 

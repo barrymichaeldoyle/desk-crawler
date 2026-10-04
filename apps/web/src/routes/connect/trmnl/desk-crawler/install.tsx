@@ -5,6 +5,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useState, type FormEvent } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { seo } from '../../../../lib/seo'
+import { SwitchAccount } from '../../../../lib/switchAccount'
 import { captureInstall, finishInstall, getPendingInstall } from '../../../../server/installFns'
 
 type Search = { code?: string; installation_callback_url?: string; invalid?: boolean }
@@ -89,6 +90,11 @@ function ConnectForm() {
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       {needsProfile ? (
+        <p className="rounded-md border border-amber-600 p-3 text-sm">
+          This sign-in has no TRMNL Games account yet, so connecting creates a new one. Already playing? Switch account and sign in the way you did before (email code, Google or GitHub).
+        </p>
+      ) : null}
+      {needsProfile ? (
         <label className="flex flex-col gap-1">
           <span className="font-semibold">Public name</span>
           <span className="text-sm text-stone-600 dark:text-stone-400">Shown publicly to other players on leaderboards and TRMNL screens. Use any name you're happy to share; never include contact details.</span>
@@ -109,6 +115,7 @@ function ConnectForm() {
           Your hero <strong>{me?.hero?.name}</strong> will appear on this TRMNL.
         </p>
       )}
+      <SwitchAccount returnTo="/connect/trmnl/desk-crawler/install" />
       {error ? (
         <p role="alert" className="font-semibold text-red-700 dark:text-red-400">
           {error}

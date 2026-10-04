@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, createFileRoute, redirect } from '@tanstack/react-router'
 import { api } from '@trmnl-games/backend/api'
 import { seo } from '../../../../lib/seo'
+import { SwitchAccount } from '../../../../lib/switchAccount'
 import { useIntent } from '../../../../lib/intent'
 import { Button, Card, ErrorNote } from '../../../../lib/ui'
 import { captureManagement, getManagedInstance } from '../../../../server/manageFns'
@@ -65,6 +66,9 @@ function Connection({ uuid }: { uuid: string }) {
     return (
       <Card title="Different account">
         <p>This TRMNL installation is linked to another TRMNL Games account. Sign out and sign in with the account you used to connect it. Accounts are never merged automatically.</p>
+        <div className="mt-3">
+          <SwitchAccount returnTo="/connect/trmnl/desk-crawler/manage" />
+        </div>
       </Card>
     )
   }

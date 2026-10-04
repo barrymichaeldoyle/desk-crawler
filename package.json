@@ -18,7 +18,7 @@
     "balance": "tsx tools/balance/run.ts",
     "check": "pnpm typecheck && pnpm test",
     "build:deploy": "node tools/deploy/check-target.mjs && pnpm check && convex deploy -y --cmd 'pnpm build'",
-    "deploy:web": "pnpm --filter @trmnl-games/web deploy"
+    "deploy:web": "pnpm --filter @trmnl-games/web run deploy"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.62.5",

@@ -5,10 +5,12 @@ import { api } from '@trmnl-games/backend/api'
 import { Card } from '../../lib/ui'
 import { seo } from '../../lib/seo'
 import { NameRepair } from './desk-crawler/-nameRepair'
+import { preload } from '../../lib/preload'
 
 /** Companion shell: auth gate, setup states and mobile-first navigation (companion.md). */
 export const Route = createFileRoute('/app/desk-crawler')({
   head: () => seo({ title: 'Companion', index: false }),
+  loader: ({ context }) => preload(context, convexQuery(api.users.me, {})),
   component: AppShell,
 })
 

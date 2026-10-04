@@ -6,8 +6,9 @@ import { api } from '@trmnl-games/backend/api'
 import { useIntent } from '../../../lib/intent'
 import { seo } from '../../../lib/seo'
 import { Button, Card, ErrorNote } from '../../../lib/ui'
+import { preload } from '../../../lib/preload'
 
-export const Route = createFileRoute('/app/desk-crawler/settings')({ head: () => seo({ title: 'Settings', index: false }), component: Settings })
+export const Route = createFileRoute('/app/desk-crawler/settings')({ head: () => seo({ title: 'Settings', index: false }), loader: ({ context }) => preload(context, convexQuery(api.users.me, {}), convexQuery(api.heroes.mine, {}), convexQuery(api.connections.mine, {})), component: Settings })
 
 function Settings() {
   const { data: me } = useQuery(convexQuery(api.users.me, {}))

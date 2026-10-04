@@ -1,6 +1,6 @@
 # Implementation evidence checklist
 
-Live implementation evidence is available, with remaining acceptance checks recorded in [release preparation](release.md). The latest pass adds [capacity measurements](capacity.md), [synthetic recovery](recovery.md), [Creator Fund findings](creator-fund.md) and an [installation walkthrough](install-demo/README.md). A successful individual check does not close its entire matrix. Do not create invented success reports.
+Live implementation evidence is available, with remaining acceptance checks recorded in [release preparation](release.md). The latest pass adds [capacity measurements](capacity.md), [synthetic recovery](recovery.md), [Creator Fund findings](creator-fund.md) and an [installation walkthrough](install-demo/README.md). The TRMNL Games migration [rehearsal](platform-rehearsal.md) records the M1 gate and the dev-instance run. A successful individual check does not close its entire matrix. Do not create invented success reports.
 
 | Artifact | Owner | Required content |
 | --- | --- | --- |

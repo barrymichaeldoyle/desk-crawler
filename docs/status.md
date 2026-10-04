@@ -6,6 +6,8 @@ Barry subsequently requested a plan to share infrastructure across future games 
 
 Barry clarified that this is a pre-launch migration with no public player base. Preserving his current identity/hero is best effort; fresh onboarding is acceptable if preservation becomes complicated. The proposal now uses a single coordinated cutover without a mandatory identity bridge or extended compatibility period. This does not relax progress preservation for later public releases or authorize a production reset now.
 
+Migration progress: M1 (monorepo move) and M2 (platform boundaries, two deletion levels, per-game handoff cookies) are committed locally on `main`, not pushed. The M3 rehearsal on the Convex/Clerk dev instances passed; see [platform rehearsal](evidence/platform-rehearsal.md) for results and the items left for the M4 cutover.
+
 ## Built and verified
 
 | Package | State | Evidence |

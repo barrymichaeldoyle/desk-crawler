@@ -1,7 +1,7 @@
 {
-  "name": "Desk Crawler",
-  "short_name": "Desk Crawler",
-  "description": "An office RPG that plays itself on your TRMNL e-ink display.",
+  "name": "TRMNL Games",
+  "short_name": "TRMNL Games",
+  "description": "Games that play themselves on your TRMNL e-ink display.",
   "start_url": "/app",
   "scope": "/",
   "display": "standalone",

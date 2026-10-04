@@ -7,8 +7,9 @@ import type { Id } from '@trmnl-games/backend/data-model'
 import { useIntent } from '../../../lib/intent'
 import { seo } from '../../../lib/seo'
 import { Button, Card, ErrorNote } from '../../../lib/ui'
+import { preload } from '../../../lib/preload'
 
-export const Route = createFileRoute('/app/desk-crawler/inventory')({ head: () => seo({ title: 'Bag', index: false }), component: Inventory })
+export const Route = createFileRoute('/app/desk-crawler/inventory')({ head: () => seo({ title: 'Bag', index: false }), loader: ({ context }) => preload(context, convexQuery(api.inventory.mine, {}), convexQuery(api.heroes.mine, {})), component: Inventory })
 
 type Gear = {
   id: Id<'items'>

@@ -3,4 +3,4 @@ Disallow: /app
 Disallow: /admin
 Disallow: /connect/
 
-Sitemap: https://desk-crawler.grandprixpicks.com/sitemap.xml
+Sitemap: https://trmnlgames.com/sitemap.xml

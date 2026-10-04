@@ -7,8 +7,9 @@ import { seo } from '../../../lib/seo'
 import { artUrl, useIntent } from '../../../lib/intent'
 import { Button, Card, ErrorNote, Meter } from '../../../lib/ui'
 import { ReturnRecap } from './-recap'
+import { preload } from '../../../lib/preload'
 
-export const Route = createFileRoute('/app/desk-crawler/')({ head: () => seo({ title: 'Hero', index: false }), component: HeroHome })
+export const Route = createFileRoute('/app/desk-crawler/')({ head: () => seo({ title: 'Hero', index: false }), loader: ({ context }) => preload(context, convexQuery(api.heroes.mine, {}), convexQuery(api.heroes.returnSummary, {})), component: HeroHome })
 
 const STATUS_TEXT: Record<string, (hero: { biomeName: string; targetName: string }) => string> = {
   exploring: (h) => `Exploring the ${h.biomeName}`,

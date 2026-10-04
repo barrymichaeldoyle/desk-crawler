@@ -105,6 +105,19 @@ describe('Desk Crawler progress deletion', () => {
     expect(await cy.query(api.users.me, {})).toMatchObject({ gameState: 'active', hero: null })
   })
 
+  it('deletes a signed-in identity that never joined a game, including its Clerk user', async () => {
+    vi.stubEnv('CLERK_SECRET_KEY', 'sk_test_fake')
+    const eve = t.withIdentity({ issuer: 'issuer', subject: 'Eve' })
+    expect(await eve.query(api.users.me, {})).toMatchObject({ user: null })
+    await eve.mutation(api.deletion.requestDeletion, { operationId: 'delete-0005', confirm: 'DELETE' })
+    await t.finishAllScheduledFunctions(vi.runAllTimers)
+    expect(fetchMock).toHaveBeenCalledWith('https://api.clerk.com/v1/users/Eve', expect.objectContaining({ method: 'DELETE' }))
+    expect(await t.run(async (ctx) => ({
+      users: (await ctx.db.query('users').collect()).length,
+      revoked: (await ctx.db.query('revokedAuthIdentities').collect()).length,
+    }))).toEqual({ users: 0, revoked: 1 })
+  })
+
   it('removes the game profile and its jobs when the whole account is deleted afterwards', async () => {
     vi.stubEnv('CLERK_SECRET_KEY', 'sk_test_fake')
     await seedHero(t, {}, 'Di')

@@ -1,4 +1,5 @@
 import { currentHero, gameProfile } from './lib/gameProfile'
+import { heroStatus } from './schema'
 import { v } from 'convex/values'
 import { mutation, query } from './_generated/server'
 import { runIntent } from './lib/intent'
@@ -22,7 +23,7 @@ export const me = query({
       ),
       hero: v.union(
         v.null(),
-        v.object({ name: v.string(), activationState: v.union(v.literal('pending_trmnl'), v.literal('active')) }),
+        v.object({ name: v.string(), activationState: v.union(v.literal('pending_trmnl'), v.literal('active')), status: heroStatus }),
       ),
     }),
   ),
@@ -38,7 +39,7 @@ export const me = query({
       signedIn: true as const,
       gameState: user ? (await gameProfile(ctx, user._id))?.state ?? (hero ? 'active' as const : null) : null,
       user: user === null ? null : { publicAlias: user.publicAlias, timezone: user.timezone, state: user.state, nameRepairRequired: user.nameRepairRequired ?? false },
-      hero: hero === null ? null : { name: hero.name, activationState: hero.activationState },
+      hero: hero === null ? null : { name: hero.name, activationState: hero.activationState, status: hero.status },
     }
   },
 })

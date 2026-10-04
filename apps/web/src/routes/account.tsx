@@ -8,8 +8,9 @@ import { AuthShell } from '../lib/platformShell'
 import { useIntent } from '../lib/intent'
 import { Button, Card, ErrorNote } from '../lib/ui'
 import { seo } from '../lib/seo'
+import { preload } from '../lib/preload'
 
-export const Route = createFileRoute('/account')({ head: () => seo({ title: 'Account', index: false }), component: () => <AuthShell><Account /></AuthShell> })
+export const Route = createFileRoute('/account')({ head: () => seo({ title: 'Account', index: false }), loader: ({ context }) => preload(context, convexQuery(api.users.me, {})), component: () => <AuthShell><Account /></AuthShell> })
 
 function Account() {
   const { data: me, isPending } = useQuery(convexQuery(api.users.me, {}))
@@ -31,7 +32,7 @@ function Account() {
           </Card>
           <Card title="Delete TRMNL Games account">
             <p>This permanently removes your progress and connections from every game on TRMNL Games, and deletes your sign-in. Your public name is hidden immediately. Backups expire within about a week. TRMNL may keep the last screen until you remove the plugin from its playlist.</p>
-            {me?.user ? (
+            {me ? (
               <>
                 <label className="mt-4 flex flex-col gap-2 text-sm">
                   <span className="font-semibold">Type DELETE to confirm</span>
@@ -40,7 +41,7 @@ function Account() {
                 <Button className="mt-4" variant="secondary" disabled={confirm !== 'DELETE' || deletion.pending} onClick={async () => { if (await deletion.run({ confirm: 'DELETE' })) await clerk.signOut({ redirectUrl: '/' }) }}>Delete my TRMNL Games account</Button>
                 <ErrorNote message={deletion.error} />
               </>
-            ) : <p className="mt-4 text-sm">If you have signed in without connecting a game, contact <Link to="/support" className="underline underline-offset-4">support</Link> to remove the sign-in.</p>}
+            ) : null}
           </Card>
         </>
       )}

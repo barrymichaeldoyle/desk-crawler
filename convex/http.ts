@@ -4,6 +4,7 @@ import { httpAction } from './_generated/server'
 import { sha256Hex } from './lib/hash'
 import { verifySvix } from './lib/svix'
 import { renderScenePng } from './art/route'
+import { DEFAULT_COMPANION_ORIGIN, renderQrPng } from './art/qr'
 import { screenMarkup } from './templates/screen'
 
 /**
@@ -114,14 +115,20 @@ http.route({
   }),
 })
 
-/** Public, deterministic scene art for TRMNL screens. Immutable per URL (versioned path). */
+/**
+ * Public, deterministic art for TRMNL screens. Scenes are immutable per URL
+ * (versioned path); QR codes depend on COMPANION_ORIGIN, so they cache for a day.
+ */
 http.route({
   pathPrefix: '/art/',
   method: 'GET',
   handler: httpAction(async (_ctx, request) => {
-    const png = renderScenePng(new URL(request.url).pathname)
+    const path = new URL(request.url).pathname
+    const isQr = path.startsWith('/art/qr/')
+    const png = isQr ? renderQrPng(path, process.env.COMPANION_ORIGIN ?? DEFAULT_COMPANION_ORIGIN) : renderScenePng(path)
     if (png === null) return new Response('Not found', { status: 404 })
-    return new Response(new Blob([png.slice().buffer as ArrayBuffer], { type: 'image/png' }), { status: 200, headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=31536000, immutable' } })
+    const cache = isQr ? 'public, max-age=86400' : 'public, max-age=31536000, immutable'
+    return new Response(new Blob([png.slice().buffer as ArrayBuffer], { type: 'image/png' }), { status: 200, headers: { 'Content-Type': 'image/png', 'Cache-Control': cache } })
   }),
 })
 

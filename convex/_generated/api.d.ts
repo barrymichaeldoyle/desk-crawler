@@ -14,6 +14,7 @@ import type * as art_hero from "../art/hero.js";
 import type * as art_monsters from "../art/monsters.js";
 import type * as art_png from "../art/png.js";
 import type * as art_props from "../art/props.js";
+import type * as art_qr from "../art/qr.js";
 import type * as art_route from "../art/route.js";
 import type * as art_scene from "../art/scene.js";
 import type * as art_sceneKey from "../art/sceneKey.js";
@@ -71,6 +72,7 @@ declare const fullApi: ApiFromModules<{
   "art/monsters": typeof art_monsters;
   "art/png": typeof art_png;
   "art/props": typeof art_props;
+  "art/qr": typeof art_qr;
   "art/route": typeof art_route;
   "art/scene": typeof art_scene;
   "art/sceneKey": typeof art_sceneKey;

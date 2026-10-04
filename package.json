@@ -27,6 +27,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.1",
     "convex-test": "^0.0.60",
+    "jsqr": "^1.4.0",
     "liquidjs": "^10.30.0",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.15",
@@ -45,6 +46,7 @@
     "@tanstack/react-start": "^1.168.60",
     "convex": "^1.46.0",
     "jose": "^6.2.12",
+    "qrcode-generator": "^2.0.4",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   }

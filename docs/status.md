@@ -19,7 +19,7 @@ Updated 2026-10-03 (night). Live on the Convex dev deployment `superb-bobcat-74`
 | A11 operations | Daily bounded retention cleanup; account deletion with durable purge, revocation hashes and Clerk user deletion | convex-test; live deletion ([evidence](evidence/deletion.md)) |
 | D27 incident notices | One incident per stalled run, deduplicated alert + recovery via Resend with idempotency keys and bounded retries; disabled until `RESEND_API_KEY` is set on Convex | convex-test |
 | D23 admin | Server-side allowlist, health view, audited name repair / suspend / restore / release / resume-run, owner name replacement | convex-test |
-| Layout matrix | Local framework preview of ten states × four sizes (template v7) | [layouts](evidence/trmnl-layouts.md) |
+| Layout matrix | Local framework preview of ten states × four sizes on OG and TRMNL X (template v8), overflow-checked; companion QR on setup and full bag | [layouts](evidence/trmnl-layouts.md) |
 | D25 return recap | Single server checkpoint, guarded visible acknowledgement | convex-test; live browser check |
 
 ## Deliberate differences from the plan
@@ -27,7 +27,7 @@ Updated 2026-10-03 (night). Live on the Convex dev deployment `superb-bobcat-74`
 - `trmnl.completeInstall` prepares the pending hero in the same transaction as the grant link (no separate `heroes.create` call), so a half-finished install cannot leave a hero without an attempt.
 - The management handoff is a sealed 10-minute HttpOnly cookie instead of a `trmnlManagementHandoffs` table; the TRMNL JWT is still verified on landing, and ownership is checked by Clerk identity.
 - Install attempts do not store a browser `flowHash`; the encrypted flow cookie carries the browser binding.
-- Payload v1 gains optional `scene_url` and `scene_url_small` (additive). Progress bars use framework 3.4 `content/track/fill` with the documented inline width.
+- Payload v1 gains optional `scene_url`, `scene_url_small`, `scene_url_large`, `scene_url_medium` and `qr_url`/`qr_url_large`/`qr_label` (additive). Progress bars use framework 3.4 `content/track/fill` with the documented inline width.
 - `DEV_SEED_ENABLED` gates an internal-only dev seeding function used for browser checks. Never set it on production.
 
 ## Remaining before public release
@@ -36,6 +36,6 @@ Updated 2026-10-03 (night). Live on the Convex dev deployment `superb-bobcat-74`
 - Set `RESEND_API_KEY` on Convex to turn on incident/recovery emails (barry@barrymichaeldoyle.com from `desk-crawler@grandprixpicks.com`, D27/D38), then send one staging test.
 - Production: Convex prod deployment, Clerk production instance with Google/GitHub OAuth credentials, Workers deploy on `desk-crawler.grandprixpicks.com`, **daily backups enabled** (the privacy page states this), `DEV_SEED_ENABLED` unset, plugin URLs switched from localhost/dev, real plugin icon.
 - V06 lifecycle matrix live: uninstall, second instance, reinstall, expired attempt, wrong owner, lost callback.
-- Confirm template v7 and scene art v3 on the real TRMNL X; mashups beside other plugins; art polish after Barry's review.
+- Confirm template v8 and scene art v3 on the real TRMNL X (check the ×6 scene edges); mashups beside other plugins; art polish after Barry's review.
 - Capacity measurement at 100/1,000 heroes (V05) and the zero-revenue cost report; Creator Fund eligibility (V10).
 - Marketplace review package and submission (needs Barry's explicit go-ahead).

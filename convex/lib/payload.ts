@@ -4,7 +4,8 @@
  */
 import type { ContentCatalog } from '../sim/core/types'
 import { maxHp, xpToLeave } from '../sim/core/stats'
-import { FULL_SCALE, SMALL_SCALE } from '../art/scene'
+import { FULL_SCALE, LARGE_SCALE, MEDIUM_SCALE, SMALL_SCALE } from '../art/scene'
+import { QR_LARGE_SCALE, QR_SCALE, qrPath, type QrTarget } from '../art/qr'
 import { sceneFor, scenePath, type LatestEvent } from '../art/sceneKey'
 
 export const STALE_AFTER_MS = 30 * 60 * 1000
@@ -173,12 +174,21 @@ export function buildPayload(input: PayloadInput) {
       ? {
           scene_url: `${input.artBaseUrl}${scenePath(biomeId, scene.pose, scene.subject, FULL_SCALE)}`,
           scene_url_small: `${input.artBaseUrl}${scenePath(biomeId, scene.pose, scene.subject, SMALL_SCALE)}`,
+          scene_url_large: `${input.artBaseUrl}${scenePath(biomeId, scene.pose, scene.subject, LARGE_SCALE)}`,
+          scene_url_medium: `${input.artBaseUrl}${scenePath(biomeId, scene.pose, scene.subject, MEDIUM_SCALE)}`,
         }
-      : { scene_url: '', scene_url_small: '' }
+      : { scene_url: '', scene_url_small: '', scene_url_large: '', scene_url_medium: '' }
+
+  /** A QR code back to the companion, only when the player has something to do there. */
+  const qrFields = (target: QrTarget | null, label: string) =>
+    target !== null && input.artBaseUrl
+      ? { qr_url: `${input.artBaseUrl}${qrPath(target, QR_SCALE)}`, qr_url_large: `${input.artBaseUrl}${qrPath(target, QR_LARGE_SCALE)}`, qr_label: label }
+      : { qr_url: '', qr_url_large: '', qr_label: '' }
 
   if (hero === null) {
     return {
       ...common,
+      ...qrFields(servicePaused ? null : 'app', 'Scan to finish setup'),
       ...sceneUrls(content.safeBiomeId, { pose: 'idle', subject: { kind: 'prop', id: 'signpost' } }),
       hero_tick: null,
       hero_updated_at: null,
@@ -195,7 +205,7 @@ export function buildPayload(input: PayloadInput) {
       hp_pct: null,
       gold: null,
       status: 'unlinked' as const,
-      status_label: 'Finish setup in the Desk Crawler companion',
+      status_label: 'Setup not finished',
       status_eta_ticks: 0,
       biome_id: '',
       biome_name: '',
@@ -209,7 +219,7 @@ export function buildPayload(input: PayloadInput) {
       held_item: '',
       wake_at_tick: null,
       log: [],
-      attention: servicePaused ? 'Desk Crawler is paused for maintenance.' : 'Open the Desk Crawler companion and save this plugin in TRMNL to start.',
+      attention: servicePaused ? 'Desk Crawler is down for maintenance.' : 'Sign in to the companion, then save this plugin in TRMNL.',
     }
   }
 
@@ -241,21 +251,23 @@ export function buildPayload(input: PayloadInput) {
         etaTicks = eta(hero.wakeAtTick)
         statusLabel = etaTicks === 0 ? 'Resume pending' : 'Adventures resume next tick'
       } else if (input.heldItemName) {
-        statusLabel = 'Taking a break: bag full. A new find is waiting.'
+        statusLabel = 'Bag full, holding a new find'
       } else {
-        statusLabel = 'Taking a break: free a bag slot, then resume.'
+        statusLabel = 'Bag full. Free a slot to resume.'
       }
       break
   }
 
   let attention: string | null = null
-  if (hero.quarantined || servicePaused) attention = 'Desk Crawler paused this hero for a service check. Progress is safe.'
-  else if (stale) attention = 'Updates delayed. Your progress is safe.'
-  else if (hero.status === 'dead') attention = 'Revival is automatic. XP and gear are safe.'
-  else if (hero.status === 'sleeping' && hero.wakeAtTick === undefined) attention = 'Your find is safe. Manage gear in the companion, then resume adventures.'
+  if (hero.quarantined || servicePaused) attention = 'Paused for a service check. Nothing is lost.'
+  else if (stale) attention = 'Updates delayed. Nothing is lost.'
+  else if (hero.status === 'dead') attention = 'Revives automatically with all XP and gear.'
+  else if (hero.status === 'sleeping' && hero.wakeAtTick === undefined) attention = 'Make room in your bag in the companion, then resume.'
 
+  const needsBag = hero.status === 'sleeping' && hero.wakeAtTick === undefined && !hero.quarantined && !servicePaused
   return {
     ...common,
+    ...qrFields(needsBag ? 'bag' : null, 'Scan to open your bag'),
     ...sceneUrls(hero.biomeId, sceneFor(hero.status, hero.wakeAtTick !== undefined, input.latestEvent)),
     hero_tick: hero.lastTick,
     hero_updated_at: hero.lastAdvancedAt === undefined ? null : iso(hero.lastAdvancedAt),

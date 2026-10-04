@@ -1,4 +1,21 @@
-# TRMNL layout evidence — A10 (in progress)
+# TRMNL layout evidence: A10 (in progress)
+
+## Local framework matrix, template v8 (2026-10-04)
+
+The preview now renders every state and size twice: OG (`screen--og screen--md screen--1bit`, 800×480) and TRMNL X (`screen--v2 screen--lg screen--4bit`, 1040×780 logical, scaled ×1.8 to 1872×1404). An automated check flags any layout whose content overflows its view; v8 has none.
+
+| Device | Sheet (rows: the ten states; columns: full, half horizontal, half vertical, quadrant) |
+| --- | --- |
+| OG | [v8-og.png](layouts/v8-og.png) |
+| TRMNL X | [v8-x.png](layouts/v8-x.png) |
+
+Changes after Barry's v7 device check ("squashed to the top", unreadable small text):
+
+- No text below the regular `label` size. `label--small` and `description` render in the 1-bit pixel font on the OG and were unreadable; gray text is dithered on 1-bit screens, so gray now applies only on 4-bit (`4bit:label--gray`).
+- `lg:` variants enlarge type and progress bars on the X, and X-only rows fill the extra height: gear, gold and potions, two more log lines, Top 5 instead of Top 3.
+- The X gets larger scene art (`scene_url_large` ×6 for full, `scene_url_medium` ×3 for halves and quadrant) swapped in with `lg:hidden` / `hidden lg:block`. At ×1.8 that is 10.8 device px per art pixel, so edges pick up a faint one-pixel gray fringe in the browser render (about 4% of scene pixels). Accepted for now; ×5 (exactly 9 device px) remains the fallback if the real X shows it.
+- Companion QR codes (`qr_url`, `qr_url_large`) appear only when the player has something to do: setup (full and half vertical) and a full bag (full layout, in place of the rank panel). Targets are allowlisted (`/app`, `/app/inventory`); both scales decode in tests.
+
 
 ## Local framework matrix, template v7 (2026-10-03)
 

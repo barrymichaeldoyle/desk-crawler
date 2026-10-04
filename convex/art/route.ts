@@ -2,10 +2,10 @@ import { heroPoses, type HeroPose } from './hero'
 import { monsterArt } from './monsters'
 import { encodePng1Bit } from './png'
 import { propArt, type PropId } from './props'
-import { composeScene, FULL_SCALE, SCENE_VERSION, SMALL_SCALE, type BiomeArt, type Subject } from './scene'
+import { composeScene, FULL_SCALE, LARGE_SCALE, MEDIUM_SCALE, SCENE_VERSION, SMALL_SCALE, type BiomeArt, type Subject } from './scene'
 
 const BIOMES = new Set<BiomeArt>(['office_cubicles', 'server_room', 'cafeteria_depths'])
-const SCALES = new Set([FULL_SCALE, SMALL_SCALE])
+const SCALES = new Set([FULL_SCALE, SMALL_SCALE, LARGE_SCALE, MEDIUM_SCALE])
 
 /** Parse `/art/scene/v1/<biome>/<pose>/<subject>/<scale>.png` against strict allowlists. */
 export function parseScenePath(path: string): { biome: BiomeArt; pose: HeroPose; subject: Subject; scale: number } | null {

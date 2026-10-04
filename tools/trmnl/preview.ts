@@ -31,6 +31,9 @@ const base: PayloadInput = {
     { at: NOW - 7 * 60_000, kind: 'combat', summary: 'Unplugged a Cable Serpent. +14 XP, +5 gold.' },
     { at: NOW - 22 * 60_000, kind: 'loot', summary: 'Found a Rare Keyboard Mace.' },
     { at: NOW - 37 * 60_000, kind: 'rest', summary: 'Cooled off by the air conditioning. +30 HP.' },
+    { at: NOW - 52 * 60_000, kind: 'combat', summary: 'Rebooted a Blinking Router. +11 XP, +4 gold.' },
+    { at: NOW - 67 * 60_000, kind: 'loot', summary: 'Found 22 gold under a raised floor tile.' },
+    { at: NOW - 82 * 60_000, kind: 'combat', summary: 'Untangled a Patch Cable Knot. +9 XP.' },
   ],
   instanceName: 'Desk Crawler',
   content: contentV2,
@@ -79,22 +82,32 @@ const states: Record<string, PayloadInput> = {
   unlinked: { ...base, hero: null, ranking: null, logs: [], latestEvent: null },
 }
 
+/** OG (800x480, 1-bit) and X (1040x780 logical, 4-bit) screen classes from framework 3.4. */
+const DEVICES = [
+  { key: 'og', classes: 'screen screen--og screen--md screen--1bit screen--landscape' },
+  { key: 'x', classes: 'screen screen--v2 screen--lg screen--4bit screen--landscape' },
+] as const
+
 const SIZES = [
-  { key: 'markup', wrapper: (inner: string) => `<div class="screen"><div class="view view--full">${inner}</div></div>`, label: 'Full 800x480' },
-  { key: 'markup_half_horizontal', wrapper: (inner: string) => `<div class="screen"><div class="mashup mashup--1Tx1B"><div class="view view--half_horizontal">${inner}</div><div class="view view--half_horizontal"></div></div></div>`, label: 'Half horizontal' },
-  { key: 'markup_half_vertical', wrapper: (inner: string) => `<div class="screen"><div class="mashup mashup--1Lx1R"><div class="view view--half_vertical">${inner}</div><div class="view view--half_vertical"></div></div></div>`, label: 'Half vertical' },
-  { key: 'markup_quadrant', wrapper: (inner: string) => `<div class="screen"><div class="mashup mashup--2x2"><div class="view view--quadrant">${inner}</div><div class="view view--quadrant"></div><div class="view view--quadrant"></div><div class="view view--quadrant"></div></div></div>`, label: 'Quadrant' },
+  { key: 'markup', wrapper: (inner: string) => `<div class="view view--full">${inner}</div>`, label: 'Full' },
+  { key: 'markup_half_horizontal', wrapper: (inner: string) => `<div class="mashup mashup--1Tx1B"><div class="view view--half_horizontal">${inner}</div><div class="view view--half_horizontal"></div></div>`, label: 'Half horizontal' },
+  { key: 'markup_half_vertical', wrapper: (inner: string) => `<div class="mashup mashup--1Lx1R"><div class="view view--half_vertical">${inner}</div><div class="view view--half_vertical"></div></div>`, label: 'Half vertical' },
+  { key: 'markup_quadrant', wrapper: (inner: string) => `<div class="mashup mashup--2x2"><div class="view view--quadrant">${inner}</div><div class="view view--quadrant"></div><div class="view view--quadrant"></div><div class="view view--quadrant"></div></div>`, label: 'Quadrant' },
 ] as const
 
 mkdirSync('.previews', { recursive: true })
+let written = 0
 for (const [name, input] of Object.entries(states)) {
   const payload = buildPayload(input) as unknown as Record<string, unknown>
   for (const size of SIZES) {
     const inner = await liquid.parseAndRender(screenMarkup[size.key], payload)
-    const html = `<!doctype html><html><head><meta charset="utf-8"><title>${name} · ${size.label}</title>
+    for (const device of DEVICES) {
+      const html = `<!doctype html><html><head><meta charset="utf-8"><title>${name} · ${device.key} · ${size.label}</title>
 <link rel="stylesheet" href="https://trmnl.com/css/3.4.0/plugins.css"><script src="https://trmnl.com/js/3.4.0/plugins.js"></script>
-</head><body class="environment trmnl">${size.wrapper(inner)}</body></html>`
-    writeFileSync(`.previews/${name}--${size.key}.html`, html)
+</head><body class="environment trmnl"><div class="${device.classes}">${size.wrapper(inner)}</div></body></html>`
+      writeFileSync(`.previews/${name}--${device.key}--${size.key}.html`, html)
+      written++
+    }
   }
 }
-console.log(`wrote ${Object.keys(states).length * SIZES.length} previews to .previews/`)
+console.log(`wrote ${written} previews to .previews/`)

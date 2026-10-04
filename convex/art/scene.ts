@@ -10,9 +10,14 @@ import { eliteCrown, propArt, type PropId } from './props'
  */
 export const STAGE_WIDTH = 152
 export const STAGE_HEIGHT = 40
-/** Full layout renders 152x40 at x5 (760x200, full content width); smaller layouts at x2 (304x80). */
+/**
+ * Full layout renders 152x40 at x5 (760x200, full content width); smaller layouts at x2 (304x80).
+ * Large screens (TRMNL X, `screen--lg`) get x6 for the full view and x3 for the smaller views.
+ */
 export const FULL_SCALE = 5
 export const SMALL_SCALE = 2
+export const LARGE_SCALE = 6
+export const MEDIUM_SCALE = 3
 const GROUND = 37
 const HERO_X = 24
 const SUBJECT_X = 92

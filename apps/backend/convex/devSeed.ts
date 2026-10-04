@@ -63,7 +63,7 @@ export const seedTestHero = internalMutation({
     }
     await ctx.db.patch(heroId, { weaponId, armorId })
     await setCurrentHero(ctx, (await ctx.db.get(userId))!, heroId)
-    await ctx.db.insert('tickLogs', { heroId, source: 'lifecycle', sequence: 1, at: now, kind: 'system', summary: 'Your shift begins in the Office Cubicles.', detail: { v: 1, operation: 'dev_seed' }, deltas: { xpEarned: 0, gold: 0, hp: 0 } })
+    await ctx.db.insert('tickLogs', { heroId, source: 'lifecycle', sequence: 1, at: now, kind: 'system', summary: 'Your shift begins in the [[Office Cubicles]].', detail: { v: 1, operation: 'dev_seed' }, deltas: { xpEarned: 0, gold: 0, hp: 0 } })
     return heroId
   },
 })

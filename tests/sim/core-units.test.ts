@@ -96,12 +96,12 @@ describe('hourly score projection (D31)', () => {
 })
 
 describe('narrative articles', () => {
-  it('uses "an" before vowel-initial names and leaves other text alone', async () => {
+  it('uses "an" before vowel-initial names and marks names bold', async () => {
     const { fill } = await import('@trmnl-games/desk-crawler/sim/core/narrative')
-    expect(fill('Rebooted a {monster}. +{xp} XP.', { monster: 'Overheated Rack', xp: 3 })).toBe('Rebooted an Overheated Rack. +3 XP.')
-    expect(fill('A {monster} crashed.', { monster: 'Overheated Rack' })).toBe('An Overheated Rack crashed.')
-    expect(fill('Beat a {monster}.', { monster: 'Paper Imp' })).toBe('Beat a Paper Imp.')
-    expect(fill('Found a {item} and {gold} gold.', { item: 'Rare Mace', gold: 4 })).toBe('Found a Rare Mace and 4 gold.')
+    expect(fill('Rebooted a {monster}. +{xp} XP.', { monster: 'Overheated Rack', xp: 3 })).toBe('Rebooted an [[Overheated Rack]]. +3 XP.')
+    expect(fill('A {monster} crashed.', { monster: 'Overheated Rack' })).toBe('An [[Overheated Rack]] crashed.')
+    expect(fill('Beat a {monster}.', { monster: 'Paper Imp' })).toBe('Beat a [[Paper Imp]].')
+    expect(fill('Found a {item} and {gold} gold.', { item: 'Rare Mace', gold: 4 })).toBe('Found a [[Rare Mace]] and 4 gold.')
   })
 })
 

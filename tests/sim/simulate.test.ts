@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { applyItemChanges } from '@trmnl-games/desk-crawler/sim/core/apply'
 import { SimulationInvariantError } from '@trmnl-games/desk-crawler/sim/core/invariants'
+import { codePoints } from '@trmnl-games/desk-crawler/sim/core/narrative'
 import { maxHp, xpToLeave } from '@trmnl-games/desk-crawler/sim/core/stats'
 import type { HeroState, ItemSnapshot } from '@trmnl-games/desk-crawler/sim/core/types'
 import { baseState, content, fillBag, findSeed, run } from './helpers'
@@ -216,7 +217,7 @@ describe('fuzzed long runs', () => {
       let { hero, inventory } = baseState()
       for (let tick = 1; tick <= 500; tick += 1) {
         const result = run(hero, inventory, tick, heroIndex * 10_000 + tick)
-        if (result.event) expect([...result.event.summary].length).toBeLessThanOrEqual(c.summaryMaxCodePoints)
+        if (result.event) expect(codePoints(result.event.summary)).toBeLessThanOrEqual(c.summaryMaxCodePoints)
         const applied = applyItemChanges(result.nextHero, inventory, result.itemChanges, () => `n${String(nextId++).padStart(8, '0')}`)
         hero = applied.hero
         inventory = applied.inventory

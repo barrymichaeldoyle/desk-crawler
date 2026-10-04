@@ -83,6 +83,15 @@ export interface BiomeNarrative {
   readonly rest: readonly string[]
   readonly eliteVictory: readonly string[]
   readonly jackpot: readonly string[]
+  /** v3+: where gear turns up in this biome ({item}), pooled with the shared lines. */
+  readonly lootGear?: readonly string[]
+  /** v3+: arriving in this biome ({destination}), pooled with the shared lines. */
+  readonly arrive?: readonly string[]
+}
+
+/** v3+: signature lines for one monster ({monster}, {xp}, {gold}), pooled with its biome's victories. */
+export interface MonsterNarrative {
+  readonly victory: readonly string[]
 }
 
 export interface SharedNarrative {
@@ -100,6 +109,8 @@ export interface SharedNarrative {
   readonly revive: readonly string[]
   readonly arrive: readonly string[]
   readonly depart: readonly string[]
+  /** v3+: a level-up that opens a new area ({destination}). */
+  readonly unlock?: readonly string[]
 }
 
 export interface SimulationConstants {
@@ -136,7 +147,7 @@ export interface ContentCatalog {
   readonly gearTiers: Readonly<Record<number, GearTierStats>>
   readonly rarities: readonly RarityRule[]
   readonly potion: Readonly<{ templateId: string; name: string }>
-  readonly narrative: Readonly<{ biomes: Readonly<Record<string, BiomeNarrative>>; shared: SharedNarrative }>
+  readonly narrative: Readonly<{ biomes: Readonly<Record<string, BiomeNarrative>>; shared: SharedNarrative; monsters?: Readonly<Record<string, MonsterNarrative>> }>
 }
 
 // ---------------------------------------------------------------- hero and items

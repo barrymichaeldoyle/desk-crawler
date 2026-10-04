@@ -185,7 +185,7 @@ async function prepareHero(ctx: MutationCtx, user: Doc<'users'>, name: string, n
     sequence: 1,
     at: now,
     kind: 'system',
-    summary: 'Your shift begins in the Office Cubicles.',
+    summary: 'Your shift begins in the [[Office Cubicles]].',
     detail: { v: 1, operation: 'hero_created' },
     deltas: { xpEarned: 0, gold: 0, hp: 0 },
   })

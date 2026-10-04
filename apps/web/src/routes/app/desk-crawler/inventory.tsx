@@ -1,7 +1,8 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { nextSlotAfter } from '@trmnl-games/desk-crawler/sim/schedule'
 import { api } from '@trmnl-games/backend/api'
 import type { Id } from '@trmnl-games/backend/data-model'
 import { useIntent } from '../../../lib/intent'
@@ -76,7 +77,7 @@ function Inventory() {
               {bag.used >= bag.capacity ? <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">Sell or swap something below to make room first.</p> : null}
             </>
           ) : hero.wakeAtTick !== null ? (
-            <p>Adventures resume next tick.</p>
+            <ResumeAt />
           ) : (
             <>
               <p>Leave at least one free slot, then resume. Choose where to head next if you like.</p>
@@ -176,4 +177,11 @@ function Inventory() {
       ) : null}
     </>
   )
+}
+
+/** The next tick's local time, set after mount so server and client render the same markup. */
+function ResumeAt() {
+  const [at, setAt] = useState<string | null>(null)
+  useEffect(() => setAt(new Date(nextSlotAfter(Date.now())).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })), [])
+  return <p>Adventures resume {at === null ? 'at the next adventure' : `at ${at}`}.</p>
 }

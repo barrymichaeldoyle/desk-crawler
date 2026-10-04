@@ -2,7 +2,26 @@ import { pickOne, type Rng } from './rng'
 
 export type NarrativeVars = Readonly<Record<string, string | number>>
 
-export const codePoints = (text: string): number => [...text].length
+/**
+ * Names (monsters, items, areas) are stored wrapped in [[...]] so screens can set them in bold.
+ * Displays turn the marks into bold or strip them; old summaries simply have none.
+ */
+export const BOLD_OPEN = '[['
+export const BOLD_CLOSE = ']]'
+const BOLD_VARS = new Set(['monster', 'item', 'destination'])
+
+export const bold = (text: string) => `${BOLD_OPEN}${text}${BOLD_CLOSE}`
+export const stripMarks = (text: string) => text.replaceAll(BOLD_OPEN, '').replaceAll(BOLD_CLOSE, '')
+
+/** Plain and bold runs of a marked summary, for displays that render rich text. */
+export function markedRuns(text: string): Array<{ text: string; bold: boolean }> {
+  const runs: Array<{ text: string; bold: boolean }> = []
+  for (const [index, part] of text.split(/\[\[|\]\]/).entries()) if (part !== '') runs.push({ text: part, bold: index % 2 === 1 })
+  return runs
+}
+
+/** Visible length: the bold marks are not shown, so they do not count against the budget. */
+export const codePoints = (text: string): number => [...stripMarks(text)].length
 
 export function fill(template: string, vars: NarrativeVars): string {
   // "a {monster}" becomes "an Overheated Rack" when the name starts with a vowel.
@@ -13,7 +32,7 @@ export function fill(template: string, vars: NarrativeVars): string {
   return articled.replace(/\{(\w+)\}/g, (match, key: string) => {
     const value = vars[key]
     if (value === undefined) throw new Error(`missing narrative variable ${key} in "${template}"`)
-    return String(value)
+    return BOLD_VARS.has(key) ? bold(String(value)) : String(value)
   })
 }
 
@@ -38,10 +57,10 @@ export function composeSummary(primary: string, compact: string, consequences: r
     const text = join(compact, consequences.slice(0, keep))
     if (codePoints(text) <= max) return text
   }
-  return [...compact].slice(0, max - 1).join('') + '…'
+  return [...stripMarks(compact)].slice(0, max - 1).join('') + '…'
 }
 
 export const rarityLabel = (rarity: string): string => rarity.charAt(0).toUpperCase() + rarity.slice(1)
 
-/** "a Rare Mace", "an Uncommon Cable Cutter". */
-export const withArticle = (name: string) => `${/^[AEIOU]/i.test(name) ? 'an' : 'a'} ${name}`
+/** "a [[Rare Mace]]", "an [[Uncommon Cable Cutter]]": the name in bold marks. */
+export const withArticle = (name: string) => `${/^[AEIOU]/i.test(name) ? 'an' : 'a'} ${bold(name)}`

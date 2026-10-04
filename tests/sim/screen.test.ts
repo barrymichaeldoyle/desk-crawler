@@ -71,15 +71,37 @@ describe('full layout', () => {
   })
 })
 
+describe('rich text and status times (D45)', () => {
+  it('sets marked names in bold and keeps other text escaped', async () => {
+    const vars = payload() as { log: Array<Record<string, unknown>> } & Record<string, unknown>
+    const html = await render({ ...vars, utc_offset: 0, log: [{ ...vars.log[0], s: 'Fed a [[Paper Imp]] to the <shredder>.' }] })
+    expect(html).toContain('Fed a <span class="text--bold">Paper Imp</span> to the &lt;shredder&gt;.</span>')
+  })
+
+  it('shows a pending status with its owner-local time, or the fallback label without an offset', async () => {
+    const dead = { ...payload(), status_label: 'Knocked out. Back in about 2 h', status_eta_label: 'Knocked out, back at', status_eta_at: Date.UTC(2026, 9, 4, 10, 30) / 1000 }
+    expect(await render({ ...dead, utc_offset: 7200 })).toContain('<span class="text--regular">Knocked out, back at 12:30</span>')
+    expect(await render({ ...dead, utc_offset: null })).toContain('<span class="text--regular">Knocked out. Back in about 2 h</span>')
+  })
+})
+
 describe('log lines (D44)', () => {
   it('shows each line with its glyph and owner-local HH:MM', async () => {
     const html = await render({ ...payload(), utc_offset: 7200 })
-    expect(html).toMatch(/<img class="image no-shrink" src="data:image\/svg\+xml,[^"]+" alt=""><span[^>]*>10:19&nbsp; Unplugged a Cable Serpent/)
+    expect(html).toMatch(/<img class="image no-shrink" src="data:image\/svg\+xml,[^"]+" alt=""><span[^>]*><span class="text--regular">10:19&nbsp; Unplugged a Cable Serpent/)
   })
 
   it('leaves the time out without an offset', async () => {
     const html = await render({ ...payload(), utc_offset: null })
-    expect(html).toMatch(/data-clamp="2">Unplugged a Cable Serpent/)
+    expect(html).toMatch(/data-clamp="0" data-clamp-lg="0"><span class="text--regular">Unplugged a Cable Serpent/)
+  })
+
+  it('clamps only text too long to fit, since the clamp drops bold', async () => {
+    const vars = payload() as { log: Array<Record<string, unknown>> } & Record<string, unknown>
+    const long = 'Sent an elite [[Microwave Wraith]] back to the kitchen. +188 XP, +57 gold. Reached level 12!'
+    const html = await render({ ...vars, utc_offset: 0, log: [{ ...vars.log[0], s: long }, { ...vars.log[0], s: 'Fed a [[Paper Imp]] to the shredder.' }] })
+    expect(html).toMatch(/data-clamp="2" data-clamp-lg="0"><span class="text--regular">\d\d:\d\d&nbsp; Sent an elite/)
+    expect(html).toMatch(/data-clamp="0" data-clamp-lg="0"><span class="text--regular">\d\d:\d\d&nbsp; Fed a <span class="text--bold">Paper Imp<\/span>/)
   })
 
   it('celebrates a big moment with a badge', async () => {

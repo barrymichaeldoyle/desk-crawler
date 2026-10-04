@@ -131,7 +131,8 @@ class TickRun {
     delete h.targetBiomeId
     delete h.arriveAtTick
     h.status = 'exploring'
-    const text = variant(this.rng.narrative, this.content.narrative.shared.arrive, { destination: this.biome(to).name })
+    const arrivals = [...this.content.narrative.shared.arrive, ...(this.content.narrative.biomes[to]?.arrive ?? [])]
+    const text = variant(this.rng.narrative, arrivals, { destination: this.biome(to).name })
     return this.finish('arrived', {
       kind: 'travel',
       summary: text,
@@ -150,7 +151,7 @@ class TickRun {
     delete h.reviveAtTick
     delete h.targetBiomeId
     delete h.arriveAtTick
-    const text = variant(this.rng.narrative, content.narrative.shared.revive, { heal: hp })
+    const text = variant(this.rng.narrative, content.narrative.shared.revive, { heal: hp, destination: this.biome(content.safeBiomeId).name })
     return this.finish('revived', {
       kind: 'revive',
       summary: text,
@@ -261,7 +262,8 @@ class TickRun {
           this.metrics.victories = 1
           if (elite) this.metrics.elites = 1
           Object.assign(vars, { xp: xpGranted, gold: goldGranted })
-          primary = variant(this.rng.narrative, elite ? narrative.eliteVictory : narrative.victory, vars)
+          const victories = [...narrative.victory, ...(content.narrative.monsters?.[monster.id]?.victory ?? [])]
+          primary = variant(this.rng.narrative, elite ? narrative.eliteVictory : victories, vars)
           compact = fill('Beat {monster}. +{xp} XP, +{gold} gold.', vars)
         } else if (result === 'retreat') {
           goldPenalty = Math.floor((h.gold * c.retreatGoldLossPct) / 100)
@@ -402,6 +404,9 @@ class TickRun {
         this.metrics.levelUps = levelsGained
         if (logKind !== 'death') logKind = 'levelup'
         consequences.push(`Reached level ${h.level}!`)
+        // A level that opens a new area says so (v3+ content).
+        const opened = content.biomes.find((b) => !b.safe && b.unlockLevel > h.level - levelsGained && b.unlockLevel <= h.level)
+        if (opened && shared.unlock) consequences.push(variant(this.rng.narrative, shared.unlock, { destination: opened.name }))
       }
     }
     if (goldGranted > 0) {
@@ -424,7 +429,7 @@ class TickRun {
         consequences.unshift('Bag full. Holding it until you make room.')
       }
       if (outcome.variant === 'loot') {
-        primary = variant(this.rng.narrative, shared.lootGear, { item })
+        primary = variant(this.rng.narrative, [...shared.lootGear, ...(narrative.lootGear ?? [])], { item })
         compact = `Found ${withArticle(item)}.`
         outcome = { ...outcome, templateId: gear.templateId, rarity: gear.rarity, destination: heldFind ? 'held' : 'bag' }
       } else {

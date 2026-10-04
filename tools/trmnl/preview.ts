@@ -7,7 +7,7 @@
  */
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { Liquid } from 'liquidjs'
-import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
+import { contentV3 } from '@trmnl-games/desk-crawler/content/v3'
 import { buildPayload, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
 import { screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
 import { PREVIEW_DEVICES, PREVIEW_LAYOUTS, previewDocument, type PreviewDevice, type PreviewLayout } from '@trmnl-games/desk-crawler/templates/preview'
@@ -32,15 +32,15 @@ const base: PayloadInput = {
   bagCapacity: 30,
   heldItemName: null,
   logs: [
-    { at: NOW - 7 * 60_000, kind: 'combat', summary: 'Unplugged a Cable Serpent. +14 XP, +5 gold.' },
-    { at: NOW - 22 * 60_000, kind: 'loot', summary: 'Found a Rare Keyboard Mace.' },
+    { at: NOW - 7 * 60_000, kind: 'combat', summary: 'Untangled a [[Cable Serpent]] and zip-tied it. +14 XP, +5 gold.' },
+    { at: NOW - 22 * 60_000, kind: 'loot', summary: 'Pulled a [[Rare Keyboard Mace]] out of a cable tray.' },
     { at: NOW - 37 * 60_000, kind: 'rest', summary: 'Cooled off by the air conditioning. +30 HP.' },
-    { at: NOW - 52 * 60_000, kind: 'combat', summary: 'Rebooted an Overheated Rack. +11 XP, +4 gold.' },
+    { at: NOW - 52 * 60_000, kind: 'combat', summary: 'Rebooted an [[Overheated Rack]] for good. +11 XP, +4 gold.' },
     { at: NOW - 67 * 60_000, kind: 'loot', summary: 'Found 22 gold under a raised floor tile.' },
-    { at: NOW - 82 * 60_000, kind: 'combat', summary: 'Unplugged a Cable Serpent. +9 XP, +3 gold.' },
+    { at: NOW - 82 * 60_000, kind: 'combat', summary: 'Unplugged a [[Cable Serpent]]. +9 XP, +3 gold.' },
   ],
   instanceName: 'Desk Crawler',
-  content: contentV2,
+  content: contentV3,
   spriteBaseUrl: null,
   artBaseUrl,
   latestEvent: { kind: 'combat', outcome: { variant: 'combat', monsterId: 'cable_serpent', elite: false } },
@@ -70,11 +70,11 @@ const base: PayloadInput = {
 const hero = (patch: Partial<NonNullable<PayloadInput['hero']>>) => ({ ...base.hero!, ...patch })
 const states: Record<string, PayloadInput> = {
   normal: base,
-  elite: { ...base, latestEvent: { kind: 'combat', outcome: { variant: 'combat', monsterId: 'legacy_mainframe', elite: true, outcome: 'victory' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'An elite Legacy Mainframe went offline for good. +64 XP, +15 gold.' }, ...base.logs] },
-  levelUp: { ...base, hero: hero({ level: 6, xp: 12 }), latestEvent: { kind: 'levelup', outcome: { variant: 'combat', monsterId: 'cable_serpent', elite: false, outcome: 'victory' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'levelup', summary: 'Unplugged a Cable Serpent. +15 XP, +5 gold. Reached level 6!' }, ...base.logs] },
-  dead: { ...base, hero: hero({ status: 'dead', hp: 0, reviveAtTick: 125 }), latestEvent: { kind: 'death', outcome: { variant: 'combat', monsterId: 'firewall_gremlin', elite: false } }, logs: [{ at: NOW - 7 * 60_000, kind: 'death', summary: 'Fell to a Firewall Gremlin. Revives in the Office in 8 ticks. Lost 64 gold.' }, ...base.logs] },
+  elite: { ...base, latestEvent: { kind: 'combat', outcome: { variant: 'combat', monsterId: 'legacy_mainframe', elite: true, outcome: 'victory' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'Took down an elite [[Legacy Mainframe]]. The floor heard it. +64 XP, +15 gold.' }, ...base.logs] },
+  levelUp: { ...base, hero: hero({ level: 6, xp: 12 }), latestEvent: { kind: 'levelup', outcome: { variant: 'combat', monsterId: 'cable_serpent', elite: false, outcome: 'victory' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'levelup', summary: 'Unplugged a [[Cable Serpent]]. +15 XP, +5 gold. Reached level 6!' }, ...base.logs] },
+  dead: { ...base, hero: hero({ status: 'dead', hp: 0, reviveAtTick: 125 }), latestEvent: { kind: 'death', outcome: { variant: 'combat', monsterId: 'firewall_gremlin', elite: false } }, logs: [{ at: NOW - 7 * 60_000, kind: 'death', summary: 'Flattened by a [[Firewall Gremlin]]. Lost 64 gold.' }, ...base.logs] },
   travelling: { ...base, hero: hero({ status: 'travelling', targetBiomeId: 'cafeteria_depths', arriveAtTick: 121 }), latestEvent: { kind: 'system' } },
-  sleeping: { ...base, hero: hero({ status: 'sleeping' }), heldItemName: 'Rare Spork Halberd', bagUsed: 30, latestEvent: { kind: 'loot', outcome: { variant: 'loot', found: 'gear' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'loot', summary: 'Found a Rare Spork Halberd. Bag full. Holding it until you make room.' }, ...base.logs] },
+  sleeping: { ...base, hero: hero({ status: 'sleeping' }), heldItemName: 'Rare Spork Halberd', bagUsed: 30, latestEvent: { kind: 'loot', outcome: { variant: 'loot', found: 'gear' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'loot', summary: 'Found a [[Rare Spork Halberd]]. Bag full. Holding it until you make room.' }, ...base.logs] },
   paused: { ...base, hero: hero({ status: 'paused' }), ranking: { ...base.ranking!, rank: null, rankDelta: null, status: 'dormant', score: null } },
   quarantined: { ...base, hero: hero({ quarantined: true }) },
   stale: { ...base, world: { ...base.world!, lastCompletedAt: NOW - 3 * 3_600_000 } },
@@ -84,7 +84,7 @@ const states: Record<string, PayloadInput> = {
     ownerAlias: 'A_Very_Long_Alias__',
     // Widest case for the unclamped rank rows: a 20-character public name with a five-digit score.
     ranking: { ...base.ranking!, rank: 1, score: 12840, top5: [{ rank: 1, name: 'Maximilian_Wolfgangs', hero_name: 'Sir Staplington', level: 12, score: 12840 }, ...base.ranking!.top5.slice(1)] },
-    logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'Sent an elite Microwave Wraith back to the kitchen. +188 XP, +57 gold. Reached level 12! Found a Rare Ladle of Ruin.' }, ...base.logs],
+    logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'Sent an elite [[Microwave Wraith]] back to the kitchen. +188 XP, +57 gold. Reached level 12! Found a [[Rare Ladle of Ruin]].' }, ...base.logs],
   },
   unlinked: { ...base, hero: null, ranking: null, logs: [], latestEvent: null },
   firstRun: { ...base, hero: hero({ level: 1, xp: 0, hp: 60, gold: 0, biomeId: 'office_cubicles', lastTick: 0 }), logs: [], latestEvent: null, ranking: { ...base.ranking!, rank: null, rankDelta: null, status: 'awaiting', score: null, top5: [] } },

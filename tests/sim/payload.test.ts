@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
-import { buildPayload, celebrationFor, MAX_LOGS, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
+import { aboutDuration, buildPayload, celebrationFor, MAX_LOGS, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
 
 const NOW = Date.UTC(2026, 9, 4, 8, 20)
 const input: PayloadInput = {
@@ -72,6 +72,26 @@ describe('log lines and celebrations (D44)', () => {
     const celebration = (p: unknown) => (p as { celebration: string | null }).celebration
     expect(celebration(buildPayload({ ...played, latestEvent: { kind: 'levelup' } }))).toBe('Level up! Now level 1')
     expect(celebration(buildPayload({ ...played, latestEvent: { kind: 'levelup' }, world: { ...input.world!, maintenanceMode: true } }))).toBeNull()
+  })
+})
+
+describe('status times (D45)', () => {
+  const status = (p: unknown) => p as { status_label: string; status_eta_at: number | null; status_eta_label: string }
+
+  it('gives a knocked-out hero a real return time and a tick-free fallback', () => {
+    const p = status(buildPayload({ ...input, hero: { ...input.hero!, status: 'dead', hp: 0, lastTick: 1, reviveAtTick: 6 } }))
+    expect(p).toMatchObject({ status_label: 'Knocked out. Back in about 1 h 15 min', status_eta_label: 'Knocked out, back at' })
+    expect(p.status_eta_at).toBe(Date.UTC(2026, 9, 4, 9, 30) / 1000)
+  })
+
+  it('names areas in bold and has no time while exploring', () => {
+    expect(status(buildPayload(input))).toMatchObject({ status_label: 'Exploring the [[Office Cubicles]]', status_eta_at: null, status_eta_label: '' })
+    const travelling = status(buildPayload({ ...input, hero: { ...input.hero!, status: 'travelling', lastTick: 1, targetBiomeId: 'server_room', arriveAtTick: 2 } }))
+    expect(travelling).toMatchObject({ status_eta_label: 'To the [[Server Room]], arriving', status_eta_at: Date.UTC(2026, 9, 4, 8, 30) / 1000 })
+  })
+
+  it('formats fallback durations', () => {
+    expect([1, 3, 4, 5, 8].map(aboutDuration)).toEqual(['15 min', '45 min', '1 h', '1 h 15 min', '2 h'])
   })
 })
 

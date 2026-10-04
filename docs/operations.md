@@ -70,6 +70,10 @@ Production deployment authorization and continuous automation rules will be esta
 | Cleanup backlog | Reduce page size if limits hit, resume continuation; inspect oldest row and protected active generations |
 | Usage nearing allowance | Measure dominant operation; adjust log retention/batch sizes/read shape; discuss paid capacity before imposing new gameplay restrictions |
 
+### Content releases
+
+A catalog change ships as a new content version (e.g. v3) next to the old ones, so runs that pinned the old version can still finish. After the deploy, switch the live world between runs with `npx convex run world:setActiveContentVersion '{"contentVersion":"v3"}' --prod`. It refuses while a run is active (retry after it completes) and returns the previous version; switching back the same way is the rollback. `ACTIVE_CONTENT` only seeds new worlds. Switching is a production data change and needs explicit approval.
+
 Never “fix” an incident by resetting all player state, dropping active rank generations or blindly replaying a tick. Restore/compensation is an explicit audited operation with a separate decision.
 
 ## Security requirements tied to this design

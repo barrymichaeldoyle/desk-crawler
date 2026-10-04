@@ -7,7 +7,7 @@
  */
 import { GLYPHS, glyphRows } from '../art/glyphs'
 
-export const TEMPLATE_VERSION = 19
+export const TEMPLATE_VERSION = 20
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -98,14 +98,45 @@ const logIcon = (kind: string, size: number) =>
     .map((k) => `{% when "${k}" %}{% assign glyph = glyph${size}_${k} %}`)
     .join('')}{% else %}{% assign glyph = glyph${size}_system %}{% endcase %}<img class="image no-shrink" src="{{ glyph }}" alt="">`
 
+/**
+ * Stored text with names in [[bold marks]]: escaped first, then each mark becomes a `text--bold` span (plain <b> loses to
+ * the X fonts' fixed weight axis). Older text has no marks.
+ */
+const rich = (expr: string) => `{{ ${expr} | escape | replace: "[[", '<span class="text--bold">' | replace: "]]", "</span>" }}`
+
+/**
+ * Rich text in one regular-weight span: `.label` is inline-flex and would lay out each run as its own item, and label
+ * text is already semibold on the X, so names only stand out against regular weight. The OG's small bitmap font has a
+ * single weight, so there names are bold only in the larger newest-story line.
+ */
+const richSpan = (content: string) => `<span class="text--regular">${content}</span>`
+
 /** HH:MM in the owner's timezone (D42 offset), then the story. Without an offset the time is left out. */
-const storyText = (entry: string) => `{% if utc_offset != nil %}{{ ${entry}.u | plus: utc_offset | date: "%H:%M" }}&nbsp; {% endif %}{{ ${entry}.s | escape }}`
+const storyText = (entry: string) => richSpan(`{% if utc_offset != nil %}{{ ${entry}.u | plus: utc_offset | date: "%H:%M" }}&nbsp; {% endif %}${rich(`${entry}.s`)}`)
 
-/** One log line: glyph, time and story, wrapping beside the icon. */
-const logLine = (entry: string, classes: string, clamp: number, size: number, wrapper = 'flex') => `<div class="${wrapper} flex--row flex--left flex--top gap--small">${logIcon(`${entry}.k`, size)}<span class="${classes}" data-clamp="${clamp}">${storyText(entry)}</span></div>`
+/** Status with a real time when it has one ("Knocked out, back at 12:30"); otherwise the self-contained label. */
+const statusText = richSpan(`{% if status_eta_at and utc_offset != nil %}${rich('status_eta_label')} {{ status_eta_at | plus: utc_offset | date: "%H:%M" }}{% else %}${rich('status_label')}{% endif %}`)
 
-const newestStory = (clamp: number, classes: string, size = 16) => `
-      {% if log.size > 0 %}${logLine('log[0]', classes, clamp, size)}{% else %}<span class="${classes}">The first adventure starts soon.</span>{% endif %}`
+/**
+ * Clamp attributes that keep bold names where possible. The framework clamp replaces an element's markup with plain
+ * text, so text whose visible length (`plain`) fits in `fit` characters is left unclamped on the OG, and the X (wide,
+ * with room to wrap) never clamps rich text. Only longer OG text falls back to a plain clamped line.
+ */
+const fitClamp = (plain: string, clamp: number, fit: number) =>
+  `data-clamp="{% if ${plain}.size > ${fit} %}${clamp}{% else %}0{% endif %}" data-clamp-lg="0"`
+
+const plainOf = (expr: string) => `${expr} | replace: "[[", "" | replace: "]]", ""`
+
+/** One log line: glyph, time and story, wrapping beside the icon. `fit`: OG characters that fit in `clamp` lines. */
+const logLine = (entry: string, classes: string, clamp: number, size: number, fit: number, wrapper = 'flex') =>
+  `{% assign line_plain = ${plainOf(`${entry}.s`)} %}<div class="${wrapper} flex--row flex--left flex--top gap--small">${logIcon(`${entry}.k`, size)}<span class="${classes}" ${fitClamp('line_plain', clamp, fit)}>${storyText(entry)}</span></div>`
+
+const newestStory = (clamp: number, classes: string, size = 16, fit = 60) => `
+      {% if log.size > 0 %}${logLine('log[0]', classes, clamp, size, fit)}{% else %}<span class="${classes}">The first adventure starts soon.</span>{% endif %}`
+
+/** The status line, its clamp fitted like log lines. */
+const statusLine = (clamp: number, fit: number) =>
+  `{% if status_eta_at and utc_offset != nil %}{% assign status_plain = ${plainOf('status_eta_label')} | append: " 00:00" %}{% else %}{% assign status_plain = ${plainOf('status_label')} %}{% endif %}<span class="label lg:title--small" ${fitClamp('status_plain', clamp, fit)}>${statusText}</span>`
 
 /** A big moment (level-up, elite win, jackpot, rare find) gets an inverted badge above the newest story. */
 const celebrationBadge = (classes: string) => `
@@ -117,15 +148,15 @@ const celebrationBadge = (classes: string) => `
  * appear on large screens.
  */
 const olderStories = (count: number, extra = 0) => `
-      {% for entry in log offset: 1 limit: ${count} %}${logLine('entry', 'label lg:title--small', 2, 16)}{% endfor %}${
+      {% for entry in log offset: 1 limit: ${count} %}${logLine('entry', 'label lg:title--small', 2, 16, 66)}{% endfor %}${
         extra > 0
           ? `
-      {% for entry in log offset: ${1 + count} limit: ${extra} %}${logLine('entry', 'label lg:title--small', 2, 16, 'hidden lg:flex')}{% endfor %}`
+      {% for entry in log offset: ${1 + count} limit: ${extra} %}${logLine('entry', 'label lg:title--small', 2, 16, 66, 'hidden lg:flex')}{% endfor %}`
           : ''
       }`
 
 const rankLine = `
-      {% if rank %}<span class="label">Rank {{ rank }} of {{ total_players }}, {{ leaderboard_cohort_label | escape }}</span>{% elsif rank_status == "dormant" %}<span class="label 4bit:label--gray">Not ranked while paused</span>{% else %}<span class="label 4bit:label--gray">Ranking within the hour</span>{% endif %}`
+      {% if rank %}<span class="label">Rank {{ rank }} of {{ total_players }}, {{ leaderboard_cohort_label | escape }}</span>{% elsif rank_status == "dormant" %}<span class="label">Not ranked while paused</span>{% else %}<span class="label">Ranking within the hour</span>{% endif %}`
 
 /** English ordinal suffix for `rank` (1st, 2nd, 3rd, 4th, 11th-13th, 21st...), assigned to `rank_suffix`. */
 const rankSuffix = `{% assign rank_mod100 = rank | modulo: 100 %}{% assign rank_mod10 = rank | modulo: 10 %}{% if rank_mod100 >= 11 and rank_mod100 <= 13 %}{% assign rank_suffix = "th" %}{% elsif rank_mod10 == 1 %}{% assign rank_suffix = "st" %}{% elsif rank_mod10 == 2 %}{% assign rank_suffix = "nd" %}{% elsif rank_mod10 == 3 %}{% assign rank_suffix = "rd" %}{% else %}{% assign rank_suffix = "th" %}{% endif %}`
@@ -135,9 +166,9 @@ const rankSuffix = `{% assign rank_mod100 = rank | modulo: 100 %}{% assign rank_
  * Top 5 is cut to three rows on the OG so every row stays at a readable size.
  */
 const rankPanel = `
-      {% if rank %}${rankSuffix}<div class="flex flex--row flex--left flex--center-y gap--small"><span class="value value--small lg:value--large">{{ rank }}{{ rank_suffix }}</span><div><div><span class="label lg:title--small">of {{ total_players }} this week</span></div>{% if leaderboard_cohort_label != "" %}<div><span class="label lg:title--small 4bit:label--gray" data-clamp="1">{{ leaderboard_cohort_label | escape }}</span></div>{% endif %}</div></div>
+      {% if rank %}${rankSuffix}<div class="flex flex--row flex--left flex--center-y gap--small"><span class="value value--small lg:value--large">{{ rank }}{{ rank_suffix }}</span><div><div><span class="label lg:title--small">of {{ total_players }} this week</span></div>{% if leaderboard_cohort_label != "" %}<div><span class="label lg:title--small" data-clamp="1">{{ leaderboard_cohort_label | escape }}</span></div>{% endif %}</div></div>
       {% else %}<span class="label lg:title--small">This week{% if leaderboard_cohort_label != "" %}, {{ leaderboard_cohort_label | escape }}{% endif %}</span>
-      {% if rank_status == "dormant" %}<span class="label 4bit:label--gray">Not ranked while paused</span>{% else %}<span class="label 4bit:label--gray">Ranking within the hour</span>{% endif %}{% endif %}
+      {% if rank_status == "dormant" %}<span class="label">Not ranked while paused</span>{% else %}<span class="label">Ranking within the hour</span>{% endif %}{% endif %}
       {% for row in top5 %}<div class="{% if forloop.index > 3 %}hidden lg:flex {% endif %}flex flex--row flex--between stretch-x gap--small"><span class="label lg:title--small grow" data-clamp="1">{{ row.rank }}. {{ row.name | escape }}</span><span class="label lg:title--small no-shrink">{{ row.score }}&nbsp;XP</span></div>{% endfor %}`
 
 /** The one quiet attention message (service, delay, death, inventory sleep): never clipped, shown in every size. */
@@ -160,7 +191,7 @@ const qrImage = (scale: number, largeScale: number, field = 'qr_base') =>
  * Plain blocks, not a flex column: the framework's flex gap outranks gap--none and left the caption floating.
  */
 const gearSlot = (slot: string, field: string) => `
-      <div class="hidden lg:block"><div><span class="label 4bit:label--gray">${slot}</span></div><div><span class="title--small" data-clamp="2">{% if ${field} != "" %}{{ ${field} | escape }}{% else %}None{% endif %}</span></div></div>`
+      <div class="hidden lg:block"><div><span class="label">${slot}</span></div><div><span class="title--small" data-clamp="2">{% if ${field} != "" %}{{ ${field} | escape }}{% else %}None{% endif %}</span></div></div>`
 
 /**
  * The standing companion link beside the rank panel: opens the bag to inspect gear and potions.
@@ -185,7 +216,7 @@ const welcome = (layout: WelcomeLayout) => {
     : `{% if status == "unlinked" %}<span class="${line}" data-clamp="2">Scan with your phone to open the companion.</span>
       <span class="${line}" data-clamp="2">{{ attention | escape }}</span>{% else %}<span class="${line}" data-clamp="2">The first adventure starts within 15 minutes.</span>
       <span class="${line}" data-clamp="3">Scan to open your companion, where you manage gear and pick where to explore.</span>{% endif %}
-      <span class="${line} 4bit:label--gray">trmnlgames.com</span>`
+      <span class="${line}">trmnlgames.com</span>`
   const text = `
     <div class="flex flex--col flex--left gap--small${layout === 'halfVertical' ? ' flex--center-x' : ''}">
       <span class="${title}" data-clamp="1">${heading}</span>
@@ -214,7 +245,7 @@ export const markupFull = `${glyphAssigns([16, 24])}
   <div class="grid stretch-x gap--medium">
     <div class="col--span-5 lg:col--span-4 flex flex--col flex--left gap--xsmall">
       <span class="title lg:title--large" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
-      <span class="label lg:title--small" data-clamp="2">{{ status_label | escape }}</span>${nextTick('hidden lg:block label lg:title--small')}
+      ${statusLine(2, 56)}${nextTick('hidden lg:block label lg:title--small')}
       <span class="hidden lg:block label lg:title--small">{{ gold }} gold · {{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}</span>
     </div>
     <div class="col--span-7 lg:col--span-8">
@@ -229,8 +260,8 @@ export const markupFull = `${glyphAssigns([16, 24])}
   <div class="flex flex--col gap--small">${scene('scene_url')}${divider}
   </div>
   <div class="grid stretch-x gap--large lg:gap--xlarge">
-    <div class="{% if qr_url == "" and companion_qr_base != "" %}col--span-6{% else %}col--span-7{% endif %} flex flex--col flex--left flex--top gap--small lg:gap--medium">${celebrationBadge('label lg:title--small')}${newestStory(2, 'title lg:title', 24)}
-      {% if attention %}${attention('label lg:title--small', 2)}${olderStories(0, 5)}{% elsif celebration %}${olderStories(0, 5)}{% else %}${olderStories(1, 5)}{% endif %}
+    <div class="{% if qr_url == "" and companion_qr_base != "" %}col--span-6{% else %}col--span-7{% endif %} flex flex--col flex--left flex--top gap--small lg:gap--medium">${celebrationBadge('label lg:title--small')}${newestStory(2, 'title lg:title', 24, 46)}
+      {% if attention %}${attention('label lg:title--small', 2)}${olderStories(0, 4)}{% elsif celebration %}${olderStories(0, 4)}{% else %}${olderStories(1, 4)}{% endif %}
     </div>
     {% if qr_url != "" %}<div class="col--span-5 flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small">${qr}
     </div>{% else %}<div class="{% if companion_qr_base != "" %}col--span-6{% else %}col--span-5{% endif %} flex flex--row flex--top gap--medium">
@@ -250,10 +281,10 @@ export const markupHalfHorizontal = `${glyphAssigns([16])}
     </div>
     <div class="grow flex flex--col flex--left flex--stretch-x gap--small">
       <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
-      <span class="label lg:title--small" data-clamp="1">{{ status_label | escape }}</span>${nextTick('label lg:title--small')}${hpBar(' progress-bar--small')}
+      ${statusLine(2, 76)}${nextTick('label lg:title--small')}${hpBar(' progress-bar--small')}
       <div class="hidden lg:block">${xpBar(' progress-bar--small')}
       </div>
-      {% if attention %}${attention('label lg:title--small', 1)}${newestStory(1, 'label lg:title--small')}{% else %}${newestStory(2, 'label lg:title--small')}{% endif %}${olderStories(0, 3)}
+      {% if attention %}${attention('label lg:title--small', 1)}${newestStory(1, 'label lg:title--small', 16, 34)}{% else %}${newestStory(2, 'label lg:title--small', 16, 66)}{% endif %}${olderStories(0, 3)}
     </div>
   </div>
   {% endif %}
@@ -265,9 +296,9 @@ export const markupHalfVertical = `${glyphAssigns([16, 24])}
   {% else %}
   <div class="flex flex--col flex--left flex--stretch-x gap--small">
     <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
-    <span class="label lg:title--small" data-clamp="1">{{ status_label | escape }}</span>${nextTick('label lg:title--small')}${attention('label lg:title--small', 2)}${hpBar(' progress-bar--small')}${xpBar(' progress-bar--small')}
+    ${statusLine(2, 70)}${nextTick('label lg:title--small')}${attention('label lg:title--small', 2)}${hpBar(' progress-bar--small')}${xpBar(' progress-bar--small')}
   </div>${scene('scene_url_small')}${divider}
-  <div class="flex flex--col flex--left gap--small">${celebrationBadge('label lg:title--small')}${newestStory(2, 'title title--small lg:title', 24)}{% if celebration %}${olderStories(0, 6)}{% else %}${olderStories(1, 6)}{% endif %}${rankLine}
+  <div class="flex flex--col flex--left gap--small">${celebrationBadge('label lg:title--small')}${newestStory(2, 'title title--small lg:title', 24, 50)}{% if celebration %}${olderStories(0, 6)}{% else %}${olderStories(1, 6)}{% endif %}${rankLine}
   </div>
   {% endif %}
 </div>${titleBar}`
@@ -277,7 +308,7 @@ export const markupQuadrant = `${glyphAssigns([16])}
   {% if status == "unlinked" or first_run %}${welcome('quadrant')}
   {% else %}
     <span class="label lg:title--small" data-clamp="1">{{ hero_name | escape }}, level {{ level }} · HP {{ hp }}/{{ max_hp }}</span>${scene('scene_url_small')}
-    {% if attention %}${attention('label lg:title--small', 2)}{% else %}${newestStory(2, 'label lg:title--small')}{% endif %}
+    {% if attention %}${attention('label lg:title--small', 2)}{% else %}${newestStory(2, 'label lg:title--small', 16, 60)}{% endif %}
   {% endif %}
 </div>${titleBar}`
 

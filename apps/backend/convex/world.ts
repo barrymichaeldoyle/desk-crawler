@@ -1,6 +1,7 @@
 import { ACTIVE_CONTENT, catalogs } from '@trmnl-games/desk-crawler/content'
+import { v } from 'convex/values'
 import type { Doc } from './_generated/dataModel'
-import type { MutationCtx, QueryCtx } from './_generated/server'
+import { internalMutation, type MutationCtx, type QueryCtx } from './_generated/server'
 import { SIMULATION_VERSION } from '@trmnl-games/desk-crawler/sim/core/simulate'
 
 export async function readWorld(ctx: QueryCtx): Promise<Doc<'worldState'> | null> {
@@ -28,3 +29,19 @@ export async function getOrCreateWorld(ctx: MutationCtx): Promise<Doc<'worldStat
   })
   return (await ctx.db.get(id))!
 }
+
+/**
+ * Switch the content catalog the next run pins (operations.md "Content releases"). Refused while a run is
+ * active, so no run mixes catalogs; runs already started keep the version they recorded.
+ */
+export const setActiveContentVersion = internalMutation({
+  args: { contentVersion: v.string() },
+  returns: v.object({ from: v.string(), to: v.string() }),
+  handler: async (ctx, { contentVersion }) => {
+    if (!(contentVersion in catalogs)) throw new Error(`content version ${contentVersion} is not available`)
+    const world = await getOrCreateWorld(ctx)
+    if (world.activeRunId !== undefined) throw new Error('a run is active; retry after it completes')
+    await ctx.db.patch(world._id, { activeContentVersion: contentVersion })
+    return { from: world.activeContentVersion, to: contentVersion }
+  },
+})

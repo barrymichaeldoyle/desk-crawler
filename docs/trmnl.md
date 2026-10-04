@@ -99,13 +99,14 @@ Root values are flat; bounded `log` and `top5` arrays are intentionally nested. 
 | `level`, `xp`, `xp_to_next`, `xp_pct` | Current-level XP and progress; nullable when unlinked, percent 0–100 |
 | `hp`, `max_hp`, `hp_pct`, `gold` | Live stats, nullable when unlinked; percent 0–100 |
 | `status` | exploring/resting/travelling/dead/paused/sleeping, or unlinked when no activated hero |
-| `status_label`, `status_eta_ticks` | Preformatted text; travel/revival or scheduled inventory-wake remaining logical ticks, otherwise 0 |
+| `status_label`, `status_eta_ticks` | Preformatted text with area names in `[[bold marks]]` and no tick counts ("Knocked out. Back in about 1 h 15 min"); travel/revival or scheduled inventory-wake remaining logical ticks, otherwise 0 |
+| `status_eta_at`, `status_eta_label` | While a revive, arrival or scheduled resume is pending: its expected start (UTC seconds, from the tick schedule) and the status leading into it ("Knocked out, back at"). Templates v20 render the label plus HH:MM with `utc_offset`, else `status_label` (D45). Null/empty otherwise. Additive v1 fields |
 | `biome_id`, `biome_name` | Current biome; empty when unlinked |
 | `sprite`, `sprite_url` | Allowlisted sprite ID + versioned public HTTPS asset URL, or empty strings |
 | `weapon`, `armor` | Equipped names or empty strings |
 | `potions` | Nonnegative quantity; 0 when unlinked |
 | `bag_used`, `bag_capacity`, `held_item`, `wake_at_tick` | Live bag usage/capacity (initial 30; null unlinked), retained gear name or empty, nullable scheduled inventory-wake tick |
-| `log` | Max 10 newest-first `{ at, u, t, k, s }` entries; ISO UTC source time, the same time as UTC seconds (templates v19 render it as HH:MM with `utc_offset`, D44), legacy local `DD Mon HH:mm` label (not displayed), kind (selects the line's glyph), summary |
+| `log` | Max 10 newest-first `{ at, u, t, k, s }` entries; ISO UTC source time, the same time as UTC seconds (templates v19 render it as HH:MM with `utc_offset`, D44), legacy local `DD Mon HH:mm` label (not displayed), kind (selects the line's glyph), summary (names in `[[bold marks]]` from v20 logs on; older entries have none, D45) |
 | `celebration` | String/null: "Level up! Now level N", "Elite defeated!", "Jackpot!" or "Rare find!" when the newest event is that big moment and no attention message applies; templates show it as an inverted badge (D44). Additive v1 field |
 | `rank`, `rank_delta` | Nullable seven-day own-group ordinal rank / gain since previous hourly publication of same board/group; group change or return from dormancy null |
 | `rank_status` | `ranked`, `awaiting` (no own row yet: new, unlinked or before first publication) or `dormant` (paused/sleeping without wake with zero window XP, D32); lets templates explain a null rank |

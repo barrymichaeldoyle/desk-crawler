@@ -67,5 +67,11 @@ export function validateCatalog(content: ContentCatalog): string[] {
   for (const [key, list] of Object.entries(content.narrative.shared)) {
     if ((list as readonly string[]).length < 1) problems.push(`shared narrative ${key} is empty`)
   }
+  for (const [id, lines] of Object.entries(content.narrative.monsters ?? {})) {
+    if (!monsterIds.has(id)) problems.push(`monster narrative for unknown monster ${id}`)
+    for (const line of lines.victory) {
+      if (!line.includes('{monster}') || !line.includes('{xp}')) problems.push(`monster ${id} victory line misses {monster} or {xp}: ${line}`)
+    }
+  }
   return problems
 }

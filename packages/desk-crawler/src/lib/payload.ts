@@ -7,7 +7,8 @@ import { maxHp, xpToLeave } from '../sim/core/stats'
 import { FULL_SCALE, LARGE_SCALE, MEDIUM_SCALE, SMALL_SCALE } from '../art/scene'
 import { QR_LARGE_SCALE, QR_SCALE, qrBasePath, qrPath, type QrTarget } from '../art/qr'
 import { sceneFor, scenePath, type LatestEvent } from '../art/sceneKey'
-import { nextSlotAfter } from '../sim/schedule'
+import { nextSlotAfter, slotEta, SLOT_MS } from '../sim/schedule'
+import { bold } from '../sim/core/narrative'
 
 export const STALE_AFTER_MS = 30 * 60 * 1000
 /** Newest-first log lines: the OG shows two or three, the X up to all of them. */
@@ -171,6 +172,14 @@ export function celebrationFor(latest: LatestEvent | null, level: number): strin
   return null
 }
 
+/** "45 min", "2 h", "1 h 15 min" for a number of quarter-hour ticks. */
+export function aboutDuration(ticks: number): string {
+  const minutes = (ticks * SLOT_MS) / 60_000
+  const hours = Math.floor(minutes / 60)
+  const rest = minutes % 60
+  return hours === 0 ? `${rest} min` : rest === 0 ? `${hours} h` : `${hours} h ${rest} min`
+}
+
 export function buildPayload(input: PayloadInput) {
   const { now, world, hero, content } = input
   const biomeName = (id: string | undefined) => content.biomes.find((b) => b.id === id)?.name ?? ''
@@ -237,6 +246,8 @@ export function buildPayload(input: PayloadInput) {
       status: 'unlinked' as const,
       status_label: 'Setup not finished',
       status_eta_ticks: 0,
+      status_eta_at: null,
+      status_eta_label: '',
       next_tick_at: null,
       biome_id: '',
       biome_name: '',
@@ -258,22 +269,28 @@ export function buildPayload(input: PayloadInput) {
   const max = maxHp(hero.level)
   const xpToNext = xpToLeave(hero.level)
   const eta = (deadline: number | undefined) => (deadline === undefined ? 0 : Math.max(0, deadline - hero.lastTick))
+  // Area names carry bold marks, rendered by the templates like log summaries.
+  const area = (id: string | undefined) => bold(biomeName(id))
   let statusLabel: string
+  /** With an ETA, the status leading into its HH:MM ("Knocked out, back at"); the template appends the time. */
+  let etaLabel = ''
   let etaTicks = 0
   switch (hero.status) {
     case 'exploring':
-      statusLabel = `Exploring the ${biomeName(hero.biomeId)}`
+      statusLabel = `Exploring the ${area(hero.biomeId)}`
       break
     case 'resting':
-      statusLabel = `Resting in the ${biomeName(hero.biomeId)}`
+      statusLabel = `Resting in the ${area(hero.biomeId)}`
       break
     case 'travelling':
       etaTicks = eta(hero.arriveAtTick)
-      statusLabel = etaTicks === 0 ? 'Arrival pending' : `Travelling to the ${biomeName(hero.targetBiomeId)}`
+      statusLabel = etaTicks === 0 ? 'Arrival pending' : `Travelling to the ${area(hero.targetBiomeId)}`
+      etaLabel = `To the ${area(hero.targetBiomeId)}, arriving`
       break
     case 'dead':
       etaTicks = eta(hero.reviveAtTick)
-      statusLabel = etaTicks === 0 ? 'Revival pending' : `Knocked out. Revives in ${etaTicks} tick${etaTicks === 1 ? '' : 's'}`
+      statusLabel = etaTicks === 0 ? 'Revival pending' : `Knocked out. Back in about ${aboutDuration(etaTicks)}`
+      etaLabel = 'Knocked out, back at'
       break
     case 'paused':
       statusLabel = 'Paused by you'
@@ -282,6 +299,7 @@ export function buildPayload(input: PayloadInput) {
       if (hero.wakeAtTick !== undefined) {
         etaTicks = eta(hero.wakeAtTick)
         statusLabel = etaTicks === 0 ? 'Resume pending' : 'Adventures resume next tick'
+        etaLabel = 'Adventures resume at'
       } else if (input.heldItemName) {
         statusLabel = 'Bag full, holding a new find'
       } else {
@@ -327,6 +345,9 @@ export function buildPayload(input: PayloadInput) {
     status: hero.status,
     status_label: statusLabel,
     status_eta_ticks: etaTicks,
+    // D44/D45: when a pending status ends (UTC seconds); the template shows `status_eta_label` + HH:MM, else `status_label`.
+    status_eta_at: etaTicks > 0 ? Math.floor(slotEta(now, etaTicks) / 1000) : null,
+    status_eta_label: etaTicks > 0 ? etaLabel : '',
     next_tick_at: nextTickAt,
     biome_id: hero.biomeId,
     biome_name: biomeName(hero.biomeId),

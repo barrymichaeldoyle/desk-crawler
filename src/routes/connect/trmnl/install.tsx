@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useState, type FormEvent } from 'react'
 import { api } from '../../../../convex/_generated/api'
+import { seo } from '../../../lib/seo'
 import { captureInstall, finishInstall, getPendingInstall } from '../../../server/installFns'
 
 type Search = { code?: string; installation_callback_url?: string; invalid?: boolean }
@@ -22,7 +23,10 @@ export const Route = createFileRoute('/connect/trmnl/install')({
     }
   },
   loader: async () => await getPendingInstall(),
-  head: () => ({ meta: [{ title: 'Connect TRMNL · Desk Crawler' }, { name: 'referrer', content: 'no-referrer' }] }),
+  head: () => {
+    const head = seo({ title: 'Connect TRMNL', index: false })
+    return { ...head, meta: [...head.meta, { name: 'referrer', content: 'no-referrer' }] }
+  },
   component: InstallPage,
 })
 
@@ -57,7 +61,7 @@ function ConnectForm() {
   const { data: me } = useQuery(convexQuery(api.users.me, {}))
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  if (me === undefined) return <p>Loading your account…</p>
+  if (me === undefined) return <p role="status">Loading your account…</p>
   const needsProfile = !me?.user
   const needsHero = !me?.hero
 
@@ -120,5 +124,5 @@ function ConnectForm() {
 }
 
 function Page({ children }: { children: React.ReactNode }) {
-  return <main className="mx-auto flex max-w-lg flex-col gap-4 px-4 py-12">{children}</main>
+  return <main id="main" className="mx-auto flex max-w-lg flex-col gap-4 px-4 py-12">{children}</main>
 }

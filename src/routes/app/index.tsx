@@ -3,11 +3,12 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { usePaginatedQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
+import { seo } from '../../lib/seo'
 import { artUrl, useIntent } from '../../lib/intent'
 import { Button, Card, ErrorNote, Meter } from '../../lib/ui'
 import { ReturnRecap } from './-recap'
 
-export const Route = createFileRoute('/app/')({ component: HeroHome })
+export const Route = createFileRoute('/app/')({ head: () => seo({ title: 'Hero', index: false }), component: HeroHome })
 
 const STATUS_TEXT: Record<string, (hero: { biomeName: string; targetName: string }) => string> = {
   exploring: (h) => `Exploring the ${h.biomeName}`,
@@ -24,7 +25,7 @@ function HeroHome() {
   const potion = useIntent(api.inventory.usePotion)
   const pause = useIntent(api.heroes.pause)
   const resume = useIntent(api.heroes.resume)
-  if (!hero) return <p className="text-stone-500">Loading your hero…</p>
+  if (!hero) return <p role="status" className="text-stone-600 dark:text-stone-400">Loading your hero…</p>
 
   const biomeName = hero.biomes.find((b: { id: string }) => b.id === hero.biomeId)?.name ?? ''
   const targetName = hero.biomes.find((b: { id: string }) => b.id === hero.targetBiomeId)?.name ?? ''
@@ -55,19 +56,19 @@ function HeroHome() {
         </div>
         <dl className="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
           <div>
-            <dt className="text-stone-500">Attack</dt>
+            <dt className="text-stone-600 dark:text-stone-400">Attack</dt>
             <dd className="text-lg font-bold tabular-nums">{hero.attack}</dd>
           </div>
           <div>
-            <dt className="text-stone-500">Defense</dt>
+            <dt className="text-stone-600 dark:text-stone-400">Defense</dt>
             <dd className="text-lg font-bold tabular-nums">{hero.defense}</dd>
           </div>
           <div>
-            <dt className="text-stone-500">Gold</dt>
+            <dt className="text-stone-600 dark:text-stone-400">Gold</dt>
             <dd className="text-lg font-bold tabular-nums">{hero.gold}</dd>
           </div>
         </dl>
-        <p className="mt-2 text-xs text-stone-500">Gold will be spendable once the merchant arrives in a later update.</p>
+        <p className="mt-2 text-xs text-stone-600 dark:text-stone-400">Gold will be spendable once the merchant arrives in a later update.</p>
         <div className="mt-4 flex flex-wrap gap-2">
           {hero.status === 'sleeping' ? (
             <Link to="/app/inventory" className="inline-flex min-h-11 items-center rounded-md bg-stone-900 px-4 font-semibold text-white dark:bg-stone-100 dark:text-stone-900">
@@ -100,8 +101,8 @@ function HeroHome() {
             <li key={biome.id} className="flex items-center justify-between gap-2">
               <span>
                 <span className="font-semibold">{biome.name}</span>
-                {!biome.unlocked ? <span className="ml-2 text-sm text-stone-500">Unlocks at level {biome.unlockLevel}</span> : null}
-                {biome.id === hero.biomeId ? <span className="ml-2 text-sm text-stone-500">You are here</span> : null}
+                {!biome.unlocked ? <span className="ml-2 text-sm text-stone-600 dark:text-stone-400">Unlocks at level {biome.unlockLevel}</span> : null}
+                {biome.id === hero.biomeId ? <span className="ml-2 text-sm text-stone-600 dark:text-stone-400">You are here</span> : null}
               </span>
               {biome.unlocked && biome.id !== hero.biomeId ? (
                 <Button variant="secondary" disabled={!canAct || travel.pending} onClick={() => travel.run({ biomeId: biome.id })}>
@@ -127,7 +128,7 @@ function AdventureLog() {
         {results.map((entry: { id: string; at: number; summary: string; kind: string }) => (
           <li key={entry.id} className="py-2">
             <p>{entry.summary}</p>
-            <time className="text-xs text-stone-500" dateTime={new Date(entry.at).toISOString()}>
+            <time className="text-xs text-stone-600 dark:text-stone-400" dateTime={new Date(entry.at).toISOString()}>
               {new Date(entry.at).toLocaleString(undefined, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
             </time>
           </li>
@@ -138,7 +139,7 @@ function AdventureLog() {
           Load older entries
         </Button>
       ) : null}
-      {status === 'Exhausted' ? <p className="mt-2 text-xs text-stone-500">Detailed history is kept for three days.</p> : null}
+      {status === 'Exhausted' ? <p className="mt-2 text-xs text-stone-600 dark:text-stone-400">Detailed history is kept for three days.</p> : null}
     </Card>
   )
 }

@@ -10,6 +10,8 @@ import { encodePng1Bit } from './png'
 export const QR_VERSION = 1
 export const QR_SCALE = 3
 export const QR_LARGE_SCALE = 5
+/** Every served scale: layouts pick one per size and screen (3-5 on the OG, up to 7 on the X). */
+export const QR_SCALES = new Set([3, 4, 5, 7])
 const QUIET_MODULES = 4
 
 export const QR_TARGETS = { app: '/app', bag: '/app/inventory' } as const
@@ -17,14 +19,15 @@ export type QrTarget = keyof typeof QR_TARGETS
 
 export const DEFAULT_COMPANION_ORIGIN = 'https://desk-crawler.grandprixpicks.com'
 
-export const qrPath = (target: QrTarget, scale: number) => `/art/qr/v${QR_VERSION}/${target}/${scale}.png`
+export const qrBasePath = (target: QrTarget) => `/art/qr/v${QR_VERSION}/${target}`
+export const qrPath = (target: QrTarget, scale: number) => `${qrBasePath(target)}/${scale}.png`
 
 export function parseQrPath(path: string): { target: QrTarget; scale: number } | null {
   const match = /^\/art\/qr\/v(\d+)\/([a-z]+)\/(\d)\.png$/.exec(path)
   if (!match || Number(match[1]) !== QR_VERSION) return null
   const target = match[2] as QrTarget
   const scale = Number(match[3])
-  if (!(target in QR_TARGETS) || (scale !== QR_SCALE && scale !== QR_LARGE_SCALE)) return null
+  if (!(target in QR_TARGETS) || !QR_SCALES.has(scale)) return null
   return { target, scale }
 }
 

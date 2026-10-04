@@ -5,9 +5,10 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { api } from '../../../convex/_generated/api'
 import { useIntent } from '../../lib/intent'
+import { seo } from '../../lib/seo'
 import { Button, Card, ErrorNote } from '../../lib/ui'
 
-export const Route = createFileRoute('/app/settings')({ component: Settings })
+export const Route = createFileRoute('/app/settings')({ head: () => seo({ title: 'Settings', index: false }), component: Settings })
 
 function Settings() {
   const { data: me } = useQuery(convexQuery(api.users.me, {}))
@@ -21,9 +22,10 @@ function Settings() {
   const [confirmText, setConfirmText] = useState('')
   const resume = useIntent(api.heroes.resume)
   const browserZone = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC'
-  if (!me?.user || !hero) return <p className="text-stone-500">Loading settings…</p>
+  if (!me?.user || !hero) return <p role="status" className="text-stone-600 dark:text-stone-400">Loading settings…</p>
   return (
     <>
+      <h1 className="sr-only">Settings</h1>
       <Card title="Profile">
         <p>
           Public name: <strong>{me.user.publicAlias}</strong>
@@ -67,7 +69,7 @@ function Settings() {
               <li key={c.id} className="flex items-center justify-between gap-2 py-2">
                 <span>
                   <span className="font-semibold">Installation {c.uuid.slice(0, 8)}</span>
-                  <span className="ml-2 text-sm text-stone-500">{c.state === 'active' ? 'Connected' : c.state === 'uninstalled' ? 'Uninstalled' : 'Disconnected'}</span>
+                  <span className="ml-2 text-sm text-stone-600 dark:text-stone-400">{c.state === 'active' ? 'Connected' : c.state === 'uninstalled' ? 'Uninstalled' : 'Disconnected'}</span>
                 </span>
                 {c.state === 'active' ? (
                   <Button variant="secondary" disabled={disconnect.pending} onClick={() => disconnect.run({ instanceId: c.id })}>

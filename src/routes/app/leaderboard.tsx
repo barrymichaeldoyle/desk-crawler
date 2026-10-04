@@ -3,9 +3,10 @@ import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { api } from '../../../convex/_generated/api'
+import { seo } from '../../lib/seo'
 import { Button, Card } from '../../lib/ui'
 
-export const Route = createFileRoute('/app/leaderboard')({ component: Leaderboard })
+export const Route = createFileRoute('/app/leaderboard')({ head: () => seo({ title: 'Rankings', index: false }), component: Leaderboard })
 
 type Board = 'recent_7d' | 'recent_24h' | 'overall'
 const TABS: Array<{ board: Board; label: string }> = [
@@ -22,13 +23,13 @@ function Leaderboard() {
   const { data } = useQuery(convexQuery(api.leaderboard.view, { board, ...(cohortKey ? { cohortKey } : {}) }))
   return (
     <>
-      <div role="tablist" aria-label="Ranking period" className="flex gap-2">
+      <h1 className="sr-only">Rankings</h1>
+      <div role="group" aria-label="Ranking period" className="flex gap-2">
         {TABS.map((tab) => (
           <button
             key={tab.board}
-            role="tab"
             type="button"
-            aria-selected={board === tab.board}
+            aria-pressed={board === tab.board}
             onClick={() => {
               setBoard(tab.board)
               setCohortKey(undefined)
@@ -40,7 +41,7 @@ function Leaderboard() {
         ))}
       </div>
       {!data ? (
-        <p className="text-stone-500">Loading rankings…</p>
+        <p role="status" className="text-stone-600 dark:text-stone-400">Loading rankings…</p>
       ) : !data.published ? (
         <Card>
           <p>Rankings publish every hour. Check back soon.</p>
@@ -73,7 +74,7 @@ function Leaderboard() {
                   <span className="w-8 text-right font-bold tabular-nums">{row.rank}</span>
                   <span className="flex-1">
                     <span className="font-semibold">{row.name}</span>
-                    {row.hero_name ? <span className="text-stone-500"> · {row.hero_name}</span> : null}
+                    {row.hero_name ? <span className="text-stone-600 dark:text-stone-400"> · {row.hero_name}</span> : null}
                   </span>
                   <span className="text-sm tabular-nums text-stone-600 dark:text-stone-400">{board === 'overall' ? `Level ${row.level}` : `${row.score} XP`}</span>
                 </li>

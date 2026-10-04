@@ -1,5 +1,11 @@
 # TRMNL layout evidence: A10 (in progress)
 
+## First-run screens, template v10 (2026-10-04)
+
+Two first-run states share one panel in every size, built around a large QR code: setup (an installation with no active hero) and a brand-new hero before its first adventure (`first_run`, new payload field). A new player sees the second one for up to 15 minutes after saving the plugin. QR scales per layout: full ×4 (OG) / ×7 (X), half vertical ×4 / ×5, half horizontal ×3 / ×5, quadrant ×3 / ×4; the payload sends `qr_base` and the markup appends the scale. Rows: setup and first run on OG, then the same on the X: [v10-first-run.png](layouts/v10-first-run.png). No overflow across all 88 renders (eleven states).
+
+Template v9 dropped per-line timestamps from older log entries and lets them wrap to two rows.
+
 ## Local framework matrix, template v8 (2026-10-04)
 
 The preview now renders every state and size twice: OG (`screen--og screen--md screen--1bit`, 800×480) and TRMNL X (`screen--v2 screen--lg screen--4bit`, 1040×780 logical, scaled ×1.8 to 1872×1404). An automated check flags any layout whose content overflows its view; v8 has none.

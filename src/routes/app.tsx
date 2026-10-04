@@ -4,11 +4,12 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
 import { api } from '../../convex/_generated/api'
 import { Button, Card } from '../lib/ui'
+import { seo } from '../lib/seo'
 import { NameRepair } from './app/-nameRepair'
 
 /** Companion shell: auth gate, setup states and mobile-first navigation (companion.md). */
 export const Route = createFileRoute('/app')({
-  head: () => ({ meta: [{ title: 'Desk Crawler' }] }),
+  head: () => seo({ title: 'Companion', index: false }),
   component: AppShell,
 })
 
@@ -31,7 +32,7 @@ function AppShell() {
         </Show>
       </header>
       <Show when="signed-out">
-        <main className="flex flex-col gap-4 px-4 py-8">
+        <main id="main" className="flex flex-col gap-4 px-4 py-8">
           <h1 className="text-2xl font-bold">Desk Crawler companion</h1>
           <p>Sign in to check on your hero and sort out gear.</p>
           <SignInButton mode="modal">
@@ -48,10 +49,10 @@ function AppShell() {
 
 function SignedInApp() {
   const { data: me, isPending } = useQuery(convexQuery(api.users.me, {}))
-  if (isPending) return <main className="px-4 py-8 text-stone-500">Loading…</main>
+  if (isPending) return <main id="main" className="px-4 py-8 text-stone-600 dark:text-stone-400"><p role="status">Loading…</p></main>
   if (!me?.hero) {
     return (
-      <main className="px-4 py-8">
+      <main id="main" className="px-4 py-8">
         <Card title="Start on TRMNL">
           <p>Desk Crawler starts on your TRMNL. Install the Desk Crawler plugin from the TRMNL marketplace, connect it here, then save it in TRMNL.</p>
         </Card>
@@ -60,7 +61,7 @@ function SignedInApp() {
   }
   if (me.hero.activationState === 'pending_trmnl') {
     return (
-      <main className="px-4 py-8">
+      <main id="main" className="px-4 py-8">
         <Card title="One more step">
           <p>
             <strong>{me.hero.name}</strong> is ready. Return to TRMNL and click <strong>Save</strong> on the Desk Crawler plugin to start adventures.
@@ -87,7 +88,7 @@ function SignedInApp() {
           ))}
         </ul>
       </nav>
-      <main className="flex flex-col gap-4 px-4 py-6">
+      <main id="main" className="flex flex-col gap-4 px-4 py-6">
         {me.user?.nameRepairRequired ? <NameRepair /> : null}
         <Outlet />
       </main>

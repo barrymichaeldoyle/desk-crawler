@@ -5,7 +5,7 @@
 import type { ContentCatalog } from '../sim/core/types'
 import { maxHp, xpToLeave } from '../sim/core/stats'
 import { FULL_SCALE, LARGE_SCALE, MEDIUM_SCALE, SMALL_SCALE } from '../art/scene'
-import { QR_LARGE_SCALE, QR_SCALE, qrPath, type QrTarget } from '../art/qr'
+import { QR_LARGE_SCALE, QR_SCALE, qrBasePath, qrPath, type QrTarget } from '../art/qr'
 import { sceneFor, scenePath, type LatestEvent } from '../art/sceneKey'
 
 export const STALE_AFTER_MS = 30 * 60 * 1000
@@ -189,13 +189,19 @@ export function buildPayload(input: PayloadInput) {
   /** A QR code back to the companion, only when the player has something to do there. */
   const qrFields = (target: QrTarget | null, label: string) =>
     target !== null && input.artBaseUrl
-      ? { qr_url: `${input.artBaseUrl}${qrPath(target, QR_SCALE)}`, qr_url_large: `${input.artBaseUrl}${qrPath(target, QR_LARGE_SCALE)}`, qr_label: label }
-      : { qr_url: '', qr_url_large: '', qr_label: '' }
+      ? {
+          qr_url: `${input.artBaseUrl}${qrPath(target, QR_SCALE)}`,
+          qr_url_large: `${input.artBaseUrl}${qrPath(target, QR_LARGE_SCALE)}`,
+          qr_base: `${input.artBaseUrl}${qrBasePath(target)}`,
+          qr_label: label,
+        }
+      : { qr_url: '', qr_url_large: '', qr_base: '', qr_label: '' }
 
   if (hero === null) {
     return {
       ...common,
       ...qrFields(servicePaused ? null : 'app', 'Scan to finish setup'),
+      first_run: false,
       ...sceneUrls(content.safeBiomeId, { pose: 'idle', subject: { kind: 'prop', id: 'signpost' } }),
       hero_tick: null,
       hero_updated_at: null,
@@ -272,9 +278,12 @@ export function buildPayload(input: PayloadInput) {
   else if (hero.status === 'sleeping' && hero.wakeAtTick === undefined) attention = 'Make room in your bag in the companion, then resume.'
 
   const needsBag = hero.status === 'sleeping' && hero.wakeAtTick === undefined && !hero.quarantined && !servicePaused
+  // A brand-new hero has no adventures yet: the screen welcomes them and links the companion.
+  const firstRun = input.logs.length === 0 && attention === null && (hero.status === 'exploring' || hero.status === 'resting')
   return {
     ...common,
-    ...qrFields(needsBag ? 'bag' : null, 'Scan to open your bag'),
+    ...(needsBag ? qrFields('bag', 'Scan to open your bag') : qrFields(firstRun ? 'app' : null, 'Scan to open your companion')),
+    first_run: firstRun,
     ...sceneUrls(hero.biomeId, sceneFor(hero.status, hero.wakeAtTick !== undefined, input.latestEvent)),
     hero_tick: hero.lastTick,
     hero_updated_at: hero.lastAdvancedAt === undefined ? null : iso(hero.lastAdvancedAt),

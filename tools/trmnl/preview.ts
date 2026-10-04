@@ -80,6 +80,7 @@ const states: Record<string, PayloadInput> = {
     logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'Sent an elite Microwave Wraith back to the kitchen. +188 XP, +57 gold. Reached level 12! Found a Rare Ladle of Ruin.' }, ...base.logs],
   },
   unlinked: { ...base, hero: null, ranking: null, logs: [], latestEvent: null },
+  firstRun: { ...base, hero: hero({ level: 1, xp: 0, hp: 60, gold: 0, biomeId: 'office_cubicles', lastTick: 0 }), logs: [], latestEvent: null, ranking: { ...base.ranking!, rank: null, rankDelta: null, status: 'awaiting', score: null, top5: [] } },
 }
 
 /** OG (800x480, 1-bit) and X (1040x780 logical, 4-bit) screen classes from framework 3.4. */

@@ -28,7 +28,7 @@ export function Meter({ label, value, max }: { label: string; value: number; max
           {value}/{max}
         </span>
       </div>
-      <div className="mt-1 h-3 overflow-hidden rounded border border-stone-900 dark:border-stone-200" role="meter" aria-label={label} aria-valuenow={value} aria-valuemin={0} aria-valuemax={max}>
+      <div className="mt-1 h-3 overflow-hidden rounded border border-stone-900 dark:border-stone-200" role="meter" aria-label={label} aria-valuenow={value} aria-valuemin={0} aria-valuemax={max} aria-valuetext={`${value} of ${max}`}>
         <div className="h-full bg-stone-900 dark:bg-stone-200" style={{ width: `${pct}%` }} />
       </div>
     </div>

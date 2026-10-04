@@ -5,9 +5,10 @@ import { useState } from 'react'
 import { api } from '../../../convex/_generated/api'
 import type { Id } from '../../../convex/_generated/dataModel'
 import { useIntent } from '../../lib/intent'
+import { seo } from '../../lib/seo'
 import { Button, Card, ErrorNote } from '../../lib/ui'
 
-export const Route = createFileRoute('/app/inventory')({ component: Inventory })
+export const Route = createFileRoute('/app/inventory')({ head: () => seo({ title: 'Bag', index: false }), component: Inventory })
 
 type Gear = {
   id: Id<'items'>
@@ -32,7 +33,7 @@ function Inventory() {
   const sellMany = useIntent(api.inventory.sellMany)
   const claim = useIntent(api.inventory.claimHeld)
   const resume = useIntent(api.inventory.resumeAdventures)
-  if (!bag || !hero) return <p className="text-stone-500">Loading your bag…</p>
+  if (!bag || !hero) return <p role="status" className="text-stone-600 dark:text-stone-400">Loading your bag…</p>
 
   const gear = bag.gear as Gear[]
   const manageable = hero.status === 'exploring' || hero.status === 'resting' || hero.status === 'sleeping'
@@ -60,6 +61,7 @@ function Inventory() {
 
   return (
     <>
+      <h1 className="sr-only">Bag</h1>
       {hero.status === 'sleeping' ? (
         <Card title="Bag full">
           {held ? (
@@ -114,9 +116,11 @@ function Inventory() {
             return (
               <li key={item.id} className="flex items-center gap-3 py-2">
                 {!item.equipped && !item.held && manageable ? (
-                  <input type="checkbox" aria-label={`Select ${item.label} to sell`} checked={selected.has(item.id)} onChange={() => toggle(item.id)} className="h-5 w-5" />
+                  <label className="-m-3 flex min-h-11 min-w-11 cursor-pointer items-center justify-center">
+                    <input type="checkbox" aria-label={`Select ${item.label} to sell`} checked={selected.has(item.id)} onChange={() => toggle(item.id)} className="h-5 w-5" />
+                  </label>
                 ) : (
-                  <span className="w-5" />
+                  <span className="w-5" aria-hidden="true" />
                 )}
                 <div className="flex-1">
                   <p className="font-semibold">
@@ -128,6 +132,7 @@ function Inventory() {
                   <p className="text-sm text-stone-600 dark:text-stone-400">
                     {item.kind === 'weapon' ? `+${item.attack} attack` : `+${item.defense} defense`} · {item.rarity} · level {item.requiredLevel} · sells for {item.saleValue}
                   </p>
+                  {!item.equipped && !item.held && item.requiredLevel > hero.level ? <p className="text-sm font-semibold">Equippable at level {item.requiredLevel}</p> : null}
                 </div>
                 {!item.equipped && !item.held ? (
                   <Button variant="secondary" disabled={!manageable || equip.pending || item.requiredLevel > hero.level} onClick={() => equip.run({ itemId: item.id })}>
@@ -142,7 +147,7 @@ function Inventory() {
       </Card>
 
       {chosen.length > 0 ? (
-        <div className="sticky bottom-4 rounded-lg border-2 border-stone-900 bg-white p-4 shadow-lg dark:border-stone-200 dark:bg-stone-900">
+        <div role="region" aria-label="Sell selected gear" className="sticky bottom-4 rounded-lg border-2 border-stone-900 bg-white p-4 shadow-lg dark:border-stone-200 dark:bg-stone-900">
           {confirming ? (
             <>
               <p>

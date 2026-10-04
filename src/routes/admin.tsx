@@ -7,13 +7,14 @@ import { useState } from 'react'
 import { api } from '../../convex/_generated/api'
 import type { Id } from '../../convex/_generated/dataModel'
 import { errorMessage } from '../lib/intent'
+import { seo } from '../lib/seo'
 import { Button, Card, ErrorNote } from '../lib/ui'
 
 /** Owner-run support console (D23). Every action requires a reason and is audited server-side. */
 export const Route = createFileRoute('/admin')({
-  head: () => ({ meta: [{ title: 'Admin · Desk Crawler' }, { name: 'robots', content: 'noindex' }] }),
+  head: () => seo({ title: 'Admin', index: false }),
   component: () => (
-    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-8">
+    <main id="main" className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-8">
       <h1 className="text-2xl font-bold">Desk Crawler admin</h1>
       <Show when="signed-in">
         <AdminGate />
@@ -29,7 +30,7 @@ const when = (ts: number | null | undefined) => (ts ? new Date(ts).toLocaleStrin
 
 function AdminGate() {
   const { data: isAdmin } = useQuery(convexQuery(api.admin.isAdmin, {}))
-  if (isAdmin === undefined) return <p className="text-stone-500">Checking access…</p>
+  if (isAdmin === undefined) return <p role="status" className="text-stone-600 dark:text-stone-400">Checking access…</p>
   if (!isAdmin) return <p>Not available.</p>
   return (
     <>
@@ -44,7 +45,7 @@ function Health() {
   const resume = useMutation(api.admin.resumeBlockedRun)
   const release = useMutation(api.admin.releaseHero)
   const [error, setError] = useState<string | null>(null)
-  if (!data) return <p className="text-stone-500">Loading health…</p>
+  if (!data) return <p role="status" className="text-stone-600 dark:text-stone-400">Loading health…</p>
   const act = async (fn: () => Promise<unknown>) => {
     setError(null)
     try {
@@ -147,7 +148,7 @@ function UserTools() {
           </div>
         </div>
       ) : alias.length >= 2 ? (
-        <p className="mt-3 text-sm text-stone-500">No player with that public name.</p>
+        <p className="mt-3 text-sm text-stone-600 dark:text-stone-400">No player with that public name.</p>
       ) : null}
       <ErrorNote message={error} />
     </Card>

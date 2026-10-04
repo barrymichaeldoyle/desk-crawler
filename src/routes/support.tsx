@@ -1,8 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { ProsePage, SUPPORT_EMAIL } from '../lib/prose'
+import { seo } from '../lib/seo'
 
 export const Route = createFileRoute('/support')({
-  head: () => ({ meta: [{ title: 'Support · Desk Crawler' }] }),
+  head: () => seo({ title: 'Support', path: '/support', description: 'Get help with your Desk Crawler account, TRMNL connection or a public-name report.' }),
   component: () => (
     <ProsePage title="Support">
       <ul>

@@ -118,6 +118,7 @@ Root values are flat; bounded `log` and `top5` arrays are intentionally nested. 
 | `scene_url`, `scene_url_small` | Public versioned scene images (`/art/scene/v<N>/<biome>/<pose>/<subject>/<scale>.png`) for the full (760×200) and smaller (304×80) layouts; empty when no art origin is configured. Additive v1 fields (revision 12) |
 | `scene_url_large`, `scene_url_medium` | The same scene at ×6 (912×240) and ×3 (456×120) for large screens (TRMNL X), selected in markup with `lg:` classes. Additive v1 fields |
 | `qr_url`, `qr_url_large`, `qr_label` | QR code back to the companion (`/art/qr/v1/<app\|bag>/<3\|5>.png`, encodes `COMPANION_ORIGIN` + `/app` or `/app/inventory`) and its caption. Set only for setup and a full bag; empty otherwise. Additive v1 fields |
+| `qr_base`, `first_run` | QR path without the scale (`.../art/qr/v1/<target>`, markup appends `/<3\|4\|5\|7>.png`), and true for a new hero before its first adventure (the screen shows a welcome with a companion QR). Additive v1 fields |
 | `game_as_of_label` | <=48-character local completed-run date/time with UTC offset, or “Awaiting first game tick”; present on every layout |
 | `leaderboard_as_of_label` | Same format for published board, or “Ranking within the hour”; shown with ranks |
 

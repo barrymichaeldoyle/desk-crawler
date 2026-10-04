@@ -4,7 +4,7 @@
 
 ## Platform and visual direction
 
-TanStack Start + Vite on Cloudflare Workers, React, Clerk, Convex reactive queries. The web app is mobile-first and keyboard-accessible. An installable PWA manifest is a later enhancement unless trivial in the foundation; offline game mutations are not an MVP feature.
+TanStack Start + Vite on Cloudflare Workers, React, Clerk, Convex reactive queries. The web app is mobile-first and keyboard-accessible. A basic web app manifest ships with the icons; offline support and game mutations are not an MVP feature. Favicons, app icons and the social card are generated from the marketplace icon art by `pnpm tsx tools/art/web.ts` into `public/`.
 
 Tone: an office adventure ledger with original pixel hero artwork, legible typography and clear action labels. Device art may be monochrome; the web UI may use restrained color. Do not make every stat a competing dashboard card. Hero state and latest story come first; inventory and rank are secondary.
 

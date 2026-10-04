@@ -3,6 +3,7 @@ import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
 import { Link, createFileRoute, redirect } from '@tanstack/react-router'
 import { api } from '../../../../convex/_generated/api'
+import { seo } from '../../../lib/seo'
 import { useIntent } from '../../../lib/intent'
 import { Button, Card, ErrorNote } from '../../../lib/ui'
 import { captureManagement, getManagedInstance } from '../../../server/manageFns'
@@ -23,7 +24,10 @@ export const Route = createFileRoute('/connect/trmnl/manage')({
     }
   },
   loader: async () => await getManagedInstance(),
-  head: () => ({ meta: [{ title: 'Manage TRMNL · Desk Crawler' }, { name: 'referrer', content: 'no-referrer' }] }),
+  head: () => {
+    const head = seo({ title: 'Manage TRMNL', index: false })
+    return { ...head, meta: [...head.meta, { name: 'referrer', content: 'no-referrer' }] }
+  },
   component: ManagePage,
 })
 
@@ -31,7 +35,7 @@ function ManagePage() {
   const { uuid } = Route.useLoaderData()
   const { invalid } = Route.useSearch()
   return (
-    <main className="mx-auto flex max-w-lg flex-col gap-4 px-4 py-12">
+    <main id="main" className="mx-auto flex max-w-lg flex-col gap-4 px-4 py-12">
       <h1 className="text-2xl font-bold">Desk Crawler on TRMNL</h1>
       {uuid === null ? (
         <Card>
@@ -56,7 +60,7 @@ function ManagePage() {
 function Connection({ uuid }: { uuid: string }) {
   const { data } = useQuery(convexQuery(api.connections.forManagement, { uuid }))
   const disconnect = useIntent(api.connections.disconnect)
-  if (data === undefined) return <p className="text-stone-500">Checking this installation…</p>
+  if (data === undefined) return <p role="status" className="text-stone-600 dark:text-stone-400">Checking this installation…</p>
   if (data === null || !data.owned) {
     return (
       <Card title="Different account">
@@ -95,7 +99,7 @@ function Connection({ uuid }: { uuid: string }) {
           </Button>
         ) : null}
       </div>
-      <p className="mt-3 text-xs text-stone-500">Disconnecting stops new screens for this installation. TRMNL may keep showing the last image until you remove the plugin from your playlist.</p>
+      <p className="mt-3 text-xs text-stone-600 dark:text-stone-400">Disconnecting stops new screens for this installation. TRMNL may keep showing the last image until you remove the plugin from your playlist.</p>
       <ErrorNote message={disconnect.error} />
     </Card>
   )

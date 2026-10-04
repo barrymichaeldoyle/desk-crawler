@@ -1,8 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { ProsePage, SUPPORT_EMAIL } from '../lib/prose'
+import { seo } from '../lib/seo'
 
 export const Route = createFileRoute('/privacy')({
-  head: () => ({ meta: [{ title: 'Privacy · Desk Crawler' }] }),
+  head: () => seo({ title: 'Privacy', path: '/privacy', description: 'What Desk Crawler stores, what is public on leaderboards and TRMNL screens, and how to delete your account.' }),
   component: () => (
     <ProsePage title="Privacy">
       <p>Desk Crawler is a free game. This page describes what the service stores and why, in plain terms.</p>

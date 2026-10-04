@@ -16,8 +16,14 @@ export function NameRepair() {
     <Card title="Choose new names">
       <p>Your public names were hidden after a report. Pick new ones that follow the name rules; your hero's progress and gear are unchanged.</p>
       <form onSubmit={onSubmit} className="mt-3 flex flex-col gap-3">
-        <input aria-label="New public name" value={alias} onChange={(e) => setAlias(e.target.value)} minLength={2} maxLength={20} required className="min-h-11 rounded-md border border-stone-400 bg-white px-3 text-stone-900" />
-        <input aria-label="New hero name" value={hero} onChange={(e) => setHero(e.target.value)} minLength={2} maxLength={16} required className="min-h-11 rounded-md border border-stone-400 bg-white px-3 text-stone-900" />
+        <label className="flex flex-col gap-1">
+          <span className="font-semibold">New public name</span>
+          <input value={alias} onChange={(e) => setAlias(e.target.value)} minLength={2} maxLength={20} required autoComplete="off" className="min-h-11 rounded-md border border-stone-400 bg-white px-3 text-stone-900" />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="font-semibold">New hero name</span>
+          <input value={hero} onChange={(e) => setHero(e.target.value)} minLength={2} maxLength={16} required autoComplete="off" className="min-h-11 rounded-md border border-stone-400 bg-white px-3 text-stone-900" />
+        </label>
         <Button type="submit" disabled={replace.pending}>
           Save names
         </Button>

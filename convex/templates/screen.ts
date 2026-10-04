@@ -5,7 +5,7 @@
  * Deploy-time constants: user text only arrives through merge_variables and is
  * escaped here. Each string is self-contained (no shared-template registration).
  */
-export const TEMPLATE_VERSION = 9
+export const TEMPLATE_VERSION = 10
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -95,22 +95,51 @@ const attention = (classes: string, clamp: number) => `
 const qr = `
       {% if qr_url != "" %}<div class="flex flex--col flex--center-x gap--xsmall no-shrink"><img class="image lg:hidden" src="{{ qr_url }}" alt=""><img class="image hidden lg:block" src="{{ qr_url_large }}" alt=""><span class="label lg:title--small">{{ qr_label | escape }}</span></div>{% endif %}`
 
-/** Setup prompt. `side` puts the QR beside the text (full), `below` stacks it (half vertical). */
-const setup = (field: SceneField, qrPlacement: 'none' | 'side' | 'below' = 'none') => {
-  const withQr = qrPlacement !== 'none'
-  return `${scene(field)}
-  <div class="flex ${qrPlacement === 'below' ? 'flex--col' : 'flex--row'} flex--center-x flex--center-y gap--medium lg:gap--large">
-    <div class="flex flex--col flex--center-x gap--small">
-      <span class="${field === 'scene_url' ? 'title lg:title--large' : 'title title--small lg:title'}">Your hero is ready</span>
-      <span class="label lg:title--small text--center" data-clamp="3">{{ attention | escape }}</span>
-      <span class="label lg:title--small">desk-crawler.grandprixpicks.com</span>
-    </div>${withQr ? qr : ''}
+/** QR image at a per-layout scale, swapped for a larger one on screen--lg (TRMNL X). */
+const qrImage = (scale: number, largeScale: number) =>
+  `<img class="image lg:hidden" src="{{ qr_base }}/${scale}.png" alt=""><img class="image hidden lg:block" src="{{ qr_base }}/${largeScale}.png" alt="">`
+
+type WelcomeLayout = 'full' | 'halfVertical' | 'halfHorizontal' | 'quadrant'
+
+/**
+ * First-run panel: setup (no active hero) or a brand-new hero before its first
+ * adventure. The QR is the main element, sized per layout; text stays short.
+ */
+const welcome = (layout: WelcomeLayout) => {
+  const compact = layout === 'quadrant'
+  const title = compact ? 'title title--small lg:title' : 'title lg:title--large'
+  const line = layout === 'halfVertical' ? 'label lg:title--small text--center' : 'label lg:title--small'
+  const heading = `{% if status == "unlinked" %}Finish setting up{% else %}{{ hero_name | escape }} is ready{% endif %}`
+  const lines = compact
+    ? `<span class="${line}" data-clamp="2">{% if status == "unlinked" %}Scan to finish setup{% else %}First adventure within 15 minutes{% endif %}</span>`
+    : `{% if status == "unlinked" %}<span class="${line}" data-clamp="2">Scan with your phone to open the companion.</span>
+      <span class="${line}" data-clamp="2">{{ attention | escape }}</span>{% else %}<span class="${line}" data-clamp="2">The first adventure starts within 15 minutes.</span>
+      <span class="${line}" data-clamp="3">Scan to open your companion, where you manage gear and pick where to explore.</span>{% endif %}
+      <span class="${line} 4bit:label--gray">desk-crawler.grandprixpicks.com</span>`
+  const text = `
+    <div class="flex flex--col flex--left gap--small${layout === 'halfVertical' ? ' flex--center-x' : ''}">
+      <span class="${title}" data-clamp="1">${heading}</span>
+      ${lines}
+    </div>`
+  const scales: Record<WelcomeLayout, [number, number]> = { full: [4, 7], halfVertical: [4, 5], halfHorizontal: [3, 5], quadrant: [3, 4] }
+  const [scale, largeScale] = scales[layout]
+  const code = `{% if qr_base != "" %}<div class="no-shrink">${qrImage(scale, largeScale)}</div>{% endif %}`
+  if (layout === 'halfVertical') {
+    return `${scene('scene_url_small')}
+  <div class="flex flex--col flex--center-x gap--small">
+    ${code}${text}
   </div>`
+  }
+  const row = `
+  <div class="flex flex--row flex--center-x flex--center-y gap--large lg:gap--xlarge">
+    ${code}${text}
+  </div>`
+  return layout === 'full' ? `${scene('scene_url')}${row}` : row
 }
 
 export const markupFull = `
 <div class="layout layout--col layout--top layout--stretch-x gap--small lg:gap--xxlarge">
-  {% if status == "unlinked" %}${setup('scene_url', 'side')}
+  {% if status == "unlinked" or first_run %}${welcome('full')}
   {% else %}
   <div class="flex flex--col gap--small">${scene('scene_url')}${divider}
   </div>
@@ -136,7 +165,7 @@ export const markupFull = `
 
 export const markupHalfHorizontal = `
 <div class="layout layout--col layout--stretch-x">
-  {% if status == "unlinked" %}${setup('scene_url_small')}
+  {% if status == "unlinked" or first_run %}${welcome('halfHorizontal')}
   {% else %}
   <div class="flex flex--row flex--center-y stretch-x gap--medium">
     <div class="no-shrink">${scene('scene_url_small')}
@@ -152,8 +181,8 @@ export const markupHalfHorizontal = `
 </div>${titleBar}`
 
 export const markupHalfVertical = `
-<div class="layout layout--col layout--stretch-x {% if status == "unlinked" %}gap--medium{% else %}gap--distribute{% endif %}">
-  {% if status == "unlinked" %}${setup('scene_url_small', 'below')}
+<div class="layout layout--col layout--stretch-x {% if status == "unlinked" or first_run %}gap--medium{% else %}gap--distribute{% endif %}">
+  {% if status == "unlinked" or first_run %}${welcome('halfVertical')}
   {% else %}${scene('scene_url_small')}
   <div class="flex flex--col flex--left flex--stretch-x gap--small">
     <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
@@ -166,7 +195,7 @@ export const markupHalfVertical = `
 
 export const markupQuadrant = `
 <div class="layout layout--col layout--stretch-x gap--xsmall lg:gap--small">
-  {% if status == "unlinked" %}${setup('scene_url_small')}
+  {% if status == "unlinked" or first_run %}${welcome('quadrant')}
   {% else %}${scene('scene_url_small')}
     <span class="label lg:title--small" data-clamp="1">{{ hero_name | escape }}, level {{ level }}. HP {{ hp }}/{{ max_hp }}</span>
     <div class="hidden lg:block">${hpBar(' progress-bar--small')}

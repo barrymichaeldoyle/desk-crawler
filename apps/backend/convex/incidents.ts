@@ -64,7 +64,7 @@ export const sendNotice = internalAction({
         method: 'POST',
         headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', 'Idempotency-Key': `${incidentId}-${notice}` },
         body: JSON.stringify({
-          from: process.env.ALERT_FROM ?? 'Desk Crawler <desk-crawler@grandprixpicks.com>',
+          from: process.env.ALERT_FROM ?? 'TRMNL Games <alerts@trmnlgames.com>',
           to: [process.env.ALERT_TO ?? 'barry@barrymichaeldoyle.com'],
           subject,
           text,

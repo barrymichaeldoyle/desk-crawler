@@ -4,5 +4,8 @@
   "compatibility_date": "2026-10-01",
   "compatibility_flags": ["nodejs_compat"],
   "main": "@tanstack/react-start/server-entry",
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
+  // Production companion. Secrets (CLERK_SECRET_KEY, INSTALL_FLOW_KEY) are set with `wrangler secret put`.
+  "routes": [{ "pattern": "desk-crawler.grandprixpicks.com", "custom_domain": true }],
+  "vars": { "TRMNL_CLIENT_ID": "90prjumnczpk4vhkujs9ow" }
 }

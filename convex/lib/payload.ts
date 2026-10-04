@@ -148,6 +148,13 @@ function rankingFields(ranking: PayloadRanking | null, unlinked: boolean, timeZo
   }
 }
 
+/**
+ * Joins numbers to their units with a no-break space so wrapped log lines never
+ * strand "+2" at the end of a row and "gold" at the start of the next.
+ */
+export const keepUnitsTogether = (text: string) =>
+  text.replace(/([+-]?\d+) (XP|gold|HP|ticks?)\b/g, '$1\u00a0$2').replace(/\b(level|Level) (\d+)/g, '$1\u00a0$2')
+
 export function buildPayload(input: PayloadInput) {
   const { now, world, hero, content } = input
   const biomeName = (id: string | undefined) => content.biomes.find((b) => b.id === id)?.name ?? ''
@@ -155,7 +162,7 @@ export function buildPayload(input: PayloadInput) {
   const stale = world === null ? false : now - (lastCompletedAt ?? world.createdAt) > STALE_AFTER_MS
   const servicePaused = world !== null && (world.ticksPaused || world.maintenanceMode)
   const gameAsOf = lastCompletedAt === undefined ? null : formatLocal(lastCompletedAt, input.timezone)
-  const logs = input.logs.slice(0, MAX_LOGS).map((log) => ({ at: iso(log.at), t: formatLocal(log.at, input.timezone).label, k: log.kind, s: log.summary }))
+  const logs = input.logs.slice(0, MAX_LOGS).map((log) => ({ at: iso(log.at), t: formatLocal(log.at, input.timezone).label, k: log.kind, s: keepUnitsTogether(log.summary) }))
 
   const common = {
     v: 1 as const,

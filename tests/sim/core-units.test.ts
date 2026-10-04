@@ -104,3 +104,12 @@ describe('narrative articles', () => {
     expect(fill('Found a {item} and {gold} gold.', { item: 'Rare Mace', gold: 4 })).toBe('Found a Rare Mace and 4 gold.')
   })
 })
+
+describe('screen log wrapping', () => {
+  it('keeps values with their units', async () => {
+    const { keepUnitsTogether } = await import('../../convex/lib/payload')
+    expect(keepUnitsTogether('Beat a Paper Imp. +14 XP, +2 gold. Reached level 12! Revives in 8 ticks. -5 HP.')).toBe(
+      'Beat a Paper Imp. +14 XP, +2 gold. Reached level 12! Revives in 8 ticks. -5 HP.',
+    )
+  })
+})

@@ -45,6 +45,26 @@ describe('parseUtcOffset', () => {
   })
 })
 
+describe('full layout', () => {
+  it('leads bars with the numbers and names the gear slots', async () => {
+    const html = await render({ ...payload(), weapon: 'Uncommon Cable Cutter', armor: '' })
+    expect(html).toMatch(/118\/148<\/span> <span class="label[^"]*">HP</)
+    expect(html).toContain('class="track outline"')
+    expect(html).toMatch(/>Weapon<\/span><\/div><div><span[^>]*>Uncommon Cable Cutter</)
+    expect(html).toMatch(/>Armor<\/span><\/div><div><span[^>]*>None</)
+  })
+
+  it('shows the standing bag QR beside the rank, and only the action QR when one is set', async () => {
+    const base = 'https://art.test/art/qr/v2'
+    const standing = await render({ ...payload(), companion_qr_base: `${base}/bag` })
+    expect(standing).toContain(`src="${base}/bag/3.png"`)
+    expect(standing).toContain('Your bag')
+    const action = await render({ ...payload(), companion_qr_base: `${base}/bag`, qr_url: `${base}/bag/3.png`, qr_url_large: `${base}/bag/5.png`, qr_label: 'Scan to open your bag' })
+    expect(action).not.toContain('Your bag')
+    expect(action).not.toContain('This week')
+  })
+})
+
 describe('next adventure line (D42)', () => {
   it('renders HH:MM in the owner offset from the utc_offset merge variable', async () => {
     const vars = payload()

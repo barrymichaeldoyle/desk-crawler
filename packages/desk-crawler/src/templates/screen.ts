@@ -1,11 +1,11 @@
 /**
- * Four TRMNL layouts built around the scene window (revision 13;
+ * Four TRMNL layouts built around the scene window (revision 13, template v17 adds the standing bag QR;
  * trmnl-experience.md priorities: setup/service message, hero and the living
  * scene, newest story, HP/level, service warnings, then rank).
  * Deploy-time constants: user text only arrives through merge_variables and is
  * escaped here. Each string is self-contained (no shared-template registration).
  */
-export const TEMPLATE_VERSION = 16
+export const TEMPLATE_VERSION = 17
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -45,16 +45,18 @@ const divider = `
 /**
  * Framework 3.4 progress bar: content + track + fill. The fill width is the one
  * documented inline-style exception (P18), always a server-clamped 0-100 integer.
+ * The numbers lead and the unit follows ("118/148 HP"). `outline` gives the
+ * track a strong edge so an empty bar still reads as a bar (the framework's own
+ * track border is a muted gray on the X).
  * Nothing on screen goes below the regular label size: label--small renders in
  * the 1-bit pixel font and is unreadable on the OG.
  */
 const progress = (label: string, value: string, pct: string, size = '') => `
       <div class="progress-bar${size}">
         <div class="content">
-          <span class="label lg:title--small">${label}</span>
-          <span class="value value--xsmall lg:value--small">${value}</span>
+          <span><span class="value value--xsmall lg:value--small">${value}</span> <span class="label lg:title--small">${label}</span></span>
         </div>
-        <div class="track"><div class="fill" style="width: {{ ${pct} | default: 0 }}%"></div></div>
+        <div class="track outline"><div class="fill" style="width: {{ ${pct} | default: 0 }}%"></div></div>
       </div>`
 
 const hpBar = (size = '') => progress('HP', '{{ hp }}/{{ max_hp }}', 'hp_pct', size)
@@ -94,13 +96,15 @@ const olderStories = (count: number, extra = 0) => `
 const rankLine = `
       {% if rank %}<span class="label">Rank {{ rank }} of {{ total_players }}, {{ leaderboard_cohort_label | escape }}</span>{% elsif rank_status == "dormant" %}<span class="label 4bit:label--gray">Not ranked while paused</span>{% else %}<span class="label 4bit:label--gray">Ranking within the hour</span>{% endif %}`
 
-/** Top 5 is cut to three rows on the OG so every row stays at a readable size. */
+/**
+ * Own rank as a big "#3" with its context stacked beside it ("of 41 this week" over the level group).
+ * Top 5 is cut to three rows on the OG so every row stays at a readable size.
+ */
 const rankPanel = `
-      <span class="label lg:title--small">This week{% if leaderboard_cohort_label != "" %}, {{ leaderboard_cohort_label | escape }}{% endif %}</span>
-      {% if rank %}<span class="value value--small lg:value--large">#{{ rank }}<span class="label lg:title--small"> of {{ total_players }}</span></span>
-      {% elsif rank_status == "dormant" %}<span class="label 4bit:label--gray">Not ranked while paused</span>
-      {% else %}<span class="label 4bit:label--gray">Ranking within the hour</span>{% endif %}
-      {% for row in top5 %}<div class="{% if forloop.index > 3 %}hidden lg:flex {% endif %}flex flex--row flex--between stretch-x gap--small"><span class="label lg:title--small grow" data-clamp="1">{{ row.rank }}. {{ row.name | escape }}</span><span class="label lg:title--small">{{ row.score }} XP</span></div>{% endfor %}`
+      {% if rank %}<div class="flex flex--row flex--left flex--center-y gap--small"><span class="value value--small lg:value--large">#{{ rank }}</span><div><div><span class="label lg:title--small">of {{ total_players }} this week</span></div>{% if leaderboard_cohort_label != "" %}<div><span class="label lg:title--small 4bit:label--gray" data-clamp="1">{{ leaderboard_cohort_label | escape }}</span></div>{% endif %}</div></div>
+      {% else %}<span class="label lg:title--small">This week{% if leaderboard_cohort_label != "" %}, {{ leaderboard_cohort_label | escape }}{% endif %}</span>
+      {% if rank_status == "dormant" %}<span class="label 4bit:label--gray">Not ranked while paused</span>{% else %}<span class="label 4bit:label--gray">Ranking within the hour</span>{% endif %}{% endif %}
+      {% for row in top5 %}<div class="{% if forloop.index > 3 %}hidden lg:flex {% endif %}flex flex--row flex--between stretch-x gap--small"><span class="label lg:title--small grow" data-clamp="1">{{ row.rank }}. {{ row.name | escape }}</span><span class="label lg:title--small no-shrink">{{ row.score }}&nbsp;XP</span></div>{% endfor %}`
 
 /** The one quiet attention message (service, delay, death, inventory sleep): never clipped, shown in every size. */
 const attention = (classes: string, clamp: number) => `
@@ -114,8 +118,22 @@ const qr = `
       {% if qr_url != "" %}<div class="lg:hidden flex flex--row flex--center-y gap--small"><span class="label" data-clamp="3">{{ qr_label | escape }}</span><img class="image no-shrink" src="{{ qr_url }}" alt=""></div><div class="hidden lg:flex flex--col flex--center-x gap--xsmall no-shrink"><img class="image" src="{{ qr_url_large }}" alt=""><span class="label lg:title--small">{{ qr_label | escape }}</span></div>{% endif %}`
 
 /** QR image at a per-layout scale, swapped for a larger one on screen--lg (TRMNL X). */
-const qrImage = (scale: number, largeScale: number) =>
-  `<img class="image lg:hidden" src="{{ qr_base }}/${scale}.png" alt=""><img class="image hidden lg:block" src="{{ qr_base }}/${largeScale}.png" alt="">`
+const qrImage = (scale: number, largeScale: number, field = 'qr_base') =>
+  `<img class="image lg:hidden" src="{{ ${field} }}/${scale}.png" alt=""><img class="image hidden lg:block" src="{{ ${field} }}/${largeScale}.png" alt="">`
+
+/**
+ * Equipped gear with its slot named, so a find reads as a weapon or armor at a glance (X only: the OG has no spare line).
+ * Plain blocks, not a flex column: the framework's flex gap outranks gap--none and left the caption floating.
+ */
+const gearSlot = (slot: string, field: string) => `
+      <div class="hidden lg:block"><div><span class="label 4bit:label--gray">${slot}</span></div><div><span class="title--small" data-clamp="2">{% if ${field} != "" %}{{ ${field} | escape }}{% else %}None{% endif %}</span></div></div>`
+
+/**
+ * The standing companion link beside the rank panel: opens the bag to inspect gear and potions.
+ * An action QR (setup, full bag) takes over the whole panel instead.
+ */
+const companionQr = `
+      {% if companion_qr_base != "" %}<div class="no-shrink flex flex--col flex--center-x gap--xsmall">${qrImage(3, 5, 'companion_qr_base')}<span class="hidden lg:block label lg:title--small">Your bag</span></div>{% endif %}`
 
 type WelcomeLayout = 'full' | 'halfVertical' | 'halfHorizontal' | 'quadrant'
 
@@ -165,24 +183,26 @@ export const markupFull = `
       <span class="label lg:title--small" data-clamp="2">{{ status_label | escape }}</span>${nextTick('hidden lg:block label lg:title--small')}
       <span class="hidden lg:block label lg:title--small">{{ gold }} gold · {{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}</span>
     </div>
-    <div class="col--span-7 lg:col--span-8 grid gap--medium">
-      <div class="col--span-6">${hpBar(' lg:progress-bar--large')}
+    <div class="col--span-7 lg:col--span-8">
+      <div class="grid grid--cols-2 gap--medium lg:gap--large">
+        <div>${hpBar(' lg:progress-bar--large')}
+        </div>
+        <div>${xpBar(' lg:progress-bar--large')}
+        </div>${gearSlot('Weapon', 'weapon')}${gearSlot('Armor', 'armor')}
       </div>
-      <div class="col--span-6">${xpBar(' lg:progress-bar--large')}
-      </div>
-      {% if weapon != "" %}<span class="hidden lg:block col--span-6 label lg:title--small" data-clamp="2">{{ weapon | escape }}</span>{% endif %}
-      {% if armor != "" %}<span class="hidden lg:block col--span-6 label lg:title--small" data-clamp="2">{{ armor | escape }}</span>{% endif %}
     </div>
   </div>
   <div class="flex flex--col gap--small">${scene('scene_url')}${divider}
   </div>
   <div class="grid stretch-x gap--large lg:gap--xlarge">
-    <div class="col--span-7 flex flex--col flex--left flex--top gap--small lg:gap--medium">${newestStory(2, 'title lg:title')}
+    <div class="{% if qr_url == "" and companion_qr_base != "" %}col--span-6{% else %}col--span-7{% endif %} flex flex--col flex--left flex--top gap--small lg:gap--medium">${newestStory(2, 'title lg:title')}
       {% if attention %}${attention('label lg:title--small', 2)}${olderStories(0, 1)}{% else %}${olderStories(1, 2)}{% endif %}
     </div>
-    <div class="col--span-5 flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small">
-      {% if qr_url != "" %}${qr}{% else %}${rankPanel}{% endif %}
-    </div>
+    {% if qr_url != "" %}<div class="col--span-5 flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small">${qr}
+    </div>{% else %}<div class="{% if companion_qr_base != "" %}col--span-6{% else %}col--span-5{% endif %} flex flex--row flex--top gap--medium">
+      <div class="grow flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small">${rankPanel}
+      </div>${companionQr}
+    </div>{% endif %}
   </div>
   {% endif %}
 </div>${titleBarFull}`

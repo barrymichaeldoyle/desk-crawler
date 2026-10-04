@@ -202,6 +202,7 @@ export function buildPayload(input: PayloadInput) {
     return {
       ...common,
       ...qrFields(servicePaused ? null : 'app', 'Scan to finish setup'),
+      companion_qr_base: '',
       first_run: false,
       ...sceneUrls(content.safeBiomeId, { pose: 'idle', subject: { kind: 'prop', id: 'signpost' } }),
       hero_tick: null,
@@ -289,6 +290,8 @@ export function buildPayload(input: PayloadInput) {
   return {
     ...common,
     ...(needsBag ? qrFields('bag', 'Scan to open your bag') : qrFields(firstRun ? 'app' : null, 'Scan to open your companion')),
+    // The standing link to the bag (gear and potions): the full layout shows it whenever no action QR takes its place.
+    companion_qr_base: input.artBaseUrl ? `${input.artBaseUrl}${qrBasePath('bag')}` : '',
     first_run: firstRun,
     ...sceneUrls(hero.biomeId, sceneFor(hero.status, hero.wakeAtTick !== undefined, input.latestEvent)),
     hero_tick: hero.lastTick,

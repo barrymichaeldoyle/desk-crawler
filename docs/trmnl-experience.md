@@ -61,7 +61,7 @@ An absence of hours may skip adventures on the device. The companion retains up 
 
 | Layout | Must retain | Simplification order |
 | --- | --- | --- |
-| Full | Hero/status, newest story, HP/XP, seven-day group Top 5/score/personal rank, group/period and service warnings | Gear → gold → older logs → decorative sprite size |
+| Full | Hero/status, newest story, HP/XP, seven-day group Top 5/score/personal rank, group/period and service warnings, a standing bag QR (template v17; an action QR replaces rank and bag QR) | Gear → gold → older logs → decorative sprite size |
 | Half horizontal | Hero/status, HP/level, newest story, personal rank and service warnings | Second log → XP/gold → sprite size |
 | Half vertical | Hero/status, HP/level, newest story, personal rank and service warnings | Older logs → XP/gold → sprite size |
 | Quadrant | Name/level, readable status/HP, newest outcome or recovery/setup message and service warnings | Sprite/detail first; no board or second progress bar |

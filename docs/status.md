@@ -39,12 +39,25 @@ Migration progress:
 
 ## Remaining before public release
 
-- Visually inspect candidate v12's 88 OG/X cases, then verify latest four-size live renders and mashups. Local browser preview access remains rejected despite Barry's approval. Production v11 reached Barry's X and was described as decent; that does not validate v12.
-- Complete the independent protected post-backup deletion/revocation source and in-flight recovery proof. The isolated 1,000-hero restore and manual checkpoint replay passed; full recovery readiness remains open.
-- Finish V06 live variants (reinstall, expired/abandoned attempt, wrong owner, delayed/lost callbacks), failure-under-load and outage observation. A fresh production second-instance/manage/render/uninstall demonstration passed.
-- Verify notice delivery events/live failure exhaustion. The staging alert/recovery pair was accepted by Resend; API acceptance alone is not inbox delivery.
-- Update the old marketplace featured image, finish/host reviewer video, confirm sender email and promotion answer, and confirm Third Party games/Creator Fund eligibility and payment onboarding.
-- Approve the verified production changes and final marketplace submission/email explicitly. Cloudflare Workers Builds deploys on push to `main` (`pnpm build:deploy`); a push is a production action.
+Updated 2026-10-04 after the M4 cutover and the v15/v16 preview pass. Release gates from [product](product.md#first-public-release-acceptance) and [quality](quality.md#first-release-versus-ongoing-changes):
+
+| Gate | State |
+| --- | --- |
+| Real install, manage, render, uninstall | Done on `trmnlgames.com` (decisions revision 21) |
+| Four layouts, worst-case states | Done through previews (D43), v15/v16; [layout evidence](evidence/trmnl-layouts.md). Live X render shows the next-tick line |
+| Strings work without TRMNL globals | Done in v16: the only `trmnl.*` use moved to a merge variable |
+| Capacity and zero-payout costs | Done ([capacity](evidence/capacity.md)) |
+| Creator Fund (V10) | Public rules checked ([creator fund](evidence/creator-fund.md)); TRMNL confirmation is asked in the review email; payout setup is in Barry's TRMNL account tab |
+| Marketplace approval | The review itself |
+
+Submission materials:
+
+- **Featured image:** "Generate marketplace preview" was triggered from setting 495747 on 2026-10-04, but the install page still showed the old sample afterwards. Barry to check the plugin page, and regenerate or upload a current render if it is still old.
+- **Video:** record a from-scratch install with a brand-new account ([script](release/review-package.md#install-video-script-90-seconds-no-audio)). It needs a fresh sign-up, so Barry records it; then host it at a reviewer-accessible URL (Barry approves publication).
+- **Review email:** [draft](review-email.md) updated with correct testing steps. Barry fills in the owner email (must match the sender), video URL and promotion answer, and confirms the TRMNL account is not on a BYOD free trial.
+- **Submit:** Barry clicks Submit for Review in My Plugins and sends the email.
+
+Operational hardening (not reviewer-facing, recommended before wider promotion): V06 live lifecycle variants (expired/abandoned attempt, wrong owner, delayed callbacks), notice delivery to an inbox rather than API acceptance, and the post-backup deletion/revocation recovery proof. Cloudflare Workers Builds deploys on push to `main`; a push is a production action.
 
 ## Latest preparation completed
 

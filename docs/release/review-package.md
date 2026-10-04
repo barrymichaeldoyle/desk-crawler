@@ -26,16 +26,19 @@ Desk Crawler is designed to be glanced at, not played. The hero adventures every
 
 - Install from the plugin page; sign up on the companion with any email (one-time code), Google or GitHub. No passwords to share and no special bypass.
 - Pick a public name and hero name, click Connect, then Save in TRMNL. The first adventure appears on the next world tick (within 15 minutes).
-- Companion: `https://trmnlgames.com/app/desk-crawler`. Support: barry@barrymichaeldoyle.com.
+- Companion: `https://trmnlgames.com/app/desk-crawler` (Desk Crawler is the first game on the TRMNL Games companion). Support: barry@barrymichaeldoyle.com.
 
-## Install video script (≈90 seconds)
+## Install video script (≈90 seconds, no audio)
 
-1. TRMNL marketplace → Desk Crawler → Install.
-2. Sign in on Desk Crawler, choose names, Connect.
-3. Back in TRMNL, Save; show the playlist preview.
-4. Show the companion hero page with the same scene; open the Bag and Rankings tabs.
-5. Show a half-size mashup next to another plugin.
-6. Show the device after the next refresh.
+TRMNL asks for the plugin "being installed from scratch", so record with an account that has never used TRMNL Games.
+
+1. TRMNL → Plugins → Desk Crawler → Install → Connect with Desk Crawler.
+2. trmnlgames.com: sign up (email code, Google or GitHub), pick a public name and hero name, Connect this TRMNL installation.
+3. Back in TRMNL: Save. Show the preview: the first-run screen with the QR code.
+4. Scan or open the companion: hero page with the same scene; open the Bag and Rankings tabs.
+5. After the next 15-minute tick: force refresh and show the first adventure with "Next adventure HH:MM".
+6. Configure: the companion management page for this installation.
+7. Optional: a half-size mashup next to another plugin, then the device after its next refresh.
 
 ## Before submitting (from [status](../status.md))
 

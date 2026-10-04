@@ -80,6 +80,8 @@ const states: Record<string, PayloadInput> = {
     ...base,
     hero: hero({ name: 'Sir Staplington' }),
     ownerAlias: 'A_Very_Long_Alias__',
+    // Widest case for the unclamped rank rows: a 20-character public name with a five-digit score.
+    ranking: { ...base.ranking!, rank: 1, score: 12840, top5: [{ rank: 1, name: 'Maximilian_Wolfgangs', hero_name: 'Sir Staplington', level: 12, score: 12840 }, ...base.ranking!.top5.slice(1)] },
     logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'Sent an elite Microwave Wraith back to the kitchen. +188 XP, +57 gold. Reached level 12! Found a Rare Ladle of Ruin.' }, ...base.logs],
   },
   unlinked: { ...base, hero: null, ranking: null, logs: [], latestEvent: null },

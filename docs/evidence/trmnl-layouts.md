@@ -1,5 +1,19 @@
 # TRMNL layout evidence: A10 (in progress)
 
+## Preview pass, template v15 (2026-10-04)
+
+Barry made previews the layout gate (D43). All 88 cases (11 states × four sizes × OG/X) were rendered in Chrome via Playwright against production art and checked for content outside the view or under the title bar, broken images and clock/UTC text, then inspected visually as contact sheets.
+
+The first run on v14 found the **OG full** layout overflowing in five states (normal, elite, long text, travelling, full bag) by 12–32px. The framework clips rather than overlaps, so the bottom row lost its last rank row (the owner's own row in the sample) and, in the full-bag state, the QR caption. Causes: v14's "Next adventure" line and a status column narrow enough to wrap "Travelling to the Cafeteria Depths". Fixes, OG only (the X keeps v14's arrangement):
+
+- The status column widens from 4/12 to 5/12 on the OG so the longest status fits on one line.
+- "Next adventure HH:MM" moves to the title bar's instance slot on the OG full layout. Placing it under the HP/XP bars made the header taller and overflowed by 19px.
+- The full-bag QR caption sits beside the code on the OG instead of under it.
+
+After the fixes all 88 pages pass with zero findings, and every OG full state shows three rank rows. The long-text sample now includes a 20-character public name with a five-digit score, the widest rank row, which fits on one line. The OG pixel font draws "y" with a short tail; that is the font, not clipping (same glyph mid-screen). Sheets: [OG full](layouts/v15-og-full.png), [X full](layouts/v15-x-full.png). Half and quadrant layouts on both devices were inspected and are unchanged from v14.
+
+v12–v14 were never visually checked before this pass; this closes that gap.
+
 ## Readability candidate, template v12 (2026-10-04)
 
 Barry described the delivered full-screen v11 layout as decent and requested easier reading. Candidate v12 gives hero/status and HP/XP a shared top row, keeps scene art in the middle, and widens the story panel beside rankings below. Gear names can wrap on the X; older story rows are black. Half layouts have clearer hero/status separation; quadrant prioritizes hero/HP and removes duplicate detail. Setup/first-run panels are unchanged.

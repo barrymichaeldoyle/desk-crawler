@@ -8,7 +8,7 @@ Migration progress:
 
 - M0–M3 done. Monorepo move, platform boundaries (two deletion levels, per-game handoff cookies) and the dev rehearsal ([platform rehearsal](evidence/platform-rehearsal.md)).
 - M4 done. Clerk domain moved to `trmnlgames.com`, `main` deployed at 13:58 UTC, ticks continued on the new :00 slot, data backfilled and Barry's account rebound with hero "Baz" kept (decisions revisions 18–19). Email-code, Google and GitHub sign-in work on the new domain; plugin 564's installation, management and knowledge-base URLs point at `trmnlgames.com`; signed Clerk webhook delivered; prod `COMPANION_ORIGIN` unset, so QR codes use the `https://trmnlgames.com` default (revision 20). Fresh install → Save → Configure → render → uninstall passed as Baz with setting 495979 (revision 21).
-- M5 not started: all four layouts and mashups verified through rendered previews (D43, no per-view device check), cost/health monitoring, optional old-page redirects, marketplace image and reviewer recording, repository rename.
+- M5 in progress. Preview pass done: all 88 cases pass after template v15 fixed OG full-layout clipping ([layout evidence](evidence/trmnl-layouts.md)); v15 is local until pushed. Done: old-domain DNS removed (no redirect needed), Worker and repository renamed to `trmnl-games` (revision 22). Remaining: cost/health monitoring, marketplace featured image and reviewer recording on the new URLs.
 ## Built and verified
 
 | Package | State | Evidence |

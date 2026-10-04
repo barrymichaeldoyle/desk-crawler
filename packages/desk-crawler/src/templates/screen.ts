@@ -5,7 +5,7 @@
  * Deploy-time constants: user text only arrives through merge_variables and is
  * escaped here. Each string is self-contained (no shared-template registration).
  */
-export const TEMPLATE_VERSION = 14
+export const TEMPLATE_VERSION = 15
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -29,6 +29,7 @@ const titleBar = `
   <img class="image image-stroke" src="${TITLE_ICON}" alt="">
   <span class="title">Desk Crawler</span>
 </div>`
+
 
 type SceneField = 'scene_url' | 'scene_url_small'
 /** Base scene everywhere, swapped for an integer-scaled larger image on screen--lg (TRMNL X). */
@@ -66,6 +67,13 @@ const xpBar = (size = '') => progress('XP', '{{ xp }}/{{ xp_to_next }}', 'xp_pct
 const nextTick = (classes: string) => `
       {% if next_tick_at and trmnl.user.utc_offset != nil %}<span class="${classes}">Next adventure {{ next_tick_at | plus: trmnl.user.utc_offset | date: "%H:%M" }}</span>{% endif %}`
 
+/** Full layout: on the OG the next tick (D42) sits in the title bar's instance slot; the body has no spare line for it. */
+const titleBarFull = `
+<div class="title_bar">
+  <img class="image image-stroke" src="${TITLE_ICON}" alt="">
+  <span class="title">Desk Crawler</span>{% unless status == "unlinked" or first_run %}${nextTick('instance lg:hidden')}{% endunless %}
+</div>`
+
 const newestStory = (clamp: number, classes: string) => `
       {% if log.size > 0 %}<span class="${classes}" data-clamp="${clamp}">{{ log[0].s | escape }}</span>{% else %}<span class="${classes}">The first adventure starts soon.</span>{% endif %}`
 
@@ -97,9 +105,12 @@ const rankPanel = `
 const attention = (classes: string, clamp: number) => `
       {% if attention %}<span class="${classes} label--underline" data-clamp="${clamp}">{{ attention | escape }}</span>{% endif %}`
 
-/** QR back to the companion (setup, full bag). The payload leaves qr_url empty when nothing needs doing. */
+/**
+ * QR back to the companion (setup, full bag). The payload leaves qr_url empty when nothing needs doing.
+ * On the OG the caption sits beside the code: stacked, it ran under the title bar in the full layout.
+ */
 const qr = `
-      {% if qr_url != "" %}<div class="flex flex--col flex--center-x gap--xsmall no-shrink"><img class="image lg:hidden" src="{{ qr_url }}" alt=""><img class="image hidden lg:block" src="{{ qr_url_large }}" alt=""><span class="label lg:title--small">{{ qr_label | escape }}</span></div>{% endif %}`
+      {% if qr_url != "" %}<div class="lg:hidden flex flex--row flex--center-y gap--small"><span class="label" data-clamp="3">{{ qr_label | escape }}</span><img class="image no-shrink" src="{{ qr_url }}" alt=""></div><div class="hidden lg:flex flex--col flex--center-x gap--xsmall no-shrink"><img class="image" src="{{ qr_url_large }}" alt=""><span class="label lg:title--small">{{ qr_label | escape }}</span></div>{% endif %}`
 
 /** QR image at a per-layout scale, swapped for a larger one on screen--lg (TRMNL X). */
 const qrImage = (scale: number, largeScale: number) =>
@@ -148,12 +159,12 @@ export const markupFull = `
   {% if status == "unlinked" or first_run %}${welcome('full')}
   {% else %}
   <div class="grid stretch-x gap--medium">
-    <div class="col--span-4 flex flex--col flex--left gap--xsmall">
+    <div class="col--span-5 lg:col--span-4 flex flex--col flex--left gap--xsmall">
       <span class="title lg:title--large" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
-      <span class="label lg:title--small" data-clamp="2">{{ status_label | escape }}</span>${nextTick('label lg:title--small')}
+      <span class="label lg:title--small" data-clamp="2">{{ status_label | escape }}</span>${nextTick('hidden lg:block label lg:title--small')}
       <span class="hidden lg:block label lg:title--small">{{ gold }} gold · {{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}</span>
     </div>
-    <div class="col--span-8 grid gap--medium">
+    <div class="col--span-7 lg:col--span-8 grid gap--medium">
       <div class="col--span-6">${hpBar(' lg:progress-bar--large')}
       </div>
       <div class="col--span-6">${xpBar(' lg:progress-bar--large')}
@@ -173,7 +184,7 @@ export const markupFull = `
     </div>
   </div>
   {% endif %}
-</div>${titleBar}`
+</div>${titleBarFull}`
 
 export const markupHalfHorizontal = `
 <div class="layout layout--col layout--stretch-x">

@@ -1,5 +1,5 @@
 import { games, isGameSlug, type GameSlug } from '@trmnl-games/platform'
-import { MANAGE_COOKIE, MANAGE_HANDOFF_SECONDS as HANDOFF_SECONDS, INSTANCE_UUID as UUID, openManagement } from './manageFlow'
+import { manageCookie, MANAGE_HANDOFF_SECONDS as HANDOFF_SECONDS, INSTANCE_UUID as UUID, openManagement } from './manageFlow'
 import { createServerFn } from '@tanstack/react-start'
 import { deleteCookie, getCookie, setCookie } from '@tanstack/react-start/server'
 import { createRemoteJWKSet, jwtVerify } from 'jose'
@@ -30,7 +30,7 @@ export const captureManagement = createServerFn({ method: 'POST' })
     } catch {
       return { ok: false as const }
     }
-    setCookie(MANAGE_COOKIE, await sealJson({ gameSlug: data.gameSlug, uuid: data.uuid, expiresAt: Date.now() + HANDOFF_SECONDS * 1000 }, secret()), {
+    setCookie(manageCookie(data.gameSlug), await sealJson({ gameSlug: data.gameSlug, uuid: data.uuid, expiresAt: Date.now() + HANDOFF_SECONDS * 1000 }, secret()), {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
@@ -41,13 +41,16 @@ export const captureManagement = createServerFn({ method: 'POST' })
   })
 
 /** The verified instance UUID from the handoff, or null when absent/expired. */
-export const getManagedInstance = createServerFn({ method: 'GET' }).handler(async () => {
-  const value = await openManagement(getCookie(MANAGE_COOKIE), secret(), Date.now())
-  if (!value) return { uuid: null }
-  return { uuid: value.uuid }
-})
+export const getManagedInstance = createServerFn({ method: 'GET' })
+  .inputValidator((input: { gameSlug: GameSlug }) => input)
+  .handler(async ({ data }) => {
+    const value = isGameSlug(data.gameSlug) ? await openManagement(getCookie(manageCookie(data.gameSlug)), secret(), Date.now(), data.gameSlug) : null
+    return { uuid: value?.uuid ?? null }
+  })
 
-export const endManagement = createServerFn({ method: 'POST' }).handler(async () => {
-  deleteCookie(MANAGE_COOKIE, { path: '/' })
-  return { ok: true }
-})
+export const endManagement = createServerFn({ method: 'POST' })
+  .inputValidator((input: { gameSlug: GameSlug }) => input)
+  .handler(async ({ data }) => {
+    if (isGameSlug(data.gameSlug)) deleteCookie(manageCookie(data.gameSlug), { path: '/' })
+    return { ok: true }
+  })

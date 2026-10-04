@@ -22,7 +22,7 @@ export const Route = createFileRoute('/connect/trmnl/desk-crawler/install')({
       throw redirect({ to: '/connect/trmnl/desk-crawler/install', search: result.ok ? {} : { invalid: true }, replace: true })
     }
   },
-  loader: async () => await getPendingInstall(),
+  loader: async () => await getPendingInstall({ data: { gameSlug: 'desk-crawler' } }),
   head: () => {
     const head = seo({ title: 'Connect TRMNL', index: false })
     return { ...head, meta: [...head.meta, { name: 'referrer', content: 'no-referrer' }] }
@@ -73,6 +73,7 @@ function ConnectForm() {
     const form = new FormData(event.currentTarget)
     const result = await finishInstall({
       data: {
+        gameSlug: 'desk-crawler',
         ...(needsProfile ? { publicAlias: String(form.get('publicAlias') ?? '') } : {}),
         ...(needsHero ? { heroName: String(form.get('heroName') ?? '') } : {}),
       },

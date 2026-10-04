@@ -1,4 +1,4 @@
-import { DESK_CRAWLER_GAME, isGameSlug, type GameSlug } from '@trmnl-games/platform'
+import { isGameSlug, type GameSlug } from '@trmnl-games/platform'
 import { auth } from '@clerk/tanstack-react-start/server'
 import { createServerFn } from '@tanstack/react-start'
 import { deleteCookie, getCookie, setCookie } from '@tanstack/react-start/server'
@@ -6,7 +6,7 @@ import { ConvexError } from 'convex/values'
 import { ConvexHttpClient } from 'convex/browser'
 import { api } from '@trmnl-games/backend/api'
 import {
-  INSTALL_COOKIE,
+  installCookie,
   INSTALL_FLOW_TTL_SECONDS,
   openPendingInstall,
   sealPendingInstall,
@@ -38,23 +38,26 @@ export const captureInstall = createServerFn({ method: 'POST' })
     const callbackUrl = validateCallbackUrl(data.callback)
     if (!code || !callbackUrl) return { ok: false as const }
     const sealed = await sealPendingInstall({ gameSlug: data.gameSlug, code, callbackUrl, expiresAt: Date.now() + INSTALL_FLOW_TTL_SECONDS * 1000 }, flowSecret())
-    setCookie(INSTALL_COOKIE, sealed, cookieOptions)
+    setCookie(installCookie(data.gameSlug), sealed, cookieOptions)
     return { ok: true as const }
   })
 
 /** Whether a pending install exists for this browser. Never returns the code. */
-export const getPendingInstall = createServerFn({ method: 'GET' }).handler(async () => {
-  const pending = await openPendingInstall(getCookie(INSTALL_COOKIE), flowSecret(), Date.now())
-  return { pending: pending !== null, expiresAt: pending?.expiresAt ?? null }
-})
+export const getPendingInstall = createServerFn({ method: 'GET' })
+  .inputValidator((input: { gameSlug: GameSlug }) => input)
+  .handler(async ({ data }) => {
+    if (!isGameSlug(data.gameSlug)) return { pending: false, expiresAt: null }
+    const pending = await openPendingInstall(getCookie(installCookie(data.gameSlug)), flowSecret(), Date.now(), data.gameSlug)
+    return { pending: pending !== null, expiresAt: pending?.expiresAt ?? null }
+  })
 
 export type FinishInstallResult = { ok: true; callbackUrl: string } | { ok: false; code: string; message: string }
 
 /** Exchange and link through the Clerk-authenticated Convex action, then hand back the validated TRMNL callback. */
 export const finishInstall = createServerFn({ method: 'POST' })
-  .inputValidator((input: { publicAlias?: string; heroName?: string }) => input)
+  .inputValidator((input: { gameSlug: GameSlug; publicAlias?: string; heroName?: string }) => input)
   .handler(async ({ data }): Promise<FinishInstallResult> => {
-    const pending = await openPendingInstall(getCookie(INSTALL_COOKIE), flowSecret(), Date.now())
+    const pending = isGameSlug(data.gameSlug) ? await openPendingInstall(getCookie(installCookie(data.gameSlug)), flowSecret(), Date.now(), data.gameSlug) : null
     if (!pending) return { ok: false, code: 'INSTALL_EXPIRED', message: 'This installation expired. Start again from TRMNL.' }
     const { userId, getToken } = await auth()
     const token = userId ? await getToken({ template: 'convex' }) : null
@@ -65,7 +68,7 @@ export const finishInstall = createServerFn({ method: 'POST' })
     try {
       await client.action(api.trmnl.completeInstall, {
         code: pending.code,
-        gameSlug: DESK_CRAWLER_GAME,
+        gameSlug: pending.gameSlug,
         // Legacy backend argument: no timezone preference is collected by the companion.
         timezone: 'UTC',
         ...(data.publicAlias ? { publicAlias: data.publicAlias } : {}),
@@ -78,6 +81,6 @@ export const finishInstall = createServerFn({ method: 'POST' })
       }
       return { ok: false, code: 'ERROR', message: 'Something went wrong. Please try again.' }
     }
-    deleteCookie(INSTALL_COOKIE, { path: cookieOptions.path })
+    deleteCookie(installCookie(pending.gameSlug), { path: cookieOptions.path })
     return { ok: true, callbackUrl: pending.callbackUrl }
   })

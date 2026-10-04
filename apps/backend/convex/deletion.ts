@@ -102,7 +102,8 @@ export const purgeGameStep = internalMutation({
     const legacy = await ctx.db.query('operationReceipts').withIndex('by_userId_and_scope', (q) => q.eq('userId', job.userId).eq('scope', undefined)).take(BATCH)
     if (await deleteBatch(ctx, receipts) + await deleteBatch(ctx, legacy) > 0) return await again()
     // A new enrollment can now create a new hero, but every old token stays tombstoned.
-    if (profile && user?.state === 'active') await ctx.db.patch(profile._id, { state: 'active' })
+    // Account state still gates authority, so a suspended owner regains the game only when restored.
+    if (profile) await ctx.db.patch(profile._id, { state: 'active' })
     await ctx.db.patch(jobId, { state: 'completed', phase: 'done', completedAt: now, lastProgressAt: now })
     return null
   },

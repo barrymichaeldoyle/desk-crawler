@@ -1,11 +1,12 @@
-import { DESK_CRAWLER_GAME, isGameSlug, type GameSlug } from '@trmnl-games/platform'
+import { isGameSlug, type GameSlug } from '@trmnl-games/platform'
 
 /**
  * Pending TRMNL install flow (trmnl.md "Installation flow"). The code and
  * callback live only in a short-lived AES-GCM encrypted HttpOnly cookie; they
  * never reach client JavaScript, local storage or logs.
  */
-export const INSTALL_COOKIE = 'tg_trmnl_install_v2'
+/** One cookie per game, so parallel installs for different games cannot overwrite each other. */
+export const installCookie = (gameSlug: GameSlug) => `tg_${gameSlug}_trmnl_install`
 export const INSTALL_FLOW_TTL_SECONDS = 20 * 60
 
 export interface PendingInstall {
@@ -65,7 +66,7 @@ export async function openJson(cookie: string | undefined, secret: string): Prom
 
 export const sealPendingInstall = (value: PendingInstall, secret: string) => sealJson(value, secret)
 
-export async function openPendingInstall(cookie: string | undefined, secret: string, now: number, gameSlug: GameSlug = DESK_CRAWLER_GAME): Promise<PendingInstall | null> {
+export async function openPendingInstall(cookie: string | undefined, secret: string, now: number, gameSlug: GameSlug): Promise<PendingInstall | null> {
   const value = (await openJson(cookie, secret)) as PendingInstall | null
   if (!isGameSlug(gameSlug) || value === null || value.gameSlug !== gameSlug || typeof value.code !== 'string' || typeof value.callbackUrl !== 'string' || typeof value.expiresAt !== 'number') return null
   return value.expiresAt > now && validateInstallCode(value.code) !== null && validateCallbackUrl(value.callbackUrl) !== null ? value : null

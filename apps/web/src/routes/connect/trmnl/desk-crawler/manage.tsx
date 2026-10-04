@@ -23,7 +23,7 @@ export const Route = createFileRoute('/connect/trmnl/desk-crawler/manage')({
       throw redirect({ to: '/connect/trmnl/desk-crawler/manage', search: result.ok ? {} : { invalid: true }, replace: true })
     }
   },
-  loader: async () => await getManagedInstance(),
+  loader: async () => await getManagedInstance({ data: { gameSlug: 'desk-crawler' } }),
   head: () => {
     const head = seo({ title: 'Manage TRMNL', index: false })
     return { ...head, meta: [...head.meta, { name: 'referrer', content: 'no-referrer' }] }

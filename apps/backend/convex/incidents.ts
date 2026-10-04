@@ -39,6 +39,9 @@ export const getIncident = internalQuery({
   },
 })
 
+const alertFrom = () => process.env.ALERT_FROM ?? 'TRMNL Games <alerts@trmnlgames.com>'
+const alertTo = () => process.env.ALERT_TO ?? 'barry@barrymichaeldoyle.com'
+
 export const sendNotice = internalAction({
   args: { incidentId: v.id('operationalIncidents'), notice: v.union(v.literal('alert'), v.literal('recovery')) },
   returns: v.null(),
@@ -64,8 +67,8 @@ export const sendNotice = internalAction({
         method: 'POST',
         headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', 'Idempotency-Key': `${incidentId}-${notice}` },
         body: JSON.stringify({
-          from: process.env.ALERT_FROM ?? 'TRMNL Games <alerts@trmnlgames.com>',
-          to: [process.env.ALERT_TO ?? 'barry@barrymichaeldoyle.com'],
+          from: alertFrom(),
+          to: [alertTo()],
           subject,
           text,
         }),
@@ -76,6 +79,37 @@ export const sendNotice = internalAction({
     }
     await ctx.runMutation(internal.incidents.recordDelivery, { incidentId, notice, outcome })
     return null
+  },
+})
+
+/**
+ * Operator check that alert email reaches the inbox: sends one clearly marked test message through the same
+ * sender, recipient and key as real notices. Writes nothing. Run with `npx convex run --prod incidents:sendTestNotice`.
+ */
+export const sendTestNotice = internalAction({
+  args: {},
+  returns: v.object({ status: v.union(v.literal('sent'), v.literal('failed'), v.literal('disabled')), from: v.string(), to: v.string(), id: v.union(v.string(), v.null()) }),
+  handler: async () => {
+    const from = alertFrom()
+    const to = alertTo()
+    const key = process.env.RESEND_API_KEY
+    if (!key) return { status: 'disabled' as const, from, to, id: null }
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from,
+          to: [to],
+          subject: '[TEST] TRMNL Games alert email check',
+          text: 'This is a test of the operational alert email. No incident is open and nothing needs doing.',
+        }),
+      })
+      const body = (await response.json().catch(() => null)) as { id?: unknown } | null
+      return { status: response.ok ? ('sent' as const) : ('failed' as const), from, to, id: typeof body?.id === 'string' ? body.id : null }
+    } catch {
+      return { status: 'failed' as const, from, to, id: null }
+    }
   },
 })
 

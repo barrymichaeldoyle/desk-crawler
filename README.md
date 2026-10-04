@@ -41,6 +41,14 @@ pnpm tsx tools/trmnl/preview.ts  # local TRMNL layout previews in .previews/
 
 What is built and what remains: [implementation status](docs/status.md).
 
+## Deploying
+
+Pushes to `main` deploy production through GitHub Actions (`.github/workflows/ci.yml`) once typecheck, tests and the build pass: Convex first (`exciting-cormorant-948`), then the companion Worker on `desk-crawler.grandprixpicks.com`. Pull requests run the checks only.
+
+- Repository secrets: `CONVEX_DEPLOY_KEY` (Convex production deploy key) and `CLOUDFLARE_API_TOKEN` (Workers deploy).
+- Public build values live in `.env.production`. Server secrets live on the platforms: Convex env (`npx convex env set --prod ...`) and Worker secrets (`npx wrangler secret put ...`: `CLERK_SECRET_KEY`, `INSTALL_FLOW_KEY`).
+- Backend changes must stay additive: the Worker briefly runs against the new Convex functions before it redeploys.
+
 ## Repository contents
 
 | Path | Purpose |

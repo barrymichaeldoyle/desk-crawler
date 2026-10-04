@@ -70,7 +70,8 @@ const base: PayloadInput = {
 const hero = (patch: Partial<NonNullable<PayloadInput['hero']>>) => ({ ...base.hero!, ...patch })
 const states: Record<string, PayloadInput> = {
   normal: base,
-  elite: { ...base, latestEvent: { kind: 'combat', outcome: { variant: 'combat', monsterId: 'legacy_mainframe', elite: true } }, logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'An elite Legacy Mainframe went offline for good. +64 XP, +15 gold.' }, ...base.logs] },
+  elite: { ...base, latestEvent: { kind: 'combat', outcome: { variant: 'combat', monsterId: 'legacy_mainframe', elite: true, outcome: 'victory' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'An elite Legacy Mainframe went offline for good. +64 XP, +15 gold.' }, ...base.logs] },
+  levelUp: { ...base, hero: hero({ level: 6, xp: 12 }), latestEvent: { kind: 'levelup', outcome: { variant: 'combat', monsterId: 'cable_serpent', elite: false, outcome: 'victory' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'levelup', summary: 'Unplugged a Cable Serpent. +15 XP, +5 gold. Reached level 6!' }, ...base.logs] },
   dead: { ...base, hero: hero({ status: 'dead', hp: 0, reviveAtTick: 125 }), latestEvent: { kind: 'death', outcome: { variant: 'combat', monsterId: 'firewall_gremlin', elite: false } }, logs: [{ at: NOW - 7 * 60_000, kind: 'death', summary: 'Fell to a Firewall Gremlin. Revives in the Office in 8 ticks. Lost 64 gold.' }, ...base.logs] },
   travelling: { ...base, hero: hero({ status: 'travelling', targetBiomeId: 'cafeteria_depths', arriveAtTick: 121 }), latestEvent: { kind: 'system' } },
   sleeping: { ...base, hero: hero({ status: 'sleeping' }), heldItemName: 'Rare Spork Halberd', bagUsed: 30, latestEvent: { kind: 'loot', outcome: { variant: 'loot', found: 'gear' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'loot', summary: 'Found a Rare Spork Halberd. Bag full. Holding it until you make room.' }, ...base.logs] },

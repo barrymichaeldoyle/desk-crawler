@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
-import { buildPayload, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
+import { buildPayload, celebrationFor, MAX_LOGS, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
 
 const NOW = Date.UTC(2026, 9, 4, 8, 20)
 const input: PayloadInput = {
@@ -45,6 +45,33 @@ describe('first-run and companion QR fields', () => {
     expect(p).toMatchObject({ qr_base: '', companion_qr_base: 'https://art.test/art/qr/v3/bag' })
     expect(pick(buildPayload({ ...input, hero: null })).companion_qr_base).toBe('')
     expect(pick(buildPayload({ ...input, artBaseUrl: null })).companion_qr_base).toBe('')
+  })
+})
+
+describe('log lines and celebrations (D44)', () => {
+  const played = { ...input, logs: Array.from({ length: 12 }, (_, i) => ({ at: NOW - (i + 1) * 900_000, kind: 'combat', summary: `Fight ${i}.` })) }
+
+  it('carries up to ten logs with UTC seconds for the HH:MM label', () => {
+    const log = (buildPayload(played) as unknown as { log: Array<{ u: number; s: string }> }).log
+    expect(MAX_LOGS).toBe(10)
+    expect(log).toHaveLength(10)
+    expect(log[0]).toMatchObject({ u: (NOW - 900_000) / 1000, s: 'Fight 0.' })
+  })
+
+  it('cheers the big moments only', () => {
+    expect(celebrationFor({ kind: 'levelup' }, 6)).toBe('Level up! Now level 6')
+    expect(celebrationFor({ kind: 'combat', outcome: { variant: 'combat', elite: true, outcome: 'victory' } }, 6)).toBe('Elite defeated!')
+    expect(celebrationFor({ kind: 'combat', outcome: { variant: 'combat', elite: true, outcome: 'retreat' } }, 6)).toBeNull()
+    expect(celebrationFor({ kind: 'loot', outcome: { variant: 'loot', found: 'gold', jackpot: true } }, 6)).toBe('Jackpot!')
+    expect(celebrationFor({ kind: 'loot', outcome: { variant: 'loot', found: 'gear', rarity: 'rare', jackpot: false } }, 6)).toBe('Rare find!')
+    expect(celebrationFor({ kind: 'loot', outcome: { variant: 'loot', found: 'gear', rarity: 'uncommon', jackpot: false } }, 6)).toBeNull()
+    expect(celebrationFor(null, 6)).toBeNull()
+  })
+
+  it('stays quiet behind an attention message', () => {
+    const celebration = (p: unknown) => (p as { celebration: string | null }).celebration
+    expect(celebration(buildPayload({ ...played, latestEvent: { kind: 'levelup' } }))).toBe('Level up! Now level 1')
+    expect(celebration(buildPayload({ ...played, latestEvent: { kind: 'levelup' }, world: { ...input.world!, maintenanceMode: true } }))).toBeNull()
   })
 })
 

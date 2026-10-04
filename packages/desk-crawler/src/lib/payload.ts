@@ -10,7 +10,8 @@ import { sceneFor, scenePath, type LatestEvent } from '../art/sceneKey'
 import { nextSlotAfter } from '../sim/schedule'
 
 export const STALE_AFTER_MS = 30 * 60 * 1000
-const MAX_LOGS = 6
+/** Newest-first log lines: the OG shows two or three, the X up to all of them. */
+export const MAX_LOGS = 10
 
 export interface PayloadWorld {
   readonly currentTick: number
@@ -156,6 +157,20 @@ function rankingFields(ranking: PayloadRanking | null, unlinked: boolean, timeZo
 export const keepUnitsTogether = (text: string) =>
   text.replace(/([+-]?\d+) (XP|gold|HP|ticks?)\b/g, '$1\u00a0$2').replace(/\b(level|Level) (\d+)/g, '$1\u00a0$2')
 
+/**
+ * A short cheer for the newest event when it is a big moment: a level-up, an elite win, a jackpot or a rare find.
+ * Shown above the newest story until the next adventure replaces it.
+ */
+export function celebrationFor(latest: LatestEvent | null, level: number): string | null {
+  if (latest === null) return null
+  if (latest.kind === 'levelup') return `Level up! Now level ${level}`
+  const outcome = latest.outcome
+  if (outcome?.variant === 'combat' && outcome.elite === true && outcome.outcome === 'victory') return 'Elite defeated!'
+  if (outcome?.variant === 'loot' && outcome.jackpot === true) return 'Jackpot!'
+  if (outcome?.variant === 'loot' && outcome.found === 'gear' && outcome.rarity === 'rare') return 'Rare find!'
+  return null
+}
+
 export function buildPayload(input: PayloadInput) {
   const { now, world, hero, content } = input
   const biomeName = (id: string | undefined) => content.biomes.find((b) => b.id === id)?.name ?? ''
@@ -163,7 +178,7 @@ export function buildPayload(input: PayloadInput) {
   const stale = world === null ? false : now - (lastCompletedAt ?? world.createdAt) > STALE_AFTER_MS
   const servicePaused = world !== null && (world.ticksPaused || world.maintenanceMode)
   const gameAsOf = lastCompletedAt === undefined ? null : formatLocal(lastCompletedAt, input.timezone)
-  const logs = input.logs.slice(0, MAX_LOGS).map((log) => ({ at: iso(log.at), t: formatLocal(log.at, input.timezone).label, k: log.kind, s: keepUnitsTogether(log.summary) }))
+  const logs = input.logs.slice(0, MAX_LOGS).map((log) => ({ at: iso(log.at), u: Math.floor(log.at / 1000), t: formatLocal(log.at, input.timezone).label, k: log.kind, s: keepUnitsTogether(log.summary) }))
 
   const common = {
     v: 1 as const,
@@ -235,6 +250,7 @@ export function buildPayload(input: PayloadInput) {
       held_item: '',
       wake_at_tick: null,
       log: [],
+      celebration: null,
       attention: servicePaused ? 'Desk Crawler is down for maintenance.' : 'Sign in to the companion, then save this plugin in TRMNL.',
     }
   }
@@ -324,6 +340,7 @@ export function buildPayload(input: PayloadInput) {
     held_item: input.heldItemName ?? '',
     wake_at_tick: hero.wakeAtTick ?? null,
     log: logs,
+    celebration: attention === null && logs.length > 0 ? celebrationFor(input.latestEvent, hero.level) : null,
     attention,
   }
 }

@@ -5,7 +5,9 @@
  * Deploy-time constants: user text only arrives through merge_variables and is
  * escaped here. Each string is self-contained (no shared-template registration).
  */
-export const TEMPLATE_VERSION = 18
+import { GLYPHS, glyphRows } from '../art/glyphs'
+
+export const TEMPLATE_VERSION = 19
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -77,19 +79,48 @@ const titleBarFull = `
   <span class="title">Desk Crawler</span>{% unless status == "unlinked" or first_run %}${nextTick('instance lg:hidden')}{% endunless %}
 </div>`
 
-const newestStory = (clamp: number, classes: string) => `
-      {% if log.size > 0 %}<span class="${classes}" data-clamp="${clamp}">{{ log[0].s | escape }}</span>{% else %}<span class="${classes}">The first adventure starts soon.</span>{% endif %}`
+/** One glyph as a compact URL-encoded SVG: a single path of horizontal runs keeps each icon to a few hundred bytes. */
+const glyphUri = (kind: string, size: number) => {
+  const runs = glyphRows(kind).flatMap((row, y) => [...row.matchAll(/#+/g)].map((run) => `M${run.index} ${y}h${run[0].length}v1h-${run[0].length}z`))
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}' viewBox='0 0 8 8' shape-rendering='crispEdges'><path d='${runs.join('')}'/></svg>`
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`
+}
+
+const GLYPH_KINDS = Object.keys(GLYPHS)
+
+/** Each glyph assigned once per layout (`glyph16_combat`...), so log lines only pick a variable instead of repeating the SVG. */
+const glyphAssigns = (sizes: readonly number[]) =>
+  sizes.flatMap((size) => GLYPH_KINDS.map((k) => `{% assign glyph${size}_${k} = "${glyphUri(k, size)}" %}`)).join('')
+
+/** The log-kind glyph for a Liquid expression, the same icons as the companion log. Needs `glyphAssigns` for `size`. */
+const logIcon = (kind: string, size: number) =>
+  `{% case ${kind} %}${GLYPH_KINDS.filter((k) => k !== 'system')
+    .map((k) => `{% when "${k}" %}{% assign glyph = glyph${size}_${k} %}`)
+    .join('')}{% else %}{% assign glyph = glyph${size}_system %}{% endcase %}<img class="image no-shrink" src="{{ glyph }}" alt="">`
+
+/** HH:MM in the owner's timezone (D42 offset), then the story. Without an offset the time is left out. */
+const storyText = (entry: string) => `{% if utc_offset != nil %}{{ ${entry}.u | plus: utc_offset | date: "%H:%M" }}&nbsp; {% endif %}{{ ${entry}.s | escape }}`
+
+/** One log line: glyph, time and story, wrapping beside the icon. */
+const logLine = (entry: string, classes: string, clamp: number, size: number, wrapper = 'flex') => `<div class="${wrapper} flex--row flex--left flex--top gap--small">${logIcon(`${entry}.k`, size)}<span class="${classes}" data-clamp="${clamp}">${storyText(entry)}</span></div>`
+
+const newestStory = (clamp: number, classes: string, size = 16) => `
+      {% if log.size > 0 %}${logLine('log[0]', classes, clamp, size)}{% else %}<span class="${classes}">The first adventure starts soon.</span>{% endif %}`
+
+/** A big moment (level-up, elite win, jackpot, rare find) gets an inverted badge above the newest story. */
+const celebrationBadge = (classes: string) => `
+      {% if celebration %}<span class="${classes} label--inverted">{{ celebration | escape }}</span>{% endif %}`
 
 /**
- * Older log lines, newest first. No timestamps: the device focuses on the story.
+ * Older log lines, newest first, each with its glyph and time.
  * Lines wrap to two rows so a whole outcome stays readable. `extra` lines only
  * appear on large screens.
  */
 const olderStories = (count: number, extra = 0) => `
-      {% for entry in log offset: 1 limit: ${count} %}<span class="label lg:title--small" data-clamp="2">{{ entry.s | escape }}</span>{% endfor %}${
+      {% for entry in log offset: 1 limit: ${count} %}${logLine('entry', 'label lg:title--small', 2, 16)}{% endfor %}${
         extra > 0
           ? `
-      {% for entry in log offset: ${1 + count} limit: ${extra} %}<span class="hidden lg:block label lg:title--small" data-clamp="2">{{ entry.s | escape }}</span>{% endfor %}`
+      {% for entry in log offset: ${1 + count} limit: ${extra} %}${logLine('entry', 'label lg:title--small', 2, 16, 'hidden lg:flex')}{% endfor %}`
           : ''
       }`
 
@@ -176,7 +207,7 @@ const welcome = (layout: WelcomeLayout) => {
   return layout === 'full' ? `${scene('scene_url')}${row}` : row
 }
 
-export const markupFull = `
+export const markupFull = `${glyphAssigns([16, 24])}
 <div class="layout layout--col layout--top layout--stretch-x gap--small lg:gap--medium">
   {% if status == "unlinked" or first_run %}${welcome('full')}
   {% else %}
@@ -198,8 +229,8 @@ export const markupFull = `
   <div class="flex flex--col gap--small">${scene('scene_url')}${divider}
   </div>
   <div class="grid stretch-x gap--large lg:gap--xlarge">
-    <div class="{% if qr_url == "" and companion_qr_base != "" %}col--span-6{% else %}col--span-7{% endif %} flex flex--col flex--left flex--top gap--small lg:gap--medium">${newestStory(2, 'title lg:title')}
-      {% if attention %}${attention('label lg:title--small', 2)}${olderStories(0, 1)}{% else %}${olderStories(1, 2)}{% endif %}
+    <div class="{% if qr_url == "" and companion_qr_base != "" %}col--span-6{% else %}col--span-7{% endif %} flex flex--col flex--left flex--top gap--small lg:gap--medium">${celebrationBadge('label lg:title--small')}${newestStory(2, 'title lg:title', 24)}
+      {% if attention %}${attention('label lg:title--small', 2)}${olderStories(0, 5)}{% elsif celebration %}${olderStories(0, 5)}{% else %}${olderStories(1, 5)}{% endif %}
     </div>
     {% if qr_url != "" %}<div class="col--span-5 flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small">${qr}
     </div>{% else %}<div class="{% if companion_qr_base != "" %}col--span-6{% else %}col--span-5{% endif %} flex flex--row flex--top gap--medium">
@@ -210,7 +241,7 @@ export const markupFull = `
   {% endif %}
 </div>${titleBarFull}`
 
-export const markupHalfHorizontal = `
+export const markupHalfHorizontal = `${glyphAssigns([16])}
 <div class="layout layout--col layout--stretch-x">
   {% if status == "unlinked" or first_run %}${welcome('halfHorizontal')}
   {% else %}
@@ -222,13 +253,13 @@ export const markupHalfHorizontal = `
       <span class="label lg:title--small" data-clamp="1">{{ status_label | escape }}</span>${nextTick('label lg:title--small')}${hpBar(' progress-bar--small')}
       <div class="hidden lg:block">${xpBar(' progress-bar--small')}
       </div>
-      {% if attention %}${attention('label lg:title--small', 1)}${newestStory(1, 'label lg:title--small')}{% else %}${newestStory(2, 'label lg:title--small')}{% endif %}${olderStories(0, 2)}
+      {% if attention %}${attention('label lg:title--small', 1)}${newestStory(1, 'label lg:title--small')}{% else %}${newestStory(2, 'label lg:title--small')}{% endif %}${olderStories(0, 3)}
     </div>
   </div>
   {% endif %}
 </div>${titleBar}`
 
-export const markupHalfVertical = `
+export const markupHalfVertical = `${glyphAssigns([16, 24])}
 <div class="layout layout--col layout--top layout--stretch-x gap--small lg:gap--medium">
   {% if status == "unlinked" or first_run %}${welcome('halfVertical')}
   {% else %}
@@ -236,12 +267,12 @@ export const markupHalfVertical = `
     <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
     <span class="label lg:title--small" data-clamp="1">{{ status_label | escape }}</span>${nextTick('label lg:title--small')}${attention('label lg:title--small', 2)}${hpBar(' progress-bar--small')}${xpBar(' progress-bar--small')}
   </div>${scene('scene_url_small')}${divider}
-  <div class="flex flex--col flex--left gap--small">${newestStory(2, 'title title--small lg:title')}${olderStories(1, 1)}${rankLine}
+  <div class="flex flex--col flex--left gap--small">${celebrationBadge('label lg:title--small')}${newestStory(2, 'title title--small lg:title', 24)}{% if celebration %}${olderStories(0, 6)}{% else %}${olderStories(1, 6)}{% endif %}${rankLine}
   </div>
   {% endif %}
 </div>${titleBar}`
 
-export const markupQuadrant = `
+export const markupQuadrant = `${glyphAssigns([16])}
 <div class="layout layout--col layout--stretch-x gap--xsmall lg:gap--small">
   {% if status == "unlinked" or first_run %}${welcome('quadrant')}
   {% else %}

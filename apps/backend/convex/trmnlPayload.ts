@@ -5,7 +5,7 @@ import type { Doc } from './_generated/dataModel'
 import { currentUser } from './lib/intent'
 import { ACTIVE_CONTENT, catalogs } from '@trmnl-games/desk-crawler/content'
 import { bagGearCount } from '@trmnl-games/desk-crawler/sim/core/invariants'
-import { buildPayload } from '@trmnl-games/desk-crawler/payload'
+import { buildPayload, MAX_LOGS } from '@trmnl-games/desk-crawler/payload'
 import { readWorld } from './world'
 import { readDeviceRanking } from './lib/rankingRead'
 
@@ -72,7 +72,7 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
       .query('tickLogs')
       .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id))
       .order('desc')
-      .take(6)
+      .take(MAX_LOGS)
     logs = recent.map((log) => ({ at: log.at, kind: log.kind, summary: log.summary }))
     const newest = recent[0]
     if (newest) latestEvent = { kind: newest.kind, ...('outcome' in newest.detail ? { outcome: newest.detail.outcome } : {}) }

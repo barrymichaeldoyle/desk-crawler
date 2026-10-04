@@ -64,9 +64,9 @@ export function DevicePreview({ sceneUrl, heroName }: { sceneUrl: string; heroNa
     let cancelled = false
     void (async () => {
       const { Liquid } = await import('liquidjs')
-      // TRMNL renders in UTC and supplies the owner's offset; the browser's offset stands in for the TRMNL setting here.
-      const trmnl = { user: { utc_offset: -new Date().getTimezoneOffset() * 60 } }
-      const inner = await new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup[choice.layout], { ...(payload as Record<string, unknown>), trmnl })
+      // TRMNL renders in UTC and the screen route adds the owner's offset as `utc_offset`; the browser's offset stands in for the TRMNL setting here.
+      const utcOffset = -new Date().getTimezoneOffset() * 60
+      const inner = await new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup[choice.layout], { ...(payload as Record<string, unknown>), utc_offset: utcOffset })
       if (!cancelled) setHtml(previewDocument(inner, choice.device, choice.layout, `${heroName} on ${device.label}`, { shadeOtherSlots: true }))
     })()
     return () => {

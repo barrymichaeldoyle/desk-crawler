@@ -39,7 +39,7 @@ The help page walks through Save, finding the playlist item, seeing its preview,
 
 ## A snapshot that ages honestly
 
-D39 removes date/time and timezone labels from every device layout, including rank sections. The title bar contains the icon and plugin title. Keep game and board timestamps in the API for diagnostics and companion history; response assembly time never pretends to be gameplay freshness.
+D39 removes date/time and timezone labels from every device layout, including rank sections, with two exceptions: the next-tick time (D42) and log-line times (D44), both HH:MM in TRMNL's timezone. The title bar contains the icon and plugin title. Keep game and board timestamps in the API for diagnostics and companion history; response assembly time never pretends to be gameplay freshness.
 
 Show service/delay messages when needed without a clock or relative “updated just now” label. Revival/travel show remaining logical ticks as of hero evaluation; conversions to minutes are approximate. There is no separate Desk Crawler timezone preference; any future device date/time uses the user's TRMNL timezone.
 

@@ -105,7 +105,8 @@ Root values are flat; bounded `log` and `top5` arrays are intentionally nested. 
 | `weapon`, `armor` | Equipped names or empty strings |
 | `potions` | Nonnegative quantity; 0 when unlinked |
 | `bag_used`, `bag_capacity`, `held_item`, `wake_at_tick` | Live bag usage/capacity (initial 30; null unlinked), retained gear name or empty, nullable scheduled inventory-wake tick |
-| `log` | Max 6 newest-first `{ at, t, k, s }` entries; ISO UTC source time, legacy local `DD Mon HH:mm` label (not displayed), kind, summary |
+| `log` | Max 10 newest-first `{ at, u, t, k, s }` entries; ISO UTC source time, the same time as UTC seconds (templates v19 render it as HH:MM with `utc_offset`, D44), legacy local `DD Mon HH:mm` label (not displayed), kind (selects the line's glyph), summary |
+| `celebration` | String/null: "Level up! Now level N", "Elite defeated!", "Jackpot!" or "Rare find!" when the newest event is that big moment and no attention message applies; templates show it as an inverted badge (D44). Additive v1 field |
 | `rank`, `rank_delta` | Nullable seven-day own-group ordinal rank / gain since previous hourly publication of same board/group; group change or return from dormancy null |
 | `rank_status` | `ranked`, `awaiting` (no own row yet: new, unlinked or before first publication) or `dormant` (paused/sleeping without wake with zero window XP, D32); lets templates explain a null rank |
 | `leaderboard_board`, `leaderboard_cohort`, `leaderboard_cohort_label`, `leaderboard_score` | recent_7d; captured group key/label (<=48 chars; null key and empty label when unlinked); own earned-XP score nullable before own snapshot |
@@ -135,7 +136,7 @@ Fields keep their meaning within v1. Optional additions are permitted; removing/
 
 ## Query read budget
 
-Fixed lookups: grant/instance, user, hero, bounded equipped/potion items, latest six logs, world/run summary, published publication pointer, that hero's recent_7d rank row (to resolve captured cohort), selected generation/publication, and five public-user state/name-version checks for privacy masking. It is bounded indexed work, not literally a single O(1) database access. No global scan, no live rank count, no per-poll inventory traversal beyond the bounded bag if the adapter needs it.
+Fixed lookups: grant/instance, user, hero, bounded equipped/potion items, latest ten logs, world/run summary, published publication pointer, that hero's recent_7d rank row (to resolve captured cohort), selected generation/publication, and five public-user state/name-version checks for privacy masking. It is bounded indexed work, not literally a single O(1) database access. No global scan, no live rank count, no per-poll inventory traversal beyond the bounded bag if the adapter needs it.
 
 ## Layout plans
 

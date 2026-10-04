@@ -71,6 +71,23 @@ describe('full layout', () => {
   })
 })
 
+describe('log lines (D44)', () => {
+  it('shows each line with its glyph and owner-local HH:MM', async () => {
+    const html = await render({ ...payload(), utc_offset: 7200 })
+    expect(html).toMatch(/<img class="image no-shrink" src="data:image\/svg\+xml,[^"]+" alt=""><span[^>]*>10:19&nbsp; Unplugged a Cable Serpent/)
+  })
+
+  it('leaves the time out without an offset', async () => {
+    const html = await render({ ...payload(), utc_offset: null })
+    expect(html).toMatch(/data-clamp="2">Unplugged a Cable Serpent/)
+  })
+
+  it('celebrates a big moment with a badge', async () => {
+    expect(await render({ ...payload(), celebration: 'Level up! Now level 6' })).toMatch(/label--inverted">Level up! Now level 6</)
+    expect(await render(payload())).not.toContain('label--inverted')
+  })
+})
+
 describe('next adventure line (D42)', () => {
   it('renders HH:MM in the owner offset from the utc_offset merge variable', async () => {
     const vars = payload()

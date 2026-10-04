@@ -1,5 +1,13 @@
 # TRMNL lifecycle evidence — A07 (in progress)
 
+## Production second installation, 2026-10-04
+
+Plugin 564, companion `desk-crawler.grandprixpicks.com`, Convex `exciting-cormorant-948`, existing owner/hero. Created fresh plugin setting 495833, linked the account, saved with a 15-minute interval, and followed Configure through the verified management landing. TRMNL recorded a successful render at 13:13:13 SAST (941 ms, 22.6 KB). Then uninstalled only that disposable instance.
+
+Read-only production inspection confirmed setting 495833 `uninstalled`, setting 495747 `active`, both originally `confirmedBy: success_callback`. The original hero persisted; creating a second installation did not issue a second starter kit or reset progress. The new setting was removed before its expected device slot, so its render is not claimed as hardware delivery. [Screenshots and local video](install-demo/README.md) document this flow.
+
+This closes a real second-instance/management/uninstall demonstration. It does not cover every V06 condition: expired/abandoned attempts, wrong owner, delayed callback, and same/different credential reinstall live variants remain open alongside the automated protocol tests.
+
 ## Live install, 2026-10-03 (development plugin, Barry's account)
 
 Plugin `Desk Crawler`, status development, plugin setting 495493. App on `http://localhost:3000`, lifecycle and screen on Convex dev `superb-bobcat-74`.

@@ -1,6 +1,10 @@
 # Implementation status
 
-Updated 2026-10-03 (night). Live on the Convex dev deployment `superb-bobcat-74` with Barry's TRMNL X; app runs locally (`pnpm dev`), not yet deployed to Cloudflare.
+Updated 2026-10-04. Production companion is live at `desk-crawler.grandprixpicks.com`, Convex `exciting-cormorant-948`, Clerk production, TRMNL plugin 564. Review preparation is in progress; [release evidence](evidence/release.md) records verified behavior and open checks. Candidate template v12 and web brand assets are local changes awaiting visual verification and deployment approval.
+
+Barry subsequently requested a plan to share infrastructure across future games on his newly owned `trmnlgames.com`. The [TRMNL Games migration proposal](trmnl-games-migration.md) stages the monorepo/platform/domain work before final marketplace submission. Detailed architecture and deletion-policy changes await acceptance; no production changes were made for this planning request.
+
+Barry clarified that this is a pre-launch migration with no public player base. Preserving his current identity/hero is best effort; fresh onboarding is acceptable if preservation becomes complicated. The proposal now uses a single coordinated cutover without a mandatory identity bridge or extended compatibility period. This does not relax progress preservation for later public releases or authorize a production reset now.
 
 ## Built and verified
 
@@ -17,7 +21,7 @@ Updated 2026-10-03 (night). Live on the Convex dev deployment `superb-bobcat-74`
 | A10 art + layouts | Hand-authored 1-bit pixel art (6 hero poses, 12 monsters, props, 3 backdrops), on-demand scene composer (`/art/scene/v2/...`), scene-window layouts for all four sizes | Real TRMNL X renders |
 | A09 companion | Shell, hero page (scene, stats, travel, potion, pause), bag (equip, bulk sell, claim, resume with destination), rankings (3 tabs), settings (pause, installations; timezone removed per D39), help/privacy/support pages | Playwright walkthrough with the Clerk test identity |
 | A11 operations | Daily bounded retention cleanup; account deletion with durable purge, revocation hashes and Clerk user deletion | convex-test; live deletion ([evidence](evidence/deletion.md)) |
-| D27 incident notices | One incident per stalled run, deduplicated alert + recovery via Resend with idempotency keys and bounded retries; disabled until `RESEND_API_KEY` is set on Convex | convex-test |
+| D27 incident notices | One incident per stalled run, deduplicated alert + recovery via Resend with idempotency keys and bounded retries; production key configured, staging pair accepted by Resend | convex-test; [recovery](evidence/recovery.md), delivery-event check still open |
 | D23 admin | Server-side allowlist, health view, audited name repair / suspend / restore / release / resume-run, owner name replacement | convex-test |
 | Layout matrix | Local framework preview of ten states × four sizes on OG and TRMNL X (template v8), overflow-checked; companion QR on setup and full bag | [layouts](evidence/trmnl-layouts.md) |
 | D25 return recap | Single server checkpoint, guarded visible acknowledgement | convex-test; live browser check |
@@ -32,10 +36,17 @@ Updated 2026-10-03 (night). Live on the Convex dev deployment `superb-bobcat-74`
 
 ## Remaining before public release
 
-- Clerk `user.deleted` webhook: `POST /auth/clerk/webhook` is built and tested (Svix signature, 5-minute tolerance, idempotent purge, revocation hash for unknown subjects). Still needed: the endpoint registered in the Clerk dev instance with `CLERK_WEBHOOK_SECRET` set on Convex, then the same for production.
-- Set `RESEND_API_KEY` on Convex to turn on incident/recovery emails (barry@barrymichaeldoyle.com from `desk-crawler@grandprixpicks.com`, D27/D38), then send one staging test.
-- Production: Convex prod `exciting-cormorant-948` and Clerk prod (`clerk.desk-crawler.grandprixpicks.com`, DNS added 2026-10-04) are configured; Cloudflare Workers Builds deploys on push to `main` (build `pnpm build:deploy`, `CONVEX_DEPLOY_KEY` build secret). Still to do: first deploy, **daily backups enabled** (the privacy page states this), plugin URLs switched to prod, real plugin icon.
-- V06 lifecycle matrix live: uninstall, second instance, reinstall, expired attempt, wrong owner, lost callback.
-- Confirm template v8 and scene art v3 on the real TRMNL X (check the ×6 scene edges); mashups beside other plugins; art polish after Barry's review.
-- Capacity measurement at 100/1,000 heroes (V05) and the zero-revenue cost report; Creator Fund eligibility (V10).
-- Marketplace review package and submission (needs Barry's explicit go-ahead).
+- Visually inspect candidate v12's 88 OG/X cases, then verify latest four-size live renders and mashups. Local browser preview access remains rejected despite Barry's approval. Production v11 reached Barry's X and was described as decent; that does not validate v12.
+- Complete the independent protected post-backup deletion/revocation source and in-flight recovery proof. The isolated 1,000-hero restore and manual checkpoint replay passed; full recovery readiness remains open.
+- Finish V06 live variants (reinstall, expired/abandoned attempt, wrong owner, delayed/lost callbacks), failure-under-load and outage observation. A fresh production second-instance/manage/render/uninstall demonstration passed.
+- Verify notice delivery events/live failure exhaustion. The staging alert/recovery pair was accepted by Resend; API acceptance alone is not inbox delivery.
+- Update the old marketplace featured image, finish/host reviewer video, confirm sender email and promotion answer, and confirm Third Party games/Creator Fund eligibility and payment onboarding.
+- Approve the verified production changes and final marketplace submission/email explicitly. Cloudflare Workers Builds deploys on push to `main` (`pnpm build:deploy`); a push is a production action.
+
+## Latest preparation completed
+
+- Production app, plugin lifecycle/screen URLs, Clerk environment and Resend key are configured. The production Clerk deletion webhook's trailing comma was corrected; a signed synthetic event delivered successfully.
+- Daily production backups at 09:03 UTC, seven-day retention; Oct 4 backup completed. Isolated synthetic import took 27.276 seconds, plus 6.051 seconds for verification/checkpoint replay: [recovery evidence](evidence/recovery.md).
+- 100/1,000-hero runs and screen latency met targets. The zero-payout scenario forecast identifies approximately $45/month additional Convex I/O/egress at 1,000 continuously polling instances with otherwise unused allowances: [capacity evidence](evidence/capacity.md).
+- Approved simpler logo/favicon implemented; new TRMNL plugin icon saved. Local app/touch/social assets generated and inspected.
+- [Review email](review-email.md) and [installation screenshot video](evidence/install-demo/README.md) prepared, not sent or published. Current tests/typechecks (71 tests) and production build pass.

@@ -1,9 +1,9 @@
 import type { convexTest } from 'convex-test'
 import { vi } from 'vitest'
-import { internal } from '../../convex/_generated/api'
-import type { Id } from '../../convex/_generated/dataModel'
-import { contentV2 } from '../../convex/content/v2'
-import { starterHero, starterKit } from '../../convex/sim/core/starter'
+import { internal } from '@trmnl-games/backend/api'
+import type { Id } from '@trmnl-games/backend/data-model'
+import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
+import { starterHero, starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
 
 export type T = ReturnType<typeof convexTest>
 

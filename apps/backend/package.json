@@ -1,0 +1,22 @@
+{
+  "name": "@trmnl-games/backend",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./api": "./convex/_generated/api.js",
+    "./data-model": "./convex/_generated/dataModel.d.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p convex/tsconfig.json"
+  },
+  "dependencies": {
+    "convex": "^1.46.0",
+    "@noble/hashes": "^2.4.0",
+    "@trmnl-games/desk-crawler": "workspace:*",
+    "@trmnl-games/platform": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3",
+    "@types/node": "^24.19.1"
+  }
+}

@@ -1,14 +1,14 @@
 // @vitest-environment edge-runtime
 import { convexTest } from 'convex-test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { api } from '../../convex/_generated/api'
-import type { Id } from '../../convex/_generated/dataModel'
-import schema from '../../convex/schema'
-import { contentV2 } from '../../convex/content/v2'
-import { starterKit } from '../../convex/sim/core/starter'
+import { api } from '@trmnl-games/backend/api'
+import type { Id } from '@trmnl-games/backend/data-model'
+import schema from '../../apps/backend/convex/schema'
+import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
+import { starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
 import { runTick, seedHero, seedWorld, type T } from './helpers'
 
-const modules = import.meta.glob('../../convex/**/*.ts')
+const modules = import.meta.glob('../../apps/backend/convex/**/*.ts')
 const SLOT = Date.UTC(2026, 9, 3, 10, 13, 2)
 let op = 0
 const opId = () => `op-${String(++op).padStart(6, '0')}`

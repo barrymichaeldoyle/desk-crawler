@@ -1,0 +1,207 @@
+{
+  "date": "2026-10-04",
+  "deployment": "precious-pheasant-866",
+  "simulationVersion": 1,
+  "contentVersion": "v2",
+  "templateVersionDuringMeasurement": 11,
+  "cohorts": [
+    {
+      "n": 100,
+      "measuredAt": "2026-10-04T10:56:01.385Z",
+      "runMs": 3282,
+      "processed": 100,
+      "eligible": 100,
+      "quarantined": 0,
+      "boards": [
+        {
+          "board": "overall",
+          "state": "ready",
+          "total": 100
+        },
+        {
+          "board": "recent_24h",
+          "state": "ready",
+          "total": 100
+        },
+        {
+          "board": "recent_7d",
+          "state": "ready",
+          "total": 100
+        }
+      ],
+      "inventorySampleRows": 32,
+      "retainedBucketSample": 167,
+      "duplicateNoop": true,
+      "commands": {
+        "submitted": 10,
+        "accepted": 8,
+        "rejected": [
+          {
+            "index": 6,
+            "code": "INVALID_STATE"
+          },
+          {
+            "index": 42,
+            "code": "INVALID_STATE"
+          }
+        ],
+        "conflictRetries": 0
+      },
+      "simulation": {
+        "calls": 5,
+        "executionMs": 1653.982072,
+        "userExecutionMs": 269.31820700000003,
+        "p95ExecutionMs": 424.856169,
+        "p95UserExecutionMs": 70.084456,
+        "readBytes": 2850733,
+        "writeBytes": 847010,
+        "readDocuments": 4038,
+        "writeDocuments": 348,
+        "conflictRetries": 0
+      },
+      "ranking": {
+        "calls": 6,
+        "executionMs": 1235.8474840000001,
+        "userExecutionMs": 114.520998,
+        "p95ExecutionMs": 461.493731,
+        "p95UserExecutionMs": 33.064625,
+        "readBytes": 587268,
+        "writeBytes": 299089,
+        "readDocuments": 938,
+        "writeDocuments": 314,
+        "conflictRetries": 0
+      },
+      "screen": {
+        "requests": 50,
+        "all200": true,
+        "p50Ms": 300.882916999999,
+        "p95Ms": 350.1915829999998,
+        "meanBytes": 22221.2,
+        "maxBytes": 22454,
+        "http": {
+          "calls": 50,
+          "executionMs": 2392.179491,
+          "userExecutionMs": 2237.5425189999996,
+          "p95ExecutionMs": 66.168053,
+          "p95UserExecutionMs": 60.46131,
+          "readBytes": 0,
+          "writeBytes": 0,
+          "readDocuments": 0,
+          "writeDocuments": 0,
+          "conflictRetries": 0
+        },
+        "payload": {
+          "calls": 50,
+          "executionMs": 1930.3145029999998,
+          "userExecutionMs": 411.155314,
+          "p95ExecutionMs": 53.36341,
+          "p95UserExecutionMs": 12.351697999999999,
+          "readBytes": 1925580,
+          "writeBytes": 0,
+          "readDocuments": 2265,
+          "writeDocuments": 0,
+          "conflictRetries": 0
+        }
+      }
+    },
+    {
+      "n": 1000,
+      "measuredAt": "2026-10-04T10:59:58.814Z",
+      "runMs": 34293,
+      "processed": 1000,
+      "eligible": 1000,
+      "quarantined": 0,
+      "boards": [
+        {
+          "board": "overall",
+          "state": "ready",
+          "total": 1000
+        },
+        {
+          "board": "recent_24h",
+          "state": "ready",
+          "total": 1000
+        },
+        {
+          "board": "recent_7d",
+          "state": "ready",
+          "total": 1000
+        }
+      ],
+      "inventorySampleRows": 32,
+      "retainedBucketSample": 167,
+      "duplicateNoop": true,
+      "commands": {
+        "submitted": 10,
+        "accepted": 8,
+        "rejected": [
+          {
+            "index": 6,
+            "code": "INVALID_STATE"
+          },
+          {
+            "index": 42,
+            "code": "INVALID_STATE"
+          }
+        ],
+        "conflictRetries": 0
+      },
+      "simulation": {
+        "calls": 41,
+        "executionMs": 17070.664652,
+        "userExecutionMs": 2601.9505269999995,
+        "p95ExecutionMs": 711.701907,
+        "p95UserExecutionMs": 75.579786,
+        "readBytes": 28476375,
+        "writeBytes": 8538028,
+        "readDocuments": 40332,
+        "writeDocuments": 3560,
+        "conflictRetries": 0
+      },
+      "ranking": {
+        "calls": 33,
+        "executionMs": 13699.319966000003,
+        "userExecutionMs": 1253.539559,
+        "p95ExecutionMs": 586.230824,
+        "p95UserExecutionMs": 49.175526,
+        "readBytes": 60992486,
+        "writeBytes": 2398897,
+        "readDocuments": 9148,
+        "writeDocuments": 3069,
+        "conflictRetries": 0
+      },
+      "screen": {
+        "requests": 50,
+        "all200": true,
+        "p50Ms": 288.12854200000584,
+        "p95Ms": 412.5184999999983,
+        "meanBytes": 22315.6,
+        "maxBytes": 22498,
+        "http": {
+          "calls": 50,
+          "executionMs": 1857.8576279999995,
+          "userExecutionMs": 1655.9716140000005,
+          "p95ExecutionMs": 45.725932,
+          "p95UserExecutionMs": 41.827698000000005,
+          "readBytes": 0,
+          "writeBytes": 0,
+          "readDocuments": 0,
+          "writeDocuments": 0,
+          "conflictRetries": 0
+        },
+        "payload": {
+          "calls": 50,
+          "executionMs": 1326.104325,
+          "userExecutionMs": 399.151226,
+          "p95ExecutionMs": 33.599658999999996,
+          "p95UserExecutionMs": 12.213583,
+          "readBytes": 1963660,
+          "writeBytes": 0,
+          "readDocuments": 2305,
+          "writeDocuments": 0,
+          "conflictRetries": 0
+        }
+      }
+    }
+  ]
+}

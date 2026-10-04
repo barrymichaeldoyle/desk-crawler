@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { parseScenePath, renderScenePng } from '../../convex/art/route'
-import { FULL_SCALE, LARGE_SCALE, MEDIUM_SCALE, SCENE_VERSION, SMALL_SCALE, STAGE_HEIGHT, STAGE_WIDTH } from '../../convex/art/scene'
-import { sceneFor, scenePath } from '../../convex/art/sceneKey'
-import { monsterArt } from '../../convex/art/monsters'
-import { contentV2 } from '../../convex/content/v2'
+import { parseScenePath, renderScenePng } from '@trmnl-games/desk-crawler/art/route'
+import { FULL_SCALE, LARGE_SCALE, MEDIUM_SCALE, SCENE_VERSION, SMALL_SCALE, STAGE_HEIGHT, STAGE_WIDTH } from '@trmnl-games/desk-crawler/art/scene'
+import { sceneFor, scenePath } from '@trmnl-games/desk-crawler/art/sceneKey'
+import { monsterArt } from '@trmnl-games/desk-crawler/art/monsters'
+import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
 
 describe('scene art', () => {
   it('maps hero state and the latest event to a pose and subject', () => {
@@ -48,16 +48,16 @@ describe('scene art', () => {
 describe('companion QR codes', () => {
   it('encode only allowlisted targets and scan back to the companion URL', async () => {
     const { default: jsQR } = await import('jsqr')
-    const { parseQrPath, qrInk, qrPath, renderQrPng, QR_SCALE, QR_LARGE_SCALE } = await import('../../convex/art/qr')
+    const { parseQrPath, qrInk, qrPath, renderQrPng, QR_SCALE, QR_LARGE_SCALE } = await import('@trmnl-games/desk-crawler/art/qr')
     expect(parseQrPath(qrPath('bag', QR_SCALE))).toEqual({ target: 'bag', scale: QR_SCALE })
-    for (const bad of ['/art/qr/v1/evil/3.png', '/art/qr/v1/app/9.png', '/art/qr/v2/app/3.png', '/art/qr/v1/app/3.png?x=1']) {
+    for (const bad of ['/art/qr/v1/evil/3.png', '/art/qr/v1/app/9.png', '/art/qr/v0/app/3.png', '/art/qr/v1/app/3.png?x=1']) {
       expect(renderQrPng(bad, 'https://example.test')).toBeNull()
     }
     for (const scale of [QR_SCALE, QR_LARGE_SCALE]) {
-      const { size, ink } = qrInk('https://desk-crawler.grandprixpicks.com/app/inventory', scale)
+      const { size, ink } = qrInk('https://trmnlgames.com/app/desk-crawler/inventory', scale)
       const rgba = new Uint8ClampedArray(size * size * 4)
       for (let i = 0; i < ink.length; i += 1) rgba.fill(ink[i] ? 0 : 255, i * 4, i * 4 + 3), (rgba[i * 4 + 3] = 255)
-      expect(jsQR(rgba, size, size)?.data).toBe('https://desk-crawler.grandprixpicks.com/app/inventory')
+      expect(jsQR(rgba, size, size)?.data).toBe('https://trmnlgames.com/app/desk-crawler/inventory')
     }
   })
 })

@@ -1,0 +1,15 @@
+file '01-connect.png'
+duration 4
+file '02-authorize.png'
+duration 5
+file '03-linked.png'
+duration 4
+file '04-saved.png'
+duration 5
+file '05-manage.png'
+duration 6
+file '06-render.png'
+duration 5
+file '07-removed.png'
+duration 4
+file '07-removed.png'

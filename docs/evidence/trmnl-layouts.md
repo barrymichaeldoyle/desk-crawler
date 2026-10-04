@@ -1,12 +1,22 @@
 # TRMNL layout evidence: A10 (in progress)
 
+## Readability candidate, template v12 (2026-10-04)
+
+Barry described the delivered full-screen v11 layout as decent and requested easier reading. Candidate v12 gives hero/status and HP/XP a shared top row, keeps scene art in the middle, and widens the story panel beside rankings below. Gear names can wrap on the X; older story rows are black. Half layouts have clearer hero/status separation; quadrant prioritizes hero/HP and removes duplicate detail. Setup/first-run panels are unchanged.
+
+`pnpm check` (71 tests/typechecks), `pnpm build`, and generation of all 88 HTML cases passed. Mechanical layout lint returned no findings. **Visual inspection and overflow/image checks have not run for v12**: automatic browser review rejected local preview access even after Barry allowed it. These changes remain local and must not be deployed as verified. No browser workaround was used.
+
+Production v11 is now live: original setting 495747's timeline recorded rendering at 11:12:47 SAST and device delivery at 11:22:18; later rendering at 12:27:09. Barry's hardware feedback supplies limited full-screen readability evidence. A new production installation rendered successfully at 13:13:13, 941 ms, 22.6 KB ([walkthrough](install-demo/README.md)). Its install form still uses an old static featured image; that image is not a current production render.
+
+Generic account markup preview returned empty merge variables and was excluded from acceptance evidence. Downloading the actual TRMNL image was rejected by browser review. Latest mashup and OG live-render proof remain open. Firmware observed: TRMNL X 1.8.17.
+
 ## Device times removed, template v11 (2026-10-04)
 
 D39 removes the completed-game date/time and UTC offset from the shared title bar in all four sizes. Awaiting-rank copy now uses fixed “Ranking within the hour” text instead of the legacy board-time label. Older story rows already omit timestamps. The icon and title remain, following the [official basic title-bar structure](https://trmnl.com/framework/docs/3.4/title_bar).
 
 Validation: `pnpm check` passed all typechecks and 71 tests. `pnpm tsx tools/trmnl/preview.ts` generated 88 pages (11 states × four sizes × OG/X). Playwright checked each for content crossing the title bar/view bounds, failed visible images, and clock/UTC text: zero failures. All eight normal-state screenshots (four sizes × OG/X) were visually inspected; local artifacts are in `.previews/v11-<og|x>-<layout>.png`. Help/settings copy and onboarding now omit the separate timezone preference; the backend and v1 payload keep legacy fields for compatibility.
 
-`pnpm build` also passed for the client and Worker SSR bundle, with existing TanStack `inputValidator` deprecation notices. These are local framework previews. Template v11 has not been deployed or checked on the physical TRMNL; the live release gate remains open.
+`pnpm build` also passed for the client and Worker SSR bundle, with existing TanStack `inputValidator` deprecation notices. These were local framework previews at the time; subsequent production delivery and Barry's feedback are recorded above. The all-layout live release gate remains open.
 
 ## First-run screens, template v10 (2026-10-04)
 

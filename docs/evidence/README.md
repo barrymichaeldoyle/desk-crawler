@@ -1,6 +1,6 @@
 # Implementation evidence checklist
 
-No live gate is complete yet. Collect these artifacts after implementation is authorized. Do not create invented success reports.
+Live implementation evidence is available, with remaining acceptance checks recorded in [release preparation](release.md). The latest pass adds [capacity measurements](capacity.md), [synthetic recovery](recovery.md), [Creator Fund findings](creator-fund.md) and an [installation walkthrough](install-demo/README.md). A successful individual check does not close its entire matrix. Do not create invented success reports.
 
 | Artifact | Owner | Required content |
 | --- | --- | --- |

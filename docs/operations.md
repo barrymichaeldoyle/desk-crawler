@@ -6,7 +6,7 @@ Local development: current pinned app dependencies, local Workers-compatible run
 
 Staging: separate Convex state + Worker deployment + dedicated Clerk configuration. Use an owner's development TRMNL plugin/instance for live protocol and screenshot checks. Staging is an engineering environment, not a player beta program. Do not copy private production user data into it.
 
-Production: `https://desk-crawler.grandprixpicks.com` (D33) with dedicated service configurations on the existing Convex Pro and Clerk Pro accounts. The Clerk production instance needs its DNS records on that subdomain, and a Workers custom domain needs the `grandprixpicks.com` zone on Cloudflare. No remote repository, DNS record, deployment, Clerk app or TRMNL listing has been created during planning. Exact account/app IDs must be selected before provisioning.
+Production: `https://desk-crawler.grandprixpicks.com` (D33), Convex `exciting-cormorant-948`, dedicated Clerk production and Cloudflare Worker, TRMNL plugin 564. These are configured and live as of 2026-10-04. Daily backups and the corrected deletion webhook were verified; [release evidence](evidence/release.md) records current open gates. Original planning sections below describe policies, not the current provisioning checklist.
 
 Each environment uses explicit app/API origins and a matching Clerk issuer. Development and production tokens must never share a database or grant identity. A preview deployment must not accidentally run production mutations or register production cron jobs.
 
@@ -28,13 +28,13 @@ Each environment uses explicit app/API origins and a matching Clerk issuer. Deve
 | World seed | Server-generated Convex singleton; never public config |
 | Admin allowlist | Server-controlled Clerk subjects/verified claims, never client writes |
 | Convex/Cloudflare deployment tokens | CI secrets with project-scoped access |
-| Resend key | No MVP requirement; add server-only if transactional email is later authorized |
+| Resend key | Convex server-only; configured for approved D27/D38 incident/recovery notices |
 
 Keep an `.env.example` with variable names and fake placeholders during implementation; never print or commit actual secret values. Do not create replacement accounts when existing subscriptions can host the project.
 
 ## CI/CD proposal
 
-The repository will be public at `github.com/barrymichaeldoyle/desk-crawler` (D33), MIT for code with reserved art/content (D34). Proposed CI: one coordinated GitHub Actions pipeline so backend/web releases preserve the shared contract. Remote creation and first push await explicit authorization.
+The repository is `github.com/barrymichaeldoyle/desk-crawler` (D33), MIT for code with reserved art/content (D34). Cloudflare Workers Builds deploys on pushes to `main` using `pnpm build:deploy` and its configured Convex deploy secret. Treat a push as a production deployment and obtain explicit approval. Backend/web releases must preserve the shared contract.
 
 Pull request checks: frozen dependency install, formatting/lint/type check, domain and transaction tests, contract/fixture checks, deterministic small balance smoke, Worker production build, relevant end-to-end tests, and docs/link checks. Screenshot checks are required when a layout/payload/text-length change affects rendering; do not burn TRMNL render allowance on unrelated commits.
 

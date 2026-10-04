@@ -4,13 +4,13 @@
  *   pnpm balance [--heroes 500] [--days 30] [--content v2] [--json out.json]
  */
 import { writeFileSync } from 'node:fs'
-import { catalogs, type CatalogId } from '../../convex/content'
-import { applyItemChanges } from '../../convex/sim/core/apply'
-import { simulateHero, SIMULATION_VERSION } from '../../convex/sim/core/simulate'
-import { starterHero, starterKit } from '../../convex/sim/core/starter'
-import { cumulativeXpToReach } from '../../convex/sim/core/stats'
-import type { ContentCatalog, HeroState, ItemSnapshot } from '../../convex/sim/core/types'
-import { createRng } from '../../convex/sim/core/rng'
+import { catalogs, type CatalogId } from '@trmnl-games/desk-crawler/content'
+import { applyItemChanges } from '@trmnl-games/desk-crawler/sim/core/apply'
+import { simulateHero, SIMULATION_VERSION } from '@trmnl-games/desk-crawler/sim/core/simulate'
+import { starterHero, starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
+import { cumulativeXpToReach } from '@trmnl-games/desk-crawler/sim/core/stats'
+import type { ContentCatalog, HeroState, ItemSnapshot } from '@trmnl-games/desk-crawler/sim/core/types'
+import { createRng } from '@trmnl-games/desk-crawler/sim/core/rng'
 
 const TICKS_PER_DAY = 96
 

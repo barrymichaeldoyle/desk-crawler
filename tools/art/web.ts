@@ -1,11 +1,11 @@
 /** Render the companion's favicons, app icons and social card into public/. pnpm tsx tools/art/web.ts */
 import { mkdirSync, writeFileSync } from 'node:fs'
-import { Canvas } from '../../convex/art/canvas'
-import { encodePng1Bit } from '../../convex/art/png'
-import { composeScene, STAGE_WIDTH } from '../../convex/art/scene'
-import { iconCanvas } from './iconArt'
+import { Canvas } from '@trmnl-games/desk-crawler/art/canvas'
+import { encodePng1Bit } from '@trmnl-games/desk-crawler/art/png'
+import { composeScene, STAGE_WIDTH } from '@trmnl-games/desk-crawler/art/scene'
+import { faviconCanvas, iconCanvas } from './iconArt'
 
-const OUT = 'public'
+const OUT = 'apps/web/public/games/desk-crawler'
 mkdirSync(OUT, { recursive: true })
 
 function blit(target: Canvas, source: Canvas, left: number, top: number): void {
@@ -21,37 +21,46 @@ function png(name: string, canvas: Canvas, factor: number): Uint8Array {
 }
 
 const icon = iconCanvas()
+const favicon = faviconCanvas()
 
 // Crisp vector favicon: one 1x1 run per horizontal stretch of ink on a white tile.
 const runs: string[] = []
-for (let y = 0; y < icon.height; y += 1) {
-  for (let x = 0; x < icon.width; x += 1) {
-    if (!icon.ink[y * icon.width + x]) continue
+for (let y = 0; y < favicon.height; y += 1) {
+  for (let x = 0; x < favicon.width; x += 1) {
+    if (!favicon.ink[y * favicon.width + x]) continue
     let end = x
-    while (end + 1 < icon.width && icon.ink[y * icon.width + end + 1]) end += 1
+    while (end + 1 < favicon.width && favicon.ink[y * favicon.width + end + 1]) end += 1
     runs.push(`M${x} ${y}h${end - x + 1}v1h-${end - x + 1}z`)
     x = end
   }
 }
 writeFileSync(
   `${OUT}/favicon.svg`,
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" shape-rendering="crispEdges"><rect width="32" height="32" fill="#fff"/><path d="${runs.join('')}"/></svg>\n`,
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect width="16" height="16" fill="#fff"/><path d="${runs.join('')}"/></svg>\n`,
 )
 console.log(`wrote ${OUT}/favicon.svg`)
 
-// favicon.ico for clients that ignore <link rel="icon">: one embedded 32x32 PNG.
-const ico32 = encodePng1Bit(32, 32, icon.ink)
-const header = new DataView(new ArrayBuffer(22))
+// Native 16px and doubled 32px drawings for clients that use favicon.ico.
+const ico16 = encodePng1Bit(16, 16, favicon.ink)
+const doubled = favicon.scaled(2)
+const ico32 = encodePng1Bit(32, 32, doubled.ink)
+const header = new DataView(new ArrayBuffer(38))
 header.setUint16(2, 1, true) // type: icon
-header.setUint16(4, 1, true) // one image
-header.setUint8(6, 32)
-header.setUint8(7, 32)
+header.setUint16(4, 2, true)
+header.setUint8(6, 16)
+header.setUint8(7, 16)
 header.setUint16(10, 1, true) // colour planes
 header.setUint16(12, 32, true) // bits per pixel
-header.setUint32(14, ico32.length, true)
-header.setUint32(18, 22, true) // image offset
-writeFileSync(`${OUT}/favicon.ico`, Buffer.concat([new Uint8Array(header.buffer), ico32]))
-console.log(`wrote ${OUT}/favicon.ico 32x32`)
+header.setUint32(14, ico16.length, true)
+header.setUint32(18, 38, true)
+header.setUint8(22, 32)
+header.setUint8(23, 32)
+header.setUint16(26, 1, true)
+header.setUint16(28, 32, true)
+header.setUint32(30, ico32.length, true)
+header.setUint32(34, 38 + ico16.length, true)
+writeFileSync(`${OUT}/favicon.ico`, Buffer.concat([new Uint8Array(header.buffer), ico16, ico32]))
+console.log(`wrote ${OUT}/favicon.ico 16x16, 32x32`)
 
 // Apple touch icon: 180 = 36 x 5, so pad the 32px art by two pixels each side.
 const touch = new Canvas(36, 36)

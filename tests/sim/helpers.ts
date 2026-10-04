@@ -1,7 +1,7 @@
-import { contentV1 } from '../../convex/content/v1'
-import { simulateHero, SIMULATION_VERSION } from '../../convex/sim/core/simulate'
-import { starterHero, starterKit } from '../../convex/sim/core/starter'
-import type { HeroState, ItemSnapshot, NewItem, SimulationInput, SimulationResult, StreamSeeds } from '../../convex/sim/core/types'
+import { contentV1 } from '@trmnl-games/desk-crawler/content/v1'
+import { simulateHero, SIMULATION_VERSION } from '@trmnl-games/desk-crawler/sim/core/simulate'
+import { starterHero, starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
+import type { HeroState, ItemSnapshot, NewItem, SimulationInput, SimulationResult, StreamSeeds } from '@trmnl-games/desk-crawler/sim/core/types'
 
 export const content = contentV1
 

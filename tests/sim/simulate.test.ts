@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { applyItemChanges } from '../../convex/sim/core/apply'
-import { SimulationInvariantError } from '../../convex/sim/core/invariants'
-import { maxHp, xpToLeave } from '../../convex/sim/core/stats'
-import type { HeroState, ItemSnapshot } from '../../convex/sim/core/types'
+import { applyItemChanges } from '@trmnl-games/desk-crawler/sim/core/apply'
+import { SimulationInvariantError } from '@trmnl-games/desk-crawler/sim/core/invariants'
+import { maxHp, xpToLeave } from '@trmnl-games/desk-crawler/sim/core/stats'
+import type { HeroState, ItemSnapshot } from '@trmnl-games/desk-crawler/sim/core/types'
 import { baseState, content, fillBag, findSeed, run } from './helpers'
 
 const c = content.constants
@@ -229,7 +229,7 @@ describe('fuzzed long runs', () => {
 
 // --------------------------------------------------------------- local helpers
 
-import { simulateHero as simulate } from '../../convex/sim/core/simulate'
+import { simulateHero as simulate } from '@trmnl-games/desk-crawler/sim/core/simulate'
 import { seeds as baseSeeds } from './helpers'
 
 /** Crude occasional management so long runs exercise sleep, wake and travel. */

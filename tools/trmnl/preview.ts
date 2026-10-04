@@ -7,9 +7,9 @@
  */
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { Liquid } from 'liquidjs'
-import { contentV2 } from '../../convex/content/v2'
-import { buildPayload, type PayloadInput } from '../../convex/lib/payload'
-import { screenMarkup } from '../../convex/templates/screen'
+import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
+import { buildPayload, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
+import { screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
 
 const artBaseUrl = process.argv[2] ?? 'https://superb-bobcat-74.convex.site'
 const NOW = Date.UTC(2026, 9, 4, 8, 20)

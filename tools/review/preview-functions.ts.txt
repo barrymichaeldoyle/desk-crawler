@@ -1,0 +1,103 @@
+/** Disposable-preview harness. Copy into a scratch checkout only; never deploy this module to production. */
+import { v } from 'convex/values'
+import { internalMutation, internalQuery } from './_generated/server'
+import { ACTIVE_CONTENT, catalogs } from './content'
+import { starterHero, starterKit } from './sim/core/starter'
+import { getOrCreateWorld, readWorld } from './world'
+import { sha256Hex } from './lib/hash'
+import { identityHash } from './deletion'
+import { openIncident, recoverIncidents } from './incidents'
+
+function guard() {
+  if (process.env.REVIEW_VALIDATION_ENABLED !== 'true' || process.env.CONVEX_CLOUD_URL === 'https://exciting-cormorant-948.convex.cloud' || process.env.CONVEX_CLOUD_URL === 'https://superb-bobcat-74.convex.cloud') throw new Error('Disposable review preview only')
+}
+
+export const seed = internalMutation({
+  args: { offset: v.number(), count: v.number() },
+  returns: v.number(),
+  handler: async (ctx, { offset, count }) => {
+    guard()
+    if (!Number.isInteger(offset) || offset < 0 || offset + count > 1000 || !Number.isInteger(count) || count < 1 || count > 20) throw new Error('Invalid bounded cohort')
+    const world = await getOrCreateWorld(ctx)
+    const now = Date.now(), hour = Math.floor(now / 3_600_000) * 3_600_000
+    const content = catalogs[ACTIVE_CONTENT], kit = starterKit(content)
+    for (let i = offset; i < offset + count; i++) {
+      const tokenIdentifier = `https://review.invalid|user_synthetic${i.toString().padStart(4, '0')}`
+      if (await ctx.db.query('users').withIndex('by_tokenIdentifier', q => q.eq('tokenIdentifier', tokenIdentifier)).first()) throw new Error('Duplicate seed')
+      const userId = await ctx.db.insert('users', { tokenIdentifier, publicAlias: `Reviewer${i}`, normalizedAlias: `reviewer${i}`, timezone: 'UTC', state: 'active', createdAt: now, publicNameVersion: 1 })
+      const base = starterHero('synthetic', content, world.currentTick)
+      const statuses = ['exploring', 'resting', 'travelling', 'dead', 'paused', 'sleeping'] as const
+      const status = statuses[i % statuses.length]!
+      const heroId = await ctx.db.insert('heroes', { userId, name: `Synthetic${i}`, class: 'warrior', createdAt: now, isActive: true, schemaVersion: 1, activationState: 'active', activatedAt: now, level: 1, xp: 0, lifetimeXp: 168, hp: status === 'dead' ? 0 : status === 'resting' ? 50 : 100, gold: 100, lastLevelUpTick: 0, status, biomeId: content.safeBiomeId, ...(status === 'travelling' ? { targetBiomeId: content.safeBiomeId, arriveAtTick: world.currentTick + 1 } : {}), ...(status === 'dead' ? { reviveAtTick: world.currentTick + 8 } : {}), ...(status === 'paused' ? { pausedFromStatus: 'exploring' as const } : {}), eligibleFromTick: world.currentTick + 1, lastTick: world.currentTick, lastProgressTick: world.currentTick, logSequence: 0, simulationState: 'healthy', counters: base.counters, scoreHourXp: 0 })
+      let weaponId, armorId, heldItemId
+      const gearCount = status === 'sleeping' ? 31 : 30
+      for (let j = 0; j < gearCount; j++) {
+        const id = await ctx.db.insert('items', { ...(j % 2 === 0 ? kit.weapon : kit.armor), heroId, createdAt: now })
+        if (j === 0) weaponId = id
+        if (j === 1) armorId = id
+        if (j === 30) heldItemId = id
+      }
+      await ctx.db.insert('items', { ...kit.potions, heroId, quantity: 5, createdAt: now })
+      await ctx.db.patch(heroId, { weaponId, armorId, ...(heldItemId ? { heldItemId } : {}) })
+      await ctx.db.patch(userId, { activeHeroId: heroId })
+      const buckets = Array.from({ length: 168 }, (_, j) => ({ hourStart: hour - (168 - j) * 3_600_000, xp: 1 }))
+      await ctx.db.insert('heroScoreWindows', { heroId, buckets, xp24h: 24, xp7d: 168, scoreVersion: 1 })
+      const grantId = await ctx.db.insert('trmnlGrants', { userId, tokenHash: sha256Hex(`review-token-${i}`), state: 'active', createdAt: now })
+      await ctx.db.insert('trmnlInstances', { grantId, userId, uuid: `00000000-0000-4000-8000-${i.toString(16).padStart(12, '0')}`, state: 'active', confirmedBy: 'success_callback', createdAt: now })
+    }
+    return count
+  },
+})
+
+export const prepareRun = internalMutation({
+  args: {}, returns: v.null(), handler: async ctx => {
+    guard()
+    const world = await getOrCreateWorld(ctx)
+    if (world.activeRunId) throw new Error('Run active')
+    for (const instance of await ctx.db.query('trmnlInstances').take(1001)) {
+      if (instance.uuid.startsWith('review-instance-')) {
+        const index = Number(instance.uuid.slice('review-instance-'.length))
+        await ctx.db.patch(instance._id, { uuid: `00000000-0000-4000-8000-${index.toString(16).padStart(12, '0')}` })
+      }
+    }
+    await ctx.db.patch(world._id, { ticksPaused: false, maintenanceMode: false, lastStartedWallSlot: undefined, lastPublishedAt: undefined })
+    return null
+  },
+})
+
+export const summary = internalQuery({
+  args: {}, returns: v.any(), handler: async ctx => {
+    guard()
+    const world = await readWorld(ctx)
+    const run = await ctx.db.query('simulationRuns').withIndex('by_tick').order('desc').first()
+    const heroes = await ctx.db.query('heroes').take(1001)
+    const sample = heroes.find(h => h.name === 'Synthetic5') ?? heroes[0]
+    const items = sample ? await ctx.db.query('items').withIndex('by_heroId', q => q.eq('heroId', sample._id)).take(40) : []
+    const score = sample ? await ctx.db.query('heroScoreWindows').withIndex('by_heroId', q => q.eq('heroId', sample._id)).first() : null
+    const generations = world?.publishedPublicationId ? await ctx.db.query('leaderboardGenerations').withIndex('by_publicationId', q => q.eq('publicationId', world.publishedPublicationId!)).take(20) : []
+    return { heroes: heroes.length, world: world ? { tick: world.currentTick, completed: world.lastCompletedTick, active: world.activeRunId ?? null, publication: world.publishedPublicationId ?? null, paused: world.ticksPaused } : null, run, sample: sample ? { name: sample.name, lifetimeXp: sample.lifetimeXp, lastTick: sample.lastTick, itemCount: items.length, buckets: score?.buckets.length } : null, boards: generations.map(g => ({ board: g.board, total: g.totalPlayers, state: g.state })), incidents: await ctx.db.query('operationalIncidents').take(10) }
+  },
+})
+
+/** A synthetic post-snapshot deletion checkpoint. No provider call or real account. */
+export const revoke = internalMutation({
+  args: { index: v.number() }, returns: v.null(), handler: async (ctx, { index }) => {
+    guard()
+    const tokenIdentifier = `https://review.invalid|user_synthetic${index.toString().padStart(4, '0')}`
+    const user = await ctx.db.query('users').withIndex('by_tokenIdentifier', q => q.eq('tokenIdentifier', tokenIdentifier)).unique()
+    if (!user) throw new Error('Synthetic user missing')
+    await ctx.db.patch(user._id, { state: 'deleting', deletionRequestedAt: Date.now() })
+    const hash = identityHash(tokenIdentifier), tokenHash = sha256Hex(`review-token-${index}`)
+    if (!await ctx.db.query('revokedAuthIdentities').withIndex('by_identityHash', q => q.eq('identityHash', hash)).first()) await ctx.db.insert('revokedAuthIdentities', { identityHash: hash, revokedAt: Date.now(), reasonCode: 'review_drill' })
+    if (!await ctx.db.query('revokedTrmnlCredentials').withIndex('by_tokenHash', q => q.eq('tokenHash', tokenHash)).first()) await ctx.db.insert('revokedTrmnlCredentials', { tokenHash, revokedAt: Date.now(), reasonCode: 'review_drill' })
+    const grant = await ctx.db.query('trmnlGrants').withIndex('by_tokenHash', q => q.eq('tokenHash', tokenHash)).first()
+    if (grant) await ctx.db.patch(grant._id, { state: 'revoked' })
+    return null
+  },
+})
+
+export const pause = internalMutation({ args: {}, returns: v.null(), handler: async ctx => { guard(); const world = await getOrCreateWorld(ctx); if (world.activeRunId) throw new Error('Drain first'); await ctx.db.patch(world._id, { ticksPaused: true, maintenanceMode: true }); return null } })
+
+export const notice = internalMutation({ args: { recover: v.boolean() }, returns: v.null(), handler: async (ctx, { recover }) => { guard(); const run = await ctx.db.query('simulationRuns').withIndex('by_tick').order('desc').first(); if (!run) throw new Error('No synthetic run'); if (recover) await recoverIncidents(ctx, run._id, Date.now()); else await openIncident(ctx, run._id, 'review_drill', Date.now()); return null } })
+
+export const seedCleanup = internalMutation({ args: {}, returns: v.null(), handler: async ctx => { guard(); const hero = await ctx.db.query('heroes').first(); if (!hero) throw new Error('No hero'); for (let i = 0; i < 250; i++) await ctx.db.insert('tickLogs', { heroId: hero._id, source: 'command', sequence: -i, at: Date.now() - 100 * 3_600_000, kind: 'system', summary: 'Synthetic expired log', detail: { v: 1, operation: 'review_drill' }, deltas: { xpEarned: 0, gold: 0, hp: 0 } }); return null } })

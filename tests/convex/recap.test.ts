@@ -1,11 +1,11 @@
 // @vitest-environment edge-runtime
 import { convexTest } from 'convex-test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { api } from '../../convex/_generated/api'
-import schema from '../../convex/schema'
+import { api } from '@trmnl-games/backend/api'
+import schema from '../../apps/backend/convex/schema'
 import { seedHero, seedWorld, type T } from './helpers'
 
-const modules = import.meta.glob('../../convex/**/*.ts')
+const modules = import.meta.glob('../../apps/backend/convex/**/*.ts')
 
 describe('return recap (D25)', () => {
   let t: T

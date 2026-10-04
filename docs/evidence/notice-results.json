@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-04",
+  "deployment": "precious-pheasant-866",
+  "recipient": "Resend delivered test inbox",
+  "subjectPrefix": "[STAGING]",
+  "incidentCount": 1,
+  "state": "recovered",
+  "openedAt": 1791111933080,
+  "recoveredAt": 1791111974201,
+  "alert": { "attempts": 1, "lastAttemptAt": 1791111933349, "state": "sent" },
+  "recovery": { "attempts": 1, "lastAttemptAt": 1791111974329, "state": "sent" },
+  "observed": "Resend API acceptance; delivery events and inbox receipt not verified",
+  "temporaryPreviewResendKeyRemoved": true
+}

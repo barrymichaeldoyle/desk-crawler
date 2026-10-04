@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-04T11:16:13.000Z",
+  "source": "precious-pheasant-866",
+  "target": "usable-snail-909",
+  "snapshotBytes": 2614708,
+  "snapshotSha256": "9789e9d05aa3904558b21ff42403be6fee3d5628decb720bfd1ac3bbefc6792f",
+  "importMs": 27276,
+  "verificationAndCheckpointMs": 6051,
+  "heroes": 1000,
+  "world": {
+    "active": null,
+    "completed": 4,
+    "paused": true,
+    "publication": "k173jnq1wvevpe2erdzcve4w2s8fm703",
+    "tick": 4
+  },
+  "sample": {
+    "buckets": 167,
+    "itemCount": 32,
+    "lastTick": 4,
+    "lifetimeXp": 168,
+    "name": "Synthetic5"
+  },
+  "boards": [
+    {
+      "board": "overall",
+      "state": "ready",
+      "total": 1000
+    },
+    {
+      "board": "recent_24h",
+      "state": "ready",
+      "total": 1000
+    },
+    {
+      "board": "recent_7d",
+      "state": "ready",
+      "total": 1000
+    }
+  ],
+  "duplicateNoop": true,
+  "postSnapshotCheckpoint": "manually preserved synthetic checkpoint; independent production source remains unproven",
+  "revokedScreenStatus": 404
+}

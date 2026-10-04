@@ -2,13 +2,14 @@
 
 Planning revision 7 · 2026-10-03 · Owner: Barry
 
-This is a documentation-first implementation brief. It is sufficiently detailed to split implementation work, but technical spikes, tuning, and the explicitly open product choices must still be resolved. Nothing here authorizes starting application coding or deploying.
+Implementation was authorized on 2026-10-03. This index includes the original planning brief and current [implementation status](status.md); [release preparation](evidence/release.md) distinguishes completed checks from open gates. Planning documents alone do not authorize deployment or publication.
 
 ## Reading order
 
 | Document | Authoritative subject |
 | --- | --- |
 | [Implementation status](status.md) | What is built and verified, deliberate differences, remaining release work |
+| [TRMNL Games migration](trmnl-games-migration.md) | Proposed shared platform, monorepo and pre-launch domain cutover; owner preservation is best effort |
 | [Decisions](decisions.md) | Confirmed choices, proposals, open questions, superseded assumptions |
 | [Product](product.md) | Audience, MVP boundaries, player experience, launch acceptance |
 | [Monetization](monetization.md) | Creator Fund assumptions, eligibility evidence and operating costs |

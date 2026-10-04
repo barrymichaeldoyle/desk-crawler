@@ -2,7 +2,7 @@
 
 A passive multiplayer office RPG for your desk. A hero explores every 15 minutes, finds equipment, survives mishaps, and climbs a global leaderboard. Built exclusively for TRMNL: install the plugin to start your hero, watch the story on e-ink, and use the companion website for occasional decisions.
 
-**Phase: implementation started.** The pure simulator, v2 content catalog, tests and balance harness exist (`convex/sim`, `convex/content`, `tests`, `tools/balance`). The web app, Convex backend and TRMNL integration are next. Run `pnpm install` then `pnpm check` and `pnpm balance`.
+**Phase: review preparation.** The companion, Convex backend and TRMNL integration are live; the simulator, v2 catalog, tests and balance harness are implemented. See [implementation status](docs/status.md) and [release checks](docs/evidence/release.md) for verified behavior and remaining gates. Run `pnpm install` then `pnpm check` and `pnpm balance`.
 
 Confirmed on 2026-10-03:
 
@@ -22,6 +22,8 @@ Confirmed on 2026-10-03:
 - Approved pacing/content targets, bounded return recap, owner incident alerts, daily backups and an early install-to-display milestone; [build refinements](docs/build-readiness.md).
 
 Start with the [documentation index](docs/README.md), [MVP definition](docs/product.md), [decisions and open questions](docs/decisions.md), and [agent work packages](docs/work-packages.md).
+
+Barry's proposed next step is a shared TRMNL Games platform on the newly owned `trmnlgames.com`: see the [monorepo and domain migration plan](docs/trmnl-games-migration.md). Production migration has not started.
 
 The first release includes all four TRMNL layouts because Third Party marketplace publication requires them. The canonical flat player JSON remains a separate API contract; the marketplace endpoint returns markup plus merge variables.
 

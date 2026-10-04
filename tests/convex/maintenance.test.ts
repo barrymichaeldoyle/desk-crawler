@@ -1,11 +1,11 @@
 // @vitest-environment edge-runtime
 import { convexTest } from 'convex-test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { internal } from '../../convex/_generated/api'
-import schema from '../../convex/schema'
+import { internal } from '@trmnl-games/backend/api'
+import schema from '../../apps/backend/convex/schema'
 import { seedHero, type T } from './helpers'
 
-const modules = import.meta.glob('../../convex/**/*.ts')
+const modules = import.meta.glob('../../apps/backend/convex/**/*.ts')
 const NOW = Date.UTC(2026, 9, 10, 3, 5)
 
 describe('retention cleanup', () => {

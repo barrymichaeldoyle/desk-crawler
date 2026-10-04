@@ -1,12 +1,12 @@
 // @vitest-environment edge-runtime
 import { convexTest } from 'convex-test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { internal } from '../../convex/_generated/api'
-import schema from '../../convex/schema'
-import { sha256Hex } from '../../convex/lib/hash'
+import { internal } from '@trmnl-games/backend/api'
+import schema from '../../apps/backend/convex/schema'
+import { sha256Hex } from '../../apps/backend/convex/lib/hash'
 import { seedWorld, type T } from './helpers'
 
-const modules = import.meta.glob('../../convex/**/*.ts')
+const modules = import.meta.glob('../../apps/backend/convex/**/*.ts')
 const NOW = Date.UTC(2026, 9, 3, 10, 0)
 const UUID_A = 'aaaaaaaa-1111-4aed-8464-bad68368e97c'
 const UUID_B = 'bbbbbbbb-2222-4aed-8464-bad68368e97c'

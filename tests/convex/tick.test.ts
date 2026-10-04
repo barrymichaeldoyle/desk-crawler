@@ -1,13 +1,13 @@
 // @vitest-environment edge-runtime
 import { convexTest } from 'convex-test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { internal } from '../../convex/_generated/api'
-import type { Id } from '../../convex/_generated/dataModel'
-import schema from '../../convex/schema'
-import { starterHero, starterKit } from '../../convex/sim/core/starter'
-import { contentV2 } from '../../convex/content/v2'
+import { internal } from '@trmnl-games/backend/api'
+import type { Id } from '@trmnl-games/backend/data-model'
+import schema from '../../apps/backend/convex/schema'
+import { starterHero, starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
+import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
 
-const modules = import.meta.glob('../../convex/**/*.ts')
+const modules = import.meta.glob('../../apps/backend/convex/**/*.ts')
 
 /** 2026-10-03 10:13:00 UTC: a regular (non-publication) slot. */
 const SLOT = Date.UTC(2026, 9, 3, 10, 13, 0)

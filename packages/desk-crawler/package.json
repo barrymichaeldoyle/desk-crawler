@@ -1,0 +1,26 @@
+{
+  "name": "@trmnl-games/desk-crawler",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./sim/core": "./src/sim/core/index.ts",
+    "./sim/core/*": "./src/sim/core/*.ts",
+    "./sim/seed": "./src/sim/seed.ts",
+    "./sim/score": "./src/sim/score.ts",
+    "./content": "./src/content/index.ts",
+    "./content/*": "./src/content/*.ts",
+    "./art/*": "./src/art/*.ts",
+    "./templates/*": "./src/templates/*.ts",
+    "./payload": "./src/lib/payload.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@noble/hashes": "^2.4.0",
+    "qrcode-generator": "^2.0.4"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3"
+  }
+}

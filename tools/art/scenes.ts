@@ -1,7 +1,7 @@
 /** Render sample scenes for review: pnpm tsx tools/art/scenes.ts <outDir> */
 import { mkdirSync, writeFileSync } from 'node:fs'
-import { encodePng1Bit } from '../../convex/art/png'
-import { composeScene, FULL_SCALE, type Subject } from '../../convex/art/scene'
+import { encodePng1Bit } from '@trmnl-games/desk-crawler/art/png'
+import { composeScene, FULL_SCALE, type Subject } from '@trmnl-games/desk-crawler/art/scene'
 
 const out = process.argv[2] ?? 'scenes'
 mkdirSync(out, { recursive: true })

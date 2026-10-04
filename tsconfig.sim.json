@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2023",
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "strict": true,
@@ -13,11 +17,22 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["node", "vite/client"],
+    "types": [
+      "node",
+      "vite/client"
+    ],
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": [
+        "./apps/web/src/*"
+      ]
     }
   },
-  "include": ["convex/sim/**/*.ts", "convex/content/**/*.ts", "tests/**/*.ts", "tools/**/*.ts"],
-  "exclude": ["convex/sim/runs/**", "tests/convex/**"]
+  "include": [
+    "packages/desk-crawler/src/**/*.ts",
+    "tests/**/*.ts",
+    "tools/**/*.ts"
+  ],
+  "exclude": [
+    "tests/convex/**"
+  ]
 }

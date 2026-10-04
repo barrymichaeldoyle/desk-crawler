@@ -1,5 +1,5 @@
 {
-  "name": "desk-crawler",
+  "name": "trmnl-games",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -9,15 +9,16 @@
     "node": ">=24"
   },
   "scripts": {
-    "dev": "vite dev --port 3000",
-    "build": "vite build",
-    "preview": "vite preview",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.sim.json && tsc --noEmit -p convex/tsconfig.json",
+    "dev": "pnpm --filter @trmnl-games/web dev",
+    "build": "pnpm --filter @trmnl-games/web build",
+    "preview": "pnpm --filter @trmnl-games/web preview",
+    "typecheck": "pnpm -r typecheck && tsc --noEmit -p tsconfig.sim.json",
     "test": "vitest run",
     "test:watch": "vitest",
     "balance": "tsx tools/balance/run.ts",
     "check": "pnpm typecheck && pnpm test",
-    "build:deploy": "node tools/deploy/check-target.mjs && pnpm check && convex deploy -y --cmd 'pnpm build'"
+    "build:deploy": "node tools/deploy/check-target.mjs && pnpm check && convex deploy -y --cmd 'pnpm build'",
+    "deploy:web": "pnpm --filter @trmnl-games/web deploy"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.62.5",
@@ -49,6 +50,9 @@
     "jose": "^6.2.12",
     "qrcode-generator": "^2.0.4",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "@trmnl-games/backend": "workspace:*",
+    "@trmnl-games/desk-crawler": "workspace:*",
+    "@trmnl-games/platform": "workspace:*"
   }
 }

@@ -1,13 +1,13 @@
 // @vitest-environment edge-runtime
 import { convexTest } from 'convex-test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { api, internal } from '../../convex/_generated/api'
-import schema from '../../convex/schema'
-import { sha256Hex } from '../../convex/lib/hash'
-import { verifySvix } from '../../convex/lib/svix'
+import { api, internal } from '@trmnl-games/backend/api'
+import schema from '../../apps/backend/convex/schema'
+import { sha256Hex } from '../../apps/backend/convex/lib/hash'
+import { verifySvix } from '../../apps/backend/convex/lib/svix'
 import { seedHero, seedWorld, type T } from './helpers'
 
-const modules = import.meta.glob('../../convex/**/*.ts')
+const modules = import.meta.glob('../../apps/backend/convex/**/*.ts')
 
 async function linkGrant(t: T, alias: string, tokenHash: string) {
   await t.run(async (ctx) => {

@@ -34,7 +34,7 @@ Keep an `.env.example` with variable names and fake placeholders during implemen
 
 ## CI/CD proposal
 
-The repository is `github.com/barrymichaeldoyle/desk-crawler` (D33), MIT for code with reserved art/content (D34). Cloudflare Workers Builds deploys on pushes to `main` using `pnpm build:deploy` and its configured Convex deploy secret. Treat a push as a production deployment and obtain explicit approval. Backend/web releases must preserve the shared contract.
+The repository is `github.com/barrymichaeldoyle/trmnl-games` (renamed from `desk-crawler` 2026-10-04; D33), MIT for code with reserved art/content (D34). Cloudflare Workers Builds deploys on pushes to `main` using `pnpm build:deploy` and its configured Convex deploy secret. Treat a push as a production deployment and obtain explicit approval. Backend/web releases must preserve the shared contract.
 
 Pull request checks: frozen dependency install, formatting/lint/type check, domain and transaction tests, contract/fixture checks, deterministic small balance smoke, Worker production build, relevant end-to-end tests, and docs/link checks. Screenshot checks are required when a layout/payload/text-length change affects rendering; do not burn TRMNL render allowance on unrelated commits.
 

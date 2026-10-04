@@ -54,7 +54,7 @@ export const Route = createFileRoute('/terms')({
       <h2>Ownership</h2>
       <p>
         The source code is open under the MIT License on{' '}
-        <a href="https://github.com/barrymichaeldoyle/desk-crawler">GitHub</a>. The artwork, the monster, item and place names, the written game text and
+        <a href="https://github.com/barrymichaeldoyle/trmnl-games">GitHub</a>. The artwork, the monster, item and place names, the written game text and
         the Desk Crawler name and logo are not covered by that license and remain all rights reserved.
       </p>
 

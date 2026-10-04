@@ -32,7 +32,7 @@ Updated 2026-10-03 (night). Live on the Convex dev deployment `superb-bobcat-74`
 
 ## Remaining before public release
 
-- Clerk `user.deleted` webhook reconciliation (V09).
+- Clerk `user.deleted` webhook: `POST /auth/clerk/webhook` is built and tested (Svix signature, 5-minute tolerance, idempotent purge, revocation hash for unknown subjects). Still needed: the endpoint registered in the Clerk dev instance with `CLERK_WEBHOOK_SECRET` set on Convex, then the same for production.
 - Set `RESEND_API_KEY` on Convex to turn on incident/recovery emails (barry@barrymichaeldoyle.com from `desk-crawler@grandprixpicks.com`, D27/D38), then send one staging test.
 - Production: Convex prod deployment, Clerk production instance with Google/GitHub OAuth credentials, Workers deploy on `desk-crawler.grandprixpicks.com`, **daily backups enabled** (the privacy page states this), `DEV_SEED_ENABLED` unset, plugin URLs switched from localhost/dev, real plugin icon.
 - V06 lifecycle matrix live: uninstall, second instance, reinstall, expired attempt, wrong owner, lost callback.

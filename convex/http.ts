@@ -2,6 +2,7 @@ import { httpRouter } from 'convex/server'
 import { internal } from './_generated/api'
 import { httpAction } from './_generated/server'
 import { sha256Hex } from './lib/hash'
+import { verifySvix } from './lib/svix'
 import { renderScenePng } from './art/route'
 import { screenMarkup } from './templates/screen'
 
@@ -121,6 +122,35 @@ http.route({
     const png = renderScenePng(new URL(request.url).pathname)
     if (png === null) return new Response('Not found', { status: 404 })
     return new Response(new Blob([png.slice().buffer as ArrayBuffer], { type: 'image/png' }), { status: 200, headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=31536000, immutable' } })
+  }),
+})
+
+/**
+ * Clerk user.deleted reconciliation (api.md, V09). Signed with the endpoint's
+ * Svix secret; anything unsigned, stale or oversized is refused before a
+ * mutation runs. Other event types are acknowledged and ignored.
+ */
+http.route({
+  path: '/auth/clerk/webhook',
+  method: 'POST',
+  handler: httpAction(async (ctx, request) => {
+    const secret = process.env.CLERK_WEBHOOK_SECRET
+    if (!secret) return json(503, { error: 'not_configured' })
+    const text = await readBoundedText(request)
+    if (text === null) return json(413, { error: 'too_large' })
+    const headers = { id: request.headers.get('svix-id'), timestamp: request.headers.get('svix-timestamp'), signature: request.headers.get('svix-signature') }
+    if (!(await verifySvix(secret, headers, text, Date.now()))) return json(401, { error: 'invalid_signature' })
+    let event: { type?: unknown; data?: { id?: unknown } }
+    try {
+      event = JSON.parse(text) as typeof event
+    } catch {
+      return json(400, { error: 'invalid_json' })
+    }
+    if (event.type !== 'user.deleted') return json(200, { ok: true, ignored: true })
+    const clerkUserId = typeof event.data?.id === 'string' ? event.data.id : ''
+    if (!/^user_[A-Za-z0-9]{8,64}$/.test(clerkUserId)) return json(400, { error: 'invalid_body' })
+    await ctx.runMutation(internal.deletion.providerDeleted, { clerkUserId })
+    return json(200, { ok: true })
   }),
 })
 

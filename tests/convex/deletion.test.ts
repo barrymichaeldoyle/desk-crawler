@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { api, internal } from '../../convex/_generated/api'
 import schema from '../../convex/schema'
 import { sha256Hex } from '../../convex/lib/hash'
+import { verifySvix } from '../../convex/lib/svix'
 import { seedHero, seedWorld, type T } from './helpers'
 
 const modules = import.meta.glob('../../convex/**/*.ts')
@@ -75,5 +76,47 @@ describe('account deletion (D22)', () => {
     expect(job).toMatchObject({ state: 'blocked', phase: 'provider', reasonCode: 'PROVIDER_DELETE_FAILED' })
     // The account stays denied while blocked.
     expect((await t.run(async (ctx) => await ctx.db.query('users').first()))?.state).toBe('deleting')
+  })
+
+  it('reconciles a verified Clerk user.deleted once, and refuses unsigned or stale deliveries (V09)', async () => {
+    vi.stubEnv('CLERK_JWT_ISSUER_DOMAIN', 'issuer')
+    const secret = 'whsec_' + btoa('desk-crawler-test-signing-key-32b')
+    vi.stubEnv('CLERK_WEBHOOK_SECRET', secret)
+    await seedHero(t, {}, 'user_Dana12345')
+    // Clerk already deleted the user, so the provider step sees 404 and completes.
+    fetchMock.mockImplementation(async () => new Response(null, { status: 404 }))
+
+    const body = JSON.stringify({ type: 'user.deleted', data: { id: 'user_Dana12345', deleted: true } })
+    const sign = async (id: string, ts: number, payload: string) => {
+      const key = await crypto.subtle.importKey('raw', Uint8Array.from(atob(secret.slice(6)), (c) => c.charCodeAt(0)), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
+      const mac = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(`${id}.${ts}.${payload}`))
+      return `v1,${btoa(String.fromCharCode(...new Uint8Array(mac)))}`
+    }
+    const deliver = async (payload: string, ts = Math.floor(Date.now() / 1000), signature?: string) =>
+      await t.fetch('/auth/clerk/webhook', {
+        method: 'POST',
+        headers: { 'svix-id': 'msg_1', 'svix-timestamp': String(ts), 'svix-signature': signature ?? (await sign('msg_1', ts, payload)) },
+        body: payload,
+      })
+
+    expect((await deliver(body, undefined, 'v1,AAAA')).status).toBe(401)
+    expect((await deliver(body, Math.floor(Date.now() / 1000) - 600)).status).toBe(401)
+    expect(await t.run(async (ctx) => (await ctx.db.query('accountDeletionJobs').collect()).length)).toBe(0)
+
+    expect((await deliver(body)).status).toBe(200)
+    expect((await deliver(body)).status).toBe(200) // duplicate delivery
+    await t.finishAllScheduledFunctions(vi.runAllTimers)
+    const state = await t.run(async (ctx) => ({
+      users: (await ctx.db.query('users').collect()).length,
+      jobs: (await ctx.db.query('accountDeletionJobs').collect()).map((j) => j.state),
+      revoked: (await ctx.db.query('revokedAuthIdentities').collect()).length,
+    }))
+    expect(state).toEqual({ users: 0, jobs: ['completed'], revoked: 1 })
+    // A late redelivery after the purge only keeps the single revocation hash.
+    expect((await deliver(body)).status).toBe(200)
+    expect(await t.run(async (ctx) => (await ctx.db.query('revokedAuthIdentities').collect()).length)).toBe(1)
+    // Other event types are acknowledged and ignored.
+    expect((await deliver(JSON.stringify({ type: 'user.updated', data: { id: 'user_Dana12345' } }))).status).toBe(200)
+    expect(await verifySvix(secret, { id: 'msg_1', timestamp: '1', signature: 'v1,x' }, body, Date.now())).toBe(false)
   })
 })

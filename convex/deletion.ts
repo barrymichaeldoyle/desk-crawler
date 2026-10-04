@@ -22,28 +22,61 @@ export const requestDeletion = mutation({
   returns: v.object({ operationId: v.string(), changed: v.boolean() }),
   handler: async (ctx, args) => {
     const result = await runIntent(ctx, args.operationId, 'deletion.requestDeletion', {}, async (user) => {
-      const now = Date.now()
-      const existing = await ctx.db
-        .query('accountDeletionJobs')
-        .withIndex('by_userId', (q) => q.eq('userId', user._id))
-        .first()
-      if (existing) return { changed: false }
-      await ctx.db.patch(user._id, { state: 'deleting', deletionRequestedAt: now })
-      await ctx.db.insert('revokedAuthIdentities', { identityHash: identityHash(user.tokenIdentifier), revokedAt: now, reasonCode: 'account_deleted' })
-      const clerkUserId = user.tokenIdentifier.split('|').at(-1)
-      const jobId = await ctx.db.insert('accountDeletionJobs', {
-        userId: user._id,
-        ...(clerkUserId ? { clerkUserId } : {}),
-        state: 'running',
-        phase: 'connections',
-        providerAttempts: 0,
-        createdAt: now,
-        lastProgressAt: now,
-      })
-      await ctx.scheduler.runAfter(0, internal.deletion.purgeStep, { jobId })
-      return { changed: true }
+      return { changed: await startDeletion(ctx, user, Date.now()) }
     })
     return { operationId: result.operationId, changed: result.changed }
+  },
+})
+
+/** Deny authority and enqueue the durable purge once per user. Shared by the companion request and the Clerk webhook. */
+async function startDeletion(ctx: MutationCtx, user: Doc<'users'>, now: number): Promise<boolean> {
+  const existing = await ctx.db
+    .query('accountDeletionJobs')
+    .withIndex('by_userId', (q) => q.eq('userId', user._id))
+    .first()
+  if (existing) return false
+  await ctx.db.patch(user._id, { state: 'deleting', deletionRequestedAt: now })
+  await revokeIdentity(ctx, user.tokenIdentifier, now)
+  const clerkUserId = user.tokenIdentifier.split('|').at(-1)
+  const jobId = await ctx.db.insert('accountDeletionJobs', {
+    userId: user._id,
+    ...(clerkUserId ? { clerkUserId } : {}),
+    state: 'running',
+    phase: 'connections',
+    providerAttempts: 0,
+    createdAt: now,
+    lastProgressAt: now,
+  })
+  await ctx.scheduler.runAfter(0, internal.deletion.purgeStep, { jobId })
+  return true
+}
+
+async function revokeIdentity(ctx: MutationCtx, tokenIdentifier: string, now: number): Promise<void> {
+  const hash = identityHash(tokenIdentifier)
+  const known = await ctx.db.query('revokedAuthIdentities').withIndex('by_identityHash', (q) => q.eq('identityHash', hash)).first()
+  if (!known) await ctx.db.insert('revokedAuthIdentities', { identityHash: hash, revokedAt: now, reasonCode: 'account_deleted' })
+}
+
+/**
+ * Verified Clerk user.deleted (V09). Runs the same idempotent purge when the
+ * provider deletes first; duplicates and late deliveries are no-ops, and an
+ * unknown subject still gets a revocation hash so a stale JWT cannot recreate it.
+ * The provider step then sees 404 from Clerk and treats it as done.
+ */
+export const providerDeleted = internalMutation({
+  args: { clerkUserId: v.string() },
+  returns: v.object({ started: v.boolean() }),
+  handler: async (ctx, { clerkUserId }) => {
+    const issuer = process.env.CLERK_JWT_ISSUER_DOMAIN
+    if (!issuer) throw new Error('CLERK_JWT_ISSUER_DOMAIN is not set')
+    const tokenIdentifier = `${issuer}|${clerkUserId}`
+    const now = Date.now()
+    const user = await ctx.db.query('users').withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', tokenIdentifier)).unique()
+    if (user === null) {
+      await revokeIdentity(ctx, tokenIdentifier, now)
+      return { started: false }
+    }
+    return { started: await startDeletion(ctx, user, now) }
   },
 })
 

@@ -23,7 +23,8 @@ function maybeTravel(hero: HeroState, content: ContentCatalog, tick: number): He
 }
 
 describe('content v3 narrative', () => {
-  it('changes only the text: v2 and v3 heroes stay identical on the same seeds', () => {
+  // 48,000 simulations can exceed the default five seconds on the CI runner.
+  it('changes only the text: v2 and v3 heroes stay identical on the same seeds', { timeout: 15_000 }, () => {
     const texts = new Set<string>()
     for (let heroIndex = 0; heroIndex < 60; heroIndex += 1) {
       let a = start(contentV2)

@@ -18,3 +18,5 @@ Verification:
 - Long-story OG side and X full screenshots inspected after the final row limits, with names and HP changes readable above the footer. `git diff --check` passed.
 
 Ignored local artifacts: `.previews/companion-log.html`, `.previews/generate-log-layout.ts`, `.previews/log-layout-check.log`, `.previews/log-layout-build.log` and the generated TRMNL pages. Local screenshots/geometry are not a live installation or physical-display check; that deployment gate remains open for v23.
+
+Deployment attempt on 2026-10-05: commit `6bea7f2713e2aa4ed460411c04e62d411e219e9e` failed in [Workers Builds](https://dash.cloudflare.com/57fa9c5f2bc9dda93a108e887a81b419/workers/services/view/trmnl-games/production/builds/942bb6f1-14b8-4f9f-8dec-9286a2a55a79), before Convex or Worker deployment. Typechecks and 164 tests passed; the existing v2/v3 differential simulation test exceeded its default 5,000ms timeout at 5,084ms on the CI runner. Its 48,000 simulations and assertions are unchanged; that one test now has a 15,000ms timeout. Local `pnpm check` passes all 165 tests after the correction. No production progress was reset or content activated.

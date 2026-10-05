@@ -11,13 +11,13 @@ const hours = (ticks: number) => {
 }
 
 /** Seven-day rank in the hero's level group, from the same published board as Rankings. */
-function Rank() {
+function Rank({ stopped }: { stopped: boolean }) {
   const { data } = useQuery(convexQuery(api.leaderboard.view, {}))
   if (!data) return <p className="text-stone-600 dark:text-stone-400">Reading the rankings…</p>
   const board = data as { published: boolean; cohortKey?: string; totalPlayers?: number; own?: { rank: number; rankDelta: number | null } | null }
   const group = board.cohortKey ? `Levels ${board.cohortKey.replace('-', '–').replace('+', ' and up')}` : 'your level group'
   if (!board.published || !board.own) {
-    return <p>Your hero joins the {group} rankings after the next hourly update.</p>
+    return <p>{board.published && stopped ? 'No recent rank while adventures are stopped and your seven-day XP has aged out. Lifetime progress stays earned.' : `Your hero joins the ${group} rankings after the next hourly update.`}</p>
   }
   const delta = board.own.rankDelta
   return (
@@ -31,7 +31,7 @@ function Rank() {
   )
 }
 
-export function Records({ counters, lifetimeXp }: { counters: Counters; lifetimeXp: number }) {
+export function Records({ counters, lifetimeXp, stopped = false }: { counters: Counters; lifetimeXp: number; stopped?: boolean }) {
   const rows: Array<[string, string]> = [
     ['Lifetime XP', lifetimeXp.toLocaleString()],
     ['Fights won', counters.combatWins.toLocaleString()],
@@ -52,7 +52,7 @@ export function Records({ counters, lifetimeXp }: { counters: Counters; lifetime
           All rankings
         </Link>
       </div>
-      <Rank />
+      <Rank stopped={stopped} />
       <dl className="grid grid-cols-2 border-t border-stone-900 dark:border-stone-300">
         {rows.map(([label, value]) => (
           <div key={label} className="flex items-baseline justify-between gap-2 border-b border-stone-300 py-2 odd:pr-4 dark:border-stone-700">

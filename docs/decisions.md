@@ -6,6 +6,8 @@ Status language: **confirmed** means Barry chose it; **proposed** means a docume
 
 | ID | Decision | Status / reason |
 | --- | --- | --- |
+| D46 | Optional Desk keepsakes provide a continuing incentive to watch TRMNL | Implementation selected under Barry’s 2026-10-05 request to implement the best playlist incentive. One cosmetic souvenir per account/week via a code in the authenticated TRMNL screen envelope, hidden from the companion preview; twelve permanent designs repeat with lifetime counts. No streak loss, XP/rank boost or refresh/device-count advantage. D09 progression stays independent of hardware because current requests cannot verify playlist membership. TRMNL dashboard previews can expose codes. [Contract and rationale](playlist-retention.md); deployment/live render still require authorization |
+| D47 | Deliberate second mishaps, no third consecutive repeat | Requested by Barry on 2026-10-05: a second loose cable says “another”; a third cable trip picks a different mishap. Content v4 triples each biome’s trap-hit pool from six to eighteen. Two newest story summaries are cosmetic simulator inputs; damage/reward numbers do not disguise repetition. Other accidental consecutive wording repeats are avoided. Gameplay numbers and reward draws remain v3-equivalent; live catalog activation requires authorization |
 | D01 | Plan fully before application coding | Confirmed; work now is documentation only |
 | D02 | Month 1 MVP, then larger monthly feature themes | Confirmed; each release builds on a playable foundation |
 | D03 | Public Third Party TRMNL marketplace plugin at launch | Confirmed; OAuth and seamless linking, rather than URL/template copying |

@@ -80,6 +80,8 @@ export interface BiomeNarrative {
   readonly victory: readonly string[]
   readonly lootGold: readonly string[]
   readonly trapHit: readonly string[]
+  /** v4+: a deliberate callback when this mishap occurs twice consecutively. */
+  readonly trapHitCallbacks?: Readonly<Record<string, string>>
   readonly rest: readonly string[]
   readonly eliteVictory: readonly string[]
   readonly jackpot: readonly string[]
@@ -147,7 +149,7 @@ export interface ContentCatalog {
   readonly gearTiers: Readonly<Record<number, GearTierStats>>
   readonly rarities: readonly RarityRule[]
   readonly potion: Readonly<{ templateId: string; name: string }>
-  readonly narrative: Readonly<{ biomes: Readonly<Record<string, BiomeNarrative>>; shared: SharedNarrative; monsters?: Readonly<Record<string, MonsterNarrative>> }>
+  readonly narrative: Readonly<{ biomes: Readonly<Record<string, BiomeNarrative>>; shared: SharedNarrative; monsters?: Readonly<Record<string, MonsterNarrative>>; avoidConsecutiveRepeats?: boolean }>
 }
 
 // ---------------------------------------------------------------- hero and items
@@ -217,6 +219,8 @@ export interface SimulationInput {
   readonly content: ContentCatalog
   readonly simulationVersion: number
   readonly streams: StreamSeeds
+  /** Newest first, at most two. Cosmetic history only; never changes game outcomes. */
+  readonly recentSummaries?: readonly string[]
 }
 
 export type Disposition =

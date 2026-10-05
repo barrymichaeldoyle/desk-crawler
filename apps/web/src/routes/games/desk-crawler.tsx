@@ -10,7 +10,7 @@ function Landing() {
     <main id="main" className="mx-auto flex min-h-screen max-w-2xl flex-col gap-10 px-4 py-16">
       <header className="flex flex-col gap-3">
         <Link to="/" className="font-semibold underline underline-offset-4">TRMNL Games</Link>
-        <h1 className="text-4xl font-bold leading-tight sm:text-5xl">Desk Crawler</h1>
+        <h1 className="font-display text-4xl font-bold leading-tight sm:text-5xl">Desk Crawler</h1>
         <p className="text-lg text-stone-600 dark:text-stone-400">
           An office RPG that plays itself on your TRMNL. Every fifteen minutes your hero fights a Stapler Mimic, finds a Keyboard Mace or gets knocked out, and your TRMNL shows
           what happened. Open the companion every few days to sort gear and choose where to explore next. It's free.
@@ -38,7 +38,7 @@ function Landing() {
       <p className="text-stone-600 dark:text-stone-400">
         Desk Crawler is still in development. It will appear in the TRMNL plugin directory after review.
       </p>
-      <Link to="/app/desk-crawler" className="inline-flex min-h-11 self-start items-center rounded-md bg-stone-900 px-4 font-semibold text-white dark:bg-stone-100 dark:text-stone-900">Open Desk Crawler companion</Link>
+      <Link to="/app/desk-crawler" className="inline-flex min-h-11 self-start items-center bg-stone-900 px-4 font-semibold text-white dark:bg-stone-100 dark:text-stone-900">Open Desk Crawler companion</Link>
       <SiteLinks />
     </main>
   )

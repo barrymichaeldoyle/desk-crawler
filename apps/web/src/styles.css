@@ -32,10 +32,21 @@
   html {
     accent-color: var(--color-stone-900);
     caret-color: currentColor;
+    scroll-padding-top: 4rem;
+  }
+  button, a, input, select { -webkit-tap-highlight-color: transparent; }
+  button:not(:disabled), select:not(:disabled) { cursor: pointer; }
+  h1, h2, h3, p { overflow-wrap: anywhere; }
+  input, select { font: inherit; }
+  @media (prefers-color-scheme: dark) {
+    html { accent-color: var(--color-stone-100); }
   }
   :focus-visible {
-    outline: 2px solid currentColor;
+    outline: 2px solid var(--color-stone-900);
     outline-offset: 2px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :focus-visible { outline-color: var(--color-stone-100); }
   }
 }
 

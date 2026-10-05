@@ -3,10 +3,11 @@ import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
 import { Link, createFileRoute, redirect } from '@tanstack/react-router'
 import { api } from '@trmnl-games/backend/api'
+import { useState } from 'react'
 import { seo } from '../../../../lib/seo'
 import { SwitchAccount } from '../../../../lib/switchAccount'
 import { useIntent } from '../../../../lib/intent'
-import { Button, Card, ErrorNote } from '../../../../lib/ui'
+import { ActionFeedback, Button, Card, LoadingState } from '../../../../lib/ui'
 import { captureManagement, getManagedInstance } from '../../../../server/manageFns'
 
 type Search = { uuid?: string; jwt?: string; invalid?: boolean }
@@ -37,7 +38,7 @@ function ManagePage() {
   const { invalid } = Route.useSearch()
   return (
     <main id="main" className="mx-auto flex max-w-lg flex-col gap-4 px-4 py-12">
-      <h1 className="text-2xl font-bold">Desk Crawler on TRMNL</h1>
+      <h1 className="font-display text-3xl font-bold">Desk Crawler on TRMNL</h1>
       {uuid === null ? (
         <Card>
           {invalid ? <p role="alert">That link expired or was not valid.</p> : null}
@@ -61,7 +62,8 @@ function ManagePage() {
 function Connection({ uuid }: { uuid: string }) {
   const { data } = useQuery(convexQuery(api.connections.forManagement, { uuid }))
   const disconnect = useIntent(api.connections.disconnect)
-  if (data === undefined) return <p role="status" className="text-stone-600 dark:text-stone-400">Checking this installation…</p>
+  const [confirming, setConfirming] = useState(false)
+  if (data === undefined) return <LoadingState label="Checking this installation…" />
   if (data === null || !data.owned) {
     return (
       <Card title="Different account">
@@ -84,27 +86,28 @@ function Connection({ uuid }: { uuid: string }) {
         <p>This installation is disconnected. Install Desk Crawler again from TRMNL to reconnect a screen; your hero keeps its progress.</p>
       )}
       <div className="mt-4 flex flex-wrap gap-2">
-        <Link to="/app/desk-crawler" className="inline-flex min-h-11 items-center rounded-md bg-stone-900 px-4 font-semibold text-white dark:bg-stone-100 dark:text-stone-900">
+        <Link to="/app/desk-crawler" className="inline-flex min-h-11 items-center bg-stone-900 px-4 font-semibold text-white dark:bg-stone-100 dark:text-stone-900">
           Open the companion
         </Link>
         {settingsUrl ? (
-          <a href={settingsUrl} className="inline-flex min-h-11 items-center rounded-md border border-stone-400 px-4 font-semibold">
+          <a href={settingsUrl} className="inline-flex min-h-11 items-center border border-stone-400 px-4 font-semibold">
             Back to TRMNL
           </a>
         ) : null}
         {settingsUrl ? (
-          <a href={`${settingsUrl}?force_refresh=true`} className="inline-flex min-h-11 items-center rounded-md border border-stone-400 px-4 font-semibold">
+          <a href={`${settingsUrl}?force_refresh=true`} className="inline-flex min-h-11 items-center border border-stone-400 px-4 font-semibold">
             Refresh preview in TRMNL
           </a>
         ) : null}
         {instance.state === 'active' ? (
-          <Button variant="secondary" disabled={disconnect.pending} onClick={() => disconnect.run({ instanceId: instance.id })}>
+          <Button variant="quiet" disabled={disconnect.pending} onClick={() => setConfirming(true)}>
             Disconnect this installation
           </Button>
         ) : null}
       </div>
       <p className="mt-3 text-xs text-stone-600 dark:text-stone-400">Disconnecting stops new screens for this installation. TRMNL may keep showing the last image until you remove the plugin from your playlist.</p>
-      <ErrorNote message={disconnect.error} />
+      {confirming && instance.state === 'active' ? <div className="mt-4 border-t border-stone-300 pt-4 dark:border-stone-700"><p className="font-semibold">Disconnect this installation?</p><div className="mt-3 flex flex-wrap gap-2"><Button variant="secondary" pending={disconnect.pending} busyLabel="Disconnecting…" onClick={async () => { if (await disconnect.run({ instanceId: instance.id }, 'Installation disconnected. Your hero keeps adventuring.')) setConfirming(false) }}>Confirm disconnect</Button><Button variant="quiet" disabled={disconnect.pending} onClick={() => setConfirming(false)}>Cancel</Button></div></div> : null}
+      <ActionFeedback {...disconnect} />
     </Card>
   )
 }

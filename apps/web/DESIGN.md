@@ -62,7 +62,7 @@ spacing:
   md: "20px"
   lg: "40px"
   control: "44px"
-  tab: "40px"
+  tab: "44px"
 components:
   button-primary:
     backgroundColor: "{colors.ink}"
@@ -90,7 +90,7 @@ components:
     typography: "{typography.label}"
     rounded: "{rounded.none}"
     padding: "0 12px"
-    height: "40px"
+    height: "44px"
   segmented-tab-active:
     backgroundColor: "{colors.ink}"
     textColor: "{colors.screen-white}"
@@ -186,11 +186,13 @@ A 1-bit palette with a single mid-grey, built on Tailwind's warm stone scale; in
 
 ## Layout
 
-The hero page is a desk-and-feed: on screens 1024px and wider, two columns (roughly 1.05fr device, 1fr feed) with a 40px column gap; the device column is sticky just under the game nav. Below 1024px the device sits full width above the feed. The game nav and hero page widen to a 72rem container; every other companion tab keeps a 48rem reading width.
+The hero page is a desk-and-feed: a visible hero name/level heads the page; on screens 1024px and wider, two columns (roughly 1.05fr device, 1fr feed) with a 40px column gap; the device column is sticky just under the game nav. Below 1024px health and level XP sit immediately beneath the heading, then the status strip and device above the feed. The game nav and hero page widen to a 72rem container; every other companion tab keeps a 48rem reading width.
+
+Bag, Rankings and Settings use the same ruled sections rather than rounded cards. Bag separates equipped weapon/armor from spare gear. On phones a spare item's action sits below its description, beside a 44px selection target. The sale selection bar is pinned to the bottom with safe-area padding; the expanded review flows normally on phones so it does not cover a short screen. Destructive progress deletion is disclosed under an expandable summary so routine settings remain easy to scan.
 
 Vertical rhythm in the feed: 40px between sections, 20px between blocks inside a section, 12px between a heading row and its content, 8px row padding inside ledgers. Ledgers run two columns on phones and up to three from 640px. Heading rows put the head on the left and a quiet meta line or link on the right, baseline-aligned, wrapping on narrow screens.
 
-Every tap target is at least 44px tall (segmented tabs and text filters at least 40px). Log day headers stick under the nav while their day scrolls.
+Standalone tap targets, segmented tabs and text filters are at least 44px tall. Inline prose links retain normal text flow. Log day headers stick under the nav while their day scrolls.
 
 ## Elevation & Depth
 
@@ -214,12 +216,12 @@ Rectangles of ink: decisive, never soft.
 - **Primary:** ink fill, white text; hover steps to soft ink. Used for the single positive decision in a group (Resume adventures, Sign in).
 - **Secondary:** 1px ink outline, ink text, transparent fill; hover inverts to ink fill with paper text. Used for routine actions (Drink potion, Pause adventures, Travel).
 - **Quiet:** soft-ink text with a 4px-offset underline; hover darkens to ink. Used for "load more" style continuations.
-- **Focus:** 2px outline in the current colour, offset 2px, on every focusable element.
+- **Focus:** 2px ink outline (night ink in dark mode), offset 2px, on every focusable element. Filled controls must not inherit a white outline against paper.
 - **Disabled:** 50% opacity, not-allowed cursor.
 - **Dark:** primary becomes night-ink fill with stone-900 text; secondary outline lightens to stone-300.
 
 ### Segmented Tabs
-- **Style:** a row of square cells inside one 1px ink outline, divided by ink hairlines; 40px tall, small semibold text.
+- **Style:** a row of square cells inside one 1px ink outline, divided by ink hairlines; 44px tall, small semibold text.
 - **State:** the pressed cell fills with ink and white text (`aria-pressed`). Used for the device layout switch.
 
 ### Text Filters
@@ -253,7 +255,7 @@ Underlined with a 4px offset, in the surrounding text colour.
 ### Do:
 - **Do** group facts in ledgers: ink top rule, rule-grey hairlines, small-caps label left, tabular figure right.
 - **Do** express emphasis with ink fill, weight or underline only.
-- **Do** keep every interactive control square-cornered and at least 44px tall (40px for segmented tabs and text filters).
+- **Do** keep every interactive control square-cornered and at least 44px tall, including segmented tabs and text filters.
 - **Do** set the hero name, section heads and headline numbers in Pixelify Sans; set everything else in the system sans.
 - **Do** render pixel art and icons with crisp edges at integer scale, drawing icons as SVG cell grids in the current colour.
 - **Do** provide the dark inversion for every ink, paper and rule colour you use.

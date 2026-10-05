@@ -31,6 +31,16 @@ const payload = () =>
 /** TRMNL renders third-party markup in UTC with merge_variables only: no `trmnl` object. */
 const render = (vars: Record<string, unknown>) => new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup.markup, vars)
 
+describe('keepsake footer', () => {
+  it('shows the supplied device code in all four layouts and omits it from companion previews', async () => {
+    for (const markup of Object.values(screenMarkup)) {
+      const liquid = new Liquid({ timezoneOffset: 0 })
+      expect(await liquid.parseAndRender(markup, { ...payload(), desk_keepsake_code: 'ABCD-EFGH' })).toContain('Keepsake ABCD-EFGH')
+      expect(await liquid.parseAndRender(markup, payload())).not.toContain('Keepsake')
+    }
+  })
+})
+
 describe('parseUtcOffset', () => {
   it('accepts whole seconds within ±14 hours', () => {
     expect(parseUtcOffset('7200')).toBe(7200)

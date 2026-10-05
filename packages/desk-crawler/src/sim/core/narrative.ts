@@ -37,8 +37,29 @@ export function fill(template: string, vars: NarrativeVars): string {
 }
 
 /** Choose a variant with the narrative stream only, so text never shifts reward draws. */
-export function variant(rng: Rng, templates: readonly string[], vars: NarrativeVars): string {
-  return fill(pickOne(rng, templates), vars)
+export function variant(
+  rng: Rng,
+  templates: readonly string[],
+  vars: NarrativeVars,
+  recentSummaries: readonly string[] = [],
+  callbacks: Readonly<Record<string, string>> = {},
+): string {
+  if (recentSummaries.length === 0) return fill(pickOne(rng, templates), vars)
+  // Compare flavor even when damage/rewards differ or consequences follow it.
+  const normalize = (text: string) => stripMarks(text).replace(/\d+/g, '#')
+  const recent = recentSummaries.slice(0, 2).map(normalize)
+  const candidates = templates.flatMap((template) => {
+    const ordinary = fill(template, vars)
+    const callback = callbacks[template] === undefined ? undefined : fill(callbacks[template], vars)
+    const family = [normalize(ordinary), ...(callback === undefined ? [] : [normalize(callback)])]
+    const repeats = (summary: string | undefined) => summary !== undefined && family.some((text) => summary.startsWith(text))
+    if (!repeats(recent[0])) return [ordinary]
+    // A deliberate second mishap is funny; a third must pick another variant.
+    if (repeats(recent[1])) return []
+    return callback === undefined ? [] : [callback]
+  })
+  // Single-line legacy/custom pools remain usable. Every v4 pool has alternatives.
+  return pickOne(rng, candidates.length > 0 ? candidates : templates.map((template) => fill(template, vars)))
 }
 
 /**

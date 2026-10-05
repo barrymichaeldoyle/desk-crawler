@@ -1,4 +1,5 @@
 import type { BiomeNarrative, ContentCatalog, MonsterTemplate } from '../sim/core/types'
+import { POTION_HEAL_PCT } from './sustain'
 
 /*
  * Content catalog v1: the documented planning baseline (gameplay.md), before
@@ -109,7 +110,7 @@ export const contentV1: ContentCatalog = {
   constants: {
     bagCapacity: 30,
     potionStackCap: 20,
-    potionHealPct: 40,
+    potionHealPct: POTION_HEAL_PCT,
     autoPotionBelowPct: 35,
     restBelowPct: 25,
     restingHealPct: 20,

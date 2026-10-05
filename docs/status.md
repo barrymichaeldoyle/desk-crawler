@@ -11,6 +11,8 @@ Migration progress:
 - M5 in progress. Preview pass done: all 88 cases pass after template v15 fixed OG full-layout clipping ([layout evidence](evidence/trmnl-layouts.md)); v15 is local until pushed. Done: old-domain DNS removed (no redirect needed), Worker and repository renamed to `trmnl-games` (revision 22). Template v17–v18 (standing bag QR on the full layout, outlined HP/XP bars with the unit after the numbers, labelled weapon/armor slots on the X, own rank as "3rd" beside "of 41 this week" and the level group; compact QR v3 codes) and v19 (log glyphs, HH:MM times, big-moment badges, more log lines on the X; D44) and v20 (bold names, HH:MM status times, black captions, content v3 narrative; D45) pass the preview pass. Remaining: cost/health monitoring, marketplace featured image and reviewer recording on the new URLs.
 ## Built and verified
 
+Prepared locally on 2026-10-05: D46 weekly permanent Desk keepsakes, template v21 device-only code footer and companion shelf; D47 content v4 with eighteen mishaps per biome, a second-cable callback and no third consecutive cable trip. Local checks and limitations are in [playlist-retention evidence](evidence/playlist-retention.md). These changes are not deployed, and live catalog activation/render validation remains open.
+
 | Package | State | Evidence |
 | --- | --- | --- |
 | A03 pure simulator + content | Done. v2 catalog active, luck (D35), D29 Resume destination | 23 pure tests, [balance](evidence/balance.md) |

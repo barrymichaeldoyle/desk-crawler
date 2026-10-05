@@ -10,6 +10,7 @@ import type { ReactNode } from 'react'
 import { SiteLinks } from '../lib/prose'
 import { SITE_NAME, SITE_ORIGIN, seo } from '../lib/seo'
 import appCss from '../styles.css?url'
+import { NetworkProvider } from '../lib/network'
 
 /** Server-only: read the Clerk session and mint a Convex token from the "convex" JWT template. */
 const fetchClerkAuth = createServerFn({ method: 'GET' }).handler(async () => {
@@ -75,7 +76,7 @@ function RootComponent() {
   return (
     <ClerkProvider>
       <ConvexProviderWithClerk client={context.convexClient} useAuth={useAuth}>
-        <Outlet />
+        <NetworkProvider><Outlet /></NetworkProvider>
       </ConvexProviderWithClerk>
     </ClerkProvider>
   )

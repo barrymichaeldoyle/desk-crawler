@@ -2,6 +2,12 @@
 
 These are planned Convex function contracts. Public companion functions use Clerk authentication unless explicitly stated. HTTP contracts are in [TRMNL integration](trmnl.md).
 
+## Desk keepsakes (D46, implemented locally)
+
+`keepsakes.mine({})` returns only the authenticated activated owner’s `{ totalCollected, lastClaimWeek, nextAvailableAt, connected }` or null. It contains no claim code; next availability derives from the last server-selected claim week, not a wall-clock read in the query.
+
+`keepsakes.claim({ operationId, code })` returns `{ operationId, changed, outcome: claimed | already_claimed | invalid_code, totalCollected }`. Current owner/week/connection are resolved server-side; current or prior-week codes award at most once in the current UTC week. Invalid codes return a definite outcome and commit the limiter/receipt; `RATE_LIMITED` retains the normal intent contract. No gameplay or ranking changes. Both account and game deletion deny the operation. [Full contract](playlist-retention.md).
+
 ## Common intent contract
 
 State-changing companion functions receive `operationId` (client-generated UUID, retained across retries) alongside the listed arguments. For gameplay intents, server resolves the user's active hero; clients do not send a user ID or authoritative stats. Item IDs identify an intent but never prove ownership.

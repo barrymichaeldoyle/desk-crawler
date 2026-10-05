@@ -18,6 +18,8 @@ const NOW = Date.UTC(2026, 9, 4, 8, 20)
 const liquid = new Liquid({ timezoneOffset: 0 })
 /** The screen route adds `utc_offset` from TRMNL's request; markup gets no `trmnl` object, so the preview passes none. */
 const utcOffset = 2 * 3600
+/** Preview-only sample of the verified device-envelope field; never an actual redeemable code. */
+const deskKeepsakeCode = process.argv.includes('--keepsakes') ? 'ABCD-EFGH' : null
 
 const base: PayloadInput = {
   now: NOW,
@@ -95,7 +97,7 @@ let written = 0
 for (const [name, input] of Object.entries(states)) {
   const payload = buildPayload(input) as unknown as Record<string, unknown>
   for (const layout of Object.keys(PREVIEW_LAYOUTS) as PreviewLayout[]) {
-    const inner = await liquid.parseAndRender(screenMarkup[layout], { ...payload, utc_offset: utcOffset })
+    const inner = await liquid.parseAndRender(screenMarkup[layout], { ...payload, desk_keepsake_code: name === 'unlinked' ? null : deskKeepsakeCode, utc_offset: utcOffset })
     for (const device of Object.keys(PREVIEW_DEVICES) as PreviewDevice[]) {
       writeFileSync(`.previews/${name}--${device}--${layout}.html`, previewDocument(inner, device, layout, `${name} · ${device} · ${PREVIEW_LAYOUTS[layout].label}`))
       written++

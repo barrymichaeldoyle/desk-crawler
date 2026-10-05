@@ -18,13 +18,13 @@ export function NameRepair() {
       <form onSubmit={onSubmit} className="mt-3 flex flex-col gap-3">
         <label className="flex flex-col gap-1">
           <span className="font-semibold">New public name</span>
-          <input value={alias} onChange={(e) => setAlias(e.target.value)} minLength={2} maxLength={20} required autoComplete="off" className="min-h-11 rounded-md border border-stone-400 bg-white px-3 text-stone-900" />
+          <input value={alias} onChange={(e) => setAlias(e.target.value)} minLength={2} maxLength={20} required autoComplete="off" disabled={replace.pending} className="min-h-11 min-w-0 border border-stone-400 bg-stone-50 px-3 text-base dark:border-stone-600 dark:bg-stone-950" />
         </label>
         <label className="flex flex-col gap-1">
           <span className="font-semibold">New hero name</span>
-          <input value={hero} onChange={(e) => setHero(e.target.value)} minLength={2} maxLength={16} required autoComplete="off" className="min-h-11 rounded-md border border-stone-400 bg-white px-3 text-stone-900" />
+          <input value={hero} onChange={(e) => setHero(e.target.value)} minLength={2} maxLength={16} required autoComplete="off" disabled={replace.pending} className="min-h-11 min-w-0 border border-stone-400 bg-stone-50 px-3 text-base dark:border-stone-600 dark:bg-stone-950" />
         </label>
-        <Button type="submit" disabled={replace.pending}>
+        <Button type="submit" pending={replace.pending} busyLabel="Saving names…">
           Save names
         </Button>
       </form>

@@ -82,6 +82,8 @@ HTTP responses: JSON UTF-8, `Cache-Control: private, no-store`; no public/CDN ca
 
 No game advancement, new random rolls or mandatory telemetry mutation during a read. First-request confirmation may perform the explicitly gated one-time lifecycle mutation, including pending-hero activation, before the read; subsequent requests are read-only apart from optional telemetry. The canonical query itself never confirms/relinks. Optional screen-response telemetry is throttled/best-effort and its failure cannot block the response.
 
+D46: the authenticated screen envelope additionally includes `desk_keepsake_code: string | null` for the optional weekly cosmetic collection. It is derived after authorization without mutation, shown in the existing title bar in all four layouts, and omitted after this week’s claim. This field is separate from the canonical v1 payload and is never returned by the companion preview. [Keepsake contract](playlist-retention.md) defines owner/week HMAC, cache grace and verification limits; the request is not a physical-display acknowledgement.
+
 ## Canonical payload v1
 
 Root values are flat; bounded `log` and `top5` arrays are intentionally nested. This means “Liquid-friendly,” not “every JSON value is scalar.” Omit raw IDs, emails, tokens/hashes, seeds, hidden rolls, full bag contents and structured combat detail.

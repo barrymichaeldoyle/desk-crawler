@@ -5,6 +5,7 @@ import { ConvexError } from 'convex/values'
 import { useMutation } from 'convex/react'
 import { useEffect, useRef, useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
+import { afterVisibleVisit } from '../../../lib/visibleVisit'
 
 type Summary = {
   baseline: { at: number } | null
@@ -27,6 +28,7 @@ export function ReturnRecap() {
   const record = useMutation(api.heroes.recordCompanionVisit)
   const [shown, setShown] = useState<Summary | null>(null)
   const acknowledged = useRef(false)
+  const retries = useRef(0)
 
   useEffect(() => {
     if (data && shown === null) setShown(data as Summary)
@@ -34,7 +36,7 @@ export function ReturnRecap() {
 
   useEffect(() => {
     if (!shown || acknowledged.current) return
-    let attempts = 0
+    let cancelled = false
     const acknowledge = async (sequence: number) => {
       if (document.visibilityState !== 'visible') return
       acknowledged.current = true
@@ -42,19 +44,23 @@ export function ReturnRecap() {
         await record({ operationId: crypto.randomUUID(), expectedLogSequence: sequence })
       } catch (error) {
         const code = error instanceof ConvexError ? (error.data as { code?: string }).code : undefined
-        if (code === 'RECAP_CHANGED' && attempts < 1) {
-          attempts += 1
+        if (code === 'RECAP_CHANGED' && retries.current < 1) {
+          retries.current += 1
           // Newer events exist: show them before acknowledging (bounded retry).
-          const fresh = (await refetch()).data as Summary | undefined
-          if (fresh) {
-            setShown(fresh)
-            acknowledged.current = false
+          try {
+            const fresh = (await refetch()).data as Summary | undefined
+            if (fresh && !cancelled) {
+              setShown(fresh)
+              acknowledged.current = false
+            }
+          } catch {
+            // Keep this visit's recap. The next visit can acknowledge fresh data.
           }
         }
       }
     }
-    const timer = window.setTimeout(() => void acknowledge(shown.observed.logSequence), 2000)
-    return () => window.clearTimeout(timer)
+    const stop = afterVisibleVisit(() => { if (!acknowledged.current) void acknowledge(shown.observed.logSequence) })
+    return () => { cancelled = true; stop() }
   }, [shown, record, refetch])
 
   if (!shown) return null
@@ -116,13 +122,13 @@ function Ledger({ summary }: { summary: Summary }) {
         </p>
       </div>
       {quiet ? (
-        <p className="mt-2">Nothing new yet. Your hero is still at it.</p>
+        <p className="mt-2">{summary.status === 'paused' ? 'No new adventures while paused. Resume whenever you’re ready.' : summary.status === 'sleeping' ? 'Adventures stopped to keep your new gear safe. Make room in your bag, then resume.' : 'No new progress since your last visit. The next adventure may bring something new.'}</p>
       ) : (
         <dl className="mt-2 grid grid-cols-2 border-t border-stone-900 sm:grid-cols-3 dark:border-stone-300">
           {rows.map(([label, value]) => (
             <div key={label} className="flex items-baseline justify-between gap-2 border-b border-stone-300 py-2 odd:pr-4 sm:pr-4 dark:border-stone-700">
               <dt className="caps text-sm text-stone-600 dark:text-stone-400">{label}</dt>
-              <dd className={`text-xl font-bold tabular-nums ${value === 0 ? 'text-stone-400 dark:text-stone-600' : ''}`}>{value > 0 ? `+${value.toLocaleString()}` : '0'}</dd>
+              <dd className={`text-xl font-bold tabular-nums ${value === 0 ? 'text-stone-500' : ''}`}>{value > 0 ? `+${value.toLocaleString()}` : '0'}</dd>
             </div>
           ))}
         </dl>

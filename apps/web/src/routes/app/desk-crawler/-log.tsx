@@ -70,14 +70,14 @@ export function AdventureLog() {
         <h2 id="log-title" className="font-display text-xl font-semibold">
           Adventure log
         </h2>
-        <div role="group" aria-label="Show" className="-mx-1 flex flex-wrap">
+        <div role="group" aria-label="Filter adventure log" className="-mx-1 flex flex-wrap">
           {FILTERS.map((item) => (
             <button
               key={item.key}
               type="button"
               aria-pressed={filter === item.key}
               onClick={() => setFilter(item.key)}
-              className="min-h-10 px-2 text-sm text-stone-600 underline-offset-4 aria-pressed:font-semibold aria-pressed:text-stone-900 aria-pressed:underline dark:text-stone-400 dark:aria-pressed:text-stone-100"
+              className="min-h-11 px-2 text-sm text-stone-600 underline-offset-4 aria-pressed:font-semibold aria-pressed:text-stone-900 aria-pressed:underline dark:text-stone-400 dark:aria-pressed:text-stone-100"
             >
               {item.label}
             </button>
@@ -98,7 +98,7 @@ export function AdventureLog() {
               <h3 className="sticky top-11 z-[1] border-b border-stone-900 bg-stone-50 py-2 text-sm font-bold dark:border-stone-300 dark:bg-stone-950">{day.label}</h3>
               <ol>
                 {day.encounters.map((encounter) => (
-                  <li key={encounter.key} className="grid grid-cols-[3.25rem_1fr] gap-x-3 border-b border-stone-300 py-3 dark:border-stone-800">
+                  <li key={encounter.key} className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-2 border-b border-stone-300 py-3 dark:border-stone-800">
                     <time className="pt-0.5 text-sm tabular-nums text-stone-600 dark:text-stone-400" dateTime={new Date(encounter.at).toISOString()}>
                       {new Date(encounter.at).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
                     </time>
@@ -106,7 +106,7 @@ export function AdventureLog() {
                       {encounter.entries.map((entry) => (
                         <li key={entry.id} className="flex gap-2">
                           <PixelIcon kind={entry.kind} className="mt-1" />
-                          <div>
+                          <div className="min-w-0">
                             <p>{markedRuns(keepUnitsTogether(entry.summary)).map((run, i) => (run.bold ? <strong key={i}>{run.text}</strong> : run.text))}</p>
                             <Deltas deltas={entry.deltas} />
                           </div>
@@ -126,6 +126,7 @@ export function AdventureLog() {
           Load older entries
         </Button>
       ) : null}
+      {status === 'LoadingMore' ? <p role="status" className="mt-3 text-sm">Loading older adventures…</p> : null}
       {status === 'Exhausted' && days.length > 0 ? <p className="mt-3 text-xs text-stone-600 dark:text-stone-400">Detailed history is kept for three days.</p> : null}
     </section>
   )

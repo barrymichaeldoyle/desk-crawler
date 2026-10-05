@@ -19,7 +19,7 @@ function Account() {
   const [confirm, setConfirm] = useState('')
   return (
     <main id="main" className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
-      <h1 className="text-3xl font-bold">Account</h1>
+      <h1 className="font-display text-3xl font-bold">Account</h1>
       {isPending ? <p role="status">Loading your account…</p> : (
         <>
           <Card title="Public identity">
@@ -36,9 +36,9 @@ function Account() {
               <>
                 <label className="mt-4 flex flex-col gap-2 text-sm">
                   <span className="font-semibold">Type DELETE to confirm</span>
-                  <input value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" className="min-h-11 rounded-md border border-stone-400 bg-white px-3 text-stone-900" />
+                  <input value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" autoCapitalize="characters" spellCheck={false} disabled={deletion.pending} className="min-h-11 border border-stone-400 bg-stone-50 px-3 text-base dark:border-stone-600 dark:bg-stone-950" />
                 </label>
-                <Button className="mt-4" variant="secondary" disabled={confirm !== 'DELETE' || deletion.pending} onClick={async () => { if (await deletion.run({ confirm: 'DELETE' })) await clerk.signOut({ redirectUrl: '/' }) }}>Delete my TRMNL Games account</Button>
+                <Button className="mt-4" variant="secondary" pending={deletion.pending} busyLabel="Removing account…" disabled={confirm !== 'DELETE'} onClick={async () => { if (await deletion.run({ confirm: 'DELETE' })) await clerk.signOut({ redirectUrl: '/' }) }}>Delete my TRMNL Games account</Button>
                 <ErrorNote message={deletion.error} />
               </>
             ) : null}

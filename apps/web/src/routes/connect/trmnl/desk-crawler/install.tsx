@@ -1,12 +1,13 @@
 import { Show, SignIn } from '@clerk/tanstack-react-start'
 import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { useState, type FormEvent } from 'react'
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { useRef, useState, type FormEvent } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { seo } from '../../../../lib/seo'
 import { SwitchAccount } from '../../../../lib/switchAccount'
 import { captureInstall, finishInstall, getPendingInstall } from '../../../../server/installFns'
+import { Button, LoadingState } from '../../../../lib/ui'
 
 type Search = { code?: string; installation_callback_url?: string; invalid?: boolean }
 
@@ -38,15 +39,16 @@ function InstallPage() {
   if (!pending) {
     return (
       <Page>
-        <h1 className="text-2xl font-bold">Connect TRMNL</h1>
+        <h1 className="font-display text-3xl font-bold">Connect TRMNL</h1>
         {invalid ? <p role="alert">That installation link was not valid.</p> : null}
         <p>Start from the Desk Crawler plugin in your TRMNL account and choose Install. TRMNL will bring you back here.</p>
+        <Link to="/help/desk-crawler" className="inline-flex min-h-11 items-center underline underline-offset-4">Help with setup</Link>
       </Page>
     )
   }
   return (
     <Page>
-      <h1 className="text-2xl font-bold">Connect TRMNL to Desk Crawler</h1>
+      <h1 className="font-display text-3xl font-bold">Connect TRMNL to Desk Crawler</h1>
       <Show when="signed-out">
         <p>Sign in or create your TRMNL Games account to continue.</p>
         <SignIn routing="hash" forceRedirectUrl="/connect/trmnl/desk-crawler/install" signUpForceRedirectUrl="/connect/trmnl/desk-crawler/install" />
@@ -62,35 +64,38 @@ function ConnectForm() {
   const { data: me } = useQuery(convexQuery(api.users.me, {}))
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  if (me === undefined) return <p role="status">Loading your account…</p>
+  const inFlight = useRef(false)
+  if (me === undefined) return <LoadingState label="Loading your account…" />
   const needsProfile = !me?.user
   const needsHero = !me?.hero
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (submitting) return
+    if (inFlight.current) return
+    if (!navigator.onLine) { setError('You are offline. Reconnect to continue setup.'); return }
+    inFlight.current = true
     setSubmitting(true)
     setError(null)
     const form = new FormData(event.currentTarget)
-    const result = await finishInstall({
+    try {
+      const result = await finishInstall({
       data: {
         gameSlug: 'desk-crawler',
         ...(needsProfile ? { publicAlias: String(form.get('publicAlias') ?? '') } : {}),
         ...(needsHero ? { heroName: String(form.get('heroName') ?? '') } : {}),
       },
-    })
-    if (result.ok) {
-      window.location.assign(result.callbackUrl)
-      return
-    }
-    setError(result.message)
-    setSubmitting(false)
+      })
+      if (result.ok) { window.location.assign(result.callbackUrl); return }
+      setError(result.message)
+    } catch {
+      setError('We couldn’t finish connecting. Check your connection and try again. Your existing hero is safe.')
+    } finally { inFlight.current = false; setSubmitting(false) }
   }
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       {needsProfile ? (
-        <p className="rounded-md border border-amber-600 p-3 text-sm">
+        <p className="border-y border-stone-900 py-3 text-sm dark:border-stone-300">
           This sign-in has no TRMNL Games account yet, so connecting creates a new one. Already playing? Switch account and sign in the way you did before (email code, Google or GitHub).
         </p>
       ) : null}
@@ -98,7 +103,7 @@ function ConnectForm() {
         <label className="flex flex-col gap-1">
           <span className="font-semibold">Public name</span>
           <span className="text-sm text-stone-600 dark:text-stone-400">Shown publicly to other players on leaderboards and TRMNL screens. Use any name you're happy to share; never include contact details.</span>
-          <input name="publicAlias" required minLength={2} maxLength={20} className="min-h-11 rounded-md border border-stone-400 bg-white px-3 text-stone-900" autoComplete="off" />
+          <input name="publicAlias" required minLength={2} maxLength={20} className="min-h-11 border border-stone-400 bg-stone-50 px-3 text-base dark:border-stone-600 dark:bg-stone-950" autoComplete="off" disabled={submitting} />
         </label>
       ) : (
         <p>
@@ -108,7 +113,8 @@ function ConnectForm() {
       {needsHero ? (
         <label className="flex flex-col gap-1">
           <span className="font-semibold">Hero name</span>
-          <input name="heroName" required minLength={2} maxLength={16} defaultValue="Steve" className="min-h-11 rounded-md border border-stone-400 bg-white px-3 text-stone-900" autoComplete="off" />
+          <span className="text-sm text-stone-600 dark:text-stone-400">Your hero’s name is also public. 2–16 characters.</span>
+          <input name="heroName" required minLength={2} maxLength={16} defaultValue="Steve" className="min-h-11 border border-stone-400 bg-stone-50 px-3 text-base dark:border-stone-600 dark:bg-stone-950" autoComplete="off" disabled={submitting} />
         </label>
       ) : (
         <p>
@@ -121,9 +127,7 @@ function ConnectForm() {
           {error}
         </p>
       ) : null}
-      <button type="submit" disabled={submitting} className="min-h-11 rounded-md bg-stone-900 px-4 font-semibold text-white disabled:opacity-60 dark:bg-stone-100 dark:text-stone-900">
-        {submitting ? 'Connecting…' : 'Connect this TRMNL installation'}
-      </button>
+      <Button type="submit" pending={submitting} busyLabel="Connecting…">Connect this TRMNL installation</Button>
       <p className="text-sm text-stone-600 dark:text-stone-400">Next, TRMNL asks you to save the plugin. Saving starts your hero's adventures.</p>
     </form>
   )

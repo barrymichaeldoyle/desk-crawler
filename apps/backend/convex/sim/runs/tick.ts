@@ -131,6 +131,9 @@ export const simulateBatch = internalMutation({
         .withIndex('by_heroId', (q) => q.eq('heroId', hero._id))
         .take(40)
       let result
+      const recentLogs = content.narrative.avoidConsecutiveRepeats
+        ? await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id)).order('desc').take(2)
+        : []
       try {
         result = simulateHero({
           hero: toHeroState(hero),
@@ -139,6 +142,7 @@ export const simulateBatch = internalMutation({
           content,
           simulationVersion: run.simulationVersion,
           streams: deriveStreamSeeds(world.worldSeed, hero._id, run.tick, run.simulationVersion),
+          recentSummaries: recentLogs.map((log) => log.summary),
         })
       } catch (error) {
         // Only recognized pure-core failures are isolated; anything else rolls back the page.

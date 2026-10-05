@@ -11,6 +11,7 @@ export type PulseHero = {
   targetName: string
   arriveAtTick: number | null
   reviveAtTick: number | null
+  wakeAtTick: number | null
   world: { currentTick: number; lastCompletedTick: number | null; lastCompletedAt: number | null; lastStartedWallSlot: number | null; paused: boolean } | null
 }
 
@@ -19,7 +20,7 @@ export function useNow(intervalMs = 1000): number | null {
   const [now, setNow] = useState<number | null>(null)
   useEffect(() => {
     setNow(Date.now())
-    const timer = window.setInterval(() => setNow(Date.now()), intervalMs)
+    const timer = window.setInterval(() => { if (document.visibilityState === 'visible') setNow(Date.now()) }, intervalMs)
     return () => window.clearInterval(timer)
   }, [intervalMs])
   return now
@@ -46,7 +47,7 @@ function sentence(hero: PulseHero): string {
     case 'paused':
       return 'Paused by you'
     case 'sleeping':
-      return 'Bag full. Make room to resume'
+      return hero.wakeAtTick !== null ? 'Ready to resume' : 'Adventures stopped for your bag'
     default:
       return 'Adventuring'
   }
@@ -70,7 +71,7 @@ export function Pulse({ hero }: { hero: PulseHero }) {
     const ticksTo = (tick: number | null) => (tick === null ? null : Math.max(1, tick - world.currentTick))
     if (late) detail = 'Adventures are running late. Your hero will catch the next one; nothing is lost.'
     else if (hero.status === 'paused') detail = 'No adventures until you resume.'
-    else if (hero.status === 'sleeping') detail = 'Adventures resume once your bag has room.'
+    else if (hero.status === 'sleeping') detail = hero.wakeAtTick !== null ? 'Resume is scheduled for the next adventure.' : 'Manage your bag, then choose Resume.'
     else if (running && now - slot < 5 * 60_000) detail = 'Adventuring now…'
     else if (hero.status === 'travelling' && ticksTo(hero.arriveAtTick)) detail = `Arrives about ${clock(slotEta(now, ticksTo(hero.arriveAtTick)!))}`
     else if (hero.status === 'dead' && ticksTo(hero.reviveAtTick)) detail = `Back on their feet about ${clock(slotEta(now, ticksTo(hero.reviveAtTick)!))}`

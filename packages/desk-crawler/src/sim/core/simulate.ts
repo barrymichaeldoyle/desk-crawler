@@ -1,6 +1,6 @@
 import { applyItemChanges } from './apply'
 import { assertHeroInvariants, bagGearCount, SimulationInvariantError } from './invariants'
-import { codePoints, composeSummary, fill, rarityLabel, variant, withArticle } from './narrative'
+import { codePoints, composeSummary, fill, rarityLabel, variant, withArticle, type NarrativeVars } from './narrative'
 import { createRng, pickOne, pickWeighted, type Rng } from './rng'
 import { applyXp, deriveStats, maxHp, pctOf } from './stats'
 import type {
@@ -79,6 +79,10 @@ class TickRun {
     }
   }
 
+  private narrate(templates: readonly string[], vars: NarrativeVars, callbacks?: Readonly<Record<string, string>>): string {
+    return variant(this.rng.narrative, templates, vars, this.content.narrative.avoidConsecutiveRepeats ? this.input.recentSummaries : undefined, callbacks)
+  }
+
   run(): SimulationResult {
     const { h, input } = this
     switch (h.status) {
@@ -114,7 +118,7 @@ class TickRun {
     h.status = 'travelling'
     h.arriveAtTick = this.input.tick + 1
     const destination = this.biome(destinationId).name
-    const text = variant(this.rng.narrative, this.content.narrative.shared.depart, { destination })
+    const text = this.narrate(this.content.narrative.shared.depart, { destination })
     return this.finish('departed', {
       kind: 'travel',
       summary: text,
@@ -132,7 +136,7 @@ class TickRun {
     delete h.arriveAtTick
     h.status = 'exploring'
     const arrivals = [...this.content.narrative.shared.arrive, ...(this.content.narrative.biomes[to]?.arrive ?? [])]
-    const text = variant(this.rng.narrative, arrivals, { destination: this.biome(to).name })
+    const text = this.narrate(arrivals, { destination: this.biome(to).name })
     return this.finish('arrived', {
       kind: 'travel',
       summary: text,
@@ -151,7 +155,7 @@ class TickRun {
     delete h.reviveAtTick
     delete h.targetBiomeId
     delete h.arriveAtTick
-    const text = variant(this.rng.narrative, content.narrative.shared.revive, { heal: hp, destination: this.biome(content.safeBiomeId).name })
+    const text = this.narrate(content.narrative.shared.revive, { heal: hp, destination: this.biome(content.safeBiomeId).name })
     return this.finish('revived', {
       kind: 'revive',
       summary: text,
@@ -165,7 +169,7 @@ class TickRun {
     const healing = Math.min(max - h.hp, pctOf(max, content.constants.restingHealPct))
     h.hp += healing
     if (h.hp * 100 >= max * content.constants.resumeExploringAtPct) h.status = 'exploring'
-    const text = variant(this.rng.narrative, content.narrative.shared.restingHeal, { heal: healing })
+    const text = this.narrate(content.narrative.shared.restingHeal, { heal: healing })
     return this.finish('rested', {
       kind: 'rest',
       summary: text,
@@ -196,7 +200,7 @@ class TickRun {
       h.status = 'resting'
       const healing = Math.min(max - h.hp, pctOf(max, c.restingHealPct))
       h.hp += healing
-      const text = variant(this.rng.narrative, content.narrative.shared.restingHeal, { heal: healing })
+      const text = this.narrate(content.narrative.shared.restingHeal, { heal: healing })
       return this.finish(
         'rested',
         { kind: 'rest', summary: composeSummary(text, text, potionSuffix, c.summaryMaxCodePoints), outcome: { variant: 'rest', healing, automatic: true, resultingStatus: 'resting' } },
@@ -263,14 +267,14 @@ class TickRun {
           if (elite) this.metrics.elites = 1
           Object.assign(vars, { xp: xpGranted, gold: goldGranted })
           const victories = [...narrative.victory, ...(content.narrative.monsters?.[monster.id]?.victory ?? [])]
-          primary = variant(this.rng.narrative, elite ? narrative.eliteVictory : victories, vars)
+          primary = this.narrate(elite ? narrative.eliteVictory : victories, vars)
           compact = fill('Beat {monster}. +{xp} XP, +{gold} gold.', vars)
         } else if (result === 'retreat') {
           goldPenalty = Math.floor((h.gold * c.retreatGoldLossPct) / 100)
           h.gold -= goldPenalty
           h.counters.retreats += 1
           this.metrics.retreats = 1
-          primary = variant(this.rng.narrative, shared.retreat, vars)
+          primary = this.narrate(shared.retreat, vars)
           compact = fill('Retreated from {monster}.', vars)
         } else {
           lethal = true
@@ -315,15 +319,15 @@ class TickRun {
         } else if (found === 'potion' && potionQty >= c.potionStackCap) {
           potionFullFallback = true
           rollGold()
-          primary = variant(this.rng.narrative, jackpot ? narrative.jackpot : shared.potionFullGold, vars)
+          primary = this.narrate(jackpot ? narrative.jackpot : shared.potionFullGold, vars)
           compact = fill('+{gold} gold.', vars)
         } else if (found === 'potion') {
           this.gainPotion(potionRow?.id)
-          primary = variant(this.rng.narrative, shared.lootPotion, vars)
+          primary = this.narrate(shared.lootPotion, vars)
           compact = 'Found a potion.'
         } else {
           rollGold()
-          primary = variant(this.rng.narrative, jackpot ? narrative.jackpot : narrative.lootGold, vars)
+          primary = this.narrate(jackpot ? narrative.jackpot : narrative.lootGold, vars)
           compact = fill('Found {gold} gold.', vars)
         }
         outcome = { variant: 'loot', found: potionFullFallback ? 'gold' : found, goldGranted, jackpot, potionFullFallback }
@@ -333,14 +337,14 @@ class TickRun {
         const avoided = this.rng.combat.chance(c.trapAvoidPct)
         let damage = 0
         if (avoided) {
-          primary = variant(this.rng.narrative, shared.trapAvoided, vars)
+          primary = this.narrate(shared.trapAvoided, vars)
           compact = 'Avoided a trap.'
         } else {
           damage = this.rng.combat.int(biome.trapDamage.min, biome.trapDamage.max)
           h.hp = Math.max(0, h.hp - damage)
           lethal = h.hp === 0
           vars.damage = damage
-          primary = lethal ? '' : variant(this.rng.narrative, narrative.trapHit, vars)
+          primary = lethal ? '' : this.narrate(narrative.trapHit, vars, narrative.trapHitCallbacks)
           compact = fill('A trap hit for {damage} HP.', vars)
         }
         outcome = { variant: 'trap', avoided, damage, outcome: 'survived' }
@@ -350,7 +354,7 @@ class TickRun {
         const healing = Math.min(max - h.hp, pctOf(max, c.restEncounterHealPct))
         h.hp += healing
         vars.heal = healing
-        primary = variant(this.rng.narrative, healing > 0 ? narrative.rest : shared.restFull, vars)
+        primary = this.narrate(healing > 0 ? narrative.rest : shared.restFull, vars)
         compact = fill('Rested. +{heal} HP.', vars)
         outcome = { variant: 'rest', healing, automatic: false, resultingStatus: 'exploring' }
         break
@@ -368,7 +372,7 @@ class TickRun {
         h.status = 'resting'
         h.counters.rescues += 1
         this.metrics.rescues = 1
-        primary = variant(this.rng.narrative, isCombat ? shared.rescue : shared.trapRescue, vars)
+        primary = this.narrate(isCombat ? shared.rescue : shared.trapRescue, vars)
         compact = 'A narrow escape; resting now.'
         outcome = { ...outcome, outcome: 'rescue' } as OutcomeDetail
       } else {
@@ -381,7 +385,7 @@ class TickRun {
         h.counters.deaths += 1
         this.metrics.deaths = 1
         logKind = 'death'
-        primary = variant(this.rng.narrative, isCombat ? shared.death : shared.trapDeath, { ...vars, ticks })
+        primary = this.narrate(isCombat ? shared.death : shared.trapDeath, { ...vars, ticks })
         compact = fill('Knocked out. Revives in {ticks} ticks.', { ticks })
         outcome = { ...outcome, outcome: 'death' } as OutcomeDetail
         if (goldPenalty > 0) consequences.push(`Lost ${goldPenalty} gold.`)
@@ -406,7 +410,7 @@ class TickRun {
         consequences.push(`Reached level ${h.level}!`)
         // A level that opens a new area says so (v3+ content).
         const opened = content.biomes.find((b) => !b.safe && b.unlockLevel > h.level - levelsGained && b.unlockLevel <= h.level)
-        if (opened && shared.unlock) consequences.push(variant(this.rng.narrative, shared.unlock, { destination: opened.name }))
+        if (opened && shared.unlock) consequences.push(this.narrate(shared.unlock, { destination: opened.name }))
       }
     }
     if (goldGranted > 0) {
@@ -429,7 +433,7 @@ class TickRun {
         consequences.unshift('Bag full. Holding it until you make room.')
       }
       if (outcome.variant === 'loot') {
-        primary = variant(this.rng.narrative, [...shared.lootGear, ...(narrative.lootGear ?? [])], { item })
+        primary = this.narrate([...shared.lootGear, ...(narrative.lootGear ?? [])], { item })
         compact = `Found ${withArticle(item)}.`
         outcome = { ...outcome, templateId: gear.templateId, rarity: gear.rarity, destination: heldFind ? 'held' : 'bag' }
       } else {

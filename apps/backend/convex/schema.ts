@@ -65,6 +65,13 @@ export default defineSchema({
     createdAt: v.number(),
   }).index('by_userId', ['userId']),
 
+  deskKeepsakes: defineTable({
+    userId: v.id('users'),
+    totalCollected: v.number(),
+    lastClaimWeek: v.number(),
+    lastClaimedAt: v.number(),
+  }).index('by_userId', ['userId']),
+
   gameDeletionJobs: defineTable({
     userId: v.id('users'),
     gameSlug: v.literal('desk-crawler'),
@@ -300,6 +307,7 @@ export default defineSchema({
       hp: v.optional(v.number()),
       count: v.optional(v.number()),
       tick: v.optional(v.number()),
+      keepsakeOutcome: v.optional(v.union(v.literal('claimed'), v.literal('already_claimed'), v.literal('invalid_code'))),
     }),
     createdAt: v.number(),
     expiresAt: v.number(),
@@ -419,5 +427,6 @@ export default defineSchema({
   })
     .index('by_uuid', ['uuid'])
     .index('by_grantId', ['grantId'])
+    .index('by_userId_and_state', ['userId', 'state'])
     .index('by_userId', ['userId']),
 })

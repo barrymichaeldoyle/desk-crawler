@@ -6,6 +6,10 @@ import type { Id } from '@trmnl-games/backend/data-model'
 import schema from '../../apps/backend/convex/schema'
 import { starterHero, starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
 import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
+import { contentV4 } from '@trmnl-games/desk-crawler/content/v4'
+import { simulateHero } from '@trmnl-games/desk-crawler/sim/core/simulate'
+import { deriveStreamSeeds } from '@trmnl-games/desk-crawler/sim/seed'
+import { toHeroState, toInventory } from '../../apps/backend/convex/sim/runs/adapter'
 
 const modules = import.meta.glob('../../apps/backend/convex/**/*.ts')
 
@@ -82,6 +86,32 @@ describe('tick scheduler', () => {
   })
   afterEach(() => {
     vi.useRealTimers()
+  })
+
+  it('feeds the last two stories into v4 so a third cable trip becomes a different mishap', async () => {
+    const heroId = await seedHero(t)
+    const expected = await t.run(async (ctx) => {
+      const hero = (await ctx.db.get(heroId))!
+      const items = await ctx.db.query('items').withIndex('by_heroId', (q) => q.eq('heroId', heroId)).take(40)
+      for (let n = 0; n < 3000; n += 1) {
+        const worldSeed = `callback-${n}`
+        const input = { hero: toHeroState(hero), inventory: toInventory(items), tick: 1, content: contentV4, simulationVersion: 1, streams: deriveStreamSeeds(worldSeed, heroId, 1, 1) }
+        const result = simulateHero(input)
+        if (!result.event?.summary.startsWith('Tripped over a loose cable.')) continue
+        await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v4', activeSimulationVersion: 1, worldSeed, ticksPaused: false, maintenanceMode: false, createdAt: Date.now() - 3_600_000, schemaVersion: 1 })
+        for (const [sequence, summary] of [[1, 'Tripped over a loose cable. -3 HP.'], [2, 'Tripped over another loose cable. -9 HP.']] as const) {
+          await ctx.db.insert('tickLogs', { heroId, source: 'tick', tick: 0, sequence, at: Date.now() - 30_000, kind: 'trap', summary, detail: result.event.detail, deltas: result.event.deltas })
+        }
+        await ctx.db.patch(heroId, { logSequence: 2 })
+        return simulateHero({ ...input, recentSummaries: ['Tripped over another loose cable. -9 HP.', 'Tripped over a loose cable. -3 HP.'] })
+      }
+      throw new Error('No seeded cable trip found')
+    })
+    await runTick(t)
+    const latest = await t.run(async (ctx) => ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', heroId)).order('desc').first())
+    expect(latest?.summary).toBe(expected.event!.summary)
+    expect(latest?.summary).not.toContain('loose cable')
+    expect(latest?.deltas).toEqual(expected.event!.deltas)
   })
 
   it('creates one logical tick per wall slot and completes the chain', async () => {

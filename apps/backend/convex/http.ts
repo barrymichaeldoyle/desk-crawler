@@ -112,7 +112,7 @@ http.route({
     }
     if (result === null || result.outcome !== 'payload') return notFound()
     // TRMNL does not expose its `trmnl` metadata to third-party Liquid, so pass the owner's offset through (D42).
-    return json(200, { ...screenMarkup, merge_variables: { ...result.payload, utc_offset: parseUtcOffset(form.get('trmnl[user][utc_offset]')) } })
+    return json(200, { ...screenMarkup, merge_variables: { ...result.payload, desk_keepsake_code: result.keepsakeCode, utc_offset: parseUtcOffset(form.get('trmnl[user][utc_offset]')) } })
   }),
 })
 

@@ -18,6 +18,9 @@ export const Route = createFileRoute('/help/desk-crawler')({
         The game world advances every 15 minutes whether or not your screen is on. Your TRMNL shows a snapshot and refreshes on its own schedule.
         Sleep Mode, slower refresh and other playlist items never reduce your hero's progress. Adventure times in the companion use your browser's local timezone.
       </p>
+      <h2>Desk keepsakes</h2>
+      <p>Keep Desk Crawler in your playlist and look for “Keepsake” followed by a code in the screen’s title bar. Enter that code in the companion’s Settings to collect a permanent office souvenir. Full-screen and mashup layouts both show it; the companion preview hides it.</p>
+      <p>You can collect one keepsake each week, with a new code from Monday at 00:00 UTC. Last week’s code works too if your screen refreshes slowly. Missing weeks loses nothing: the next design waits for you. After collecting the full set, you can collect more of each. Keepsakes do not change XP, gear or rankings, and extra devices or faster refresh earn no extras.</p>
       <h2>If the screen looks old</h2>
       <ul>
         <li>"Updates delayed" means the game service is running late. Nothing is lost and you don't need to do anything.</li>

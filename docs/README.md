@@ -13,6 +13,7 @@ Implementation was authorized on 2026-10-03. This index includes the original pl
 | [Decisions](decisions.md) | Confirmed choices, proposals, open questions, superseded assumptions |
 | [Product](product.md) | Audience, MVP boundaries, player experience, launch acceptance |
 | [Monetization](monetization.md) | Creator Fund assumptions, eligibility evidence and operating costs |
+| [Playlist retention](playlist-retention.md) | Optional permanent keepsakes, weekly screen codes, authority and verification limits |
 | [Roadmap](roadmap.md) | Month 1 sequence and later monthly themes |
 | [Gameplay](gameplay.md) | State machine, simulation rules, initial balance and content |
 | [Architecture](architecture.md) | Service boundaries, planned file structure, implementation spikes |

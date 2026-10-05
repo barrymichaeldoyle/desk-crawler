@@ -7,7 +7,7 @@
  */
 import { GLYPHS, glyphRows } from '../art/glyphs'
 
-export const TEMPLATE_VERSION = 20
+export const TEMPLATE_VERSION = 21
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -26,10 +26,14 @@ const RUNE_DIVIDER = svgDataUri(
     '<rect x="262" y="3" width="2" height="6"/><rect x="336" y="3" width="2" height="6"/></svg>',
 )
 
+/** Device-envelope-only code: no code in owner/public preview payloads. Fits the existing footer height. */
+const keepsakeFooter = `{% if desk_keepsake_code %}<span class="instance">Keepsake {{ desk_keepsake_code | escape }}</span>{% endif %}`
+
 const titleBar = `
 <div class="title_bar">
   <img class="image image-stroke" src="${TITLE_ICON}" alt="">
   <span class="title">Desk Crawler</span>
+  ${keepsakeFooter}
 </div>`
 
 
@@ -77,6 +81,7 @@ const titleBarFull = `
 <div class="title_bar">
   <img class="image image-stroke" src="${TITLE_ICON}" alt="">
   <span class="title">Desk Crawler</span>{% unless status == "unlinked" or first_run %}${nextTick('instance lg:hidden')}{% endunless %}
+  ${keepsakeFooter}
 </div>`
 
 /** One glyph as a compact URL-encoded SVG: a single path of horizontal runs keeps each icon to a few hundred bytes. */

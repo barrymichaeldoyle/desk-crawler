@@ -33,4 +33,6 @@ Track activated heroes separately from currently polling installations: disconne
 
 Improve retention by making the screen useful and delightful. Respect mixed playlists, mashups, slower refresh and Sleep Mode. Never create reward incentives for polling, manipulate impressions, ask users to disable sleep or occupy every playlist slot, or add forced web visits to satisfy a revenue metric.
 
+D46 adds optional [Desk keepsakes](playlist-retention.md): a permanent cosmetic collection claimed with a weekly screen code, hidden from the companion preview. One per account/week, with cached-screen grace and no missed-week penalty, extra XP or ranking benefit. Requests alone never award keepsakes. This encourages watching the game but cannot prove playlist inclusion or hardware display; TRMNL’s own dashboard preview can also reveal the code. No guaranteed Creator Fund revenue is assumed.
+
 Review current fund rules and costs monthly. Any future paid tier, broader platform support or inactivity/progression policy requires a separate explicit product decision.

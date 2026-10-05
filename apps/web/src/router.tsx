@@ -4,6 +4,7 @@ import { createRouter } from '@tanstack/react-router'
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
 import { ConvexReactClient } from 'convex/react'
 import { routeTree } from './routeTree.gen'
+import { RouteError } from './lib/routeError'
 
 /**
  * Called once per request on the server and once in the browser, so the Convex
@@ -17,6 +18,7 @@ export function getRouter() {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
+        throwOnError: true,
         queryKeyHashFn: convexQueryClient.hashFn(),
         queryFn: convexQueryClient.queryFn(),
       },
@@ -29,6 +31,7 @@ export function getRouter() {
     context: { queryClient, convexClient: convex, convexQueryClient },
     scrollRestoration: true,
     defaultPreload: 'intent',
+    defaultErrorComponent: RouteError,
   })
   setupRouterSsrQueryIntegration({ router, queryClient })
   return router

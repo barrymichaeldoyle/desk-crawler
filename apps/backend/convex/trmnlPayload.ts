@@ -8,6 +8,8 @@ import { bagGearCount } from '@trmnl-games/desk-crawler/sim/core/invariants'
 import { buildPayload, MAX_LOGS } from '@trmnl-games/desk-crawler/payload'
 import { readWorld } from './world'
 import { readDeviceRanking } from './lib/rankingRead'
+import { keepsakeCode, keepsakeGrant } from './lib/keepsakes'
+import { keepsakeWeek } from '@trmnl-games/desk-crawler/content/keepsakes'
 
 /**
  * Fixed-cost canonical payload for one authorized instance (trmnl.md "Query
@@ -19,7 +21,7 @@ export const forInstance = internalQuery({
   returns: v.union(
     v.null(),
     v.object({ outcome: v.literal('recoverable') }),
-    v.object({ outcome: v.literal('payload'), payload: v.any() }),
+    v.object({ outcome: v.literal('payload'), payload: v.any(), keepsakeCode: v.union(v.string(), v.null()) }),
   ),
   handler: async (ctx, args) => {
     const grant = await ctx.db
@@ -37,7 +39,11 @@ export const forInstance = internalQuery({
     if (user === null || user.state !== 'active' || (await gameProfile(ctx, user._id))?.state === 'deleting') return null
 
     const payload = await payloadFor(ctx, user, args.now, args.instanceName)
-    return { outcome: 'payload' as const, payload }
+    // Device envelope only: canonical/owner-preview payload never contains a claim code.
+    const week = keepsakeWeek(args.now)
+    const collection = await ctx.db.query('deskKeepsakes').withIndex('by_userId', (q) => q.eq('userId', user._id)).unique()
+    const codeGrant = payload.status !== 'unlinked' && (!collection || collection.lastClaimWeek < week) ? await keepsakeGrant(ctx, user._id) : null
+    return { outcome: 'payload' as const, payload, keepsakeCode: codeGrant ? keepsakeCode(codeGrant.tokenHash, user._id, week) : null }
   },
 })
 

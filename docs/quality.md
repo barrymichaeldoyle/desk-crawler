@@ -103,6 +103,8 @@ After launch, tests scale with change: pure balance changes require balance/core
 
 ## TRMNL experience and recovery checks
 
+D46 keepsakes: prove device-envelope-only code delivery, current/previous-week grace sharing one owner/week cap, successful and failed-guess receipts, concurrent claims, no gameplay writes, multi-installation behavior and both deletion paths. Inspect the shelf on desktop/phone and all four footer layouts on OG/X. Localized next-code copy must derive its weekday from the UTC reset timestamp without a timezone suffix. Mocked companion fixtures and local framework renders do not replace an authorized live render/claim check.
+
 - Actual Save → preview → hardware path, mixed playlist and mashup; HTTP success is not display success.
 - Slower refresh/sleep preserves progress; no cron-aligned display/overnight fetch promises.
 - Physical-scale five-second glance: clear hero/state/story and service warnings; no clock, date or timezone label in any layout (D39). Check selected font bundles, dark/theme changes and larger text; cut detail first.

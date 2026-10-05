@@ -22,6 +22,8 @@ After activation, sleep, slow refresh, offline hardware and removal of every ins
 
 The website remains the owner's companion for gear, biomes, history, rank and account controls. Public previews use clearly labeled sample data and cannot create a rewarded hero. Free gameplay and intended Creator Fund revenue are defined in [monetization](monetization.md).
 
+D46 adds optional [Desk keepsakes](playlist-retention.md) to the current release: a permanent illustrated souvenir collection, one per account/week via a TRMNL screen code. The companion preview hides the code. Designs wait through missed weeks and repeat after a full set; there are no combat or ranking benefits and no polling/device-count advantage.
+
 ## MVP feature boundary
 
 | Area | Included in Month 1 | Deferred |

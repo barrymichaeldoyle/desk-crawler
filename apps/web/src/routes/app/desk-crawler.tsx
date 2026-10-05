@@ -2,7 +2,7 @@ import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
 import { Link, Outlet, createFileRoute, useLocation } from '@tanstack/react-router'
 import { api } from '@trmnl-games/backend/api'
-import { Card } from '../../lib/ui'
+import { Card, LoadingState } from '../../lib/ui'
 import { seo } from '../../lib/seo'
 import { NameRepair } from './desk-crawler/-nameRepair'
 import { preload } from '../../lib/preload'
@@ -29,24 +29,31 @@ function SignedInApp() {
   const { data: me, isPending } = useQuery(convexQuery(api.users.me, {}))
   // The hero page spreads into two columns on wide screens; the other tabs keep a reading width.
   const wide = useLocation({ select: (location) => location.pathname.replace(/\/$/, '') === '/app/desk-crawler' })
-  if (isPending) return <main id="main" className="mx-auto w-full max-w-3xl px-4 py-8 text-stone-600 dark:text-stone-400"><p role="status">Loading…</p></main>
+  const settings = useLocation({ select: (location) => location.pathname.replace(/\/$/, '').endsWith('/settings') })
+  if (isPending) return <main id="main" className="mx-auto w-full max-w-3xl px-4 py-8"><LoadingState label="Loading Desk Crawler…" /></main>
   if (me?.gameState === 'deleting') return <main id="main" className="mx-auto w-full max-w-3xl px-4 py-8"><Card title="Removing Desk Crawler progress"><p>Your account stays available. You can start again from TRMNL once removal finishes.</p></Card></main>
   if (!me?.hero) {
     return (
       <main id="main" className="mx-auto w-full max-w-3xl px-4 py-8">
         <Card title="Start on TRMNL">
           <p>Desk Crawler starts on your TRMNL. Install the Desk Crawler plugin from the TRMNL marketplace, connect it here, then save it in TRMNL.</p>
+          <p className="mt-3 text-sm text-stone-600 dark:text-stone-400">The plugin is in development and will appear in the directory after review.</p>
+          <Link to="/help/desk-crawler" className="mt-3 inline-flex min-h-11 items-center font-semibold underline underline-offset-4">How to connect Desk Crawler</Link>
+          <Link to="/account" className="ml-4 inline-flex min-h-11 items-center underline underline-offset-4">Account settings</Link>
         </Card>
       </main>
     )
   }
-  if (me.hero.activationState === 'pending_trmnl') {
+  if (me.hero.activationState === 'pending_trmnl' && !settings) {
     return (
       <main id="main" className="mx-auto w-full max-w-3xl px-4 py-8">
         <Card title="One more step">
           <p>
             <strong>{me.hero.name}</strong> is ready. Return to TRMNL and click <strong>Save</strong> on the Desk Crawler plugin to start adventures.
           </p>
+          <Link to="/help/desk-crawler" className="mt-3 inline-flex min-h-11 items-center font-semibold underline underline-offset-4">Help with setup</Link>
+          <Link to="/account" className="ml-4 inline-flex min-h-11 items-center underline underline-offset-4">Account settings</Link>
+          <Link to="/app/desk-crawler/settings" className="inline-flex min-h-11 items-center underline underline-offset-4">Desk Crawler settings</Link>
         </Card>
       </main>
     )
@@ -73,7 +80,7 @@ function SignedInApp() {
           ))}
         </ul>
       </nav>
-      <main id="main" className={`mx-auto flex w-full flex-col gap-4 px-4 py-6 ${wide ? 'max-w-6xl' : 'max-w-3xl'}`}>
+      <main id="main" className={`mx-auto flex w-full min-w-0 flex-col gap-8 px-4 pt-6 pb-[max(2rem,env(safe-area-inset-bottom))] ${wide ? 'max-w-6xl' : 'max-w-3xl'}`}>
         {me.user?.nameRepairRequired ? <NameRepair /> : null}
         <Outlet />
       </main>

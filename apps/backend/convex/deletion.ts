@@ -98,6 +98,8 @@ export const purgeGameStep = internalMutation({
     }
     const user = await ctx.db.get(job.userId)
     if (user?.activeHeroId) await ctx.db.patch(user._id, { activeHeroId: undefined })
+    const keepsakes = await ctx.db.query('deskKeepsakes').withIndex('by_userId', (q) => q.eq('userId', job.userId)).take(BATCH)
+    if (await deleteBatch(ctx, keepsakes) > 0) return await again()
     const receipts = await ctx.db.query('operationReceipts').withIndex('by_userId_and_scope', (q) => q.eq('userId', job.userId).eq('scope', DESK_CRAWLER)).take(BATCH)
     const legacy = await ctx.db.query('operationReceipts').withIndex('by_userId_and_scope', (q) => q.eq('userId', job.userId).eq('scope', undefined)).take(BATCH)
     if (await deleteBatch(ctx, receipts) + await deleteBatch(ctx, legacy) > 0) return await again()
@@ -199,6 +201,8 @@ export const purgeStep = internalMutation({
         return done > 0 ? await again() : await advance('gameplay')
       }
       case 'gameplay': {
+        const keepsakes = await ctx.db.query('deskKeepsakes').withIndex('by_userId', (q) => q.eq('userId', job.userId!)).take(BATCH)
+        if (await deleteBatch(ctx, keepsakes) > 0) return await again()
         const profile = await gameProfile(ctx, job.userId)
         const heroId = profile ? profile.activeHeroId : user?.activeHeroId
         if (heroId) {

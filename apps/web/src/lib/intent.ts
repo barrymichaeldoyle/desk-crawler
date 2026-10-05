@@ -1,14 +1,16 @@
 import { ConvexError } from 'convex/values'
 import { useMutation } from 'convex/react'
 import type { FunctionReference } from 'convex/server'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { ExpiredSubmission, Submission } from './submission'
 
 /** User-safe message from a structured Convex error (api.md error contract). */
 export function errorMessage(error: unknown): string {
+  if (error instanceof ExpiredSubmission) return error.message
   if (error instanceof ConvexError && typeof error.data === 'object' && error.data !== null && 'message' in error.data) {
     return String((error.data as { message: unknown }).message)
   }
-  return 'Something went wrong. Please try again.'
+  return 'We could not confirm that action. Check your connection, then try the same action again.'
 }
 
 /**
@@ -19,21 +21,32 @@ export function useIntent<Args extends { operationId: string }>(fn: FunctionRefe
   const mutate = useMutation(fn)
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  async function run(args: Omit<Args, 'operationId'>): Promise<boolean> {
-    if (pending) return false
+  const [message, setMessage] = useState<string | null>(null)
+  const [submission] = useState(() => new Submission())
+  const inFlight = useRef(false)
+  async function run(args: Omit<Args, 'operationId'>, successMessage = 'Done. Your TRMNL will reflect this on its next refresh.'): Promise<boolean> {
+    if (inFlight.current) return false
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      setError('You are offline. Reconnect, then try again. No action was queued.')
+      return false
+    }
+    inFlight.current = true
     setPending(true)
     setError(null)
+    setMessage(null)
     try {
-      await (mutate as unknown as (input: Args) => Promise<unknown>)({ ...args, operationId: crypto.randomUUID() } as Args)
-      return true
+      const done = await submission.run(args, (input) => (mutate as unknown as (input: Args) => Promise<unknown>)(input as Args), (error) => error instanceof ConvexError)
+      if (done) setMessage(successMessage)
+      return done
     } catch (caught) {
       setError(errorMessage(caught))
       return false
     } finally {
+      inFlight.current = false
       setPending(false)
     }
   }
-  return { run, pending, error, clearError: () => setError(null) }
+  return { run, pending, error, message, clearError: () => setError(null), clearFeedback: () => { setError(null); setMessage(null) } }
 }
 
 export const artUrl = (path: string) => `${import.meta.env.VITE_CONVEX_SITE_URL ?? ''}${path}`

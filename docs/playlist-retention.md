@@ -1,6 +1,6 @@
 # Desk keepsakes and playlist retention
 
-Implemented locally on 2026-10-05 under Barry’s request to choose and implement a playlist incentive. Deployment and the live TRMNL render check require separate authorization. D46 adds this cosmetic feature to the current release; it leaves D09’s earned gameplay and ranking guarantees intact.
+Implemented and deployed on 2026-10-05 under Barry’s request to choose and implement a playlist incentive and subsequent “approved, deploy”. D46 adds this cosmetic feature to the current release; it leaves D09’s earned gameplay and ranking guarantees intact. Barry waived the remaining live visual/claim check on 2026-10-05; it is recorded as waived, not passed, in the evidence below.
 
 ## Player experience
 
@@ -31,4 +31,4 @@ A device-channel collectible gives the screen additional value without those fal
 
 See [keepsake evidence](evidence/playlist-retention.md). Integration tests cover authenticated HTTP delivery, preview secrecy, read-only generation, owner scope, weekly boundaries/grace, replay/concurrency, multiple grants, revoked/disconnected credentials, committed failed attempts, persistent bounded repeat collections and both deletion paths. Template tests render the code in all four sizes and omit it without the device-envelope field.
 
-The preview harness accepts `--keepsakes` after the art origin to supply a clearly fictional sample code for the layout matrix. Local screenshots are layout evidence, not proof of hardware delivery or Creator Fund impressions. The live release check remains open until authorized deployment.
+The preview harness accepts `--keepsakes` after the art origin to supply a clearly fictional sample code for the layout matrix. Local screenshots are layout evidence, not proof of hardware delivery or Creator Fund impressions. Authorized production deployment and a successful live server render are recorded; Barry waived the remaining physical glance and real claim checks on 2026-10-05; they were not performed.

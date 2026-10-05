@@ -3,8 +3,9 @@ import { useMemo, useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { LogStory } from './-logStory'
 import { Button } from '../../../lib/ui'
+import type { LogDeltas } from '@trmnl-games/desk-crawler/log'
 
-type Entry = { id: string; at: number; tick: number | null; kind: string; summary: string; source: string; deltas: { xpEarned: number; gold: number; hp: number } }
+type Entry = { id: string; at: number; tick: number | null; kind: string; summary: string; source: string; deltas: LogDeltas }
 
 const FILTERS = [
   { key: 'all', label: 'All', kinds: null },

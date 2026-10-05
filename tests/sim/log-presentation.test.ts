@@ -1,12 +1,25 @@
 import { describe, expect, it } from 'vitest'
 import { catalogs } from '@trmnl-games/desk-crawler/content'
-import { logPresentation } from '@trmnl-games/desk-crawler/log'
+import { displayLogDeltas, logPresentation } from '@trmnl-games/desk-crawler/log'
 import { fill } from '@trmnl-games/desk-crawler/sim/core/narrative'
 
 const deltas = { xpEarned: 14, gold: 5, hp: -12 }
 const present = (summary: string, changes = deltas, kind = 'combat') => logPresentation({ summary, kind, deltas: changes })
 
 describe('story and stat changes', () => {
+  it('shows a found potion even when it cancels consumption in the same tick', () => {
+    const changes = displayLogDeltas({ deltas: { xpEarned: 0, gold: 0, hp: 20 }, detail: { outcome: { variant: 'loot', found: 'potion', potionFullFallback: false } } })
+    expect(present('Found a healing potion. Drank a potion.', changes, 'loot'))
+      .toEqual({ narrative: 'Found a healing potion. Drank a potion.', changes: ['+1 healing potion', '+20 HP'] })
+  })
+
+  it('does not report a potion for full-stack gold fallback or narrative alone', () => {
+    const zero = { xpEarned: 0, gold: 0, hp: 0 }
+    const fallback = displayLogDeltas({ deltas: { ...zero, gold: 5 }, detail: { outcome: { variant: 'loot', found: 'gold', potionFullFallback: true } } })
+    expect(present('Potion pouch full; sold a spare for 5 gold.', fallback, 'loot').changes).toEqual(['+5 gold'])
+    expect(present('Found a healing potion.', zero, 'loot').changes).toEqual([])
+    expect(displayLogDeltas({ deltas: zero, detail: { operation: 'drink_potion' } }).potionsFound).toBe(0)
+  })
   it('keeps expense-claim flavor and shows the reward once', () => {
     expect(present('An old expense claim finally paid out: 2 gold.', { xpEarned: 0, gold: 2, hp: 0 }, 'loot'))
       .toEqual({ narrative: 'An old expense claim finally paid out.', changes: ['+2 gold'] })

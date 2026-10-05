@@ -2,7 +2,7 @@
 
 A passive multiplayer office RPG for your desk. A hero explores every 15 minutes, finds equipment, survives mishaps, and climbs a global leaderboard. Built exclusively for TRMNL: install the plugin to start your hero, watch the story on e-ink, and use the companion website for occasional decisions.
 
-**Phase: review preparation.** The companion, Convex backend and TRMNL integration are live; the simulator, v2 catalog, tests and balance harness are implemented. See [implementation status](docs/status.md) and [release checks](docs/evidence/release.md) for verified behavior and remaining gates. Run `pnpm install` then `pnpm check` and `pnpm balance`.
+**Phase: review preparation.** The companion, Convex backend and TRMNL integration are live; the simulator, v4 narrative catalog, tests and balance harness are implemented. See [implementation status](docs/status.md) and [release checks](docs/evidence/release.md) for verified behavior and remaining gates. Run `pnpm install` then `pnpm check` and `pnpm balance`.
 
 Confirmed on 2026-10-03:
 
@@ -18,12 +18,12 @@ Confirmed on 2026-10-03:
 - Rolling 24-hour/seven-day XP ranking within level bands, published hourly; dormant heroes drop off recent boards. Seven-day view on TRMNL, both plus lifetime in the companion.
 - Manage gear every three to seven days; retain the first overflow and sleep until deliberate resume (Resume can name the next biome; chosen gear sells in bulk). Start tuning at 30 slots/~five gear per day; slow the late-game gear curve and trim gold income.
 - Bounded reward rolls plus rare elite foes and gold jackpots for a little luck.
-- Gold reserved for later merchants; game + dedicated Clerk account deletion; Barry initially handles private support and audited name repair.
+- Gold reserved for later merchants; Barry initially handles private support and audited name repair. Following D40, game-progress deletion preserves the shared account; account deletion removes all game progress and the TRMNL Games Clerk account.
 - Approved pacing/content targets, bounded return recap, owner incident alerts, daily backups and an early install-to-display milestone; [build refinements](docs/build-readiness.md).
 
 Start with the [documentation index](docs/README.md), [MVP definition](docs/product.md), [decisions and open questions](docs/decisions.md), and [agent work packages](docs/work-packages.md).
 
-Barry's proposed next step is a shared TRMNL Games platform on the newly owned `trmnlgames.com`: see the [monorepo and domain migration plan](docs/trmnl-games-migration.md). Production migration has not started.
+Desk Crawler now runs on the shared TRMNL Games platform at `trmnlgames.com`. The monorepo/domain migration is complete; the [migration plan](docs/trmnl-games-migration.md) records the rollout and remaining review preparation.
 
 The first release includes all four TRMNL layouts because Third Party marketplace publication requires them. The canonical flat player JSON remains a separate API contract; the marketplace endpoint returns markup plus merge variables.
 

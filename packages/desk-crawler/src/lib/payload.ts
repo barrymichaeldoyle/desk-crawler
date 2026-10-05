@@ -159,7 +159,7 @@ function rankingFields(ranking: PayloadRanking | null, unlinked: boolean, timeZo
  */
 export const keepUnitsTogether = (text: string) =>
   text
-    .replace(/([+-]?\d+) (XP|gold|HP|ticks?)\b/g, '$1\u00a0$2')
+    .replace(/([+-]?\d+) (XP|gold|HP|ticks?|healing potions?)\b/g, '$1\u00a0$2')
     .replace(/\b(level|Level) (\d+)/g, '$1\u00a0$2')
     .replace(/([+-]\d+\u00a0(?:XP|gold|HP)), (?=[+-]\d)/g, '$1,\u00a0')
 

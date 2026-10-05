@@ -4,7 +4,8 @@
  *   pnpm balance [--heroes 500] [--days 30] [--content v2] [--json out.json]
  */
 import { writeFileSync } from 'node:fs'
-import { catalogs, type CatalogId } from '@trmnl-games/desk-crawler/content'
+import { pathToFileURL } from 'node:url'
+import { ACTIVE_CONTENT, catalogs, type CatalogId } from '@trmnl-games/desk-crawler/content'
 import { applyItemChanges } from '@trmnl-games/desk-crawler/sim/core/apply'
 import { simulateHero, SIMULATION_VERSION } from '@trmnl-games/desk-crawler/sim/core/simulate'
 import { starterHero, starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
@@ -16,10 +17,12 @@ const TICKS_PER_DAY = 96
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] }
 
-interface Policy {
+export interface Policy {
   readonly name: string
   /** Days between visits; 0 never visits. */
   readonly everyDays: number
+  readonly equipGear?: boolean
+  readonly staySafe?: boolean
 }
 
 const POLICIES: readonly Policy[] = [
@@ -27,16 +30,29 @@ const POLICIES: readonly Policy[] = [
   { name: 'daily', everyDays: 1 },
   { name: 'three-day', everyDays: 3 },
   { name: 'seven-day', everyDays: 7 },
+  { name: 'undergeared-three-day', everyDays: 3, equipGear: false },
+  { name: 'safe-farming-three-day', everyDays: 3, staySafe: true },
 ]
 
-interface HeroLog {
+export interface HeroLog {
   reachTick: Map<number, number>
   firstSleepTick?: number
   bestInSlotTick?: number
   deathsByBiome: Map<string, number>
   exploringTicksByBiome: Map<string, number>
+  eligibleDaysByBiome: Map<string, Set<number>>
+  deathDaysByBiome: Map<string, Set<number>>
   stateTicks: Map<string, number>
   gearFound: number
+  usefulGearFound: number
+  equippedUpgrades: number
+  startingPotions: number
+  potionsFound: number
+  potionsUsed: number
+  potionFullFallbacks: number
+  finalPotions: number
+  retreats: number
+  rescues: number
   elites: number
   jackpots: number
   jackpotGold: number
@@ -56,8 +72,9 @@ function args() {
   return {
     heroes: Number(get('--heroes', '500')),
     days: Number(get('--days', '30')),
-    content: get('--content', 'v1') as CatalogId,
+    content: get('--content', ACTIVE_CONTENT) as CatalogId,
     json: get('--json', ''),
+    ticks: argv.includes('--ticks') ? Number(get('--ticks', '')) : undefined,
   }
 }
 
@@ -76,7 +93,7 @@ function bestInSlot(content: ContentCatalog): { attack: number; defense: number 
 }
 
 /** One visit: equip best eligible gear, claim and sell everything else, resume/travel to the hardest unlocked biome (D29). */
-function visit(hero: HeroState, inventory: ItemSnapshot[], tick: number, content: ContentCatalog): { hero: HeroState; inventory: ItemSnapshot[] } {
+function visit(hero: HeroState, inventory: ItemSnapshot[], tick: number, content: ContentCatalog, policy: Policy): { hero: HeroState; inventory: ItemSnapshot[] } {
   if (!['exploring', 'resting', 'sleeping'].includes(hero.status)) return { hero, inventory }
   const h: Mutable<HeroState> = { ...hero }
   const gear = inventory.filter((item) => item.kind !== 'potion')
@@ -89,8 +106,8 @@ function visit(hero: HeroState, inventory: ItemSnapshot[], tick: number, content
       }, undefined)
   const weapon = best('weapon')
   const armor = best('armor')
-  if (weapon) h.weaponId = weapon.id
-  if (armor) h.armorId = armor.id
+  if (weapon && policy.equipGear !== false) h.weaponId = weapon.id
+  if (armor && policy.equipGear !== false) h.armorId = armor.id
   delete h.heldItemId
   let gold = h.gold
   const kept = inventory.filter((item) => {
@@ -99,7 +116,7 @@ function visit(hero: HeroState, inventory: ItemSnapshot[], tick: number, content
     return false
   })
   h.gold = gold
-  const hardest = content.biomes.filter((b) => b.unlockLevel <= h.level).at(-1)!
+  const hardest = policy.staySafe ? content.biomes.find(b => b.safe)! : content.biomes.filter((b) => b.unlockLevel <= h.level).at(-1)!
   if (h.status === 'sleeping') {
     h.wakeAtTick = tick + 1
     if (hardest.id !== h.biomeId) h.targetBiomeId = hardest.id
@@ -111,7 +128,7 @@ function visit(hero: HeroState, inventory: ItemSnapshot[], tick: number, content
   return { hero: h, inventory: kept }
 }
 
-function simulateCohort(policy: Policy, heroes: number, days: number, content: ContentCatalog): HeroLog[] {
+export function simulateCohort(policy: Policy, heroes: number, days: number, content: ContentCatalog, ticks = days * TICKS_PER_DAY): HeroLog[] {
   const logs: HeroLog[] = []
   const bis = bestInSlot(content)
   const kit = starterKit(content)
@@ -125,8 +142,19 @@ function simulateCohort(policy: Policy, heroes: number, days: number, content: C
       reachTick: new Map(),
       deathsByBiome: new Map(),
       exploringTicksByBiome: new Map(),
+      eligibleDaysByBiome: new Map(),
+      deathDaysByBiome: new Map(),
       stateTicks: new Map(),
       gearFound: 0,
+      usefulGearFound: 0,
+      equippedUpgrades: 0,
+      startingPotions: kit.potions.quantity,
+      potionsFound: 0,
+      potionsUsed: 0,
+      potionFullFallbacks: 0,
+      finalPotions: 0,
+      retreats: 0,
+      rescues: 0,
       elites: 0,
       jackpots: 0,
       jackpotGold: 0,
@@ -136,17 +164,47 @@ function simulateCohort(policy: Policy, heroes: number, days: number, content: C
       finalGold: 0,
     }
     let dayXp = 0
-    for (let tick = 1; tick <= days * TICKS_PER_DAY; tick += 1) {
+    let recentSummaries: string[] = []
+    const markDay = (map: Map<string, Set<number>>, biome: string, day: number) => {
+      const set = map.get(biome) ?? new Set<number>()
+      set.add(day)
+      map.set(biome, set)
+    }
+    for (let tick = 1; tick <= ticks; tick += 1) {
       if (policy.everyDays > 0 && (tick - offset) % (policy.everyDays * TICKS_PER_DAY) === 0) {
-        ;({ hero, inventory } = visit(hero, inventory, tick, content))
+        const before = hero
+        ;({ hero, inventory } = visit(hero, inventory, tick, content, policy))
+        log.equippedUpgrades += Number(before.weaponId !== hero.weaponId) + Number(before.armorId !== hero.armorId)
       }
       log.stateTicks.set(hero.status, (log.stateTicks.get(hero.status) ?? 0) + 1)
       const biomeBefore = hero.biomeId
-      const result = simulateHero({ hero, inventory, tick, content, simulationVersion: SIMULATION_VERSION, streams: streams(index, tick) })
+      const day = Math.floor((tick - 1) / TICKS_PER_DAY)
+      if (hero.status === 'exploring' || hero.status === 'resting') markDay(log.eligibleDaysByBiome, biomeBefore, day)
+      const result = simulateHero({ hero, inventory, tick, content, simulationVersion: SIMULATION_VERSION, streams: streams(index, tick), recentSummaries })
+      if (result.event) recentSummaries = [result.event.summary, ...recentSummaries].slice(0, 2)
       if (result.metrics.encounter !== 'none') {
         log.exploringTicksByBiome.set(biomeBefore, (log.exploringTicksByBiome.get(biomeBefore) ?? 0) + 1)
       }
-      if (result.metrics.deaths) log.deathsByBiome.set(biomeBefore, (log.deathsByBiome.get(biomeBefore) ?? 0) + 1)
+      if (result.metrics.deaths) {
+        log.deathsByBiome.set(biomeBefore, (log.deathsByBiome.get(biomeBefore) ?? 0) + result.metrics.deaths)
+        markDay(log.deathDaysByBiome, biomeBefore, day)
+      }
+      log.potionsUsed += result.metrics.potionsUsed
+      log.retreats += result.metrics.retreats
+      log.rescues += result.metrics.rescues
+      const outcome = result.event?.detail.outcome
+      if (outcome?.variant === 'loot' && outcome.potionFullFallback) log.potionFullFallbacks += 1
+      // A found potion can cancel this tick's decrement, leaving no item directive.
+      // Count the encounter outcome so gross supply and usage still conserve the stack.
+      if (outcome?.variant === 'loot' && outcome.found === 'potion') log.potionsFound += 1
+      for (const change of result.itemChanges) {
+        if (change.type !== 'create') continue
+        if (change.item.kind === 'potion') continue
+        const current = inventory.find(item => item.id === (change.item.kind === 'weapon' ? hero.weaponId : hero.armorId))
+        const score = change.item.kind === 'weapon' ? change.item.attack : change.item.defense
+        const equippedScore = change.item.kind === 'weapon' ? current?.attack ?? 0 : current?.defense ?? 0
+        if (change.item.requiredLevel <= result.nextHero.level && score > equippedScore) log.usefulGearFound += 1
+      }
       if (result.metrics.heldFinds && log.firstSleepTick === undefined) log.firstSleepTick = tick
       log.elites += result.metrics.elites
       if (result.metrics.jackpots) {
@@ -168,9 +226,11 @@ function simulateCohort(policy: Policy, heroes: number, days: number, content: C
         dayXp = 0
       }
     }
+    if (ticks % TICKS_PER_DAY !== 0) log.dailyXp.push(dayXp)
     log.finalLevel = hero.level
     log.finalGold = hero.gold
     log.goldEarned = hero.counters.goldEarned
+    log.finalPotions = inventory.find(item => item.kind === 'potion')?.quantity ?? 0
     logs.push(log)
   }
   return logs
@@ -184,7 +244,7 @@ const pct = (values: readonly number[], p: number): number => {
 const days = (tick: number) => tick / TICKS_PER_DAY
 const round1 = (n: number) => Math.round(n * 10) / 10
 
-function summarize(policy: Policy, logs: HeroLog[], totalDays: number, content: ContentCatalog) {
+export function summarize(policy: Policy, logs: HeroLog[], totalDays: number, content: ContentCatalog) {
   /** Percentiles over every hero; heroes who never got there count as later than the run (reported as '>N'). */
   const censored = (ticks: (number | undefined)[]) => {
     const values = ticks.map((t) => (t === undefined ? Infinity : days(t)))
@@ -197,28 +257,41 @@ function summarize(policy: Policy, logs: HeroLog[], totalDays: number, content: 
     content.biomes
       .filter((b) => !b.safe)
       .map((b) => {
-        const heroDays = sum((l) => l.exploringTicksByBiome.get(b.id) ?? 0) / TICKS_PER_DAY
-        return [b.id, heroDays > 0 ? Math.round((sum((l) => l.deathsByBiome.get(b.id) ?? 0) / heroDays) * 1000) / 1000 : null]
+        const heroDays = sum(l => l.eligibleDaysByBiome.get(b.id)?.size ?? 0)
+        const daysWithDeath = sum(l => l.deathDaysByBiome.get(b.id)?.size ?? 0)
+        const p = daysWithDeath / Math.max(1, heroDays)
+        const z2 = 1.96 ** 2
+        const center = (p + z2 / (2 * Math.max(1, heroDays))) / (1 + z2 / Math.max(1, heroDays))
+        const half = 1.96 * Math.sqrt(p * (1 - p) / Math.max(1, heroDays) + z2 / (4 * Math.max(1, heroDays) ** 2)) / (1 + z2 / Math.max(1, heroDays))
+        return [b.id, { eligibleHeroDays: heroDays, heroDaysWithDeath: daysWithDeath, deathProbabilityPct: heroDays ? round1(p * 100) : null, wilson95Pct: heroDays ? [round1(Math.max(0, center - half) * 100), round1(Math.min(1, center + half) * 100)] : null, deathsPerEligibleHeroDay: heroDays ? Math.round(sum(l => l.deathsByBiome.get(b.id) ?? 0) / heroDays * 1000) / 1000 : null }]
       }),
   )
   const totalTicks = logs.length * totalDays * TICKS_PER_DAY
   const states = Object.fromEntries(
     ['exploring', 'resting', 'travelling', 'dead', 'sleeping'].map((s) => [s, Math.round((sum((l) => l.stateTicks.get(s) ?? 0) / totalTicks) * 1000) / 10]),
   )
-  const firstSleep = logs.map((l) => l.firstSleepTick).filter((t): t is number => t !== undefined).map(days)
   const lastDay = logs.map((l) => l.dailyXp.at(-1) ?? 0)
   const last7 = logs.map((l) => l.dailyXp.slice(-7).reduce((a, b) => a + b, 0))
-  const spread = (values: number[]) => ({ p10: pct(values, 0.1), median: pct(values, 0.5), p90: pct(values, 0.9), ratio: round1((pct(values, 0.9) / Math.max(1, pct(values, 0.1))) * 100) / 100 })
+  const spread = (values: number[]) => {
+    const p10 = pct(values, 0.1)
+    const p90 = pct(values, 0.9)
+    return { p10, median: pct(values, 0.5), p90, ratio: p10 > 0 ? Math.round(p90 / p10 * 100) / 100 : null }
+  }
   return {
     policy: policy.name,
     heroes: logs.length,
     days: totalDays,
     reach: [2, 4, 8, 12].map(reach),
     finalLevelMedian: pct(logs.map((l) => l.finalLevel), 0.5),
-    deathsPerExploringHeroDay: deathRate,
+    deathByBiome: deathRate,
     stateSharePct: states,
-    firstInventorySleep: { heroes: firstSleep.length, median: round1(pct(firstSleep, 0.5)), p10: round1(pct(firstSleep, 0.1)) },
+    firstInventorySleep: censored(logs.map(l => l.firstSleepTick)),
     gearPerDay: round1(sum((l) => l.gearFound) / logs.length / totalDays),
+    usefulGearPerDay: round1(sum(l => l.usefulGearFound) / logs.length / totalDays),
+    equippedUpgradesPerHero: round1(sum(l => l.equippedUpgrades) / logs.length),
+    potions: { acquiredPerHeroDay: round1(sum(l => l.potionsFound) / logs.length / totalDays), usedPerHeroDay: round1(sum(l => l.potionsUsed) / logs.length / totalDays), fullStackFallbacksPerHeroDay: round1(sum(l => l.potionFullFallbacks) / logs.length / totalDays), finalCount: { p10: pct(logs.map(l => l.finalPotions), 0.1), median: pct(logs.map(l => l.finalPotions), 0.5), p90: pct(logs.map(l => l.finalPotions), 0.9) } },
+    retreatsPerHeroDay: round1(sum(l => l.retreats) / logs.length / totalDays),
+    rescuesPerHeroDay: round1(sum(l => l.rescues) / logs.length / totalDays),
     bestInSlot: censored(logs.map((l) => l.bestInSlotTick)),
     goldDayEnd: { median: pct(logs.map((l) => l.finalGold), 0.5), p90: pct(logs.map((l) => l.finalGold), 0.9) },
     goldDay30: totalDays >= 30 ? pct(logs.map((l) => l.goldDay30 ?? 0), 0.5) : null,
@@ -231,22 +304,28 @@ function summarize(policy: Policy, logs: HeroLog[], totalDays: number, content: 
 
 function main() {
   const options = args()
+  if (!Number.isSafeInteger(options.heroes) || options.heroes < 1 || options.heroes > 10_000) throw new Error('--heroes must be an integer from 1 to 10000')
+  if (!Number.isSafeInteger(options.days) || options.days < 1 || options.days > 365) throw new Error('--days must be an integer from 1 to 365')
+  if (options.ticks !== undefined && (!Number.isSafeInteger(options.ticks) || options.ticks < 1 || options.ticks > 365 * TICKS_PER_DAY)) throw new Error('--ticks must be an integer from 1 to 35040')
   const content = catalogs[options.content]
   if (!content) throw new Error(`unknown content ${options.content}`)
   const started = Date.now()
-  const reports = POLICIES.map((policy) => summarize(policy, simulateCohort(policy, options.heroes, options.days, content), options.days, content))
-  const meta = { contentVersion: content.contentVersion, simulationVersion: SIMULATION_VERSION, heroes: options.heroes, days: options.days, seconds: (Date.now() - started) / 1000, cumulativeXpToLevel8: cumulativeXpToReach(8) }
+  const ticks = options.ticks ?? options.days * TICKS_PER_DAY
+  const totalDays = ticks / TICKS_PER_DAY
+  const reports = POLICIES.map((policy) => summarize(policy, simulateCohort(policy, options.heroes, totalDays, content, ticks), totalDays, content))
+  const meta = { reportVersion: 2, contentVersion: content.contentVersion, simulationVersion: SIMULATION_VERSION, heroes: options.heroes, days: totalDays, ticks, seconds: (Date.now() - started) / 1000, cumulativeXpToLevel8: cumulativeXpToReach(8), deathDenominator: 'hero-days with at least one exploring/resting tick in the biome; multiple deaths count once for probability', uncertainty: 'Wilson 95% descriptive interval; repeated days per seeded hero are correlated, not a player forecast' }
   if (options.json) writeFileSync(options.json, JSON.stringify({ meta, reports }, null, 2) + '\n')
   console.log(JSON.stringify(meta))
   for (const r of reports) {
     console.log(`\n== ${r.policy} (${r.heroes} heroes x ${r.days} days)`)
     for (const x of r.reach) console.log(`  L${x.level}: p10 ${x.p10}d  median ${x.median}d  p90 ${x.p90}d  reached ${x.reached}/${r.heroes}`)
-    console.log(`  final level median ${r.finalLevelMedian}; deaths/exploring hero-day ${JSON.stringify(r.deathsPerExploringHeroDay)}`)
+    console.log(`  final level median ${r.finalLevelMedian}; death hero-days ${JSON.stringify(r.deathByBiome)}`)
     console.log(`  state % ${JSON.stringify(r.stateSharePct)}; first sleep ${JSON.stringify(r.firstInventorySleep)}`)
     console.log(`  gear/day ${r.gearPerDay}; best-in-slot ${JSON.stringify(r.bestInSlot)}; gold end ${JSON.stringify(r.goldDayEnd)}; gold day 30 median ${r.goldDay30}`)
     console.log(`  jackpot gold share ${r.jackpotGoldShare}%; elites/hero-day ${r.elitesPerHeroDay}`)
+    console.log(`  potions ${JSON.stringify(r.potions)}; useful gear/day ${r.usefulGearPerDay}; equipped upgrades/hero ${r.equippedUpgradesPerHero}`)
     console.log(`  XP last day ${JSON.stringify(r.xpLastDay)}; last 7 days ${JSON.stringify(r.xpLast7Days)}`)
   }
 }
 
-main()
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main()

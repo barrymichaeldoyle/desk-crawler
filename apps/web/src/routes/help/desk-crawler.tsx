@@ -21,10 +21,24 @@ export const Route = createFileRoute('/help/desk-crawler')({
       <h2>Desk keepsakes</h2>
       <p>Keep Desk Crawler in your playlist and look for “Keepsake” followed by a code in the screen’s title bar. Enter that code in the companion’s Settings to collect a permanent office souvenir. Full-screen and mashup layouts both show it; the companion preview hides it.</p>
       <p>You can collect one keepsake each week, with a new code from Monday at 00:00 UTC. Last week’s code works too if your screen refreshes slowly. Missing weeks loses nothing: the next design waits for you. After collecting the full set, you can collect more of each. Keepsakes do not change XP, gear or rankings, and extra devices or faster refresh earn no extras.</p>
+      <h2>When your bag fills up</h2>
+      <p>Your bag holds 30 pieces of gear. A full bag alone does not stop adventures: the next piece you find is held safely, then your hero sleeps until you make room. The held find is never automatically sold or discarded.</p>
+      <ol className="[&_li]:list-decimal">
+        <li>Open Bag in the companion. Equip any upgrades and sell spare gear to free space.</li>
+        <li>If a find is being held, choose Claim find. Leave at least one free slot after claiming it so adventures can resume.</li>
+        <li>Choose Resume adventures. You can pick an unlocked destination at the same time. Your hero wakes on the next game tick.</li>
+      </ol>
+      <p>Equipping gear does not free a slot. Selling gear or claiming a find does not wake your hero automatically. Bag sleep is separate from your TRMNL’s Sleep Mode; a sleeping display never stops the game.</p>
+      <h2>Getting knocked out</h2>
+      <p>Your hero revives automatically after eight game ticks, normally about two hours, and returns to Office Cubicles. You keep your XP and equipment; getting knocked out costs 10% of your current gold. Office Cubicles provides a safe place to recover. You do not need to keep the companion open or press a revive button.</p>
+      <h2>Understanding rankings</h2>
+      <p>The screen shows your seven-day XP rank among heroes in your level group. The companion also offers a 24-hour view and a lifetime board. Rankings publish hourly, so a recent adventure or level-up can appear before your rank updates.</p>
+      <p>Paused and sleeping heroes keep their progress, but their recent XP ages out. After seven days without earned XP, they leave the weekly board until they earn XP again. Lifetime progress stays recorded.</p>
       <h2>If the screen looks old</h2>
       <ul>
         <li>"Updates delayed" means the game service is running late. Nothing is lost and you don't need to do anything.</li>
         <li>If the companion website is current but the screen is not, check the plugin's refresh setting and playlist position in TRMNL.</li>
+        <li>“Next adventure” is the expected game tick when that screen was generated. A slow refresh can leave a time that has already passed; check the companion for the current state.</li>
         <li>If you disconnected or uninstalled, install again from TRMNL. Your hero keeps all progress.</li>
       </ul>
       <h2>Disconnecting and removing</h2>

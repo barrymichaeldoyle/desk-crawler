@@ -4,6 +4,14 @@ export interface LogDeltas {
   readonly xpEarned: number
   readonly gold: number
   readonly hp: number
+  /** Gross acquisition from the stored loot outcome, derived on read, not net stack change. */
+  readonly potionsFound?: number
+}
+
+/** Reveal only display changes, never the simulator's internal event detail. */
+export function displayLogDeltas(entry: { readonly deltas: LogDeltas; readonly detail: { readonly outcome: { readonly variant: string; readonly found?: string; readonly potionFullFallback?: boolean } } | { readonly operation: string } }): LogDeltas {
+  const outcome = 'outcome' in entry.detail ? entry.detail.outcome : null
+  return { ...entry.deltas, potionsFound: outcome?.variant === 'loot' && outcome.found === 'potion' && !outcome.potionFullFallback ? 1 : 0 }
 }
 
 /** Shared display copy. Persisted, versioned simulator summaries stay replayable. */
@@ -33,6 +41,7 @@ export function logPresentation(entry: { readonly summary: string; readonly kind
   const changes = [
     deltas.xpEarned ? signed(deltas.xpEarned, 'XP') : null,
     deltas.gold ? signed(deltas.gold, 'gold') : null,
+    deltas.potionsFound ? signed(deltas.potionsFound, deltas.potionsFound === 1 ? 'healing potion' : 'healing potions') : null,
     deltas.hp ? signed(deltas.hp, 'HP') : null,
   ].filter((part): part is string => part !== null)
   return { narrative, changes }

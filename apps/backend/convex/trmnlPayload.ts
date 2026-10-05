@@ -10,6 +10,7 @@ import { readWorld } from './world'
 import { readDeviceRanking } from './lib/rankingRead'
 import { keepsakeCode, keepsakeGrant } from './lib/keepsakes'
 import { keepsakeWeek } from '@trmnl-games/desk-crawler/content/keepsakes'
+import { displayLogDeltas } from '@trmnl-games/desk-crawler/log'
 
 /**
  * Fixed-cost canonical payload for one authorized instance (trmnl.md "Query
@@ -79,7 +80,7 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
       .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id))
       .order('desc')
       .take(MAX_LOGS)
-    logs = recent.map((log) => ({ at: log.at, kind: log.kind, summary: log.summary, deltas: log.deltas }))
+    logs = recent.map((log) => ({ at: log.at, kind: log.kind, summary: log.summary, deltas: displayLogDeltas(log) }))
     const newest = recent[0]
     if (newest) latestEvent = { kind: newest.kind, ...('outcome' in newest.detail ? { outcome: newest.detail.outcome } : {}) }
   }

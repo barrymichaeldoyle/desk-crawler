@@ -9,6 +9,7 @@ import { deriveStats } from '@trmnl-games/desk-crawler/sim/core/stats'
 import { readWorld } from './world'
 import { FULL_SCALE } from '@trmnl-games/desk-crawler/art/scene'
 import { sceneFor, scenePath } from '@trmnl-games/desk-crawler/art/sceneKey'
+import { displayLogDeltas } from '@trmnl-games/desk-crawler/log'
 
 const intentResult = v.object({
   operationId: v.string(),
@@ -91,7 +92,7 @@ export const recentLog = query({
       .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id))
       .order('desc')
       .paginate(paginationOpts)
-    return { ...result, page: result.page.map((log) => ({ id: log._id, at: log.at, tick: log.tick ?? null, kind: log.kind, summary: log.summary, source: log.source, deltas: log.deltas })) }
+    return { ...result, page: result.page.map((log) => ({ id: log._id, at: log.at, tick: log.tick ?? null, kind: log.kind, summary: log.summary, source: log.source, deltas: displayLogDeltas(log) })) }
   },
 })
 

@@ -7,7 +7,7 @@
  */
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { Liquid } from 'liquidjs'
-import { contentV3 } from '@trmnl-games/desk-crawler/content/v3'
+import { contentV4 } from '@trmnl-games/desk-crawler/content/v4'
 import { buildPayload, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
 import { sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
 import { screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
@@ -43,7 +43,7 @@ const base: PayloadInput = {
     { at: NOW - 82 * 60_000, kind: 'combat', summary: 'Unplugged a [[Cable Serpent]]. +9 XP, +3 gold.', deltas: { xpEarned: 9, gold: 3, hp: -15 } },
   ],
   instanceName: 'Desk Crawler',
-  content: contentV3,
+  content: contentV4,
   spriteBaseUrl: null,
   artBaseUrl,
   latestEvent: { kind: 'combat', outcome: { variant: 'combat', monsterId: 'cable_serpent', elite: false } },
@@ -97,12 +97,23 @@ const states: Record<string, PayloadInput> = {
   firstRun: { ...base, hero: hero({ level: 1, xp: 0, hp: 60, gold: 0, biomeId: 'office_cubicles', lastTick: 0 }), logs: [], latestEvent: null, ranking: { ...base.ranking!, rank: null, rankDelta: null, status: 'awaiting', score: null, top5: [] } },
 }
 
+// A fictional public sample generated through the same payload and templates.
+// Never include a redeemable keepsake code in a marketplace or landing image.
+const potionStates: Record<string, PayloadInput> = Object.fromEntries([
+  ['potionFind', 'Found a healing potion.', 1, 0, 0],
+  ['potionFindAndUse', 'Found a healing potion. Drank a potion.', 1, 0, 20],
+  ['potionFullFallback', 'Potion pouch full; sold a spare for 5 gold.', 0, 5, 0],
+].map(([name, summary, potionsFound, gold, hp]) => [name, { ...base, latestEvent: { kind: 'loot', outcome: { variant: 'loot', found: potionsFound ? 'potion' : 'gold' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'loot', summary: String(summary), deltas: { xpEarned: 0, potionsFound: Number(potionsFound), gold: Number(gold), hp: Number(hp) } }, ...base.logs] }]))
+const previewStates = process.argv.includes('--potion-finds') ? potionStates : process.argv.includes('--marketing') ? {
+  sample: { ...base, ownerAlias: 'Steve', hero: hero({ name: 'Pip' }), ranking: { ...base.ranking!, top5: base.ranking!.top5.map(row => row.rank === 3 ? { ...row, name: 'Steve', hero_name: 'Pip' } : row) } },
+} : states
+
 mkdirSync('.previews', { recursive: true })
 let written = 0
-for (const [name, input] of Object.entries(states)) {
+for (const [name, input] of Object.entries(previewStates)) {
   const payload = sceneUrlsAt(buildPayload(input), input.now, utcOffset)
   for (const layout of Object.keys(PREVIEW_LAYOUTS) as PreviewLayout[]) {
-    const inner = await liquid.parseAndRender(screenMarkup[layout], { ...payload, desk_keepsake_code: name === 'unlinked' ? null : deskKeepsakeCode, utc_offset: utcOffset })
+    const inner = await liquid.parseAndRender(screenMarkup[layout], { ...payload, desk_keepsake_code: name === 'unlinked' || name === 'sample' ? null : deskKeepsakeCode, utc_offset: utcOffset })
     for (const device of Object.keys(PREVIEW_DEVICES) as PreviewDevice[]) {
       writeFileSync(`.previews/${name}--${device}--${layout}.html`, previewDocument(inner, device, layout, `${name} · ${device} · ${PREVIEW_LAYOUTS[layout].label}`))
       written++

@@ -27,7 +27,7 @@ Failures are not receipts for successful operations. Transport retries are bound
 | `users.me` | none | public alias, legacy timezone (D39), owner state, active hero ID | Identity index + user |
 | `heroes.mine` | none | sanitized hero state including activation state, derived stats, XP threshold, biome unlocks, server tick/health | User + active hero + bounded equipped items/world/run |
 | `heroes.returnSummary` | none | Nullable visit baseline, observed level/lifetime XP/log sequence, nullable gains, current bag/unequipped counts, held name and status/wake/simulation state | Own user + current hero + <=32 inventory rows; no history scan |
-| `heroes.recentLog` | limit 1–50, cursor? | own log page, bounded detail, continuation | Hero-index page |
+| `heroes.recentLog` | `paginationOpts` | Own log page with id/time/tick/kind/summary/source and display deltas; continuation. Additive `deltas.potionsFound` is 0 or 1, derived from the stored loot outcome, including same-tick use. No raw simulation detail | Hero-index page |
 | `inventory.mine` | none | <=30 bag gear + <=1 held gear + <=1 potion stack, equipment/held IDs, capacity and wake readiness | Hero inventory index |
 | `leaderboard.view` | board overall/recent_24h/recent_7d (default recent_7d), optional validated cohort | Scoped Top 100, own rank/score/delta if in selected group, period/cohort/group/global counts and as-of | Published set + own scoped row + selected generation + bounded privacy masking |
 | `trmnl.myConnections` | limit 1–20, cursor? | Instance page/continuation plus <=5 recent pending attempts; UUID/label/state and validated return link | Own instance page + bounded own pending-attempt index; never token/hash |

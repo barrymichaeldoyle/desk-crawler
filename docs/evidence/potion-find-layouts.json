@@ -1,0 +1,151 @@
+{
+  "date": "2026-10-05T20:15:52.362Z",
+  "templateVersion": 24,
+  "scope": "local source previews; no hardware acceptance",
+  "cases": [
+    {
+      "name": "potionFind--og--markup",
+      "fits": true,
+      "hasPotionLabel": true,
+      "loaded": true
+    },
+    {
+      "name": "potionFind--og--markup_half_horizontal",
+      "fits": true,
+      "hasPotionLabel": true,
+      "loaded": true
+    },
+    {
+      "name": "potionFind--og--markup_half_vertical",
+      "fits": true,
+      "hasPotionLabel": true,
+      "loaded": true
+    },
+    {
+      "name": "potionFind--og--markup_quadrant",
+      "fits": true,
+      "hasPotionLabel": true,
+      "loaded": true
+    },
+    {
+      "name": "potionFind--x--markup",
+      "fits": true,
+      "hasPotionLabel": true,
+      "loaded": true
+    },
+    {
+      "name": "potionFind--x--markup_half_horizontal",
+      "fits": true,
+      "hasPotionLabel": true,
+      "loaded": true
+    },
+    {
+      "name": "potionFind--x--markup_half_vertical",
+      "fits": true,
+      "hasPotionLabel": true,
+      "loaded": true
+    },
+    {
+      "name": "potionFind--x--markup_quadrant",
+      "fits": true,
+      "hasPotionLabel": true,
+      "loaded": true
+    },
+    {
+      "name": "potionFindAndUse--og--markup",
+      "fits": true,
+      "hasPotionLabel": true,
+      "loaded": true
+    },
+    {
+      "name": "potionFindAndUse--og--markup_half_horizontal",
+      "fits": true,
+      "hasPotionLabel": true,
+      "loaded": true
+    },
+    {
+      "name": "potionFindAndUse--og--markup_half_vertical",
+      "fits": true,
+      "hasPotionLabel": true,
+      "loaded": true
+    },
+    {
+      "name": "potionFindAndUse--og--markup_quadrant",
+      "fits": true,
+      "hasPotionLabel": true,
+      "loaded": true
+    },
+    {
+      "name": "potionFindAndUse--x--markup",
+      "fits": true,
+      "hasPotionLabel": true,
+      "loaded": true
+    },
+    {
+      "name": "potionFindAndUse--x--markup_half_horizontal",
+      "fits": true,
+      "hasPotionLabel": true,
+      "loaded": true
+    },
+    {
+      "name": "potionFindAndUse--x--markup_half_vertical",
+      "fits": true,
+      "hasPotionLabel": true,
+      "loaded": true
+    },
+    {
+      "name": "potionFindAndUse--x--markup_quadrant",
+      "fits": true,
+      "hasPotionLabel": true,
+      "loaded": true
+    },
+    {
+      "name": "potionFullFallback--og--markup",
+      "fits": true,
+      "hasPotionLabel": false,
+      "loaded": true
+    },
+    {
+      "name": "potionFullFallback--og--markup_half_horizontal",
+      "fits": true,
+      "hasPotionLabel": false,
+      "loaded": true
+    },
+    {
+      "name": "potionFullFallback--og--markup_half_vertical",
+      "fits": true,
+      "hasPotionLabel": false,
+      "loaded": true
+    },
+    {
+      "name": "potionFullFallback--og--markup_quadrant",
+      "fits": true,
+      "hasPotionLabel": false,
+      "loaded": true
+    },
+    {
+      "name": "potionFullFallback--x--markup",
+      "fits": true,
+      "hasPotionLabel": false,
+      "loaded": true
+    },
+    {
+      "name": "potionFullFallback--x--markup_half_horizontal",
+      "fits": true,
+      "hasPotionLabel": false,
+      "loaded": true
+    },
+    {
+      "name": "potionFullFallback--x--markup_half_vertical",
+      "fits": true,
+      "hasPotionLabel": false,
+      "loaded": true
+    },
+    {
+      "name": "potionFullFallback--x--markup_quadrant",
+      "fits": true,
+      "hasPotionLabel": false,
+      "loaded": true
+    }
+  ]
+}

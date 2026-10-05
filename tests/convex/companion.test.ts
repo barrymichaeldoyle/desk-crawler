@@ -50,6 +50,23 @@ describe('companion hero page data', () => {
     expect(await bo.query(api.heroes.returnSummary, {})).toMatchObject({ counters: { combatWins: 4, goldEarned: 31, itemsFound: 2, deaths: 0 }, newEvents: 5 })
   })
 
+  it('derives potion finds from stored outcomes for the companion and device payload without rewriting logs', async () => {
+    const heroId = await seedHero(t, {}, 'PotionFinder')
+    await t.run(async (ctx) => {
+      const detail = { v: 1 as const, simulationVersion: 1, contentVersion: 'v4', disposition: 'advanced' as const, encounterKind: 'loot' as const, potionsUsed: 1, levelsGained: 0, goldPenalty: 0, heldFind: false }
+      await ctx.db.insert('tickLogs', { heroId, source: 'tick', tick: 2, sequence: 2, at: Date.now(), kind: 'loot', summary: 'Found a healing potion. Drank a potion.', detail: { ...detail, outcome: { variant: 'loot', found: 'potion', goldGranted: 0, jackpot: false, potionFullFallback: false } }, deltas: { xpEarned: 0, gold: 0, hp: 20 } })
+      await ctx.db.insert('tickLogs', { heroId, source: 'tick', tick: 3, sequence: 3, at: Date.now() + 1, kind: 'loot', summary: 'Potion pouch full; sold a spare for 5 gold.', detail: { ...detail, potionsUsed: 0, outcome: { variant: 'loot', found: 'gold', goldGranted: 5, jackpot: false, potionFullFallback: true } }, deltas: { xpEarned: 0, gold: 5, hp: 0 } })
+    })
+    const owner = t.withIdentity({ issuer: 'issuer', subject: 'PotionFinder' })
+    const page = await owner.query(api.heroes.recentLog, { paginationOpts: { numItems: 10, cursor: null } })
+    expect(page.page.map((entry: { deltas: { potionsFound?: number } }) => entry.deltas.potionsFound)).toEqual([0, 1])
+    expect(page.page[1]).not.toHaveProperty('detail')
+    const preview = await owner.query(api.trmnlPayload.mine, { now: Date.now() })
+    expect(preview!.log[0]!.d).toBe('+5 gold')
+    expect(preview!.log[1]!.d).toBe('+1 healing potion · +20 HP')
+    expect(await t.run(async ctx => (await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', q => q.eq('heroId', heroId)).collect()).map(entry => entry.deltas))).toEqual([{ xpEarned: 0, gold: 0, hp: 20 }, { xpEarned: 0, gold: 5, hp: 0 }])
+  })
+
   it('keeps baselines recorded before counters were captured working', async () => {
     const heroId = await seedHero(t, {}, 'Cy')
     await t.run(async (ctx) => await ctx.db.patch(heroId, { companionVisitBaseline: { at: Date.now() - 60_000, level: 1, lifetimeXp: 0, logSequence: 1 } }))

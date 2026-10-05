@@ -19,16 +19,18 @@ Live implementation evidence is available, with remaining acceptance checks reco
 
 Artifacts identify date, environment, command/action and observed result. Scrub secrets and identities before storing them in this public repository; never commit imported profile data from raw callbacks.
 
-[Playlist retention and narrative callbacks](playlist-retention.md) records the locally prepared D46/D47 additions, automated checks, companion review, device-footer previews and the still-open authorized deployment/live-render gate.
+[Playlist retention and narrative callbacks](playlist-retention.md) records D46/D47 additions, automated checks, production deployment and preview/live-render evidence. Barry explicitly waived the remaining D46 physical glance, claim and post-claim checks on 2026-10-05; those checks are waived, not passed.
 
 [Separate story and stat changes](log-presentation.md) records D48's shared companion/device presentation, command deltas, compatibility checks, local layout verification and production release. The signed-in companion and live TRMNL preview are verified; physical-display acceptance remains unverified.
 
 [Log layout and name wrapping](log-layout.md) records D49's grouped names, time/change row, separators, centered device gear labels and production release. Signed-in companion, live TRMNL preview and post-deployment installation rendering are verified; physical-display acceptance remains unverified.
 
-[Local day/night window](scene-time.md) records D50's daytime artwork, timezone selection, immutable image compatibility and local checks. Deployment and live installation rendering remain pending.
+[Local day/night window](scene-time.md) records D50's daytime artwork, timezone selection, immutable image compatibility and production release. The live companion's daytime scene and post-deployment installation rendering are verified; physical-display acceptance remains unverified.
 
-[Compact log spacing](log-spacing.md) records D51's narrower story gutters, independent time/stat widths and local companion/device layout checks. It is prepared alongside D50 and not deployed.
+[Compact log spacing](log-spacing.md) records D51's narrower story gutters, independent time/stat widths and production release alongside D50. Signed-in companion, live TRMNL preview and post-deployment installation rendering are verified; physical-display acceptance remains unverified.
 
-An editor preview does not replace the Third Party envelope test or physical display evidence. Unavailable evidence remains an unresolved gate in [decisions](../decisions.md).
+[Submission preparation](submission-preparation.md) records current companion phone/desktop inspections, local help/sample improvements, review artifacts, 176 passing tests and successful builds. [Balance](balance.md) now includes current six-policy 30/90-day reports and corrected death-day units. [Protected checkpoint results](recovery-checkpoint-results.json) and [recovery](recovery.md) prove source-independent offline planning while keeping live recovery gates open.
+
+An editor preview does not replace the Third Party envelope test or physical display evidence. Apply the explicit D43 preview coverage decision and D46 waiver in [decisions](../decisions.md); do not describe waived evidence as passed or reopen it as a prerequisite.
 
 Review submission is prepared first. Account changes, reviewer contact, sending credentials, deployment and publication follow the user's authorization.

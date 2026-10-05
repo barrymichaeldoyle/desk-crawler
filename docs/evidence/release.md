@@ -1,37 +1,62 @@
-# Release preparation — 2026-10-04
+# Release preparation — 2026-10-05
 
-**Review submission is not ready to send.** Useful live evidence is complete, while the revised layout, recovery reconciliation and final reviewer video still have open checks. No submission, reviewer email, video publication or new production code deployment was performed in this preparation pass.
+**Submission preparation is substantially complete, but the application is not ready to send.** The recording/hosted video and listing updates remain open. Owner/sender and promotion answer are confirmed. Recovery and remaining live edge cases remain launch gates. This pass prepared local code, assets, tools and docs; it did not deploy, alter a listing, publish media or contact reviewers.
 
-| Artifact | Version / state |
+## Release identity
+
+| Artifact | Current deployed state | Local submission candidate |
+| --- | --- | --- |
+| Base source | `df3f8f6b9ee7e6dacd3c507ca51b4eeaec22a8ec` | Local changes on top, not deployed |
+| Hero schema / simulator / gameplay numbers | 1 / 1 / v2 tuning | Unchanged |
+| Active narrative/catalog | v4 | Unchanged |
+| TRMNL template / art | v24 / scene v4 | Unchanged; fictional marketing sample generated from these sources |
+| Plugin | 564, `desk_crawler`, Third Party, development | Review package prepared |
+| Companion | https://trmnlgames.com, `/app/desk-crawler` | Updated landing sample and help |
+| Backend | `exciting-cormorant-948` | No backend/schema changes in this preparation pass |
+
+The current deployed version is recorded in [log-spacing](log-spacing.md) and [scene-time](scene-time.md). Older v11/v12 checks are historical, not outstanding candidate work.
+
+## Verified evidence
+
+- New-domain install → Save → Configure → render → uninstall passed on 2026-10-04, preserving the original hero and installation (decisions revision 21).
+- Templates v24: all 120 local pages (15 states × four layouts × OG/X) were checked for text crossing the footer; all eight ordinary layouts and selected long-story captures were inspected ([spacing evidence](log-spacing.md)). D43 assigns layout/mashup coverage to previews.
+- The v24 installation server render succeeded at 14:18:36 UTC on 2026-10-05 (1,109 ms, 24.6 KB). Signed-in production companion and live X preview were inspected. This is not a new physical-display acceptance claim.
+- Daily production backups are configured with seven-day retention. The earlier isolated synthetic restore and replay checks are recorded in [recovery](recovery.md). A production test notice from alerts@trmnlgames.com has a Resend Delivered event; live retry exhaustion is still open.
+- Existing [100/1,000-hero capacity](capacity.md) and zero-payout forecasts remain the measured baseline; actual shared subscription headroom is unmeasured.
+- This preparation pass adds [current balance reporting](balance.md), protected offline recovery checkpoint tools and a [reconciliation runbook](../release/recovery-runbook.md). These do not claim a new cloud restore.
+- The [submission preparation evidence](submission-preparation.md) records current tests/build, browser checks and their limits.
+
+## Submission checklist
+
+| Item | State |
 | --- | --- |
-| Base production/source commit | `306ea3a`; local review changes uncommitted |
-| Hero schema / simulator / catalog | 1 / 1 / v2 |
-| Production template | v11 |
-| Candidate template | v12, generated locally; visual verification blocked |
-| Brand | simpler hero, sword and circular border; separate 16px favicon; TRMNL icon updated |
-| Plugin | 564, `desk_crawler`, Third Party / games / development |
-| Companion | https://trmnlgames.com (Desk Crawler under `/app/desk-crawler`) |
-| Production backend | `exciting-cormorant-948` |
+| Listing name, categories, lifecycle URLs and knowledge-base URL | Prepared in [review package](../release/review-package.md); verify saved listing before submission |
+| Description | 33-character description saved and verified on 2026-10-05: `A quiet office RPG for your TRMNL`; games + entertainment categories saved. Live editor currently allows 50 characters; published docs say 35 |
+| Featured image | [v24 candidate](../release/featured-image.png) prepared and visually inspected; upload/regenerate and verify actual install page still needed |
+| Install video | [Recording checklist](../release/recording-checklist.md) ready; first-signup recording and reviewer-accessible hosting still needed |
+| Reviewer testing | Supported reviewer-owned email/Google/GitHub signup documented; no owner credentials or auth bypass |
+| Review email | Draft updated for keepsakes and bag sleep; Barry confirmed owner/sender barry@barrymichaeldoyle.com and no promotion commitment. Video URL remains open |
+| Author entitlement | Developer Edition recorded under D37; confirm the account is licensed and not in a BYOD free trial |
+| Submit for Review and email | Not performed; explicit authorization required |
+| Creator Fund | Current public rules and zero-payout assessment recorded; ask TRMNL to confirm this Third Party game's eligibility/onboarding in the submission email |
 
-## Verified in this pass
+TRMNL's [current Going Live instructions](https://docs.trmnl.com/go/plugin-marketplace/going-live) require Submit for Review followed by an email with plugin ID, matching owner/sender, public benefit, installation video, testing access and promotion answer. [Plugin Creation](https://docs.trmnl.com/go/plugin-marketplace/plugin-creation) specifies a 35-character description.
 
-- Production companion responds and signed-in management works; plugin lifecycle/screen URLs target production.
-- Original installation timeline recorded a render at 11:12:47 SAST (1,222 ms, 21.4 KB) and delivery to Barry's TRMNL X at 11:22:18. A later render at 12:27:09 took 3,568 ms, 23.4 KB. Firmware 1.8.17, battery 82%, mixed playlist. Barry described the full-screen layout as decent and requested readability improvements.
-- [Fresh installation/manage/render/uninstall](install-demo/README.md) succeeded; original installation and hero preserved.
-- Production daily backups completed; corrected signed Clerk deletion webhook delivered successfully; [synthetic restore](recovery.md) and a deduplicated staging alert/recovery pair accepted by Resend.
-- [100/1,000-hero capacity](capacity.md) met run and screen latency targets; measured [zero-payout forecast](creator-fund.md).
-- `pnpm check`: all typechecks and 71 tests passed. `pnpm build`: client/Worker build passed, with existing TanStack `inputValidator` deprecation notices. Template v12 generated 88 HTML cases (11 states × four sizes × OG/X).
+## Launch gates still open
 
-## Display support and remaining checks
+| Gate | Remaining work |
+| --- | --- |
+| Independent post-snapshot deletion/revocation evidence | Approve and configure ongoing protected capture, reconcile its uncovered interval, apply denial evidence and prove an isolated live restore without source access. Offline capture/planning tests pass; live gate remains open |
+| Interrupted work and delivery failure | Restore in-flight scheduler/deletion/ranking work, replay command receipts, and exercise live alert failure/retry exhaustion safely |
+| Lifecycle/deletion edge cases | Expired/abandoned attempts, wrong owner, delayed callbacks, reinstall/returning-player credentials and provider-initiated deletion through real flows; automated coverage is supporting evidence |
+| Operational costs/health | Inspect actual subscription headroom and post-migration health; decide funding with zero assumed payouts |
+| Balance interpretation | Extended v4 reports are complete; early Cafeteria deaths and late upgrade saturation need an explicit tuning decision, not a silent numeric patch |
+| Marketplace approval | External review; submission does not establish approval or Creator Fund qualification |
 
-OG: 800×480, 1-bit local framework previews. TRMNL X: 1040×780 logical, 1872×1404 device, full-screen production delivery and Barry's feedback. Four layout sizes exist: full, half horizontal, half vertical, quadrant. The prior v11 local normal-state screenshots were inspected; v12's 88 generated pages have **not** been visually inspected. OG live rendered screenshots, latest half/quadrant mashups, theme/text-scale variants and outage behavior remain acceptance checks. Do not infer all-layout hardware acceptance from a full-screen delivery.
+Keep these gates visible even though the submission form does not request them. Approval can lead to soft launch.
 
-Before submission:
+## Waivers and display limits
 
-1. Visually verify v12 on OG/X and all four sizes, including maximum text and status/attention cases. Fix clipping and verify latest full/mashup delivery after an explicitly approved deploy. Automatic browser review currently blocks `http://127.0.0.1:4173` despite Barry's approval; TRMNL screenshot download was also rejected.
-2. Prove independent protected post-snapshot deletion/revocation reconciliation, restored in-flight work, live alert failure behavior and remaining lifecycle/outage matrix items described in the evidence. Existing automated tests do not replace these live gates.
-3. Update the stale marketplace featured image after final layout acceptance. Complete and host the installation demonstration; the current artifact is a returning-owner screenshot walkthrough.
-4. Confirm owner sender email and promotion answer in the [review email draft](../review-email.md). Ask TRMNL to confirm games/Third Party Creator Fund eligibility and payment onboarding; assume zero payouts meanwhile.
-5. Obtain explicit authorization for production deployment, video hosting, Submit for Review and sending the email. Pushing `main` runs the production deployment pipeline.
+D43 makes rendered previews the all-layout/mashup gate; Barry does not need to repeat each physical view. The D46 physical glance, real claim and post-claim checks were explicitly waived on 2026-10-05, not passed ([evidence](playlist-retention.md)); do not reopen them as submission prerequisites. Later v24 physical-screen readability remains unobserved. Theme/text-scale/outage behavior is not certified merely by an ordinary full-layout render.
 
-The [evidence checklist](README.md), [quality requirements](../quality.md) and confirmed decisions remain authoritative. This document records partial readiness rather than closing every release gate.
+No additional production deployment is necessary for the unchanged device templates in this pass. Publishing the new companion help/sample requires a separately approved push/deployment: `main` triggers the production Convex and Worker pipeline.

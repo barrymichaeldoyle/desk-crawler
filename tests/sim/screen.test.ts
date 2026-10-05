@@ -96,6 +96,13 @@ describe('rich text and status times (D45)', () => {
 })
 
 describe('log lines (D44)', () => {
+  it('shows potion acquisition beside the other changes in all four layouts', async () => {
+    const vars = payload()
+    for (const markup of Object.values(screenMarkup)) {
+      const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...vars, log: [{ n: 'Found a healing potion. Drank a potion.', s: 'Found a healing potion. Drank a potion.', k: 'loot', u: NOW / 1000, d: '+1 healing potion · +20 HP' }] })
+      expect(html.replace(/<[^>]+>/g, '')).toContain('+1 healing potion · +20 HP')
+    }
+  })
   it('shows each line with its glyph and owner-local HH:MM', async () => {
     const html = await render({ ...payload(), utc_offset: 7200 })
     expect(html).toContain('class="image no-shrink" src="data:image/svg+xml,')

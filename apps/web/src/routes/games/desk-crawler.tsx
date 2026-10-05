@@ -17,22 +17,17 @@ function Landing() {
         </p>
       </header>
 
-      <section aria-labelledby="sample-heading" className="overflow-hidden rounded-lg border-2 border-stone-900 bg-white text-stone-900 dark:border-stone-300">
+      <section aria-labelledby="sample-heading" className="flex flex-col gap-3">
+        <h2 id="sample-heading" className="font-display text-2xl font-bold">An adventure at a glance</h2>
         <img
-          src={`${import.meta.env.VITE_CONVEX_SITE_URL ?? ''}/art/scene/v3/server_room/fight/elite-legacy_mainframe/5.png`}
-          alt="Sample scene: the Warrior faces an elite Legacy Mainframe in the Server Room"
-          width={760}
-          height={200}
+          src="/games/desk-crawler/screen-sample.png"
+          alt="Example Desk Crawler screen: Pip explores the Server Room, with health, XP, equipment, adventure stories and weekly rankings."
+          width={800}
+          height={480}
           fetchPriority="high"
-          className="block w-full [image-rendering:pixelated]"
+          className="block w-full border border-stone-300 bg-white [image-rendering:pixelated] dark:border-stone-700"
         />
-        <div className="p-5 font-mono">
-          <h2 id="sample-heading" className="mb-3 text-sm text-stone-600 dark:text-stone-400">
-            Example screen
-          </h2>
-          <p className="text-xl font-bold">An elite Legacy Mainframe went offline for good. +64 XP, +15 gold.</p>
-          <p className="mt-2 text-sm">Steve, level 5. Exploring the Server Room. Rank 3 of 41 this week.</p>
-        </div>
+        <p className="text-sm text-stone-600 dark:text-stone-400">Illustrative hero and rankings. Your own adventure begins after you connect the plugin and click Save in TRMNL.</p>
       </section>
 
       <p className="text-stone-600 dark:text-stone-400">

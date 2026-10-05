@@ -25,3 +25,9 @@ Deferred verification (not claimed as passed):
 - Shared-worktree interaction smoke test. Concurrent weekly-keepsake changes were preserved; combined code checks now pass, but live query availability and rendered interaction remain unverified.
 
 The requested non-browser polish pass is complete under Barry's revised verification constraint. This is not visual/mobile certification or release approval. Existing installation, hardware, keepsake and marketplace gates are unchanged; templates and concurrent backend/simulator feature work were not edited by this pass. Nothing was deployed, published or reset.
+
+## Subsequent phone and interaction verification — 2026-10-05
+
+The later submission-preparation session successfully used an actual 390×844 Chrome viewport and permitted production/local navigation. This supersedes the earlier unavailable-browser result for the inspected cases; no previously rejected origin was accessed. Signed-in production Bag selection → sale review → cancel passed, including review focus and focus return. Settings and its disconnect confirmation fit the phone; cancellation completed without a disconnect. No sale, equipment change, pause, keepsake claim or deletion was submitted.
+
+Real Bag/Settings components with fictional queries supplied long-name, rare-sale and held-find cases. Phone light/dark screenshots and a desktop dark Bag capture showed wrapping and no horizontal overflow. Local candidate landing/help phone captures were inspected too. Exact matrix, reproduction, privacy and limitations are in [submission preparation](submission-preparation.md). Current `pnpm check` passes 29 files / 176 tests and all package typechecks; client/Worker production build passes. These checks close the specific deferred phone/focus inspections above, not the full live gameplay smoke matrix or release approval.

@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-05T19:43:44.846Z",
+  "kind": "offline synthetic CLI rehearsal",
+  "networkCalls": 0,
+  "sourceRemovedBeforePlanning": true,
+  "checkpointMode": "0600",
+  "planMode": "0600",
+  "deniedOwners": 1,
+  "deniedHeroes": 1,
+  "deniedInstances": 1,
+  "unaffectedOwnerAndHeroPreserved": true,
+  "servingMayResume": false,
+  "uncoveredWindowMs": 20,
+  "captureMs": 127,
+  "planMs": 70,
+  "cloudRestorePerformed": false
+}

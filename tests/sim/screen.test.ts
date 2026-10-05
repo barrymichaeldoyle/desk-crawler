@@ -19,7 +19,7 @@ const payload = () =>
     bagUsed: 3,
     bagCapacity: 30,
     heldItemName: null,
-    logs: [{ at: NOW - 60_000, kind: 'combat', summary: 'Unplugged a Cable Serpent. +14 XP, +5 gold.' }],
+    logs: [{ at: NOW - 60_000, kind: 'combat', summary: 'Unplugged a Cable Serpent. +14 XP, +5 gold.', deltas: { xpEarned: 14, gold: 5, hp: -12 } }],
     instanceName: 'Desk Crawler',
     content: contentV2,
     spriteBaseUrl: null,
@@ -84,7 +84,7 @@ describe('full layout', () => {
 describe('rich text and status times (D45)', () => {
   it('sets marked names in bold and keeps other text escaped', async () => {
     const vars = payload() as { log: Array<Record<string, unknown>> } & Record<string, unknown>
-    const html = await render({ ...vars, utc_offset: 0, log: [{ ...vars.log[0], s: 'Fed a [[Paper Imp]] to the <shredder>.' }] })
+    const html = await render({ ...vars, utc_offset: 0, log: [{ ...vars.log[0], n: 'Fed a [[Paper Imp]] to the <shredder>.' }] })
     expect(html).toContain('Fed a <span class="text--bold">Paper Imp</span> to the &lt;shredder&gt;.</span>')
   })
 
@@ -98,7 +98,7 @@ describe('rich text and status times (D45)', () => {
 describe('log lines (D44)', () => {
   it('shows each line with its glyph and owner-local HH:MM', async () => {
     const html = await render({ ...payload(), utc_offset: 7200 })
-    expect(html).toMatch(/<img class="image no-shrink" src="data:image\/svg\+xml,[^"]+" alt=""><span[^>]*><span class="text--regular">10:19&nbsp; Unplugged a Cable Serpent/)
+    expect(html).toMatch(/<img class="image no-shrink" src="data:image\/svg\+xml,[^"]+" alt=""><div[^>]*><span[^>]*><span class="text--regular">10:19&nbsp; Unplugged a Cable Serpent/)
   })
 
   it('leaves the time out without an offset', async () => {
@@ -109,7 +109,7 @@ describe('log lines (D44)', () => {
   it('clamps only text too long to fit, since the clamp drops bold', async () => {
     const vars = payload() as { log: Array<Record<string, unknown>> } & Record<string, unknown>
     const long = 'Sent an elite [[Microwave Wraith]] back to the kitchen. +188 XP, +57 gold. Reached level 12!'
-    const html = await render({ ...vars, utc_offset: 0, log: [{ ...vars.log[0], s: long }, { ...vars.log[0], s: 'Fed a [[Paper Imp]] to the shredder.' }] })
+    const html = await render({ ...vars, utc_offset: 0, log: [{ ...vars.log[0], n: long }, { ...vars.log[0], n: 'Fed a [[Paper Imp]] to the shredder.' }] })
     expect(html).toMatch(/data-clamp="2" data-clamp-lg="0"><span class="text--regular">\d\d:\d\d&nbsp; Sent an elite/)
     expect(html).toMatch(/data-clamp="0" data-clamp-lg="0"><span class="text--regular">\d\d:\d\d&nbsp; Fed a <span class="text--bold">Paper Imp<\/span>/)
   })
@@ -117,6 +117,26 @@ describe('log lines (D44)', () => {
   it('celebrates a big moment with a badge', async () => {
     expect(await render({ ...payload(), celebration: 'Level up! Now level 6' })).toMatch(/label--inverted">Level up! Now level 6</)
     expect(await render(payload())).not.toContain('label--inverted')
+  })
+
+  it('shows one separate stat row, including HP loss, in all four layouts', async () => {
+    const vars = payload()
+    for (const markup of Object.values(screenMarkup)) {
+      const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, vars)
+      const text = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ')
+      expect(text).toContain('Unplugged a Cable Serpent.')
+      expect(text).toContain('+14 XP · +5 gold · −12 HP')
+      expect(text).not.toContain('Serpent. +14')
+    }
+  })
+
+  it('keeps numeric changes outside narrative clamping and falls back for older payloads', async () => {
+    const vars = payload() as { log: Array<Record<string, unknown>> } & Record<string, unknown>
+    const html = await render({ ...vars, log: [{ ...vars.log[0], n: 'A very long story '.repeat(10) }] })
+    expect(html).toMatch(/<\/span><\/span><span class="label lg:title--small">\+14 XP · \+5 gold · −12 HP<\/span>/)
+    const old = await render({ ...vars, log: [{ s: 'Old story. +4 XP.', k: 'combat', u: NOW / 1000 }] })
+    expect(old).toContain('Old story. +4 XP.')
+    expect(old).not.toContain('undefined')
   })
 })
 

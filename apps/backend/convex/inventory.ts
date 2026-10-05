@@ -85,7 +85,7 @@ export const usePotion = mutation({
       else await ctx.db.patch(potion._id, { quantity: potion.quantity - 1 })
       const status = hero.status === 'resting' && hp * 100 >= max * constants.resumeExploringAtPct ? 'exploring' : hero.status
       await ctx.db.patch(hero._id, { hp, status })
-      await commandLog(ctx, hero, 'use_potion', `Drank a potion. +${hp - hero.hp} HP.`)
+      await commandLog(ctx, hero, 'use_potion', 'Drank a potion.', { xpEarned: 0, gold: 0, hp: hp - hero.hp })
       return { changed: true, hp }
     }),
 })
@@ -148,7 +148,7 @@ export const sell = mutation({
     await runIntent(ctx, args.operationId, 'inventory.sell', { itemId: args.itemId }, async (user) => {
       const hero = await requirePlayableHero(ctx, user)
       const { gold, items } = await sellItems(ctx, hero, [args.itemId])
-      await commandLog(ctx, (await ctx.db.get(hero._id))!, 'sell', `Sold the ${itemLabel(items[0]!)} for ${gold} gold.`)
+      await commandLog(ctx, (await ctx.db.get(hero._id))!, 'sell', `Sold the ${itemLabel(items[0]!)}.`, { xpEarned: 0, gold, hp: 0 })
       return { changed: true, gold, count: 1 }
     }),
 })
@@ -162,7 +162,7 @@ export const sellMany = mutation({
       if (args.itemIds.length < 1 || args.itemIds.length > 30) throw appError('INVALID_INPUT', 'Choose between 1 and 30 items.')
       const hero = await requirePlayableHero(ctx, user)
       const { gold } = await sellItems(ctx, hero, args.itemIds)
-      await commandLog(ctx, (await ctx.db.get(hero._id))!, 'sell_many', `Sold ${args.itemIds.length} items for ${gold} gold.`)
+      await commandLog(ctx, (await ctx.db.get(hero._id))!, 'sell_many', `Sold ${args.itemIds.length} items.`, { xpEarned: 0, gold, hp: 0 })
       return { changed: true, gold, count: args.itemIds.length }
     }),
 })

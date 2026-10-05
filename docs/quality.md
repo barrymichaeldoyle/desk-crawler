@@ -28,6 +28,7 @@ Select current compatible versions during foundation work. No application test s
 - 30-slot baseline, one held gear, full-potion pre-generation gold fallback, overflow sleep including rare, copied-stat claim, next-tick wake/no catch-up, sleep inventory operations and equipment swap, item ownership, deletion of depleted stack.
 - All weights total 100 (including new gear/potion/gold selection and fallback); every biome/monster/item ID resolves in its catalog version; older owned gear survives template retirement.
 - Logs reflect net HP/gold and earned XP correctly, newest-first order and length limits.
+- D48: all supported narrative catalogs remove displayed stat amounts without losing names/milestones/consequences; companion and all four device layouts show each nonzero delta once, including HP. Verify zero/net-positive HP with potion/level-up healing, death/retreat losses, legacy command compatibility, and sale/potion receipt retries. Stat rows remain visible outside narrative clamping and above the footer for ordinary/long/attention cases.
 
 ## Transaction and scheduler matrix
 

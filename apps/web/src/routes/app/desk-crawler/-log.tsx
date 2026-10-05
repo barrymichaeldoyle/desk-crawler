@@ -1,8 +1,7 @@
 import { usePaginatedQuery } from 'convex/react'
 import { useMemo, useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
-import { keepUnitsTogether } from '@trmnl-games/desk-crawler/payload'
-import { markedRuns } from '@trmnl-games/desk-crawler/sim/core/narrative'
+import { LogStory } from './-logStory'
 import { Button } from '../../../lib/ui'
 import { PixelIcon } from './-pixelIcon'
 
@@ -40,22 +39,6 @@ function group(entries: Entry[]) {
     else day.encounters.push({ key, at: entry.at, entries: [entry] })
   }
   return days
-}
-
-function Deltas({ deltas }: { deltas: Entry['deltas'] }) {
-  const parts = [
-    deltas.xpEarned ? `+${deltas.xpEarned} XP` : null,
-    deltas.gold ? `${deltas.gold > 0 ? '+' : '−'}${Math.abs(deltas.gold)} gold` : null,
-    deltas.hp ? `${deltas.hp > 0 ? '+' : '−'}${Math.abs(deltas.hp)} HP` : null,
-  ].filter(Boolean)
-  if (parts.length === 0) return null
-  return (
-    <ul className="mt-1 flex flex-wrap gap-x-3 text-xs font-semibold tabular-nums text-stone-600 dark:text-stone-400">
-      {parts.map((part) => (
-        <li key={part}>{part}</li>
-      ))}
-    </ul>
-  )
 }
 
 export function AdventureLog() {
@@ -106,10 +89,7 @@ export function AdventureLog() {
                       {encounter.entries.map((entry) => (
                         <li key={entry.id} className="flex gap-2">
                           <PixelIcon kind={entry.kind} className="mt-1" />
-                          <div className="min-w-0">
-                            <p>{markedRuns(keepUnitsTogether(entry.summary)).map((run, i) => (run.bold ? <strong key={i}>{run.text}</strong> : run.text))}</p>
-                            <Deltas deltas={entry.deltas} />
-                          </div>
+                          <LogStory entry={entry} />
                         </li>
                       ))}
                     </ul>

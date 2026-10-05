@@ -12,7 +12,8 @@
     "./content/*": "./src/content/*.ts",
     "./art/*": "./src/art/*.ts",
     "./templates/*": "./src/templates/*.ts",
-    "./payload": "./src/lib/payload.ts"
+    "./payload": "./src/lib/payload.ts",
+    "./log": "./src/lib/logPresentation.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

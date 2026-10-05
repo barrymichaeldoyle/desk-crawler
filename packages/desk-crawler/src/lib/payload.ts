@@ -9,6 +9,7 @@ import { QR_LARGE_SCALE, QR_SCALE, qrBasePath, qrPath, type QrTarget } from '../
 import { sceneFor, scenePath, type LatestEvent } from '../art/sceneKey'
 import { nextSlotAfter, slotEta, SLOT_MS } from '../sim/schedule'
 import { bold } from '../sim/core/narrative'
+import { logPresentation, type LogDeltas } from './logPresentation'
 
 export const STALE_AFTER_MS = 30 * 60 * 1000
 /** Newest-first log lines: the OG shows two or three, the X up to all of them. */
@@ -53,7 +54,7 @@ export interface PayloadInput {
   readonly bagUsed: number
   readonly bagCapacity: number
   readonly heldItemName: string | null
-  readonly logs: ReadonlyArray<{ readonly at: number; readonly kind: string; readonly summary: string }>
+  readonly logs: ReadonlyArray<{ readonly at: number; readonly kind: string; readonly summary: string; readonly deltas?: LogDeltas }>
   readonly instanceName: string | null
   readonly content: ContentCatalog
   readonly spriteBaseUrl: string | null
@@ -191,7 +192,10 @@ export function buildPayload(input: PayloadInput) {
   const stale = world === null ? false : now - (lastCompletedAt ?? world.createdAt) > STALE_AFTER_MS
   const servicePaused = world !== null && (world.ticksPaused || world.maintenanceMode)
   const gameAsOf = lastCompletedAt === undefined ? null : formatLocal(lastCompletedAt, input.timezone)
-  const logs = input.logs.slice(0, MAX_LOGS).map((log) => ({ at: iso(log.at), u: Math.floor(log.at / 1000), t: formatLocal(log.at, input.timezone).label, k: log.kind, s: keepUnitsTogether(log.summary) }))
+  const logs = input.logs.slice(0, MAX_LOGS).map((log) => {
+    const { narrative, changes } = logPresentation(log)
+    return { at: iso(log.at), u: Math.floor(log.at / 1000), t: formatLocal(log.at, input.timezone).label, k: log.kind, s: keepUnitsTogether(log.summary), n: keepUnitsTogether(narrative), d: keepUnitsTogether(changes.join(' · ')) }
+  })
 
   const common = {
     v: 1 as const,

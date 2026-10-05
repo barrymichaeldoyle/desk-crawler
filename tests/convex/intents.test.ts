@@ -53,6 +53,26 @@ describe('player intents', () => {
     expect(await errorCode(as(t, 'Ana').mutation(api.inventory.sell, { operationId: id, itemId: other! }))).toBe('OPERATION_CONFLICT')
   })
 
+  it('records sale and potion changes once, separately from command descriptions', async () => {
+    const heroId = await seedHero(t, { hp: 40 }, 'Ana')
+    const [itemId] = await addGear(t, heroId, 1)
+    const owner = as(t, 'Ana')
+    const saleOp = opId()
+    const sold = await owner.mutation(api.inventory.sell, { operationId: saleOp, itemId: itemId! })
+    await owner.mutation(api.inventory.sell, { operationId: saleOp, itemId: itemId! })
+    const potionOp = opId()
+    const potion = await owner.mutation(api.inventory.usePotion, { operationId: potionOp })
+    await owner.mutation(api.inventory.usePotion, { operationId: potionOp })
+    const logs = await t.run(async (ctx) => ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', heroId)).order('desc').take(10))
+    expect(logs).toHaveLength(2)
+    expect(logs[0]).toMatchObject({ summary: 'Drank a potion.', deltas: { xpEarned: 0, gold: 0, hp: potion.hp! - 40 } })
+    expect(logs[1]!.summary).not.toMatch(/\d+ gold/)
+    expect(logs[1]!.deltas).toEqual({ xpEarned: 0, gold: sold.gold, hp: 0 })
+    const preview = await owner.query(api.trmnlPayload.mine, { now: Date.now() })
+    expect(preview.log[0]).toMatchObject({ n: 'Drank a potion.', d: `+${potion.hp! - 40} HP` })
+    expect(preview.log[1].d).toBe(`+${sold.gold} gold`)
+  })
+
   it("refuses another owner's items and requires a signed-in active hero", async () => {
     const anaHero = await seedHero(t, {}, 'Ana')
     await seedHero(t, {}, 'Bo')

@@ -58,6 +58,12 @@ describe('log lines and celebrations (D44)', () => {
     expect(log[0]).toMatchObject({ u: (NOW - 900_000) / 1000, s: 'Fight 0.' })
   })
 
+  it('adds separate story and stat fields while preserving the legacy summary', () => {
+    const summary = 'Unplugged a [[Cable Serpent]]. +14 XP, +5 gold.'
+    const p = buildPayload({ ...input, logs: [{ at: NOW, kind: 'combat', summary, deltas: { xpEarned: 14, gold: 5, hp: -12 } }] })
+    expect(p.log[0]).toMatchObject({ s: 'Unplugged a [[Cable Serpent]]. +14 XP, +5 gold.', n: 'Unplugged a [[Cable Serpent]].', d: '+14 XP · +5 gold · −12 HP' })
+  })
+
   it('cheers the big moments only', () => {
     expect(celebrationFor({ kind: 'levelup' }, 6)).toBe('Level up! Now level 6')
     expect(celebrationFor({ kind: 'combat', outcome: { variant: 'combat', elite: true, outcome: 'victory' } }, 6)).toBe('Elite defeated!')

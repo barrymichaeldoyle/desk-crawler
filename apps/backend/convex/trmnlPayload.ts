@@ -5,7 +5,7 @@ import type { Doc } from './_generated/dataModel'
 import { currentUser } from './lib/intent'
 import { ACTIVE_CONTENT, catalogs } from '@trmnl-games/desk-crawler/content'
 import { bagGearCount } from '@trmnl-games/desk-crawler/sim/core/invariants'
-import { buildPayload, MAX_LOGS } from '@trmnl-games/desk-crawler/payload'
+import { buildPayload, MAX_LOGS, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
 import { readWorld } from './world'
 import { readDeviceRanking } from './lib/rankingRead'
 import { keepsakeCode, keepsakeGrant } from './lib/keepsakes'
@@ -59,7 +59,7 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
   let heldItemName: string | null = null
   let potions = 0
   let bagUsed = 0
-  let logs: Array<{ at: number; kind: string; summary: string }> = []
+  let logs: PayloadInput['logs'] = []
   let latestEvent: { kind: string; outcome?: { variant: string; [key: string]: unknown } } | null = null
   if (hero) {
     const items = await ctx.db
@@ -79,7 +79,7 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
       .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id))
       .order('desc')
       .take(MAX_LOGS)
-    logs = recent.map((log) => ({ at: log.at, kind: log.kind, summary: log.summary }))
+    logs = recent.map((log) => ({ at: log.at, kind: log.kind, summary: log.summary, deltas: log.deltas }))
     const newest = recent[0]
     if (newest) latestEvent = { kind: newest.kind, ...('outcome' in newest.detail ? { outcome: newest.detail.outcome } : {}) }
   }

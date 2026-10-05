@@ -80,7 +80,7 @@ export async function runIntent(
 }
 
 /** Append a short command log line for the hero (device and web history). */
-export async function commandLog(ctx: MutationCtx, hero: Doc<'heroes'>, operation: string, summary: string): Promise<void> {
+export async function commandLog(ctx: MutationCtx, hero: Doc<'heroes'>, operation: string, summary: string, deltas: Doc<'tickLogs'>['deltas'] = { xpEarned: 0, gold: 0, hp: 0 }): Promise<void> {
   const sequence = hero.logSequence + 1
   await ctx.db.patch(hero._id, { logSequence: sequence })
   await ctx.db.insert('tickLogs', {
@@ -91,6 +91,6 @@ export async function commandLog(ctx: MutationCtx, hero: Doc<'heroes'>, operatio
     kind: 'system',
     summary: summary.slice(0, 90),
     detail: { v: 1, operation },
-    deltas: { xpEarned: 0, gold: 0, hp: 0 },
+    deltas,
   })
 }

@@ -21,7 +21,9 @@ Artifacts identify date, environment, command/action and observed result. Scrub 
 
 [Playlist retention and narrative callbacks](playlist-retention.md) records the locally prepared D46/D47 additions, automated checks, companion review, device-footer previews and the still-open authorized deployment/live-render gate.
 
-[Separate story and stat changes](log-presentation.md) records D48's shared companion/device presentation, command deltas, compatibility checks and local layout verification. Deployment and live-render verification remain pending.
+[Separate story and stat changes](log-presentation.md) records D48's shared companion/device presentation, command deltas, compatibility checks, local layout verification and production release. The signed-in companion and live TRMNL preview are verified; physical-display acceptance remains unverified.
+
+[Log layout and name wrapping](log-layout.md) records D49's grouped names, time/change row, separators, centered device gear labels and local layout verification. This follow-up is not deployed.
 
 An editor preview does not replace the Third Party envelope test or physical display evidence. Unavailable evidence remains an unresolved gate in [decisions](../decisions.md).
 

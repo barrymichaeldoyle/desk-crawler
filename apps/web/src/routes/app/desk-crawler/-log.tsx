@@ -3,7 +3,6 @@ import { useMemo, useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { LogStory } from './-logStory'
 import { Button } from '../../../lib/ui'
-import { PixelIcon } from './-pixelIcon'
 
 type Entry = { id: string; at: number; tick: number | null; kind: string; summary: string; source: string; deltas: { xpEarned: number; gold: number; hp: number } }
 
@@ -81,14 +80,10 @@ export function AdventureLog() {
               <h3 className="sticky top-11 z-[1] border-b border-stone-900 bg-stone-50 py-2 text-sm font-bold dark:border-stone-300 dark:bg-stone-950">{day.label}</h3>
               <ol>
                 {day.encounters.map((encounter) => (
-                  <li key={encounter.key} className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-2 border-b border-stone-300 py-3 dark:border-stone-800">
-                    <time className="pt-0.5 text-sm tabular-nums text-stone-600 dark:text-stone-400" dateTime={new Date(encounter.at).toISOString()}>
-                      {new Date(encounter.at).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
-                    </time>
-                    <ul className="flex flex-col gap-2">
+                  <li key={encounter.key}>
+                    <ul>
                       {encounter.entries.map((entry) => (
-                        <li key={entry.id} className="flex gap-2">
-                          <PixelIcon kind={entry.kind} className="mt-1" />
+                        <li key={entry.id} className="border-b border-stone-300 py-3 dark:border-stone-700">
                           <LogStory entry={entry} />
                         </li>
                       ))}

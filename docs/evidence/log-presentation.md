@@ -1,6 +1,6 @@
 # Separate story and stat changes (D48)
 
-Local implementation verified on 2026-10-05. Deployment and a live TRMNL installation/render check remain pending; local browser previews do not close that gate.
+Deployed on 2026-10-05 following Barry's “deploy please”. Signed-in production companion and live TRMNL preview verified; installation server-render results are recorded below. Physical-display acceptance remains unverified; local browser previews do not close that gate.
 
 The companion and TRMNL templates v22 use one presentation mapper. Narrative omits numeric XP/gold/HP changes, and a separate row shows nonzero earned XP, net gold and net HP. HP includes automatic potion and level-up healing. Level numbers, unlocks, marked names and bag-full/potion consequences remain in the story. Existing simulator summaries/catalogs are unchanged. Additive payload fields `n`/`d` carry story/stats; `s` remains for older consumers, and v22 templates fall back to it when needed.
 
@@ -18,3 +18,11 @@ Validation:
 Local ignored artifacts: `.previews/log-ux-check.log`, `.previews/log-ux-build.log`, `.previews/log-ux-*.jpg` and the generated layout/companion HTML. The largest deliberately long preview story exceeds the simulator's usual summary budget and still leaves the newest stats visible.
 
 Layout tradeoff: X full/half-horizontal/half-vertical now show at most four/three/six stories. OG hides the secondary entry when attention, long newest copy or its own stats row would crowd the footer. Numerical changes sit outside narrative clamping. Quadrant retains its existing attention-message priority.
+
+Production release:
+
+- Commit `3d6d93c780ac5a7ee10bc1fb16d075eea2d44e83`, released through the existing `main` pipeline. [Workers Builds](https://dash.cloudflare.com/57fa9c5f2bc9dda93a108e887a81b419/workers/services/view/trmnl-games/production/builds/9d8d7998-c76d-4429-a278-3d473314711f) succeeded, deploying production Convex `exciting-cormorant-948` and the companion Worker. No migration, content activation or progress reset.
+- Worker deployment `42a1b49b-b7b7-45f5-b161-e6a60aae62e3` at 11:53:38 UTC serves version `d696afc2-cf0d-4f02-ab5e-342f2a77e169` at `trmnlgames.com` with 100% traffic.
+- Signed-in Baz companion: the historical expense claim reads “An old expense claim finally paid out.” with one `+2 gold` entry. Fight logs show the story followed by XP/gold/HP changes; rest/trap and legacy potion/sale entries show separate changes too.
+- The live owner TRMNL X full preview shows separate changes, including `+8 XP · +2 gold · −7 HP` for the 13:30 fight, without those amounts in the story. This verifies production payload presentation, not physical display acceptance.
+- Installation `495747` was refreshed once through its normal TRMNL UI. Its timeline reports 13:57:56 SAST (11:57:56 UTC): “Rendered — manual refresh · 821 ms · 26.4 KB”, after the production deployment. This confirms successful authenticated installation/server rendering. The rendered image and physical screen were not visually inspected.

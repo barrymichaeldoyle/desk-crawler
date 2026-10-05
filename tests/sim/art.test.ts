@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { parseScenePath, renderScenePng } from '@trmnl-games/desk-crawler/art/route'
-import { FULL_SCALE, LARGE_SCALE, MEDIUM_SCALE, SCENE_VERSION, SMALL_SCALE, STAGE_HEIGHT, STAGE_WIDTH } from '@trmnl-games/desk-crawler/art/scene'
+import { composeScene, FULL_SCALE, LARGE_SCALE, MEDIUM_SCALE, SCENE_VERSION, SMALL_SCALE, STAGE_HEIGHT, STAGE_WIDTH } from '@trmnl-games/desk-crawler/art/scene'
 import { sceneFor, scenePath } from '@trmnl-games/desk-crawler/art/sceneKey'
+import { sceneTimeAt, sceneUrlAt, sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
 import { monsterArt } from '@trmnl-games/desk-crawler/art/monsters'
 import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
 
@@ -19,9 +20,9 @@ describe('scene art', () => {
     for (const monster of contentV2.monsters) expect(monster.id in monsterArt).toBe(true)
   })
 
-  it('only serves allowlisted, current-version paths', () => {
+  it('serves allowlisted day/night paths and preserves v3 night URLs', () => {
     const good = scenePath('server_room', 'fight', { kind: 'monster', id: 'cable_serpent', elite: true }, FULL_SCALE)
-    expect(good).toBe(`/art/scene/v${SCENE_VERSION}/server_room/fight/elite-cable_serpent/${FULL_SCALE}.png`)
+    expect(good).toBe(`/art/scene/v${SCENE_VERSION}/server_room/day/fight/elite-cable_serpent/${FULL_SCALE}.png`)
     expect(parseScenePath(good)).not.toBeNull()
     for (const bad of [
       good.replace(`v${SCENE_VERSION}`, 'v0'),
@@ -29,8 +30,28 @@ describe('scene art', () => {
       good.replace('server_room', 'moon_base'),
       good.replace(`/${FULL_SCALE}.png`, '/9.png'),
       good.replace('fight', '../etc'),
+      good.replace('/day/', '/dusk/'),
+      good.replace('/day/', '/'),
+      good.replace(`v${SCENE_VERSION}`, 'v3'),
     ]) {
       expect(parseScenePath(bad)).toBeNull()
+    }
+    const night = scenePath('office_cubicles', 'idle', { kind: 'none' }, FULL_SCALE, 'night')
+    expect(parseScenePath(night)?.time).toBe('night')
+    const legacy = '/art/scene/v3/office_cubicles/idle/none/5.png'
+    expect(parseScenePath(legacy)?.time).toBe('night')
+    expect(renderScenePng(legacy)).toEqual(renderScenePng(night))
+  })
+
+  it('changes only the office window pixels between day and night', () => {
+    const day = composeScene('office_cubicles', 'fight', { kind: 'monster', id: 'paper_imp', elite: false }, 'day')
+    const night = composeScene('office_cubicles', 'fight', { kind: 'monster', id: 'paper_imp', elite: false }, 'night')
+    expect(day.ink).not.toEqual(night.ink)
+    for (let y = 0; y < STAGE_HEIGHT; y++) for (let x = 0; x < STAGE_WIDTH; x++) {
+      if (x < 6 || x >= 38 || y < 4 || y >= 18) expect(day.ink[y * STAGE_WIDTH + x]).toBe(night.ink[y * STAGE_WIDTH + x])
+    }
+    for (const biome of ['server_room', 'cafeteria_depths'] as const) {
+      expect(composeScene(biome, 'idle', { kind: 'none' }, 'day').ink).toEqual(composeScene(biome, 'idle', { kind: 'none' }, 'night').ink)
     }
   })
 
@@ -42,6 +63,37 @@ describe('scene art', () => {
       expect(view.getUint32(16)).toBe(STAGE_WIDTH * scale)
       expect(view.getUint32(20)).toBe(STAGE_HEIGHT * scale)
     }
+  })
+})
+
+describe('local scene time', () => {
+  it('uses local 06:00–18:00 boundaries, fractional offsets and midnight rollover', () => {
+    const at = (hour: number, minute = 0) => Date.UTC(2026, 9, 5, hour, minute)
+    expect(sceneTimeAt(at(5, 59), 0)).toBe('night')
+    expect(sceneTimeAt(at(6), 0)).toBe('day')
+    expect(sceneTimeAt(at(17, 59), 0)).toBe('day')
+    expect(sceneTimeAt(at(18), 0)).toBe('night')
+    expect(sceneTimeAt(at(4), 2 * 3600)).toBe('day')
+    expect(sceneTimeAt(at(16), 2 * 3600)).toBe('night')
+    expect(sceneTimeAt(at(0, 15), 5.75 * 3600)).toBe('day')
+    expect(sceneTimeAt(at(10), -4.5 * 3600)).toBe('night')
+    expect(sceneTimeAt(at(23), 2 * 3600)).toBe('night')
+    expect(sceneTimeAt(at(1), -4 * 3600)).toBe('night')
+    for (const offset of [null, NaN, Infinity, 14 * 3600 + 1, 0.5]) expect(sceneTimeAt(at(23), offset)).toBe('day')
+  })
+
+  it('selects all scales together without mutating the payload or legacy URLs', () => {
+    const url = (scale: number) => `https://example.test${scenePath('office_cubicles', 'fight', { kind: 'monster', id: 'paper_imp', elite: true }, scale)}`
+    const payload = Object.freeze({ scene_url: url(5), scene_url_small: url(2), scene_url_large: url(6), scene_url_medium: url(3), gold: 42 })
+    const local = sceneUrlsAt(payload, Date.UTC(2026, 9, 5, 16), 7200)
+    for (const key of ['scene_url', 'scene_url_small', 'scene_url_large', 'scene_url_medium'] as const) {
+      expect(local[key]).toBe(payload[key].replace('/day/', '/night/'))
+      expect(payload[key]).toContain('/day/')
+    }
+    expect(local.gold).toBe(42)
+    const legacy = '/art/scene/v3/office_cubicles/idle/none/5.png'
+    expect(sceneUrlAt(legacy, 'day')).toBe(legacy)
+    expect(sceneUrlAt('', 'night')).toBe('')
   })
 })
 

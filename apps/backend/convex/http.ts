@@ -4,6 +4,7 @@ import { httpAction } from './_generated/server'
 import { sha256Hex } from './lib/hash'
 import { verifySvix } from './lib/svix'
 import { renderScenePng } from '@trmnl-games/desk-crawler/art/route'
+import { sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
 import { DEFAULT_COMPANION_ORIGIN, renderQrPng } from '@trmnl-games/desk-crawler/art/qr'
 import { parseUtcOffset, screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
 
@@ -112,7 +113,8 @@ http.route({
     }
     if (result === null || result.outcome !== 'payload') return notFound()
     // TRMNL does not expose its `trmnl` metadata to third-party Liquid, so pass the owner's offset through (D42).
-    return json(200, { ...screenMarkup, merge_variables: { ...result.payload, desk_keepsake_code: result.keepsakeCode, utc_offset: parseUtcOffset(form.get('trmnl[user][utc_offset]')) } })
+    const utcOffset = parseUtcOffset(form.get('trmnl[user][utc_offset]'))
+    return json(200, { ...screenMarkup, merge_variables: { ...sceneUrlsAt(result.payload, now, utcOffset), desk_keepsake_code: result.keepsakeCode, utc_offset: utcOffset } })
   }),
 })
 

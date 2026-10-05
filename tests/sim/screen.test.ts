@@ -100,7 +100,7 @@ describe('log lines (D44)', () => {
     const html = await render({ ...payload(), utc_offset: 7200 })
     expect(html).toContain('class="image no-shrink" src="data:image/svg+xml,')
     expect(html).toMatch(/<span class="text--regular">Unplugged a Cable Serpent/)
-    expect(html).toMatch(/no-shrink w--10 lg:w--20">10:19<\/span><span[^>]*>\+14/)
+    expect(html).toMatch(/label lg:title--small no-shrink">10:19<\/span><span[^>]*>\+14/)
   })
 
   it('leaves the time out without an offset', async () => {
@@ -135,7 +135,7 @@ describe('log lines (D44)', () => {
   it('keeps numeric changes outside narrative clamping and falls back for older payloads', async () => {
     const vars = payload() as { log: Array<Record<string, unknown>> } & Record<string, unknown>
     const html = await render({ ...vars, log: [{ ...vars.log[0], n: 'A very long story '.repeat(10) }] })
-    expect(html).toMatch(/<\/span><\/div><div class="flex[^"]*"><span[^>]*><\/span><span class="label lg:title--small grow">\+14 XP · \+5 gold · −12 HP<\/span>/)
+    expect(html).toMatch(/<\/span><\/div><div class="flex[^"]*"><span class="label lg:title--small grow">\+14 XP · \+5 gold · −12 HP<\/span>/)
     const old = await render({ ...vars, log: [{ s: 'Old story. +4 XP.', k: 'combat', u: NOW / 1000 }] })
     expect(old).toContain('Old story. +4 XP.')
     expect(old).not.toContain('undefined')

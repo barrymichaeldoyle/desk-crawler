@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
+import { sceneTimeAt, sceneUrlAt, sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
 import { PREVIEW_DEVICES, PREVIEW_LAYOUTS, previewDocument, type PreviewDevice, type PreviewLayout } from '@trmnl-games/desk-crawler/templates/preview'
 
 const STORAGE_KEY = 'desk-crawler.preview'
@@ -56,6 +57,8 @@ export function DevicePreview({ sceneUrl, heroName }: { sceneUrl: string; heroNa
   const [failed, setFailed] = useState(false)
   const frame = useRef<HTMLDivElement>(null)
   const device = PREVIEW_DEVICES[choice.device]
+  const utcOffset = now === null ? null : -new Date(now).getTimezoneOffset() * 60
+  const localSceneUrl = sceneUrlAt(sceneUrl, sceneTimeAt(now ?? 0, utcOffset))
 
   useEffect(() => setChoice(remembered()), [])
 
@@ -70,19 +73,18 @@ export function DevicePreview({ sceneUrl, heroName }: { sceneUrl: string; heroNa
   }
 
   useEffect(() => {
-    if (!payload) return
+    if (!payload || now === null) return
     let cancelled = false
     void (async () => {
       const { engine, templates } = await getRenderer()
       // TRMNL renders in UTC and the screen route adds the owner's offset as `utc_offset`; the browser's offset stands in for the TRMNL setting here.
-      const utcOffset = -new Date().getTimezoneOffset() * 60
-      const inner = await engine.render(templates[choice.layout], { ...(payload as Record<string, unknown>), utc_offset: utcOffset })
+      const inner = await engine.render(templates[choice.layout], { ...sceneUrlsAt(payload, now, utcOffset), utc_offset: utcOffset })
       if (!cancelled) { setHtml(previewDocument(inner, choice.device, choice.layout, `${heroName} on ${device.label}`, { shadeOtherSlots: true })); setFailed(false) }
     })().catch(() => { if (!cancelled) { setFailed(true); setHtml(null) } })
     return () => {
       cancelled = true
     }
-  }, [payload, choice, heroName, device.label])
+  }, [payload, now, utcOffset, choice, heroName, device.label])
 
   useEffect(() => {
     const element = frame.current
@@ -97,7 +99,7 @@ export function DevicePreview({ sceneUrl, heroName }: { sceneUrl: string; heroNa
       <div className="rounded-[1.4rem] bg-stone-900 p-[clamp(0.5rem,2.5vw,1rem)] dark:bg-stone-700">
         <div ref={frame} className="relative overflow-hidden rounded-md bg-white" style={{ aspectRatio: `${device.width} / ${device.height}` }}>
           {/* Scene stand-in: also what screen readers get, since the iframe is decorative duplication of the page. */}
-          <img src={sceneUrl} alt={`${heroName}'s current scene`} width={760} height={200} decoding="async" className={`absolute inset-0 m-auto w-full [image-rendering:pixelated] transition-opacity duration-200 ${!payloadError && html && scale && loaded === html ? 'opacity-0' : 'opacity-100'}`} />
+          <img src={localSceneUrl} alt={`${heroName}'s current scene`} width={760} height={200} decoding="async" className={`absolute inset-0 m-auto w-full [image-rendering:pixelated] transition-opacity duration-200 ${!payloadError && html && scale && loaded === html ? 'opacity-0' : 'opacity-100'}`} />
           {!payloadError && html && scale ? (
             <iframe
               title={`TRMNL preview: ${PREVIEW_LAYOUTS[choice.layout].label} layout on ${device.label}`}

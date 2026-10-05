@@ -17,4 +17,8 @@ for (const [name, biome, pose, subject] of samples) {
   const { width, height, ink } = composeScene(biome, pose, subject).scaled(FULL_SCALE)
   writeFileSync(`${out}/${name}.png`, encodePng1Bit(width, height, ink))
 }
-console.log(`wrote ${samples.length} scenes to ${out}`)
+for (const time of ['day', 'night'] as const) {
+  const { width, height, ink } = composeScene('office_cubicles', 'idle', { kind: 'prop', id: 'chest' }, time).scaled(FULL_SCALE)
+  writeFileSync(`${out}/office-${time}.png`, encodePng1Bit(width, height, ink))
+}
+console.log(`wrote ${samples.length + 2} scenes to ${out}`)

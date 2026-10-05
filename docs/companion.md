@@ -16,6 +16,10 @@ Bag selections reconcile when gear is sold, equipped or held elsewhere, without 
 
 Actions report pending/error/success states, immediately guard duplicate submissions and retain their operation ID for an unknown-outcome retry within the backend's 24-hour receipt horizon. Offline views retain visible data, label it as the last available update and disable changes without queuing them. Loading uses static placeholders; query failures offer a page retry and support. The preview is loaded separately, reuses parsed Liquid templates, stops clock refreshes in hidden tabs and falls back to scene art if rendering fails. Its caption distinguishes a live game preview from the device's cached snapshot.
 
+The Office Cubicles window uses the browser's current local time: sun/clouds from 06:00 to before 18:00, moon/stars otherwise (D50). Both the rendered preview and fallback scene select the same sky, using the existing visible-page minute clock. TRMNL independently uses its configured timezone when it next renders, so a different timezone or a cached device snapshot can show a different sky. No timezone preference or gameplay change is introduced.
+
+Adventure log stories use a 16px icon column and an 8px gap (D51). The second row starts the time beneath the icon, with changes alongside it using an independent, intrinsic time width. This preserves one-line browser-local times without reserving that wider column beside the narrative. D49's separators and grouped marked names remain.
+
 Polish evidence and outstanding responsive verification: [companion polish](evidence/companion-polish.md). This does not replace installation/hardware release gates.
 
 Use semantic HTML, visible focus, labeled buttons, sufficient contrast, 44px touch targets, reduced-motion support and appropriate live-region messages for actions. No sound or nagging prompts. Specific visual comps are an implementation design task, not created in this planning phase.

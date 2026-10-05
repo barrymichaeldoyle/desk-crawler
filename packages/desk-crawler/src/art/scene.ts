@@ -2,10 +2,12 @@ import { Canvas, sprite, type Sprite } from './canvas'
 import { CLOAKED_POSES, heroCloak, heroPoses, type HeroPose } from './hero'
 import { monsterArt } from './monsters'
 import { eliteCrown, propArt, type PropId } from './props'
+import type { SceneTime } from './sceneTime'
+export { SCENE_VERSION } from './sceneTime'
 
 /**
  * Scene window composition (revision 12): biome backdrop + hero pose + the
- * latest encounter's subject, on a 190x50 pixel stage. Deterministic for a
+ * latest encounter's subject and local sky, on a 152x40 pixel stage. Deterministic for a
  * given key, so the image URL is cacheable.
  */
 export const STAGE_WIDTH = 152
@@ -22,8 +24,6 @@ const GROUND = 37
 const HERO_X = 24
 const SUBJECT_X = 92
 
-/** Bump whenever any art changes: scene URLs are immutable and cached. */
-export const SCENE_VERSION = 3
 export type BiomeArt = 'office_cubicles' | 'server_room' | 'cafeteria_depths'
 export type Subject = { kind: 'monster'; id: keyof typeof monsterArt; elite: boolean } | { kind: 'prop'; id: PropId } | { kind: 'none' }
 
@@ -41,6 +41,21 @@ const moon = sprite(`
 ##w
  ##w
   ###
+`)
+const sun = sprite(`
+   #
+ #   #
+  ###
+# #w# #
+  ###
+ #   #
+   #
+`)
+const cloud = sprite(`
+   ###
+ ###ww##
+#wwwwwww#
+ #######
 `)
 const torch = sprite(`
   #
@@ -85,12 +100,18 @@ const pot = sprite(`
 
 // ---------------------------------------------------------------- backdrops
 
-function office(c: Canvas): void {
-  // Night window with moon and stars: the office after hours.
+function office(c: Canvas, time: SceneTime): void {
+  // The window follows local day/night; the indoor stage stays the same.
   c.rect(4, 2, 36, 18, '#')
   c.rect(6, 4, 32, 14, 'w')
-  for (const [x, y] of [[8, 6], [16, 11], [24, 5], [9, 13]] as const) c.draw(star, x, y)
-  c.draw(moon, 28, 7)
+  if (time === 'night') {
+    for (const [x, y] of [[8, 6], [16, 11], [24, 5], [9, 13]] as const) c.draw(star, x, y)
+    c.draw(moon, 28, 7)
+  } else {
+    c.draw(sun, 28, 5)
+    c.draw(cloud, 8, 5)
+    c.draw(cloud, 11, 12)
+  }
   c.vline(22, 4, 17)
   c.hline(6, 37, 10)
   // Cubicle partition with a cork-board shade, monitor and plant.
@@ -153,7 +174,7 @@ function cafeteria(c: Canvas): void {
   for (const [x, y] of [[76, 15], [77, 13], [76, 11]] as const) c.paint(x, y, '#')
 }
 
-const BACKDROPS: Record<BiomeArt, (c: Canvas) => void> = { office_cubicles: office, server_room: serverRoom, cafeteria_depths: cafeteria }
+const BACKDROPS: Record<BiomeArt, (c: Canvas, time: SceneTime) => void> = { office_cubicles: office, server_room: serverRoom, cafeteria_depths: cafeteria }
 
 /** Draw a sprite with a 1px white halo so it stays legible over busy backdrops. */
 function drawWithHalo(c: Canvas, s: Sprite, left: number, top: number): void {
@@ -166,9 +187,9 @@ function drawWithHalo(c: Canvas, s: Sprite, left: number, top: number): void {
   c.draw(s, left, top)
 }
 
-export function composeScene(biome: BiomeArt, pose: HeroPose, subject: Subject): Canvas {
+export function composeScene(biome: BiomeArt, pose: HeroPose, subject: Subject, time: SceneTime = 'day'): Canvas {
   const c = new Canvas(STAGE_WIDTH, STAGE_HEIGHT)
-  BACKDROPS[biome](c)
+  BACKDROPS[biome](c, time)
   // Ground and a clear floor band.
   c.rect(0, GROUND, STAGE_WIDTH, 1, '#')
   c.rect(0, GROUND - 22, STAGE_WIDTH, 0, 'w')

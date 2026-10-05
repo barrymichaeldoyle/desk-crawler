@@ -9,6 +9,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { Liquid } from 'liquidjs'
 import { contentV3 } from '@trmnl-games/desk-crawler/content/v3'
 import { buildPayload, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
+import { sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
 import { screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
 import { PREVIEW_DEVICES, PREVIEW_LAYOUTS, previewDocument, type PreviewDevice, type PreviewLayout } from '@trmnl-games/desk-crawler/templates/preview'
 
@@ -70,8 +71,11 @@ const base: PayloadInput = {
 }
 
 const hero = (patch: Partial<NonNullable<PayloadInput['hero']>>) => ({ ...base.hero!, ...patch })
+const officeLogs: PayloadInput['logs'] = [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'Filed a [[Paper Imp]] under defeated. +6 XP, +2 gold.', deltas: { xpEarned: 6, gold: 2, hp: -4 } }]
 const states: Record<string, PayloadInput> = {
   normal: base,
+  officeDay: { ...base, hero: hero({ biomeId: 'office_cubicles' }), logs: officeLogs, latestEvent: { kind: 'combat', outcome: { variant: 'combat', monsterId: 'paper_imp', elite: false } } },
+  officeNight: { ...base, now: NOW + 12 * 3_600_000, world: { ...base.world!, lastCompletedAt: NOW + 12 * 3_600_000 - 7 * 60_000 }, hero: hero({ biomeId: 'office_cubicles' }), logs: officeLogs.map(log => ({ ...log, at: log.at + 12 * 3_600_000 })), latestEvent: { kind: 'combat', outcome: { variant: 'combat', monsterId: 'paper_imp', elite: false } } },
   expense: { ...base, logs: [{ at: NOW - 7 * 60_000, kind: 'loot', summary: 'An old expense claim finally paid out: 2 gold.', deltas: { xpEarned: 0, gold: 2, hp: 0 } }, ...base.logs] },
   elite: { ...base, latestEvent: { kind: 'combat', outcome: { variant: 'combat', monsterId: 'legacy_mainframe', elite: true, outcome: 'victory' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'Took down an elite [[Legacy Mainframe]]. The floor heard it. +64 XP, +15 gold.', deltas: { xpEarned: 64, gold: 15, hp: -42 } }, ...base.logs] },
   levelUp: { ...base, hero: hero({ level: 6, xp: 12 }), latestEvent: { kind: 'levelup', outcome: { variant: 'combat', monsterId: 'cable_serpent', elite: false, outcome: 'victory' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'levelup', summary: 'Unplugged a [[Cable Serpent]]. +15 XP, +5 gold. Reached level 6!', deltas: { xpEarned: 15, gold: 5, hp: 8 } }, ...base.logs] },
@@ -96,7 +100,7 @@ const states: Record<string, PayloadInput> = {
 mkdirSync('.previews', { recursive: true })
 let written = 0
 for (const [name, input] of Object.entries(states)) {
-  const payload = buildPayload(input) as unknown as Record<string, unknown>
+  const payload = sceneUrlsAt(buildPayload(input), input.now, utcOffset)
   for (const layout of Object.keys(PREVIEW_LAYOUTS) as PreviewLayout[]) {
     const inner = await liquid.parseAndRender(screenMarkup[layout], { ...payload, desk_keepsake_code: name === 'unlinked' ? null : deskKeepsakeCode, utc_offset: utcOffset })
     for (const device of Object.keys(PREVIEW_DEVICES) as PreviewDevice[]) {

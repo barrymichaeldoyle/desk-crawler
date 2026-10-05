@@ -23,7 +23,11 @@ Artifacts identify date, environment, command/action and observed result. Scrub 
 
 [Separate story and stat changes](log-presentation.md) records D48's shared companion/device presentation, command deltas, compatibility checks, local layout verification and production release. The signed-in companion and live TRMNL preview are verified; physical-display acceptance remains unverified.
 
-[Log layout and name wrapping](log-layout.md) records D49's grouped names, time/change row, separators, centered device gear labels and local layout verification. This follow-up is not deployed.
+[Log layout and name wrapping](log-layout.md) records D49's grouped names, time/change row, separators, centered device gear labels and production release. Signed-in companion, live TRMNL preview and post-deployment installation rendering are verified; physical-display acceptance remains unverified.
+
+[Local day/night window](scene-time.md) records D50's daytime artwork, timezone selection, immutable image compatibility and local checks. Deployment and live installation rendering remain pending.
+
+[Compact log spacing](log-spacing.md) records D51's narrower story gutters, independent time/stat widths and local companion/device layout checks. It is prepared alongside D50 and not deployed.
 
 An editor preview does not replace the Third Party envelope test or physical display evidence. Unavailable evidence remains an unresolved gate in [decisions](../decisions.md).
 

@@ -6,7 +6,7 @@ import { LogStory } from '../../apps/web/src/routes/app/desk-crawler/-logStory'
 it('renders the expense story and reward once, in distinct elements', () => {
   const html = renderToStaticMarkup(createElement(LogStory, { entry: { at: Date.UTC(2026, 9, 5, 11, 30), kind: 'loot', summary: 'An old expense claim finally paid out: 2 gold.', deltas: { xpEarned: 0, gold: 2, hp: 0 } } }))
   expect(html).toContain('<p>An old expense claim finally paid out.</p>')
-  expect(html).toMatch(/<\/p><time[^>]*dateTime="2026-10-05T11:30:00.000Z"[^>]*>[^<]+<\/time><ul/)
+  expect(html).toMatch(/<\/p><\/div><div[^>]*><time[^>]*dateTime="2026-10-05T11:30:00.000Z"[^>]*>[^<]+<\/time><ul/)
   expect(html.match(/2 gold/g)).toHaveLength(1)
 })
 

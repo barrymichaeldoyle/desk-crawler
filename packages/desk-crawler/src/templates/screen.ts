@@ -7,7 +7,7 @@
  */
 import { GLYPHS, glyphRows } from '../art/glyphs'
 
-export const TEMPLATE_VERSION = 23
+export const TEMPLATE_VERSION = 24
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -116,7 +116,7 @@ const rich = (expr: string) => `{{ ${expr} | escape | replace: "[[", '<span clas
  */
 const richSpan = (content: string) => `<span class="text--regular">${content}</span>`
 
-/** Story above its metadata; the icon and owner-local time share the left gutter. */
+/** Story above its metadata; the icon and time start at the same left edge. */
 const storyText = richSpan(rich('line_story'))
 
 /** Status with a real time when it has one ("Knocked out, back at 12:30"); otherwise the self-contained label. */
@@ -132,9 +132,9 @@ const fitClamp = (plain: string, clamp: number, fit: number) =>
 
 const plainOf = (expr: string) => `${expr} | replace: "[[", "" | replace: "]]", ""`
 
-/** One log line: glyph, time and story, wrapping beside the icon. `fit`: OG characters that fit in `clamp` lines. */
+/** Story uses an icon-sized gutter; metadata has its own intrinsic time width. `fit`: OG character budget. */
 const logLine = (entry: string, classes: string, clamp: number, size: number, fit: number, wrapper = 'flex') =>
-  `{% assign line_story = ${entry}.n | default: ${entry}.s %}{% assign line_plain = ${plainOf('line_story')} %}<div class="${wrapper} flex--col flex--left flex--stretch-x stretch-x gap--xsmall">${entry === 'log[0]' ? '' : '<div class="border--h-30 stretch-x"></div>'}<div class="flex flex--row flex--left flex--top gap--xsmall"><div class="no-shrink w--10 lg:w--20">${logIcon(`${entry}.k`, size)}</div><span class="${classes} grow" ${fitClamp('line_plain', clamp, Math.max(0, fit - 10))}>${storyText}</span></div>{% if utc_offset != nil or ${entry}.d != nil and ${entry}.d != "" %}<div class="flex flex--row flex--left flex--top gap--xsmall"><span class="label lg:title--small no-shrink w--10 lg:w--20">{% if utc_offset != nil %}{{ ${entry}.u | plus: utc_offset | date: "%H:%M" }}{% endif %}</span>{% if ${entry}.d != nil and ${entry}.d != "" %}<span class="label lg:title--small grow">{{ ${entry}.d | escape }}</span>{% endif %}</div>{% endif %}</div>`
+  `{% assign line_story = ${entry}.n | default: ${entry}.s %}{% assign line_plain = ${plainOf('line_story')} %}<div class="${wrapper} flex--col flex--left flex--stretch-x stretch-x gap--xsmall">${entry === 'log[0]' ? '' : '<div class="border--h-30 stretch-x"></div>'}<div class="flex flex--row flex--left flex--top gap--xsmall"><div class="no-shrink">${logIcon(`${entry}.k`, size)}</div><span class="${classes} grow" ${fitClamp('line_plain', clamp, Math.max(0, fit - 10))}>${storyText}</span></div>{% if utc_offset != nil or ${entry}.d != nil and ${entry}.d != "" %}<div class="flex flex--row flex--left flex--top gap--xsmall">{% if utc_offset != nil %}<span class="label lg:title--small no-shrink">{{ ${entry}.u | plus: utc_offset | date: "%H:%M" }}</span>{% endif %}{% if ${entry}.d != nil and ${entry}.d != "" %}<span class="label lg:title--small grow">{{ ${entry}.d | escape }}</span>{% endif %}</div>{% endif %}</div>`
 
 const newestStory = (clamp: number, classes: string, size = 16, fit = 60) => `
       {% if log.size > 0 %}${logLine('log[0]', classes, clamp, size, fit)}{% else %}<span class="${classes}">The first adventure starts soon.</span>{% endif %}`

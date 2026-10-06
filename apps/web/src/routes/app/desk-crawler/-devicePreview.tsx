@@ -116,7 +116,8 @@ export function DevicePreview({ sceneUrl, heroName }: { sceneUrl: string; heroNa
           {!payloadError && loaded && loaded === html ? <div key={loaded} aria-hidden="true" className="pointer-events-none absolute inset-0 animate-[eink-refresh_420ms_steps(6,end)_both]" /> : null}
         </div>
       </div>
-      <figcaption className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+      <figcaption className="text-sm text-muted">
+        {/* Two fixed rows (layout, then device) so the controls never reflow and the stand-in can reserve their height. */}
         <div role="group" aria-label="Preview layout" className="flex border-2 border-edge">
           {LAYOUTS.map((layout) => (
             <button
@@ -124,32 +125,33 @@ export function DevicePreview({ sceneUrl, heroName }: { sceneUrl: string; heroNa
               type="button"
               aria-pressed={choice.layout === layout}
               onClick={() => choose({ layout })}
-              className="menu-cursor flex min-h-11 items-center px-3 text-sm font-semibold text-muted not-last:border-r-2 not-last:border-edge hover:text-ink aria-pressed:bg-navy aria-pressed:text-gold"
+              className="menu-cursor flex min-h-11 flex-1 items-center justify-center px-2 font-semibold text-muted not-last:border-r-2 not-last:border-edge hover:text-ink aria-pressed:bg-navy aria-pressed:text-gold"
             >
               {PREVIEW_LAYOUTS[layout].label}
             </button>
           ))}
         </div>
-        <div role="group" aria-label="Preview device" className="flex gap-3 text-sm">
+        <div role="group" aria-label="Preview device" className="mt-2 flex flex-wrap gap-x-5 pl-0.5">
           {DEVICES.map((key) => (
             <button
               key={key}
               type="button"
               aria-pressed={choice.device === key}
               onClick={() => choose({ device: key })}
-              className="min-h-11 px-1 text-muted menu-cursor inline-flex items-center hover:text-ink aria-pressed:font-semibold aria-pressed:text-gold-ink"
+              className="menu-cursor inline-flex min-h-11 items-center text-muted hover:text-ink aria-pressed:font-semibold aria-pressed:text-gold-ink"
             >
               {PREVIEW_DEVICES[key].label}
             </button>
           ))}
         </div>
-      </figcaption>
-      {failed || payloadError || choice.layout !== 'markup' ? (
-        <p className="text-sm text-muted">
-          {failed || payloadError ? 'Preview unavailable, so this is the current scene instead.' : null}
-          {choice.layout === 'markup' ? null : ' Shaded areas are your other plugins.'}
+        <p className="mt-3">
+          {failed || payloadError
+            ? 'Preview unavailable, so this is the current scene instead.'
+            : choice.layout === 'markup'
+              ? 'A live render of your TRMNL screen.'
+              : 'A live render of your TRMNL screen. Shaded areas are your other plugins.'}
         </p>
-      ) : null}
+      </figcaption>
     </figure>
   )
 }

@@ -53,7 +53,7 @@ export function AdventureLog() {
         <h2 id="log-title" className="font-display text-3xl font-bold">
           Quest log
         </h2>
-        <div role="group" aria-label="Filter adventure log" className="-mx-1 flex flex-wrap">
+        <div role="group" aria-label="Filter adventure log" className="-mx-1.5 flex flex-wrap">
           {FILTERS.map((item) => (
             <button
               key={item.key}
@@ -69,9 +69,20 @@ export function AdventureLog() {
       </div>
 
       {status === 'LoadingFirstPage' ? (
-        <p role="status" className="mt-3 text-muted">
-          Reading the log…
-        </p>
+        <div role="status" aria-label="Reading the log" className="mt-2 flex flex-col">
+          <p aria-hidden="true" className="py-2 label-px text-muted">Today</p>
+          <ol aria-hidden="true" className="flex flex-col gap-2 pb-3">
+            {[0, 1, 2].map((row) => (
+              <li key={row} className="window grid min-h-[4.75rem] grid-cols-[2rem_minmax(0,1fr)] items-start gap-x-3 px-3 py-2.5">
+                <span className="size-8 bg-raised" />
+                <span className="flex flex-col gap-2 pt-1">
+                  <span className={`h-4 bg-raised ${row === 1 ? 'w-3/5' : 'w-4/5'}`} />
+                  <span className="h-3 w-24 bg-raised" />
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
       ) : days.length === 0 ? (
         <p className="mt-3 text-muted">{filter === 'all' ? 'Nothing logged yet.' : 'No entries of this kind loaded.'}</p>
       ) : (

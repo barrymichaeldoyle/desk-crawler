@@ -70,7 +70,7 @@ function SignedInApp() {
               <Link
                 to={item.to}
                 activeOptions={{ exact: true }}
-                className="menu-cursor flex min-h-13 items-center justify-center text-hud-sm text-muted hover:text-ink aria-[current=page]:text-gold-ink"
+                className="menu-cursor flex min-h-13 items-center justify-center text-[0.625rem] text-muted hover:text-ink aria-[current=page]:text-gold-ink aria-[current=page]:shadow-[inset_0_-4px_0_var(--color-gold)] max-sm:before:hidden sm:text-hud-sm"
               >
                 {item.label}
               </Link>

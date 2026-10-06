@@ -26,7 +26,8 @@ type Summary = {
 export function ReturnRecap() {
   const { data, refetch } = useQuery(convexQuery(api.heroes.returnSummary, {}))
   const record = useMutation(api.heroes.recordCompanionVisit)
-  const [shown, setShown] = useState<Summary | null>(null)
+  // Seeded from the preloaded query so the tally is in the server render instead of appearing after hydration.
+  const [shown, setShown] = useState<Summary | null>(() => (data as Summary | undefined) ?? null)
   const acknowledged = useRef(false)
   const retries = useRef(0)
 

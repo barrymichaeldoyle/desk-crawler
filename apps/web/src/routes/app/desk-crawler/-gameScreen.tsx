@@ -1,4 +1,5 @@
-import { usePaginatedQuery } from 'convex/react'
+import { convexQuery } from '@convex-dev/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { api } from '@trmnl-games/backend/api'
 import { keepUnitsTogether } from '@trmnl-games/desk-crawler/payload'
 import { markedRuns } from '@trmnl-games/desk-crawler/sim/core/narrative'
@@ -6,11 +7,15 @@ import { logPresentation, type LogDeltas } from '@trmnl-games/desk-crawler/log'
 import { artUrl } from '../../../lib/intent'
 import { changeTone } from './-logStory'
 
-/** Gain chips: the stat's colour as a fill, night text on top. */
-const CHIP_FILL: Record<string, string> = { 'text-xp-ink': 'bg-xp', 'text-hp-ink': 'bg-hp-ink', 'text-gold-ink': 'bg-gold', 'text-rare-ink': 'bg-rare-ink', 'text-muted': 'bg-muted' }
 import { BIOME_BANDS } from '../../../lib/palette'
 import { PixelIcon } from './-pixelIcon'
 import { usePulse, type PulseHero } from './-pulse'
+
+/** Gain chips: the stat's colour as a fill, night text on top. */
+const CHIP_FILL: Record<string, string> = { 'text-xp-ink': 'bg-xp', 'text-hp-ink': 'bg-hp-ink', 'text-gold-ink': 'bg-gold', 'text-rare-ink': 'bg-rare-ink', 'text-muted': 'bg-muted' }
+
+/** The newest log entry, as one bounded page. Preloaded by the hero route so the dialogue strip is complete in the server render. */
+export const latestLogQuery = () => convexQuery(api.heroes.recentLog, { paginationOpts: { numItems: 1, cursor: null } })
 
 const HEARTS = 10
 const FALLBACK_BANDS = BIOME_BANDS.office_cubicles!
@@ -81,7 +86,7 @@ export function GameScreen({ hero }: { hero: ScreenHero }) {
           {pulse.countdown ? (
             <p className="border-[3px] border-night bg-night/85 px-3 py-2 label-px" aria-live="off">
               Next adventure
-              <span className="hud block text-sm text-xp-ink">{pulse.countdown}</span>
+              <span className="hud block min-w-[5ch] text-sm text-xp-ink">{pulse.countdown}</span>
             </p>
           ) : null}
         </div>
@@ -97,9 +102,10 @@ export function GameScreen({ hero }: { hero: ScreenHero }) {
         <img src={artUrl(hero.scenePath)} alt={`${hero.name}: ${pulse.sentence}`} width={760} height={200} className="relative block h-[160px] w-full object-cover object-[41%_50%] mix-blend-multiply [image-rendering:pixelated] sm:h-auto sm:pt-[9.5rem] lg:mx-auto lg:w-[1064px] lg:pt-28" />
       </div>
 
-      <div className="relative z-10 flex items-start gap-3 border-t-4 border-night bg-cream py-3 pr-9 pl-3 text-night sm:pl-4">
+      {/* Reserved for the status line plus one detail line, so the strip holds its height while the log loads. */}
+      <div className="relative z-10 flex min-h-[4.25rem] items-start gap-3 border-t-4 border-night bg-cream py-3 pr-9 pl-3 text-night sm:pl-4">
         <PixelIcon kind={pulse.glyph} plain className="mt-0.5 text-night" />
-        <p className="min-w-0">
+        <p className="min-w-0 flex-1">
           <span className="hud block text-hud-sm">{pulse.sentence}</span>
           {pulse.detail ? <span className="mt-1 block text-sm text-[#3a3566]">{pulse.detail}</span> : null}
           <LatestEvent />
@@ -115,10 +121,10 @@ export function GameScreen({ hero }: { hero: ScreenHero }) {
 
 type LogEntry = { kind: string; summary: string; deltas: LogDeltas }
 
-/** The newest log line and its gains, in the dialogue strip. One bounded page of one entry. */
+/** The newest log line and its gains, in the dialogue strip. */
 function LatestEvent() {
-  const { results } = usePaginatedQuery(api.heroes.recentLog, {}, { initialNumItems: 1 })
-  const latest = (results as LogEntry[])[0]
+  const { data } = useQuery(latestLogQuery())
+  const latest = ((data as { page?: LogEntry[] } | undefined)?.page ?? [])[0]
   if (!latest) return null
   const { narrative, changes } = logPresentation(latest)
   const gains = changes.filter((part) => part !== 'No effect')

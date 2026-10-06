@@ -38,6 +38,9 @@ export const Route = createRootRouteWithContext<{
       { name: 'twitter:card', content: 'summary_large_image' },
     ],
     links: [
+      // Both pixel faces are small latin subsets; preloading them keeps HUD text from reflowing when they swap in.
+      { rel: 'preload', href: '/fonts/press-start-2p-latin.woff2', as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
+      { rel: 'preload', href: '/fonts/pixelify-sans-latin.woff2', as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
       { rel: 'stylesheet', href: appCss },
       { rel: 'icon', href: '/favicon.ico', sizes: '16x16 32x32' },
       { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
@@ -46,8 +49,11 @@ export const Route = createRootRouteWithContext<{
     ],
   }),
   beforeLoad: async (ctx) => {
+    // The session only matters for SSR, where it authenticates this request's Convex HTTP client.
+    // In the browser the Convex socket is already signed in through Clerk, so client-side
+    // navigations skip the server round trip that would otherwise delay every tab change.
+    if (!import.meta.env.SSR) return { userId: null, token: null }
     const { userId, token } = await fetchClerkAuth()
-    // During SSR, authenticate this request's Convex HTTP client only.
     if (token) ctx.context.convexQueryClient.serverHttpClient?.setAuth(token)
     return { userId, token }
   },

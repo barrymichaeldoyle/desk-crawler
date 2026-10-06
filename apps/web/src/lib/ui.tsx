@@ -41,7 +41,9 @@ export function LoadingState({ label = 'Loading…' }: { label?: string }) {
 }
 
 export function ActionFeedback({ error, message }: { error: string | null; message: string | null }) {
-  return <><ErrorNote message={error} /><p role="status" className="text-sm font-semibold">{error ? '' : message}</p></>
+  // While empty the status line leaves the flow (no stray flex gap under a row of buttons) but stays
+  // in the DOM, so the live region exists before a message arrives and screen readers announce it.
+  return <><ErrorNote message={error} /><p role="status" className="text-sm font-semibold empty:absolute">{error ? '' : message}</p></>
 }
 
 const METER_FILL = { hp: 'bg-hp', xp: 'bg-xp', gold: 'bg-gold', sky: 'bg-sky' } as const

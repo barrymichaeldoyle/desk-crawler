@@ -9,7 +9,7 @@ import { ActionFeedback, Button, Card, LoadingState } from '../../../lib/ui'
 import { preload } from '../../../lib/preload'
 import { DeskKeepsakes } from './-keepsakes'
 
-export const Route = createFileRoute('/app/desk-crawler/settings')({ head: () => seo({ title: 'Settings', index: false }), loader: ({ context }) => preload(context, convexQuery(api.users.me, {}), convexQuery(api.heroes.mine, {}), convexQuery(api.connections.mine, {})), component: Settings })
+export const Route = createFileRoute('/app/desk-crawler/settings')({ head: () => seo({ title: 'Settings', index: false }), loader: ({ context }) => preload(context, convexQuery(api.users.me, {}), convexQuery(api.heroes.mine, {}), convexQuery(api.connections.mine, {}), convexQuery(api.keepsakes.mine, {})), component: Settings })
 
 function Settings() {
   const { data: me } = useQuery(convexQuery(api.users.me, {}))

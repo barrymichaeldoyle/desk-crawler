@@ -60,7 +60,10 @@ export function usePulse(hero: PulseHero): { glyph: string; sentence: string; de
   const now = useNow()
   const world = hero.world
   let detail: string | null = null
-  let next: string | null = null
+  // The HUD's next-adventure box is reserved whenever adventures are scheduled, so it never
+  // appears or vanishes on hydration: the server render shows a blank clock in its place.
+  const scheduled = hero.simulationState !== 'quarantined' && !world?.paused && world !== null && hero.status !== 'paused' && hero.status !== 'sleeping'
+  let next: string | null = scheduled ? '--:--' : null
   if (hero.simulationState === 'quarantined') detail = 'Paused for a service check.'
   else if (world?.paused) detail = 'Paused for maintenance.'
   else if (now !== null && world) {
@@ -74,7 +77,7 @@ export function usePulse(hero: PulseHero): { glyph: string; sentence: string; de
     else if (running && now - slot < 5 * 60_000) detail = 'Adventuring now…'
     else if (hero.status === 'travelling' && ticksTo(hero.arriveAtTick)) detail = `Arrives about ${clock(slotEta(now, ticksTo(hero.arriveAtTick)!))}`
     else if (hero.status === 'dead' && ticksTo(hero.reviveAtTick)) detail = `Back on their feet about ${clock(slotEta(now, ticksTo(hero.reviveAtTick)!))}`
-    else next = countdown(nextSlotAfter(now) - now)
+    if (scheduled) next = running && now - slot < 5 * 60_000 ? 'Now' : countdown(nextSlotAfter(now) - now)
   }
   return { glyph: STATUS_GLYPH[hero.status] ?? 'system', sentence: sentence(hero), detail, countdown: next }
 }

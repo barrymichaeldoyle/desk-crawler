@@ -1,5 +1,5 @@
 import { convexQuery } from '@convex-dev/react-query'
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
@@ -22,7 +22,8 @@ const groupLabel = (key: string) => (key === 'all' ? 'All heroes' : `Levels ${ke
 function Leaderboard() {
   const [board, setBoard] = useState<Board>('recent_7d')
   const [cohortKey, setCohortKey] = useState<string | undefined>(undefined)
-  const { data } = useQuery(convexQuery(api.leaderboard.view, { board, ...(cohortKey ? { cohortKey } : {}) }))
+  // The previous board stays while the next one loads, so switching period or group never collapses to a skeleton.
+  const { data, isPlaceholderData } = useQuery({ ...convexQuery(api.leaderboard.view, { board, ...(cohortKey ? { cohortKey } : {}) }), placeholderData: keepPreviousData })
   const { data: hero } = useQuery(convexQuery(api.heroes.mine, {}))
   const ownGroup = data?.ownCohortKey ?? (hero ? levelGroup(hero.level).key : '1-3')
   const groups = [...new Set(['1-3', '4-7', '8-11', ownGroup, ...(cohortKey ? [cohortKey] : [])])]
@@ -46,7 +47,7 @@ function Leaderboard() {
           </button>
         ))}
       </div>
-      {board !== 'overall' ? <label className="flex flex-wrap items-center gap-3 text-sm"><span className="font-semibold">Level group</span><select value={cohortKey ?? ownGroup} onChange={(event) => setCohortKey(event.target.value === ownGroup ? undefined : event.target.value)} className="pixel-select min-h-11 flex-1 border-2 border-edge px-3 text-base sm:flex-none">{groups.map((key) => <option key={key} value={key}>{groupLabel(key)}{key === ownGroup ? ' (your group)' : ''}</option>)}</select></label> : null}
+      {board !== 'overall' ? <label className="flex flex-wrap items-center gap-3 text-sm"><span className="font-semibold">Level group</span><select value={cohortKey ?? ownGroup} onChange={(event) => setCohortKey(event.target.value === ownGroup ? undefined : event.target.value)} className="pixel-select min-h-11 flex-1 border-2 border-edge pr-9 pl-3 text-base sm:flex-none">{groups.map((key) => <option key={key} value={key}>{groupLabel(key)}{key === ownGroup ? ' (your group)' : ''}</option>)}</select></label> : null}
       {!data ? (
         <LoadingState label="Loading rankings…" />
       ) : !data.published ? (
@@ -54,7 +55,7 @@ function Leaderboard() {
           <p>The board publishes hourly. Your hero is on the next one.</p>
         </Card>
       ) : (
-        <Card title={`${groupLabel(data.cohortKey)}, ${data.totalPlayers} ${data.totalPlayers === 1 ? 'hero' : 'heroes'}`}>
+        <Card title={`${groupLabel(data.cohortKey)}, ${data.totalPlayers} ${data.totalPlayers === 1 ? 'hero' : 'heroes'}`} className={isPlaceholderData ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
           <p className="mb-3 text-sm text-muted">
             {board === 'overall' ? 'Ranked by level and lifetime XP.' : 'Ranked by XP earned in the period.'} Updated hourly, last at{' '}
             <time dateTime={new Date(data.scoreAt).toISOString()}>{new Date(data.scoreAt).toLocaleString(undefined, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</time>.

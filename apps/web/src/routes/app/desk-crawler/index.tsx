@@ -11,7 +11,7 @@ import { ActionFeedback, BUTTON_PRIMARY, Button, LoadingState } from '../../../l
 import { BIOME_SWATCH } from '../../../lib/palette'
 import { preload } from '../../../lib/preload'
 import { ReturnRecap } from './-recap'
-import { GameScreen } from './-gameScreen'
+import { GameScreen, latestLogQuery } from './-gameScreen'
 import { AdventureLog } from './-log'
 import { Records } from './-records'
 import { Achievements } from './-achievements'
@@ -21,7 +21,7 @@ const DevicePreview = lazy(() => import('./-devicePreview').then((module) => ({ 
 export const Route = createFileRoute('/app/desk-crawler/')({
   head: () => seo({ title: 'Hero', index: false }),
   loader: ({ context }) =>
-    preload(context, convexQuery(api.heroes.mine, {}), convexQuery(api.inventory.mine, {}), convexQuery(api.heroes.returnSummary, {}), convexQuery(api.leaderboard.view, {}), convexQuery(api.achievements.mine, {})),
+    preload(context, convexQuery(api.heroes.mine, {}), convexQuery(api.inventory.mine, {}), convexQuery(api.heroes.returnSummary, {}), convexQuery(api.leaderboard.view, {}), convexQuery(api.achievements.mine, {}), latestLogQuery()),
   component: HeroHome,
 })
 
@@ -42,27 +42,50 @@ function HeroHome() {
     <div className="flex min-w-0 flex-col gap-8">
       <GameScreen hero={{ ...hero, biomeName, targetName }} />
       <HeroSheet hero={hero} />
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+      {/* Reading order on phones: tally, quest log, records, achievements, then the device. Wide screens pair the tally and log with the rest. */}
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         <div className="flex min-w-0 flex-col gap-8">
           <div className="flex flex-col gap-3">
             <ReturnRecap />
             <LiveGain hero={hero} />
           </div>
-          <section aria-labelledby="trmnl-title" className="flex flex-col gap-3">
-            <h2 id="trmnl-title" className="font-display text-3xl font-bold">On your TRMNL</h2>
-            <Suspense fallback={<div className="aspect-[4/3] overflow-hidden rounded-[1.4rem] border-[12px] border-[#3a3566] bg-white"><img src={artUrl(hero.scenePath)} alt={`${hero.name}'s current scene`} width={760} height={200} className="mt-[15%] w-full [image-rendering:pixelated]" /></div>}>
-              <DevicePreview sceneUrl={artUrl(hero.scenePath)} heroName={hero.name} />
-            </Suspense>
-            <Link to="/app/desk-crawler/settings" hash="desk-keepsakes" className="inline-flex min-h-11 items-center text-sm underline underline-offset-4">Enter a keepsake code</Link>
-          </section>
+          <AdventureLog />
         </div>
         <div className="flex min-w-0 flex-col gap-8">
-          <AdventureLog />
           <Records counters={hero.counters} lifetimeXp={hero.lifetimeXp} stopped={hero.status === 'paused' || (hero.status === 'sleeping' && hero.wakeAtTick === null)} />
           <Achievements />
+          <section aria-labelledby="trmnl-title" className="flex flex-col gap-3">
+            <h2 id="trmnl-title" className="font-display text-3xl font-bold">On your TRMNL</h2>
+            <Suspense fallback={<DeviceStandIn sceneUrl={artUrl(hero.scenePath)} heroName={hero.name} />}>
+              <DevicePreview sceneUrl={artUrl(hero.scenePath)} heroName={hero.name} />
+            </Suspense>
+            <Link to="/app/desk-crawler/settings" hash="desk-keepsakes" className="inline-flex min-h-11 items-center self-start text-sm underline underline-offset-4">Enter a keepsake code</Link>
+          </section>
         </div>
       </div>
     </div>
+  )
+}
+
+/**
+ * What the device preview looks like before its chunk and template render
+ * arrive: the same bezel at the TRMNL X aspect ratio holding the hero's scene,
+ * with the control rows' height reserved, so nothing moves when it takes over.
+ */
+function DeviceStandIn({ sceneUrl, heroName }: { sceneUrl: string; heroName: string }) {
+  return (
+    <figure className="flex flex-col gap-3" aria-busy="true">
+      <div className="rounded-[1.4rem] bg-[#3a3566] p-[clamp(0.5rem,2.5vw,1rem)]">
+        <div className="relative overflow-hidden rounded-md bg-white" style={{ aspectRatio: '1872 / 1404' }}>
+          <img src={sceneUrl} alt={`${heroName}'s current scene`} width={760} height={200} decoding="async" className="absolute inset-0 m-auto w-full [image-rendering:pixelated]" />
+        </div>
+      </div>
+      <figcaption className="text-sm text-muted">
+        {/* Matches the preview's two control rows: 44px tabs, 8px gap, 44px device picker. */}
+        <div aria-hidden="true" className="h-24" />
+        <p className="mt-3">Loading what your TRMNL shows…</p>
+      </figcaption>
+    </figure>
   )
 }
 

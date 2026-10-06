@@ -23,7 +23,7 @@ const FALLBACK_BANDS = BIOME_BANDS.office_cubicles!
 /** One pixel heart; each half fills independently so health reads in half-heart steps. */
 function Heart({ left, right }: { left: boolean; right: boolean }) {
   return (
-    <svg viewBox="0 0 9 8" width={18} height={16} aria-hidden="true" shapeRendering="crispEdges" className="shrink-0">
+    <svg viewBox="0 0 9 8" width={18} height={16} aria-hidden="true" shapeRendering="crispEdges" className="shrink-0 max-sm:h-3 max-sm:w-3.5">
       <path className="fill-night" d="M1 0h3v1H1zM5 0h3v1H5zM0 1h1v3H0zM8 1h1v3H8zM1 4h1v1H1zM7 4h1v1H7zM2 5h1v1H2zM6 5h1v1H6zM3 6h1v1H3zM5 6h1v1H5zM4 7h1v1H4zM4 1h1v1H4z" />
       <path className={left ? 'fill-hp' : 'fill-raised'} d="M1 1h3v3H1zM2 4h2v1H2zM3 5h1v1H3z" />
       <path className={right ? 'fill-hp' : 'fill-raised'} d="M5 1h3v3H5zM5 4h2v1H5zM5 5h1v1H5zM4 2h1v5H4z" />

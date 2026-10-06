@@ -6,15 +6,15 @@
 
 | Artifact | Current deployed state | Local submission candidate |
 | --- | --- | --- |
-| Source | `93b18c7bb02a503b4bbf6f95f18818fba04b09ae` | Deployed October 6 at 09:29:33 UTC; [compact log release](log-density.md) |
+| Source | `a9b682849722e9349b1b611ccd5873cf948df1fb` | Deployed October 6 at 13:13:33 UTC; [adaptive layout release](adaptive-log-layout.md) |
 | Hero schema / simulator / gameplay numbers | 1 / 1 / v2 tuning | Unchanged |
 | Active narrative/catalog | v4 | Unchanged |
-| TRMNL template / art | v26 / scene v4 | Local v27 relocates the X bag/recap and fits recent history to available space; 256 previews pass; Barry approved production rollout on October 6, live verification in progress ([evidence](adaptive-log-layout.md)) |
+| TRMNL template / art | v27 / scene v4 | Local v28 restores leaderboard width, shrinks the bag QR and moves the recap into a complete bottom line; 256 previews and 202 tests pass, Barry approved rollout on October 6, live verification in progress ([evidence](recap-ribbon.md)). Deployed v27 server render and tick 218 passed ([evidence](adaptive-log-layout.md)) |
 | Plugin | 564, `desk_crawler`, Third Party, development | Review package prepared |
 | Companion | https://trmnlgames.com, `/app/desk-crawler` | Updated landing sample, help and potion-find labels live |
 | Backend | `exciting-cormorant-948` | Deployed candidate adds optional pagination versions, portable cursors, deletion/notice guards and ranking cost fix; D53 shared log polish |
 
-The current deployed version is recorded in [compact log rows](log-density.md); [activity recap](activity-recap.md), [log-spacing](log-spacing.md) and [scene-time](scene-time.md) preserve earlier release evidence. Older v11/v12 checks are historical, not outstanding candidate work.
+The current deployed version is recorded in [adaptive layout](adaptive-log-layout.md); [compact log rows](log-density.md) retain v26 evidence; [activity recap](activity-recap.md), [log-spacing](log-spacing.md) and [scene-time](scene-time.md) preserve earlier release evidence. Older v11/v12 checks are historical, not outstanding candidate work.
 
 ## Verified evidence
 
@@ -26,7 +26,7 @@ The current deployed version is recorded in [compact log rows](log-density.md); 
 - [Current balance reporting](balance.md), checkpoint export/capture tooling, an inactive hourly workflow template and the updated [reconciliation runbook](../release/recovery-runbook.md) are ready for review. No ongoing production capture is configured.
 - The [submission preparation evidence](submission-preparation.md) records current tests/build, browser checks and their limits.
 
-The approved D54 recap release passed 202 tests, all 200 OG/X previews, the actual TRMNL server-image inspection and delivery, and natural tick 202 with progress preserved. The separately approved v26 release tightens log rows and retains three X full/side stories; live previews, actual server image and natural tick 203 are verified. Explicit v26 device delivery is not yet observed ([evidence](log-density.md)).
+The approved D54 recap release passed 202 tests, all 200 OG/X previews, the actual TRMNL server-image inspection and delivery, and natural tick 202 with progress preserved. The separately approved v26 release tightens log rows and retains three X full/side stories; live previews, actual server image and natural tick 203 are verified. Later timeline inspection observed v26 delivery at 11:36:32 SAST ([evidence](log-density.md)). The separately approved v27 adaptive layout is now deployed and verified by the actual X server image and natural tick 218; explicit v27 delivery is not yet observed ([evidence](adaptive-log-layout.md)).
 
 ## Submission checklist
 
@@ -60,6 +60,6 @@ Keep these gates visible even though the submission form does not request them. 
 
 ## Waivers and display limits
 
-D43 makes rendered previews the all-layout/mashup gate; Barry does not need to repeat each physical view. The D46 physical glance, real claim and post-claim checks were explicitly waived on 2026-10-05, not passed ([evidence](playlist-retention.md)); do not reopen them as submission prerequisites. Later v25/v26 physical-screen readability remains unobserved. Theme/text-scale/outage behavior is not certified merely by an ordinary full-layout render.
+D43 makes rendered previews the all-layout/mashup gate; Barry does not need to repeat each physical view. The D46 physical glance, real claim and post-claim checks were explicitly waived on 2026-10-05, not passed ([evidence](playlist-retention.md)); do not reopen them as submission prerequisites. Later v25/v26/v27 physical-screen readability remains unobserved. Theme/text-scale/outage behavior is not certified merely by an ordinary full-layout render.
 
-Barry authorized the listing update and companion deployment. The existing production pipeline deployed the polish and D52 read-only query changes; the original installation rendered successfully afterward ([evidence](listing-polish-deploy.md)). Device templates are now v26 after the approved D54/D55 releases. Further submission, media publication and reviewer contact require their own authorization.
+Barry authorized the listing update and companion deployment. The existing production pipeline deployed the polish and D52 read-only query changes; the original installation rendered successfully afterward ([evidence](listing-polish-deploy.md)). Device templates are now v27 after the approved D54/D55/D56 releases. Further submission, media publication and reviewer contact require their own authorization.

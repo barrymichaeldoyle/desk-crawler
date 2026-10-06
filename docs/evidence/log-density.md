@@ -21,6 +21,8 @@ The [sanitized results](log-density-results.json) record the matrix, spacing and
 - Worker deployment `ec499609-bbc2-4259-8bc4-bf3f926399f9`, version `d4ec7180-548c-4950-9978-20ed8a76b210`, serves 100% of traffic, deployed **09:29:33.129089 UTC**.
 - Signed-in live X full and side previews both contain the zero-gap story grids and **three recent stories**. The preview was restored to X full after inspection.
 - The original installation rendered at **11:30:56 SAST / 09:30:56 UTC**, taking **970 ms**, **27.7 KB**. Its actual **1872×1404** server image was visually inspected: recap, three stories, changes, gear, rank, QR and footer remain readable. Local capture: `.previews/density-trmnl-server-image.png`.
-- The device checked in at **11:31:04 SAST**, with content returned and its next screen refresh scheduled for **11:45:57**. The observed timeline does not yet explicitly record delivery of this 27.7 KB image; physical-display acceptance is unobserved.
+- The device checked in at **11:31:04 SAST**, with content returned and its next screen refresh scheduled for **11:45:57**. Delivery was not observed in the initial release check; later v27 verification confirmed it at 11:36:32 SAST. Physical-display acceptance is unobserved.
 - Natural tick **203** completed at **09:30:06.070 UTC**, processing one hero with zero quarantines. Hero identity/creation and progress were preserved; all three leaderboard generations are ready with population one.
 - A bounded sample of **89 completion records**, **09:30:06.066263–09:31:15.012362 UTC**, contains zero errors and zero retries, including one installation payload query. These observations verify this release without claiming launch-scale capacity.
+
+During the v27 deployment check, the original installation timeline showed v26 delivery at **11:36:32 SAST / 09:36:32 UTC**, 27.7 KB. This closes the earlier unobserved-delivery limitation; physical-screen readability remains unobserved.

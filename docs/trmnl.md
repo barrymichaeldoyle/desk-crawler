@@ -151,7 +151,7 @@ Deployed v25 layouts show full recap detail on X full/half/side and compact mile
 
 D55 deployed template v26 uses a zero-gap one-column grid within each story, retaining the same fonts and separate time/stat row. Smaller full-layout inter-entry spacing allows three recent stories on X full/side, superseding v25’s two-story count. OG and compact views retain one. Attention keeps priority; live previews, server image and natural tick 203 are verified ([evidence](evidence/log-density.md)).
 
-D56 local template v27 moves the X full bag caption into the divider above the QR and the recap beneath it, allocating 7/2/3 grid columns to history/rank/bag. All four OG/X layouts fit the longest complete newest-first prefix from the existing ten stories, measuring actual wrapped boxes after framework terminalization and reserving the footer/following rank line. Shorter stories can show more entries; long descriptions retain their complete change row. Attention keeps priority. Barry approved production rollout on October 6; live verification is in progress ([evidence](evidence/adaptive-log-layout.md)).
+D56 deployed template v27 moves the X full bag caption into the divider above the QR and the recap beneath it, allocating 7/2/3 grid columns to history/rank/bag. All four OG/X layouts fit the longest complete newest-first prefix from the existing ten stories, measuring actual wrapped boxes after framework terminalization and reserving the footer/following rank line. Shorter stories can show more entries; long descriptions retain their complete change row. Attention keeps priority. Barry approved production rollout on October 6; the actual X server image and natural tick 218 passed with progress preserved ([evidence](evidence/adaptive-log-layout.md)).
 
 ## Query read budget
 
@@ -205,3 +205,5 @@ Seven-day score and group are always labeled with rank (for example Last 7 days 
 Sleeping is ready gameplay data, not service_paused/stale: show retained-find/bag guidance and idle sprite. A scheduled wake remains sleeping until evaluated. held_item is empty after claim; when bag remains full, explain free-space/Resume requirements. No device/companion-visit inactivity timer is used. Name-version mismatch or missing owner masks copied public names until refreshed.
 
 These v1 changes happen before any consumer is released; shipped compatibility rules still apply thereafter. Public examples remain illustrative, not live data or rendered proof.
+
+D57 local template v28 supersedes D56’s X full arrangement: 6/4/2 history/ranking/bag columns, a 20% smaller standing X QR (integer scale 4), and one complete full-width recap line above the title bar. Rank fitting reserves context width. OG and compact recap placement stays unchanged; adaptive complete-story fitting remains. All 256 previews pass; Barry approved production rollout on October 6; live verification is in progress ([evidence](evidence/recap-ribbon.md)).

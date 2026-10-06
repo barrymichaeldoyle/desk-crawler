@@ -7,7 +7,7 @@
  */
 import { GLYPHS, glyphRows } from '../art/glyphs'
 
-export const TEMPLATE_VERSION = 27
+export const TEMPLATE_VERSION = 28
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -200,6 +200,13 @@ const recapBlock = (compact = false, dense = false) => `
     <div class="border--h-30 stretch-x"></div>
   </div>{% endif %}`
 
+/** Wide full-layout recap, separate from the bag QR and recent story columns. */
+const recapRibbon = `
+  {% if recap %}<div class="hidden lg:block no-shrink stretch-x" data-recap-ribbon="true">
+    <div class="border--h-30 stretch-x"></div>
+    <span class="title title--small text--regular inline-block" data-fit-value="true">{{ recap.label | escape }}: {% if recap.gains != "" %}{{ recap.gains | escape }} · {% endif %}{{ recap.activity | escape }}{% if recap.highlights != "" %} · {{ recap.highlights | escape }}{% endif %}</span>
+  </div>{% endif %}`
+
 const rankLine = `
       {% if rank %}<span class="label">Rank {{ rank }} of {{ total_players }}, {{ leaderboard_cohort_label | escape }}</span>{% elsif rank_status == "dormant" %}<span class="label">Not ranked while paused</span>{% else %}<span class="label">Ranking within the hour</span>{% endif %}`
 
@@ -211,7 +218,7 @@ const rankSuffix = `{% assign rank_mod100 = rank | modulo: 100 %}{% assign rank_
  * Top 5 is cut to three rows on the OG so every row stays at a readable size.
  */
 const rankPanel = `
-      {% if rank %}${rankSuffix}<div class="flex flex--row flex--left flex--center-y gap--small lg:flex--col lg:flex--left lg:gap--xsmall"><span class="value value--small lg:value--large" data-fit-value="true">{{ rank }}{{ rank_suffix }}</span><div><div><span class="label lg:title--small">of {{ total_players }} this week</span></div>{% if leaderboard_cohort_label != "" %}<div><span class="label lg:title--small" data-clamp="1">{{ leaderboard_cohort_label | escape }}</span></div>{% endif %}</div></div>
+      {% if rank %}${rankSuffix}<div class="flex flex--row flex--left flex--center-y gap--small"><div class="grow w--min-0"><span class="value value--small lg:value--large inline-block" data-fit-value="true">{{ rank }}{{ rank_suffix }}</span></div><div class="no-shrink"><div><span class="label lg:title--small">of {{ total_players }} this week</span></div>{% if leaderboard_cohort_label != "" %}<div><span class="label lg:title--small" data-clamp="1">{{ leaderboard_cohort_label | escape }}</span></div>{% endif %}</div></div>
       {% else %}<span class="label lg:title--small">This week{% if leaderboard_cohort_label != "" %}, {{ leaderboard_cohort_label | escape }}{% endif %}</span>
       {% if rank_status == "dormant" %}<span class="label">Not ranked while paused</span>{% else %}<span class="label">Ranking within the hour</span>{% endif %}{% endif %}
       {% for row in top5 %}<div class="{% if forloop.index > 3 %}hidden lg:flex {% endif %}flex flex--row flex--between stretch-x gap--small"><span class="label lg:title--small grow" data-clamp="1">{{ row.rank }}. {{ row.name | escape }}</span><span class="label lg:title--small no-shrink">{{ row.score }}&nbsp;XP</span></div>{% endfor %}`
@@ -308,25 +315,25 @@ export const markupFull = `${glyphAssigns([16, 24])}
   </div>
   <div class="no-shrink flex flex--col gap--small stretch-x">${scene('scene_url')}
     <div class="grid stretch-x gap--large lg:gap--small">
-      <div class="col--span-12 {% if qr_url == "" and companion_qr_base != "" %}lg:col--span-9{% endif %}">${divider}</div>
-      {% if qr_url == "" and companion_qr_base != "" %}<div class="hidden lg:flex col--span-3 flex--row flex--center-y gap--xsmall"><div class="border--h-30 grow"></div><span class="label lg:title--small no-shrink">Your bag</span><div class="border--h-30 grow"></div></div>{% endif %}
+      <div class="col--span-12 {% if qr_url == "" and companion_qr_base != "" %}lg:col--span-10{% endif %}">${divider}</div>
+      {% if qr_url == "" and companion_qr_base != "" %}<div class="hidden lg:flex col--span-2 flex--row flex--center-y gap--xsmall"><div class="border--h-30 grow"></div><span class="label lg:title--small no-shrink">Your bag</span><div class="border--h-30 grow"></div></div>{% endif %}
     </div>
   </div>
   <div class="grid grow h--full h--min-0 stretch-x gap--large lg:gap--small">
-    <div class="col--span-6 lg:col--span-7 flex flex--col flex--left flex--top gap--xsmall lg:gap--small h--full">
-      ${attention('label lg:title--small', 2)}{% unless attention %}<div class="{% if companion_qr_base != "" %}lg:hidden{% endif %} stretch-x">${recapBlock()}</div>{% endunless %}
+    <div class="col--span-6 lg:col--span-6 flex flex--col flex--left flex--top gap--xsmall lg:gap--small h--full">
+      ${attention('label lg:title--small', 2)}{% unless attention %}<div class="lg:hidden stretch-x">${recapBlock()}</div>{% endunless %}
       {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(2, 'title lg:title', 24, 46)}
     </div>
-    {% if qr_url != "" %}<div class="col--span-6 lg:col--span-5 flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small">${qr}
-    </div>{% else %}<div class="col--span-6 {% if companion_qr_base != "" %}lg:col--span-2{% else %}lg:col--span-5{% endif %} flex flex--row flex--top gap--small">
+    {% if qr_url != "" %}<div class="col--span-6 lg:col--span-6 flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small">${qr}
+    </div>{% else %}<div class="col--span-6 {% if companion_qr_base != "" %}lg:col--span-4{% else %}lg:col--span-6{% endif %} flex flex--row flex--top gap--small">
       <div class="grow flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small">${rankPanel}</div>
       <div class="lg:hidden">${companionQr}</div>
     </div>
-    {% if companion_qr_base != "" %}<div class="hidden lg:flex col--span-3 flex--col flex--center-x flex--top gap--small">
-      ${qrImage(3, 5, 'companion_qr_base')}
-      {% unless attention %}${recapBlock(false, true)}{% endunless %}
+    {% if companion_qr_base != "" %}<div class="hidden lg:flex col--span-2 flex--col flex--center-x flex--top gap--small">
+      ${qrImage(3, 4, 'companion_qr_base')}
     </div>{% endif %}{% endif %}
   </div>
+  {% unless attention %}${recapRibbon}{% endunless %}
   {% endif %}
 </div>${titleBarFull}${fitStories}`
 

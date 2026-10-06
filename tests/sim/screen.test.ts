@@ -93,7 +93,7 @@ describe('full layout', () => {
   it('shows the own rank as an ordinal', async () => {
     const ranked = (rank: number) => render({ ...payload(), rank, total_players: 141, leaderboard_cohort_label: 'Levels 4-7' })
     const cases: Array<[number, string]> = [[1, '1st'], [2, '2nd'], [3, '3rd'], [4, '4th'], [11, '11th'], [12, '12th'], [13, '13th'], [21, '21st'], [102, '102nd'], [111, '111th']]
-    for (const [rank, label] of cases) expect(await ranked(rank)).toMatch(new RegExp(`>${label}</span><div><div><span[^>]*>of 141 this week<`))
+    for (const [rank, label] of cases) expect((await ranked(rank)).replace(/<[^>]+>/g, '').replace(/\s+/g, ' ')).toContain(`${label}of 141 this week`)
   })
 
   it('shows the standing bag QR beside the rank, and only the action QR when one is set', async () => {

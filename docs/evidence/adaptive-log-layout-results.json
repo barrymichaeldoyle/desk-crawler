@@ -1,8 +1,8 @@
 {
   "date": "2026-10-06",
-  "status": "approved_deployment_in_progress",
+  "status": "deployed_verified_server_render",
   "templateVersion": 27,
-  "productionTemplateVersion": 26,
+  "productionTemplateVersion": 27,
   "frameworkVersion": "3.4.0",
   "verification": {
     "tests": 202,
@@ -24,7 +24,7 @@
     "leaderboard": 2,
     "bagAndRecap": 3
   },
-  "verificationLimit": "Local settled browser previews. No v27 production deployment, server render or physical display check.",
+  "verificationLimit": "Local all-layout previews and actual existing-installation X full server image verified. Physical-screen readability and explicit v27 device delivery not yet observed.",
   "checks": [
     {
       "name": "arrivalRecap--og--markup_half_horizontal",
@@ -3826,5 +3826,57 @@
       "headerTextOverflow": false,
       "fit": []
     }
-  ]
+  ],
+  "production": {
+    "sourceCommit": "a9b682849722e9349b1b611ccd5873cf948df1fb",
+    "convexDeployment": "exciting-cormorant-948",
+    "worker": "trmnl-games",
+    "buildId": "0c8cb709-666f-4ed1-abd1-08b28e7010a4",
+    "buildStatus": "success",
+    "workerDeploymentId": "c7022b35-13db-43a9-b4aa-6d6a72eb57a8",
+    "workerVersionId": "89747932-a9b6-4af8-acd1-8e494cc02163",
+    "trafficPercentage": 100,
+    "deployedAt": "2026-10-06T13:13:33.509067Z",
+    "signedInCompanionInspected": true,
+    "liveAdaptiveTemplateConfirmed": true,
+    "serverRender": {
+      "size": [
+        1872,
+        1404
+      ],
+      "automaticRenderedAt": "2026-10-06T13:14:00Z",
+      "automaticDurationMs": 938,
+      "manualRenderedAt": "2026-10-06T13:15:00Z",
+      "manualDurationMs": 880,
+      "sizeKb": 31,
+      "completeLogEntries": 6,
+      "imageInspected": true
+    },
+    "preservation": {
+      "beforeTick": 217,
+      "afterTick": 218,
+      "lastCompletedAt": "2026-10-06T13:15:06.044Z",
+      "checks": {
+        "heroCountPreserved": true,
+        "heroIdentityAndCreationPreserved": true,
+        "heroProgressPreserved": true,
+        "naturalTickAdvanced": true,
+        "simulationCompleted": true,
+        "quarantined": 0,
+        "allBoardsReady": true,
+        "notPausedOrMaintenance": true,
+        "blockedDeletionJobs": 0
+      }
+    },
+    "postDeployLogs": {
+      "completionRecords": 89,
+      "errors": 0,
+      "willRetry": 0,
+      "screenRequests": 2,
+      "payloadReads": 2,
+      "firstTimestamp": "2026-10-06T13:13:59.522416+00:00",
+      "lastTimestamp": "2026-10-06T13:15:10.628116+00:00"
+    },
+    "deviceDeliveryObserved": false
+  }
 }

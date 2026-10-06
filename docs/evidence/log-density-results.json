@@ -1056,10 +1056,11 @@
     "imageHeight": 1404,
     "visuallyInspected": true,
     "localScreenshot": ".previews/density-trmnl-server-image.png",
-    "deliveryExplicitlyObserved": false,
+    "deliveryExplicitlyObserved": true,
     "physicalDisplayObserved": false,
     "deviceCheckedInAt": "2026-10-06T09:31:04Z",
-    "nextScreenRefreshAt": "2026-10-06T09:45:57Z"
+    "nextScreenRefreshAt": "2026-10-06T09:45:57Z",
+    "deliveryObservedAt": "2026-10-06T09:36:32Z"
   },
   "preservation": {
     "heroIdentityAndCreationPreserved": true,

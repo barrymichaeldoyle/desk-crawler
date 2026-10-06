@@ -1,6 +1,6 @@
 # Adaptive device log layout — 2026-10-06
 
-Barry requested moving “Your bag” above the QR into the decorative divider, placing the twelve-hour recap below the QR, narrowing the leaderboard and showing as many complete recent stories as fit. Template **v27** implements these changes. Barry explicitly authorized this production rollout on October 6; deployment and live verification are in progress.
+Barry requested moving “Your bag” above the QR into the decorative divider, placing the twelve-hour recap below the QR, narrowing the leaderboard and showing as many complete recent stories as fit. Template **v27** implements these changes. Barry explicitly authorized production rollout on October 6. Production now serves **v27**, and deployment, live server-render inspection and the next natural tick passed.
 
 ## Behavior
 
@@ -29,6 +29,12 @@ Representative visible counts depend on actual wrapping and metadata:
 
 [Sanitized results](adaptive-log-layout-results.json) record all checks without player identifiers or source story text. Local screenshots live in `.previews/adaptive-*.png`; `.previews/adaptive-recordedHistory-markup.png` is the primary review image. The fixture timestamps and hero are illustrative, not a live production snapshot.
 
-## Remaining release check
+## Production rollout
 
-Barry has authorized deployment. Complete the production pipeline, then inspect the signed-in companion, an actual existing-installation server render and the next natural tick with progress preserved. Framework readiness/hook behavior is verified against official pinned 3.4 assets in local Chrome; an actual TRMNL server render remains the compatibility check. No submission, listing edit or external publication was performed.
+- Source `a9b682849722e9349b1b611ccd5873cf948df1fb` deployed through the existing `main` Workers Builds pipeline. Build `0c8cb709-666f-4ed1-abd1-08b28e7010a4` succeeded. Production Convex is `exciting-cormorant-948`; Worker `trmnl-games` deployment `c7022b35-13db-43a9-b4aa-6d6a72eb57a8` serves version `89747932-a9b6-4af8-acd1-8e494cc02163` at 100% traffic, deployed **13:13:33 UTC**.
+- The signed-in companion confirms the adaptive hook, seven-column X history and right-hand recap. Its X full preview was inspected and shows six complete recent story/stat pairs. Its side preview was also inspected after the next natural tick, showing five complete rows and the rank line clear of the footer.
+- Existing installation 495747 automatically rendered v27 at **15:14:00 SAST / 13:14:00 UTC** (938 ms, 31 KB). Manual refresh rendered at **15:15:00 SAST / 13:15:00 UTC** (880 ms, 31 KB). The actual **1872×1404 server image** was inspected: six complete rows, bag label in the divider, narrow ranking, recap beneath the QR and clear footer. This verifies the renderer executes the fitting hook. Capture: `.previews/adaptive-trmnl-server-image.png`.
+- Natural tick **218** completed at **13:15:06.044 UTC**, processing one hero with zero quarantines. Hero count, identity, creation and activation were preserved; lifetime XP, level and last tick did not regress. All three published boards are ready with one player; simulation is neither paused nor in maintenance and no deletion jobs are blocked. Verification did not force ticks or alter hero state.
+- The bounded post-deployment log sample contains **89 completion records**, from **13:13:59.522416 through 13:15:10.628116 UTC**, with zero errors or retries; both screen requests and their payload reads succeeded.
+
+Explicit delivery of v27 to the physical device and physical-screen readability are not yet observed. The successful server image is ready for its next eligible check-in. No submission, listing edit or marketplace publication was performed. Post-deployment evidence is kept locally for the next source change; a documentation-only push would trigger another deployment.

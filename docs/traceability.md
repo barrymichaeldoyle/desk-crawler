@@ -41,6 +41,7 @@ Use this table when assigning/reviewing agents. A package is incomplete if it im
 | Late-game gear/gold curve (D30) | [Build refinements](build-readiness.md), [gameplay](gameplay.md) | A03 | Best-in-slot day and retained-gold distributions per cohort |
 | Hourly publication and dormant exclusion (D31/D32) | [Ranking](ranking.md), [leaderboards](leaderboards.md), [simulation](simulation.md) | A05/A06/A08/A11 | Hour-bucket expiry, catch-up publication, dormant skip/exclusion/return, measured write reduction |
 | Luck: reward rolls and lucky moments (D35) | [Gameplay](gameplay.md#luck-and-lucky-moments), [simulation](simulation.md) | A03 | Draw-order determinism, rate checks, score-spread and gold reports |
+| Achievements: tiered, retroactive, rarity-rated (D65) | [Achievements](achievements.md), [data model](data-model.md#heroachievements-d65), [API](api.md) | A03/A04/A05/A06/A09/A10 | Pure predicate/ladder/fast-path tests, unlock-once and tally-equals-count integration tests, deletion purge, layout badge test, harness unlock shares ([evidence](evidence/achievements.md)) |
 | Early real installation-to-display milestone (D28) | [Build refinements](build-readiness.md), [work packages](work-packages.md) | Lead + A02–A10 | first-path.md with real Save/encounter/coherent ranks/physical screen and minimal onboarding/four layouts |
 
 Overall first-release gate: [product acceptance](product.md). Change-specific ongoing checks: [quality](quality.md). Confirmed decisions override older rough examples; open owner choices and technical spikes remain explicit.

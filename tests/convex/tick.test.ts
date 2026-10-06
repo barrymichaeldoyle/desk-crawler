@@ -103,7 +103,8 @@ describe('tick scheduler', () => {
       throw new Error('No seeded combat drop found')
     })
     await runTick(t)
-    const latest = await t.run(ctx => ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', q => q.eq('heroId', heroId)).order('desc').first())
+    // D65: achievement logs follow the tick event; read the newest tick log.
+    const latest = await t.run(async ctx => (await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', q => q.eq('heroId', heroId)).order('desc').take(20)).find(log => log.source === 'tick'))
     const awarded = expected.itemChanges.find(change => change.type === 'create' && change.item.kind !== 'potion')!
     expect(awarded.type).toBe('create')
     expect(latest?.detail).toMatchObject({ outcome: { variant: 'combat', gearDropped: true, gearRarity: awarded.type === 'create' ? awarded.item.rarity : undefined } })
@@ -132,7 +133,7 @@ describe('tick scheduler', () => {
       throw new Error('No seeded cable trip found')
     })
     await runTick(t)
-    const latest = await t.run(async (ctx) => ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', heroId)).order('desc').first())
+    const latest = await t.run(async (ctx) => (await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', heroId)).order('desc').take(5)).find((log) => log.source === 'tick'))
     expect(latest?.summary).toBe(expected.event!.summary)
     expect(latest?.summary).not.toContain('loose cable')
     expect(latest?.deltas).toEqual(expected.event!.deltas)

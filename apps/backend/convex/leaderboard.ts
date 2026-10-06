@@ -202,6 +202,8 @@ async function publish(ctx: MutationCtx, publication: Doc<'leaderboardPublicatio
   if (world === null) throw new Error('world missing during publication')
   await ctx.db.patch(publication._id, { state: 'published', globalTotalPlayers: globalRanked, builtAt: now, publishedAt: now, batchSequence: publication.batchSequence + 1, nextScheduledFunctionId: undefined, cursor: undefined })
   await ctx.db.patch(run._id, { state: 'completed', finishedAt: now })
+  // D65: rarity is published from the same generation as the boards, from the run's batch tally.
+  await ctx.db.insert('achievementStats', { publicationId: publication._id, runId: run._id, counts: run.achievementCounts ?? {}, totalPlayers: run.achievementPopulation ?? 0, scoreAt: run.scoreAt })
   await recoverIncidents(ctx, run._id, now)
   await ctx.db.patch(world._id, {
     activeRunId: undefined,
@@ -244,6 +246,8 @@ export const cleanupPublication = internalMutation({
       .withIndex('by_publicationId', (q) => q.eq('publicationId', publicationId))
       .take(50)
     for (const row of generations) await ctx.db.delete(row._id)
+    const stats = await ctx.db.query('achievementStats').withIndex('by_publicationId', (q) => q.eq('publicationId', publicationId)).take(5)
+    for (const row of stats) await ctx.db.delete(row._id)
     const inputs = await ctx.db
       .query('rankInputs')
       .withIndex('by_runId_and_heroId', (q) => q.eq('runId', publication.runId))

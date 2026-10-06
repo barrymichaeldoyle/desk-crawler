@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { Liquid } from 'liquidjs'
 import { contentV1 } from '@trmnl-games/desk-crawler/content/v1'
 import { buildPayload } from '@trmnl-games/desk-crawler/payload'
-import { parseUtcOffset, screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
+import { parseUtcOffset, screenMarkup, glyphUri } from '@trmnl-games/desk-crawler/templates/screen'
 
 const NOW = Date.UTC(2026, 9, 4, 8, 20)
 
@@ -191,6 +191,17 @@ describe('log lines (D44)', () => {
   it('celebrates a big moment with a badge', async () => {
     expect(await render({ ...payload(), celebration: 'Level up! Now level 6' })).toMatch(/label--inverted">Level up! Now level 6</)
     expect(await render(payload())).not.toContain('label--inverted')
+  })
+
+  it('celebrates the longest achievement name on every layout and gives achievement lines a glyph', async () => {
+    const vars = payload() as { log: Array<Record<string, unknown>> } & Record<string, unknown>
+    const name = 'Achievement: Nine Lives (Expired)'
+    for (const [key, markup] of Object.entries(screenMarkup)) {
+      const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...vars, celebration: name, log: [{ ...vars.log[0], k: 'achievement', n: 'Achievement: [[Nine Lives (Expired)]]', d: '' }, ...vars.log] })
+      // The quadrant has no room for a badge (D44); the other three show it.
+      if (key !== 'markup_quadrant') expect(html).toContain(`label--inverted">${name}<`)
+      expect(html.includes(glyphUri('achievement', 16)) || html.includes(glyphUri('achievement', 24))).toBe(true)
+    }
   })
 
   it('shows one separate stat row, including HP loss, in all four layouts', async () => {

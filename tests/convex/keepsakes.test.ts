@@ -66,7 +66,10 @@ describe('weekly TRMNL keepsakes', () => {
     expect(await owner().mutation(api.keepsakes.claim, { operationId: 'keepsake-0002', code })).toMatchObject({ changed: false, outcome: 'already_claimed', totalCollected: 1 })
     expect((await envelope(t)).merge_variables.desk_keepsake_code).toBeNull()
     const after = await t.run(async (ctx) => ({ hero: await ctx.db.get(heroId), items: await ctx.db.query('items').collect(), world: await ctx.db.query('worldState').first(), ranks: await ctx.db.query('heroRanks').collect(), logs: await ctx.db.query('tickLogs').collect() }))
-    expect(after).toEqual(before)
+    // D65: the first keepsake earns "Desk Ornament", which adds one achievement log and advances the log sequence; nothing else moves.
+    const strip = (snapshot: typeof after) => ({ ...snapshot, hero: { ...snapshot.hero, logSequence: 0, achievementsVersion: 0 }, logs: snapshot.logs.filter((log) => log.kind !== 'achievement') })
+    expect(strip(after)).toEqual(strip(before))
+    expect(after.logs.filter((log) => log.kind === 'achievement').map((log) => log.summary)).toEqual(['Achievement: [[Desk Ornament]]'])
     expect(await owner().query(api.keepsakes.mine, {})).toMatchObject({ totalCollected: 1, nextAvailableAt: keepsakeWeekStartsAt(keepsakeWeek(NOW) + 1) })
   })
 

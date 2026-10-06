@@ -28,7 +28,7 @@ import type {
 export const SIMULATION_VERSION = 1
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] }
-type WorkingHero = Mutable<Omit<HeroState, 'counters'>> & { counters: Mutable<HeroCounters> }
+type WorkingHero = Mutable<Omit<HeroState, 'counters'>> & { counters: Mutable<Omit<HeroCounters, 'monsterWins'>> & { monsterWins: Record<string, number> } }
 
 const ZERO_METRICS: TickMetrics = {
   encounter: 'none',
@@ -73,7 +73,7 @@ class TickRun {
   private metrics: Mutable<TickMetrics> = { ...ZERO_METRICS }
 
   constructor(private readonly input: SimulationInput) {
-    this.h = { ...input.hero, counters: { ...input.hero.counters } }
+    this.h = { ...input.hero, counters: { ...input.hero.counters, monsterWins: { ...input.hero.counters.monsterWins } } }
     this.content = input.content
     this.rng = {
       encounter: createRng(input.streams.encounter),
@@ -139,6 +139,7 @@ class TickRun {
     delete h.targetBiomeId
     delete h.arriveAtTick
     h.status = 'exploring'
+    h.counters.trips += 1
     const arrivals = [...this.content.narrative.shared.arrive, ...this.content.narrative.biomes[to]!.arrive]
     const text = this.narrate(arrivals, { destination: this.biome(to).name })
     return this.finish('arrived', {
@@ -172,6 +173,7 @@ class TickRun {
     const max = maxHp(h.level)
     const healing = Math.min(max - h.hp, pctOf(max, content.constants.restingHealPct))
     h.hp += healing
+    h.counters.restTicks += 1
     if (h.hp * 100 >= max * content.constants.resumeExploringAtPct) h.status = 'exploring'
     const text = this.narrate(content.narrative.shared.restingHeal, { heal: healing })
     return this.finish('rested', {
@@ -197,6 +199,7 @@ class TickRun {
       potionsUsed = 1
       this.changes.push({ type: 'potion_decrement', itemId: potionRow.id, deleteRow: potionQty === 0 })
       this.metrics.potionsUsed = 1
+      h.counters.potionsUsed += 1
     }
     const potionSuffix = potionsUsed > 0 ? ['Drank a potion.'] : []
 
@@ -204,6 +207,7 @@ class TickRun {
       h.status = 'resting'
       const healing = Math.min(max - h.hp, pctOf(max, c.restingHealPct))
       h.hp += healing
+      h.counters.restTicks += 1
       const text = this.narrate(content.narrative.shared.restingHeal, { heal: healing })
       return this.finish(
         'rested',
@@ -268,6 +272,8 @@ class TickRun {
           gearDropped = this.rng.reward.chance(c.combatGearDropPct)
           if (gearDropped) gear = this.generateGear(biome.tier)
           h.counters.combatWins += 1
+          h.counters.monsterWins[monster.id] = (h.counters.monsterWins[monster.id] ?? 0) + 1
+          if (elite) h.counters.eliteWins += 1
           this.metrics.victories = 1
           if (elite) this.metrics.elites = 1
           Object.assign(vars, { xp: xpGranted, gold: goldGranted })
@@ -328,6 +334,7 @@ class TickRun {
           if (jackpot) {
             goldGranted *= c.jackpot.goldMultiplier
             this.metrics.jackpots = 1
+            h.counters.jackpots += 1
           }
           vars.gold = goldGranted
         }
@@ -356,6 +363,7 @@ class TickRun {
         const avoided = this.rng.combat.chance(c.trapAvoidPct)
         let damage = 0
         if (avoided) {
+          h.counters.trapsAvoided += 1
           primary = this.narrate(shared.trapAvoided, vars)
           compact = 'Avoided a trap.'
         } else {
@@ -372,6 +380,7 @@ class TickRun {
       case 'rest': {
         const healing = Math.min(max - h.hp, pctOf(max, c.restEncounterHealPct))
         h.hp += healing
+        h.counters.restTicks += 1
         vars.heal = healing
         primary = this.narrate(healing > 0 ? narrative.rest : shared.restFull, vars)
         compact = fill('Rested. +{heal} HP.', vars)
@@ -450,6 +459,7 @@ class TickRun {
     let disposition: Disposition = 'advanced'
     if (gear !== undefined) {
       h.counters.itemsFound += 1
+      if (gear.rarity === 'rare') h.counters.rareFinds += 1
       const item = `${rarityLabel(gear.rarity)} ${gear.name}`
       heldFind = isBagFull(h, input.inventory)
       this.changes.push({ type: 'create', destination: heldFind ? 'held' : 'bag', item: gear })
@@ -575,7 +585,7 @@ class TickRun {
 /** Drop undefined optional fields so the result satisfies exact optional property types. */
 function toHeroState(h: WorkingHero): HeroState {
   const entries = Object.entries(h).filter(([, value]) => value !== undefined)
-  return { ...(Object.fromEntries(entries) as unknown as HeroState), counters: { ...h.counters } }
+  return { ...(Object.fromEntries(entries) as unknown as HeroState), counters: { ...h.counters, monsterWins: { ...h.counters.monsterWins } } }
 }
 
 function validateOutput(input: SimulationInput, result: SimulationResult): void {

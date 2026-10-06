@@ -63,14 +63,18 @@ describe('player intents', () => {
     const potionOp = opId()
     const potion = await owner.mutation(api.inventory.usePotion, { operationId: potionOp })
     await owner.mutation(api.inventory.usePotion, { operationId: potionOp })
-    const logs = await t.run(async (ctx) => ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', heroId)).order('desc').take(10))
+    // D65: the first sale and potion also earn achievements, logged separately.
+    const logs = (await t.run(async (ctx) => ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', heroId)).order('desc').take(10))).filter((log) => log.kind !== 'achievement')
     expect(logs).toHaveLength(2)
     expect(logs[0]).toMatchObject({ summary: 'Drank a potion.', deltas: { xpEarned: 0, gold: 0, hp: potion.hp! - 40 } })
     expect(logs[1]!.summary).not.toMatch(/\d+ gold/)
     expect(logs[1]!.deltas).toEqual({ xpEarned: 0, gold: sold.gold, hp: 0 })
     const preview = await owner.query(api.trmnlPayload.mine, { now: Date.now() })
-    expect(preview.log[0]).toMatchObject({ n: 'Drank a potion.', d: `+${potion.hp! - 40} HP` })
-    expect(preview.log[1].d).toBe(`+${sold.gold} gold`)
+    // D65: the first potion earns "First Aid", logged after the command.
+    const stories = preview.log.filter((entry: { k: string }) => entry.k !== 'achievement')
+    expect(stories[0]).toMatchObject({ n: 'Drank a potion.', d: `+${potion.hp! - 40} HP` })
+    expect(stories[1].d).toBe(`+${sold.gold} gold`)
+    expect(preview.log.find((entry: { k: string }) => entry.k === 'achievement')).toMatchObject({ n: 'Achievement: [[First Aid]]', d: '' })
   })
 
   it("refuses another owner's items and requires a signed-in active hero", async () => {

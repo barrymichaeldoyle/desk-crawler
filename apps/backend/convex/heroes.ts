@@ -6,6 +6,7 @@ import { ACTIVE_CONTENT, catalogs } from '@trmnl-games/desk-crawler/content'
 import { appError } from './lib/errors'
 import { commandLog, currentUser, requirePlayableHero, runIntent } from './lib/intent'
 import { deriveStats } from '@trmnl-games/desk-crawler/sim/core/stats'
+import { withCounterDefaults } from '@trmnl-games/desk-crawler/sim/core/starter'
 import { readWorld } from './world'
 import { FULL_SCALE } from '@trmnl-games/desk-crawler/art/scene'
 import { sceneFor, scenePath } from '@trmnl-games/desk-crawler/art/sceneKey'
@@ -35,11 +36,12 @@ export const mine = query({
       .take(40)
     const stats = deriveStats(hero, items.map((item) => ({ ...item, id: item._id })))
     const world = await readWorld(ctx)
-    const newest = await ctx.db
+    // Achievement logs follow their gameplay event (D65); the scene keeps showing that event.
+    const newest = (await ctx.db
       .query('tickLogs')
       .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id))
       .order('desc')
-      .first()
+      .take(5)).find((log) => log.kind !== 'achievement')
     const scene = sceneFor(hero.status, hero.wakeAtTick !== undefined, newest ? { kind: newest.kind, ...('outcome' in newest.detail ? { outcome: newest.detail.outcome } : {}) } : null)
     return {
       id: hero._id,
@@ -64,7 +66,7 @@ export const mine = query({
       reviveAtTick: hero.reviveAtTick ?? null,
       wakeAtTick: hero.wakeAtTick ?? null,
       lastTick: hero.lastTick,
-      counters: hero.counters,
+      counters: withCounterDefaults(hero.counters),
       biomes: content.biomes.map((biome) => ({ id: biome.id, name: biome.name, unlockLevel: biome.unlockLevel, unlocked: biome.unlockLevel <= hero.level })),
       world: world
         ? {

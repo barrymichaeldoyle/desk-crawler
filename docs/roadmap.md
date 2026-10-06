@@ -25,6 +25,7 @@ Scope still to deploy (all local, approved):
 | Portrait arrangement for every device view | D62 | Reviewers may install in portrait |
 | Template v29 QR coverage and compact OG/X spacing | D58 | Layout polish for the reviewed build |
 | Platformer HUD companion | D60 | The reviewed companion |
+| Achievements | D65/O14 | Deployed 2026-10-06 at Barry's request as an additive system: optional counters with a one-off backfill, new tables, companion section and device celebration. No payload meaning changed |
 
 Then: reset-first deployment ([runbook](release/pre-launch-reset.md)), fresh install → Save → first adventure recording, review package and email, Submit for Review. Each external action needs its own authorization.
 
@@ -60,11 +61,12 @@ Core batch: stances, configurable rest/potion thresholds, a small set of event c
 | Merchant | Bounded offers/price validation, four-tick expiry, purchase receipts; no push spam. Prices sit beside the D61 bag prices (40/150/600/2,000), the first gold sink |
 | Effects | Typed duration/modifier rules; death ordering and rest cleansing explicitly designed |
 | Affixes/Epic | Versioned generation and owned-item compatibility; extend inventory UI |
+| Achievements (D65) | Shipped early, in v1.0 (2026-10-06). v1.1 appends families for merchant purchases, stance changes and event choices under a new catalog version. See [achievements](achievements.md) |
 | Daily quests | Stretch, not required; timezone/DST and timezone-change abuse design first |
 | Lost-and-found | Stretch; extend the single held-find/inventory-sleep system only with a bounded migration; never reintroduce silent disposal |
 | Web push/email alerts | Deferred by default; user opt-in, delivery cost and calmness review |
 
-Prefer choices/merchant/stances as one coherent release and schedule quest/push scope separately. Salvage is not in this release: materials without a sink would be a hollow feature, so it ships with gear upgrades in v2.0.
+Achievements are additive and independent of the choice systems, so they can ship first within v1.1. Prefer choices/merchant/stances as one coherent release and schedule quest/push scope separately. Salvage is not in this release: materials without a sink would be a hollow feature, so it ships with gear upgrades in v2.0.
 
 Gate: no manual intervention required to resolve expiry; choose/default cannot both award; attention remains one unobtrusive message; more app engagement is a hypothesis, not a login target.
 
@@ -142,12 +144,14 @@ Checked against the local v1.0 candidate on 2026-10-06. Keep these true in any v
 | Five gear slots (later) | Capacity counts unequipped gear only | Keep that rule, so new slots never shrink a bag |
 | Balance after launch | D63 keeps the content-version mechanism; the pre-launch reset is the last reset | Every post-launch balance change is a new content version; the D41 exception ends at launch |
 | Colour devices | Device templates and scene art are 1-bit/greyscale; BWRY previews exist | Colour variants are template work, not payload changes |
+| Achievements (D65) | The nine counters are optional storage fields, normalized on read and backfilled once; predicates read only bounded hero state | Every future counter an achievement will need must exist before the deeds happen; logs expire after 72 hours. Keep predicates off logs and history; append ids, never renumber |
 | Hardcore, prestige, seasons (v3.0) | One hero per owner, no lifecycle beyond death/revival | Do not add hero-mode flags to v1.0; these need their own lifecycle tables |
 
 ## Every release
 
 - One measured balance pass with a content/simulation version and release notes.
 - Small content additions only after the versioned catalog is stable.
+- Append achievement families for each new system under a new catalog version (D65); never reuse or renumber ids.
 - Review cron/recovery, leaderboard/read cost, retention, subscription headroom, current Creator Fund rules and realized payouts versus operating costs.
 - Regression checks on all four layouts, landscape and portrait, for visible changes.
 - Preserve existing players' progress and old API compatibility.

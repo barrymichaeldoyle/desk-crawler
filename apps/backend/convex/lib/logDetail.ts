@@ -93,4 +93,13 @@ export const commandDetail = v.object({
   bagSlots: v.optional(v.number()),
 })
 
-export const logDetail = v.union(simulationDetail, commandDetail)
+/** One earned achievement (D65); the name is copied so reads never need the catalog. */
+export const achievementDetail = v.object({
+  v: v.literal(1),
+  achievementId: v.string(),
+  name: v.string(),
+  family: v.string(),
+  tier: v.number(),
+})
+
+export const logDetail = v.union(simulationDetail, commandDetail, achievementDetail)

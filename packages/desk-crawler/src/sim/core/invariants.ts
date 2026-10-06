@@ -32,7 +32,13 @@ export function assertHeroInvariants(hero: HeroState, inventory: readonly ItemSn
   if (!isCount(hero.hp) || hero.hp > max) fail('HP', `hp ${hero.hp} outside 0..${max}`)
   if (!isCount(hero.lastLevelUpTick)) fail('LEVEL_TICK', 'invalid last level-up tick')
   for (const [name, value] of Object.entries(hero.counters)) {
-    if (!isCount(value)) fail('COUNTER', `counter ${name} invalid`)
+    if (name === 'monsterWins') continue
+    if (typeof value !== 'number' || !isCount(value)) fail('COUNTER', `counter ${name} invalid`)
+  }
+  const monsterIds = new Set(content.monsters.map((monster) => monster.id))
+  for (const [id, wins] of Object.entries(hero.counters.monsterWins)) {
+    if (!monsterIds.has(id)) fail('COUNTER', `monster wins for unknown monster ${id}`)
+    if (!isCount(wins)) fail('COUNTER', `monster wins for ${id} invalid`)
   }
 
   const biomeIds = new Set(content.biomes.map((biome) => biome.id))

@@ -8,7 +8,7 @@ export const MAX_RECAP_EVENTS = 200
 export interface ActivityEntry {
   readonly at: number
   readonly deltas: LogDeltas
-  readonly detail: Pick<LogDetail, 'outcome' | 'levelsGained' | 'heldFind'> | { readonly operation: string }
+  readonly detail: Pick<LogDetail, 'outcome' | 'levelsGained' | 'heldFind'> | { readonly operation: string } | { readonly achievementId: string }
 }
 
 /** Read-only, deterministic digest of recorded outcomes. Never infer facts from jokes. */

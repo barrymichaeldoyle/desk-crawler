@@ -13,6 +13,11 @@ import { starterHero, starterKit } from '@trmnl-games/desk-crawler/sim/core/star
 import { cumulativeXpToReach } from '@trmnl-games/desk-crawler/sim/core/stats'
 import type { ContentCatalog, HeroState, ItemSnapshot } from '@trmnl-games/desk-crawler/sim/core/types'
 import { createRng } from '@trmnl-games/desk-crawler/sim/core/rng'
+import { ACHIEVEMENTS, ACHIEVEMENT_FAMILIES, rarityBand } from '@trmnl-games/desk-crawler/content/achievements'
+import { allSatisfied } from '@trmnl-games/desk-crawler/sim/core/achievements'
+
+/** Days at which each hero's satisfied achievements are snapshotted (achievements.md "Verification"). */
+const ACHIEVEMENT_DAYS = [1, 7, 30] as const
 
 const TICKS_PER_DAY = 96
 
@@ -70,6 +75,8 @@ export interface HeroLog {
   bagMilestones: number
   bagPurchases: number
   bagGoldSpent: number
+  /** D65: achievement ids satisfied at the end of each snapshot day. */
+  achievementsByDay: Map<number, readonly string[]>
 }
 
 function args() {
@@ -184,6 +191,7 @@ export function simulateCohort(policy: Policy, heroes: number, days: number, con
       bagMilestones: 0,
       bagPurchases: 0,
       bagGoldSpent: 0,
+      achievementsByDay: new Map(),
     }
     let dayXp = 0
     let recentSummaries: string[] = []
@@ -255,6 +263,9 @@ export function simulateCohort(policy: Policy, heroes: number, days: number, con
         if ((w?.attack ?? 0) >= bis.attack && (a?.defense ?? 0) >= bis.defense) log.bestInSlotTick = tick
       }
       if (tick === 30 * TICKS_PER_DAY) log.goldDay30 = hero.gold
+      if (tick % TICKS_PER_DAY === 0 && (ACHIEVEMENT_DAYS as readonly number[]).includes(tick / TICKS_PER_DAY)) {
+        log.achievementsByDay.set(tick / TICKS_PER_DAY, allSatisfied({ level: hero.level, bagCapacity: hero.bagCapacity, counters: hero.counters, keepsakeTotal: 0 }, content).map((a) => a.id))
+      }
       if (tick % TICKS_PER_DAY === 0) {
         log.dailyXp.push(dayXp)
         dayXp = 0
@@ -339,7 +350,41 @@ export function summarize(policy: Policy, logs: HeroLog[], totalDays: number, co
     },
     xpLastDay: spread(lastDay),
     xpLast7Days: spread(last7),
+    achievements: achievementShares(logs),
   }
+}
+
+/**
+ * Share of heroes holding each achievement at each snapshot day, plus a band
+ * census, so a release can check that monster tier V stays Legendary at day 30.
+ */
+function achievementShares(logs: HeroLog[]) {
+  const byDay: Record<string, { bands: Record<string, number>; monsterTiers: Record<string, number[]>; shares: Record<string, number> }> = {}
+  for (const day of ACHIEVEMENT_DAYS) {
+    const counts = new Map<string, number>()
+    let heroes = 0
+    for (const log of logs) {
+      const ids = log.achievementsByDay.get(day)
+      if (ids === undefined) continue
+      heroes += 1
+      for (const id of ids) counts.set(id, (counts.get(id) ?? 0) + 1)
+    }
+    if (heroes === 0) continue
+    const shares: Record<string, number> = {}
+    const bands: Record<string, number> = { common: 0, uncommon: 0, rare: 0, legendary: 0 }
+    for (const def of ACHIEVEMENTS) {
+      const share = (counts.get(def.id) ?? 0) / heroes
+      shares[def.id] = Math.round(share * 1000) / 10
+      bands[rarityBand(share)] = (bands[rarityBand(share)] ?? 0) + 1
+    }
+    const monsterTiers: Record<string, number[]> = {}
+    for (const family of ACHIEVEMENT_FAMILIES) {
+      if (!family.id.startsWith('slay_')) continue
+      monsterTiers[family.id] = ACHIEVEMENTS.filter((a) => a.family === family.id).map((a) => shares[a.id]!)
+    }
+    byDay[`day${day}`] = { bands, monsterTiers, shares }
+  }
+  return byDay
 }
 
 function main() {
@@ -366,6 +411,9 @@ function main() {
     console.log(`  potions ${JSON.stringify(r.potions)}; useful gear/day ${r.usefulGearPerDay}; equipped upgrades/hero ${r.equippedUpgradesPerHero}`)
     console.log(`  bag ${r.bag.reach.map((b) => `${b.capacity}: ${b.median}d (p10 ${b.p10}, p90 ${b.p90})`).join('; ')}; finds/hero ${r.bag.findsPerHero}; buys/hero ${r.bag.purchasesPerHero}; gold spent median ${r.bag.goldSpentMedian}`)
     console.log(`  XP last day ${JSON.stringify(r.xpLastDay)}; last 7 days ${JSON.stringify(r.xpLast7Days)}`)
+    for (const [day, a] of Object.entries(r.achievements)) {
+      console.log(`  achievements ${day}: bands ${JSON.stringify(a.bands)}; monster tier shares % ${Object.entries(a.monsterTiers).map(([f, tiers]) => `${f.slice(5)} ${tiers.join('/')}`).join('; ')}`)
+    }
   }
 }
 

@@ -1,5 +1,5 @@
 import { maxHp } from './stats'
-import type { ContentCatalog, HeroState, NewItem } from './types'
+import type { ContentCatalog, HeroCounters, HeroState, NewItem } from './types'
 
 /**
  * Starting hero and kit (gameplay.md). Initialization, not an earned reward.
@@ -18,8 +18,45 @@ export function starterHero(id: string, content: ContentCatalog, tick: number): 
     biomeId: content.safeBiomeId,
     bagCapacity: content.bagLadder.tiers[0]!.capacity,
     lastLevelUpTick: tick,
-    counters: { combatWins: 0, retreats: 0, deaths: 0, rescues: 0, goldEarned: 0, itemsFound: 0, ticksExplored: 0 },
+    counters: zeroCounters(),
   }
+}
+
+/** Every lifetime counter at zero; the only place the full counter shape is spelled out. */
+export function zeroCounters(): HeroCounters {
+  return {
+    combatWins: 0,
+    retreats: 0,
+    deaths: 0,
+    rescues: 0,
+    goldEarned: 0,
+    itemsFound: 0,
+    ticksExplored: 0,
+    monsterWins: {},
+    eliteWins: 0,
+    jackpots: 0,
+    rareFinds: 0,
+    potionsUsed: 0,
+    trapsAvoided: 0,
+    restTicks: 0,
+    trips: 0,
+    itemsSold: 0,
+  }
+}
+
+/**
+ * Fill counters a stored hero may not have yet (the D65 counters are optional in
+ * storage until the one-off backfill has run). Every read path uses this, so a
+ * missing counter is always zero and never undefined.
+ */
+export function withCounterDefaults(counters: Partial<HeroCounters> & Pick<HeroCounters, 'combatWins' | 'retreats' | 'deaths' | 'rescues' | 'goldEarned' | 'itemsFound' | 'ticksExplored'>): HeroCounters {
+  const base = zeroCounters()
+  const full = { ...base } as { -readonly [K in keyof HeroCounters]: HeroCounters[K] }
+  for (const key of Object.keys(base) as (keyof HeroCounters)[]) {
+    const value = counters[key]
+    if (value !== undefined) (full as Record<string, unknown>)[key] = value
+  }
+  return full
 }
 
 export const STARTER_POTIONS = 3

@@ -72,6 +72,8 @@ Biome control shows unlocked choices and locked requirements. Explain travel arr
 
 Use potion shows available count and projected heal. Hide or explain unavailable/full-HP cases. Manual actions affect live web state promptly; e-ink will reflect them on its next scheduled render.
 
+Achievements (D65) sit under Records: earned families as cards (name, tier numeral, blurb, earned date, rarity band and share from the hourly publication, progress toward the next tier), unearned families collapsed behind "N more to find" as "?" cards that show only the category and the first tier's rarity, never a Legendary preview. Below twenty ranked heroes the share reads "3 of 11 heroes". No timers, streaks or task list; nothing is recomputed on a visit. See [achievements](achievements.md).
+
 ## Inventory
 
 Show the two equipped slots and a simple bag list. Item details: name, rarity word, slot, level requirement, stat and sale value. Equipped references are authoritative; comparison uses the same shared stats logic as the backend.

@@ -67,6 +67,8 @@ export interface PayloadInput {
   /** Public origin serving `/art/...` scene images (the Convex site URL). */
   readonly artBaseUrl: string | null
   readonly latestEvent: LatestEvent | null
+  /** The newest log of any kind, for the celebration; defaults to `latestEvent`. An achievement log carries its `title` (D65). */
+  readonly newestEvent?: LatestEvent | null
   /** Seven-day own-group ranking from the published set; null before any publication. */
   readonly ranking: PayloadRanking | null
 }
@@ -175,6 +177,7 @@ export const keepUnitsTogether = (text: string) =>
  */
 export function celebrationFor(latest: LatestEvent | null, level: number): string | null {
   if (latest === null) return null
+  if (latest.kind === 'achievement') return latest.title ? `Achievement: ${latest.title}` : null
   if (latest.kind === 'levelup') return `Level up! Now level ${level}`
   const outcome = latest.outcome
   if (outcome?.variant === 'combat' && outcome.elite === true && outcome.outcome === 'victory') return 'Elite defeated!'
@@ -376,7 +379,7 @@ export function buildPayload(input: PayloadInput) {
     held_item: input.heldItemName ?? '',
     wake_at_tick: hero.wakeAtTick ?? null,
     log: logs,
-    celebration: attention === null && logs.length > 0 ? celebrationFor(input.latestEvent, hero.level) : null,
+    celebration: attention === null && logs.length > 0 ? celebrationFor(input.newestEvent === undefined ? input.latestEvent : input.newestEvent, hero.level) : null,
     attention,
   }
 }

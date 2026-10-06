@@ -14,13 +14,14 @@ import { ReturnRecap } from './-recap'
 import { GameScreen } from './-gameScreen'
 import { AdventureLog } from './-log'
 import { Records } from './-records'
+import { Achievements } from './-achievements'
 
 const DevicePreview = lazy(() => import('./-devicePreview').then((module) => ({ default: module.DevicePreview })))
 
 export const Route = createFileRoute('/app/desk-crawler/')({
   head: () => seo({ title: 'Hero', index: false }),
   loader: ({ context }) =>
-    preload(context, convexQuery(api.heroes.mine, {}), convexQuery(api.inventory.mine, {}), convexQuery(api.heroes.returnSummary, {}), convexQuery(api.leaderboard.view, {})),
+    preload(context, convexQuery(api.heroes.mine, {}), convexQuery(api.inventory.mine, {}), convexQuery(api.heroes.returnSummary, {}), convexQuery(api.leaderboard.view, {}), convexQuery(api.achievements.mine, {})),
   component: HeroHome,
 })
 
@@ -58,6 +59,7 @@ function HeroHome() {
         <div className="flex min-w-0 flex-col gap-8">
           <AdventureLog />
           <Records counters={hero.counters} lifetimeXp={hero.lifetimeXp} stopped={hero.status === 'paused' || (hero.status === 'sleeping' && hero.wakeAtTick === null)} />
+          <Achievements />
         </div>
       </div>
     </div>

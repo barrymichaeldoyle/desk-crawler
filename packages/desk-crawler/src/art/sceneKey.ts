@@ -13,6 +13,8 @@ export type SceneSubject =
 export interface LatestEvent {
   readonly kind: string
   readonly outcome?: { readonly variant: string; readonly [key: string]: unknown }
+  /** An achievement log's name (D65); used by the celebration, never by the scene. */
+  readonly title?: string
 }
 
 export function sceneFor(status: string, hasWake: boolean, latest: LatestEvent | null): { pose: HeroPose; subject: SceneSubject } {

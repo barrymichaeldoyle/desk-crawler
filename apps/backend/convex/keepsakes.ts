@@ -5,6 +5,8 @@ import { currentUser, runIntent } from './lib/intent'
 import { appError } from './lib/errors'
 import { keepsakeCode, keepsakeGrant, normalizedKeepsakeCode } from './lib/keepsakes'
 import { keepsakeWeek, keepsakeWeekStartsAt } from '@trmnl-games/desk-crawler/content/keepsakes'
+import { achievementState, awardAchievements } from './lib/achievements'
+import { readWorld, worldContent } from './world'
 
 export const mine = query({
   args: {},
@@ -46,7 +48,10 @@ export const claim = mutation({
       const values = { totalCollected: totalCollected + 1, lastClaimWeek: week, lastClaimedAt: Date.now() }
       if (collection) await ctx.db.patch(collection._id, values)
       else await ctx.db.insert('deskKeepsakes', { userId: user._id, ...values })
-      // Cosmetic state only: no hero, inventory, logs, simulator or ranking writes.
+      // Cosmetic state only: no hero stats, inventory, simulator or ranking writes. The keepsake
+      // achievement family (D65) reads the new total and may add an unlock row and its log.
+      const world = await readWorld(ctx)
+      await awardAchievements(ctx, hero, achievementState(hero, totalCollected), achievementState(hero, values.totalCollected), worldContent(world), Date.now(), world?.currentTick ?? 0)
       return { changed: true, count: values.totalCollected, keepsakeOutcome: 'claimed' as const }
     })
     return { operationId: result.operationId, changed: result.changed, outcome: result.keepsakeOutcome!, totalCollected: result.count! }

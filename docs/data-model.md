@@ -10,6 +10,14 @@ Each table gets explicit argument/return validators. Status, item slot, rarity a
 
 One fixed-size row per player: `userId`, `totalCollected`, `lastClaimWeek`, `lastClaimedAt`; index `by_userId`. The ordered twelve-design shelf and repeated-copy counts derive from the safe-integer total. No unbounded array or claim-history table. Both account and game deletion deny reads/claims immediately and purge this row in their bounded jobs. `operationReceipts.result.keepsakeOutcome?` records claimed/already-claimed/invalid-code outcomes; invalid guesses commit their rate-limit charge. `trmnlInstances.by_userId_and_state` finds the active code grant without scanning historical tombstones. See the [authority contract](playlist-retention.md#authority-and-storage).
 
+### `heroAchievements` (D65)
+
+One row per earned achievement: `userId`, `heroId`, `achievementId`, `unlockedAt`, `tick`, `catalogVersion`; indexes `by_userId_and_achievementId` (logical unique key, enforced transactionally: a duplicate evaluation finds the row and writes nothing) and `by_userId_and_unlockedAt`. Keyed by owner so unlocks outlive a hero's lifecycle; bounded by the catalog (131 ids at launch, read with a 1,024-row cap). Game and account deletion purge the rows in both bounded jobs. See [achievements](achievements.md#storage).
+
+### `achievementStats` (D65)
+
+One document per publication: `publicationId`, `runId`, `counts` (achievement id → holders), `totalPlayers`, `scoreAt`; index `by_publicationId`. Written at promotion from the run's batch tally and deleted with the obsolete publication, so rarity, population and ranks come from one generation.
+
 ### `users`
 
 Fields: `tokenIdentifier` (Clerk issuer + subject identity), `publicAlias`, `normalizedAlias`, `timezone` (legacy compatibility field, validated IANA, UTC for new installs; no current UI preference, D39), `state: active | suspended | deleting`, `createdAt`, `activeHeroId?`, `deletionRequestedAt?`, `publicNameVersion` (initial 1), `nameRepairRequired?` (bounded alias/hero-name field set).
@@ -32,7 +40,8 @@ Fields:
 - Inventory count (P23 candidate): `bagGearCount`, maintained transactionally with every gear insert/delete/claim, if V05 shows the narrow tick read is worthwhile.
 - Tick markers: `eligibleFromTick`, `lastTick` (last evaluated tick; dormant heroes skipped between publications do not advance it), `lastProgressTick` (last successful gameplay evaluation), `lastAdvancedAt?`, `logSequence` (transactionally incremented for each new log).
 - Safety: `simulationState: healthy | quarantined`, `quarantineReasonCode?`.
-- Lifetime counters: `combatWins`, `retreats`, `deaths`, `rescues`, `goldEarned`, `itemsFound`, `ticksExplored`.
+- Lifetime counters (grow-only safe integers): `combatWins`, `retreats`, `deaths`, `rescues`, `goldEarned`, `itemsFound`, `ticksExplored`, and from D65/O14 `monsterWins` (object keyed by catalog monster id), `eliteWins`, `jackpots`, `rareFinds`, `potionsUsed` (simulator and the drink intent), `trapsAvoided`, `restTicks`, `trips`, `itemsSold` (sell intents). The nine D65 counters are optional in storage until the one-off `achievements.backfillCounters` has visited every hero; every read path fills a missing counter with zero (`withCounterDefaults`), and every write stores the full set. Achievement predicates read only these plus level, bag capacity and the keepsake total.
+- Achievements (D65): `achievementsVersion?`, the last catalog version evaluated; absent means a full pass is due on the next tick.
 - Companion: `companionVisitBaseline?` containing server-captured `{ at, level, lifetimeXp, logSequence }`. One checkpoint, no visit history; never changed by TRMNL polling. See [return-summary contract](build-readiness.md#a-compact-return-summary).
 
 Indexes: `by_user_active[userId,isActive]`, `by_created[createdAt]`, `by_simulation_state[simulationState]`.
@@ -65,6 +74,8 @@ Create the singleton with an idempotent internal initialization operation. Seeds
 
 ### `simulationRuns`
 
+Additive D65 fields on publication runs: `achievementCounts?` (unlock count per achievement id, merged once per batch) and `achievementPopulation?` (heroes tallied, i.e. every hero given a rank input).
+
 Fields: `tick`, `wallSlot`, `scoreAt`, `publishes` (boolean fixed at start, D31), `startedAt`, `cohortCutoff`, `contentVersion`, `simulationVersion`, `seedVersion`, `state: simulating | ranking | completed | blocked`, `cursor?`, `batchSequence`, `nextScheduledFunctionId?`, `lastProgressAt`, `simulatedAt?`, `finishedAt?`, `processed`, `eligible`, `skippedDormant`, `paused`, `sleeping`, `heldFinds`, `deadWaiting`, `quarantined`, `batches`, `encounterCounts` (fixed object), `deaths`, `levelUps`, `failureCode?`, `recoveryAttempts`.
 
 Indexes: `by_tick[tick]`, `by_state_started[state,startedAt]`, `by_started[startedAt]`.
@@ -83,13 +94,13 @@ Only pure-input/core validation failures are isolated per hero. Database/orchest
 
 ### `tickLogs`
 
-Fields: `heroId`, `source: tick | command | lifecycle`, `tick?`, `runId?`, `commandId?`, `sequence`, `at`, `kind: combat | loot | trap | rest | travel | death | revive | levelup | system`, `summary`, `detail` (versioned discriminated union), `deltas: { xpEarned, gold, hp }`.
+Fields: `heroId`, `source: tick | command | lifecycle`, `tick?`, `runId?`, `commandId?`, `sequence`, `at`, `kind: combat | loot | trap | rest | travel | death | revive | levelup | achievement | system`, `summary`, `detail` (versioned discriminated union), `deltas: { xpEarned, gold, hp }`.
 
 Indexes: `by_hero_at[heroId,at,sequence]`, `by_run_hero[runId,heroId]`, `by_at[at]`.
 
 Tick logs are one combined event per processed gameplay tick; secondary level-up/death information is inside detail and summary. Commands append their own system logs. A server-assigned sequence/tie-break keeps simultaneous log order stable; use document creation ordering as a final tie-break. Device history returns the newest six across both sources with ISO UTC timestamps and date-aware local labels.
 
-Detail variants contain bounded combat rounds, template IDs, applied item changes, outcome and version. Bound summaries to 90 code points; detail target <= 1.5 KiB. Retain 72 hours, with paginated cleanup.
+An `achievement` log (D65, source `lifecycle`) carries `detail { v: 1, achievementId, name, family, tier }` and zero deltas; it is written after the gameplay log that earned it, so it is the newest entry and drives the device celebration while the scene keeps following the newest gameplay event. Detail variants contain bounded combat rounds, template IDs, applied item changes, outcome and version. Bound summaries to 90 code points; detail target <= 1.5 KiB. Retain 72 hours, with paginated cleanup.
 
 ## Leaderboard snapshots and score history
 

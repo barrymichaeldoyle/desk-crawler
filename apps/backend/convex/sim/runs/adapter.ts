@@ -1,6 +1,7 @@
 import type { Doc, Id } from '../../_generated/dataModel'
 import type { MutationCtx } from '../../_generated/server'
 import type { HeroState, ItemChange, ItemSnapshot, LogDetail, SimulationResult } from '@trmnl-games/desk-crawler/sim/core/types'
+import { withCounterDefaults } from '@trmnl-games/desk-crawler/sim/core/starter'
 
 /** Convex hero document -> pure domain state (domain-contracts.md). */
 export function toHeroState(hero: Doc<'heroes'>): HeroState {
@@ -24,7 +25,7 @@ export function toHeroState(hero: Doc<'heroes'>): HeroState {
     ...(hero.heldItemId === undefined ? {} : { heldItemId: hero.heldItemId }),
     bagCapacity: hero.bagCapacity,
     lastLevelUpTick: hero.lastLevelUpTick,
-    counters: hero.counters,
+    counters: withCounterDefaults(hero.counters),
   }
 }
 

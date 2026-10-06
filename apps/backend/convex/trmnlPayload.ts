@@ -63,6 +63,7 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
   let logs: PayloadInput['logs'] = []
   let activity: PayloadInput['activity']
   let latestEvent: { kind: string; outcome?: { variant: string; [key: string]: unknown } } | null = null
+  let newestEvent: { kind: string; outcome?: { variant: string; [key: string]: unknown }; title?: string } | null = null
   if (hero) {
     const items = await ctx.db
       .query('items')
@@ -92,8 +93,11 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
       .order('desc')
       .take(MAX_RECAP_EVENTS + 1)
     activity = { entries: window.slice(0, MAX_RECAP_EVENTS), truncated: window.length > MAX_RECAP_EVENTS }
+    // The scene follows the newest gameplay event; the celebration follows the newest log, which may be an achievement (D65).
+    const gameplay = recent.find((log) => log.kind !== 'achievement')
+    if (gameplay) latestEvent = { kind: gameplay.kind, ...('outcome' in gameplay.detail ? { outcome: gameplay.detail.outcome } : {}) }
     const newest = recent[0]
-    if (newest) latestEvent = { kind: newest.kind, ...('outcome' in newest.detail ? { outcome: newest.detail.outcome } : {}) }
+    if (newest) newestEvent = { kind: newest.kind, ...('outcome' in newest.detail ? { outcome: newest.detail.outcome } : {}), ...('achievementId' in newest.detail ? { title: newest.detail.name } : {}) }
   }
 
   const payload = buildPayload({
@@ -141,6 +145,7 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
     spriteBaseUrl: process.env.SPRITE_BASE_URL ?? null,
     artBaseUrl: process.env.CONVEX_SITE_URL ?? null,
     latestEvent,
+    newestEvent,
     ranking: hero ? await readDeviceRanking(ctx, world, hero) : null,
   })
   return payload

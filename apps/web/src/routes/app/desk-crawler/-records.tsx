@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { api } from '@trmnl-games/backend/api'
 
-type Counters = { combatWins: number; retreats: number; deaths: number; rescues: number; goldEarned: number; itemsFound: number; ticksExplored: number }
+type Counters = { combatWins: number; retreats: number; deaths: number; rescues: number; goldEarned: number; itemsFound: number; ticksExplored: number; eliteWins: number; potionsUsed: number; trapsAvoided: number; itemsSold: number }
 
 const hours = (ticks: number) => {
   const total = Math.round((ticks * 15) / 60)
@@ -41,6 +41,10 @@ export function Records({ counters, lifetimeXp, stopped = false }: { counters: C
     ['Items found', counters.itemsFound.toLocaleString()],
     ['Gold earned', counters.goldEarned.toLocaleString()],
     ['Time adventuring', hours(counters.ticksExplored)],
+    ['Elites beaten', counters.eliteWins.toLocaleString()],
+    ['Potions drunk', counters.potionsUsed.toLocaleString()],
+    ['Traps avoided', counters.trapsAvoided.toLocaleString()],
+    ['Items sold', counters.itemsSold.toLocaleString()],
   ]
   return (
     <section aria-labelledby="records-title" className="window flex min-w-0 flex-col gap-3 px-4 pt-3 pb-4 sm:px-5">

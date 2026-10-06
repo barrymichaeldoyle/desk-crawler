@@ -97,7 +97,7 @@ const titleBarFull = `
 </div>`
 
 /** One glyph as a compact URL-encoded SVG: a single path of horizontal runs keeps each icon to a few hundred bytes. */
-const glyphUri = (kind: string, size: number) => {
+export const glyphUri = (kind: string, size: number) => {
   const runs = glyphRows(kind).flatMap((row, y) => [...row.matchAll(/#+/g)].map((run) => `M${run.index} ${y}h${run[0].length}v1h-${run[0].length}z`))
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}' viewBox='0 0 8 8' shape-rendering='crispEdges'><path d='${runs.join('')}'/></svg>`
   return `data:image/svg+xml,${encodeURIComponent(svg)}`

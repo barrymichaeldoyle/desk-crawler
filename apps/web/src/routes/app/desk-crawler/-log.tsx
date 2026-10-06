@@ -11,7 +11,7 @@ const FILTERS = [
   { key: 'all', label: 'All', kinds: null },
   { key: 'fights', label: 'Fights', kinds: ['combat'] },
   { key: 'finds', label: 'Finds', kinds: ['loot'] },
-  { key: 'milestones', label: 'Milestones', kinds: ['levelup', 'death', 'revive', 'travel'] },
+  { key: 'milestones', label: 'Milestones', kinds: ['levelup', 'achievement', 'death', 'revive', 'travel'] },
   { key: 'rest', label: 'Rest & traps', kinds: ['rest', 'trap'] },
 ] as const
 

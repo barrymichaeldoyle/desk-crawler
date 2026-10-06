@@ -19,6 +19,11 @@ export const heroStatus = v.union(
 export const rarity = v.union(v.literal('common'), v.literal('uncommon'), v.literal('rare'))
 export const itemKind = v.union(v.literal('weapon'), v.literal('armor'), v.literal('potion'))
 
+/**
+ * Lifetime counters (D65): grow-only safe integers; `monsterWins` is keyed by catalog monster id.
+ * The nine D65 counters are optional in storage until `achievements.backfillCounters` has visited
+ * every hero; every read path normalizes a missing counter to zero (`withCounterDefaults`).
+ */
 export const heroCounters = v.object({
   combatWins: v.number(),
   retreats: v.number(),
@@ -27,6 +32,15 @@ export const heroCounters = v.object({
   goldEarned: v.number(),
   itemsFound: v.number(),
   ticksExplored: v.number(),
+  monsterWins: v.optional(v.record(v.string(), v.number())),
+  eliteWins: v.optional(v.number()),
+  jackpots: v.optional(v.number()),
+  rareFinds: v.optional(v.number()),
+  potionsUsed: v.optional(v.number()),
+  trapsAvoided: v.optional(v.number()),
+  restTicks: v.optional(v.number()),
+  trips: v.optional(v.number()),
+  itemsSold: v.optional(v.number()),
 })
 
 export const logKind = v.union(
@@ -38,6 +52,7 @@ export const logKind = v.union(
   v.literal('death'),
   v.literal('revive'),
   v.literal('levelup'),
+  v.literal('achievement'),
   v.literal('system'),
 )
 
@@ -71,6 +86,27 @@ export default defineSchema({
     lastClaimWeek: v.number(),
     lastClaimedAt: v.number(),
   }).index('by_userId', ['userId']),
+
+  /** One row per earned achievement, keyed by owner so unlocks outlive a hero's lifecycle (D65). Bounded by the catalog. */
+  heroAchievements: defineTable({
+    userId: v.id('users'),
+    heroId: v.id('heroes'),
+    achievementId: v.string(),
+    unlockedAt: v.number(),
+    tick: v.number(),
+    catalogVersion: v.number(),
+  })
+    .index('by_userId_and_achievementId', ['userId', 'achievementId'])
+    .index('by_userId_and_unlockedAt', ['userId', 'unlockedAt']),
+
+  /** Per-publication unlock tally for rarity; written once at promotion from the run's batch tally (D65). */
+  achievementStats: defineTable({
+    publicationId: v.id('leaderboardPublications'),
+    runId: v.id('simulationRuns'),
+    counts: v.record(v.string(), v.number()),
+    totalPlayers: v.number(),
+    scoreAt: v.number(),
+  }).index('by_publicationId', ['publicationId']),
 
   gameDeletionJobs: defineTable({
     userId: v.id('users'),
@@ -117,6 +153,8 @@ export default defineSchema({
     simulationState: v.union(v.literal('healthy'), v.literal('quarantined')),
     quarantineReasonCode: v.optional(v.string()),
     counters: heroCounters,
+    /** Last achievement catalog version evaluated for this hero; absent means never (D65). */
+    achievementsVersion: v.optional(v.number()),
     scoreHour: v.optional(v.number()),
     scoreHourXp: v.number(),
     companionVisitBaseline: v.optional(v.object({ at: v.number(), level: v.number(), lifetimeXp: v.number(), logSequence: v.number(), counters: heroCounters })),
@@ -186,6 +224,9 @@ export default defineSchema({
     heldFinds: v.number(),
     recoveryAttempts: v.number(),
     failureCode: v.optional(v.string()),
+    /** Publication runs only: unlock counts per achievement id and the heroes tallied (D65). */
+    achievementCounts: v.optional(v.record(v.string(), v.number())),
+    achievementPopulation: v.optional(v.number()),
   })
     .index('by_tick', ['tick'])
     .index('by_state_and_startedAt', ['state', 'startedAt']),

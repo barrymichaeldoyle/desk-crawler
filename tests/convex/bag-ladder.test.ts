@@ -68,7 +68,9 @@ describe('bag ladder intents (D61)', () => {
     expect(bag.ladder.next).toMatchObject({ id: 'laptop_backpack', buyable: false })
     expect(await errorCode(user.mutation(api.inventory.buyBag, { operationId: opId(), tierId: 'laptop_backpack' }))).toBe('BAG_UNAVAILABLE')
     const history = await user.query(api.heroes.recentLog, { paginationOpts: { numItems: 5, cursor: null } })
-    expect(history.page[0]).toMatchObject({ summary: 'Bought a [[Tote Bag]]. Bag holds 10.', deltas: { gold: -40, bagSlots: 4 } })
+    // D65: the purchase also earns "Tote-ally Prepared", logged after the command.
+    expect(history.page.find((entry: { kind: string }) => entry.kind !== 'achievement')).toMatchObject({ summary: 'Bought a [[Tote Bag]]. Bag holds 10.', deltas: { gold: -40, bagSlots: 4 } })
+    expect(history.page[0]).toMatchObject({ kind: 'achievement', summary: 'Achievement: [[Tote-ally Prepared]]' })
   })
 
   it('needs a free slot to unequip, while swapping stays possible with a full bag', async () => {
@@ -92,7 +94,7 @@ describe('bag ladder intents (D61)', () => {
     })
     await runTick(t)
     expect(await heroDoc(t, heroId)).toMatchObject({ bagCapacity: 10 })
-    const log = await t.run(async (ctx) => await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', heroId)).order('desc').first())
+    const log = await t.run(async (ctx) => (await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', heroId)).order('desc').take(5)).find((entry) => entry.source === 'tick'))
     expect(log?.detail).toMatchObject({ contentVersion: 'v1', bagUpgrade: { from: 6, to: 10, tierId: 'tote_bag', source: 'milestone' } })
   })
 })

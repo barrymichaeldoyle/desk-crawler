@@ -14,6 +14,8 @@ import { getOrCreateWorld } from '../../world'
 import { applyResult, storedDetail, toHeroState, toInventory } from './adapter'
 import { beginBuild, writeRankInput } from '../../leaderboard'
 import { openIncident, recoverIncidents } from '../../incidents'
+import { achievementState, awardAchievements, keepsakeTotal, mergeCounts, tallyUnlocks } from '../../lib/achievements'
+import { needsFullPass } from '@trmnl-games/desk-crawler/sim/core/achievements'
 import { SLOT_MS, SLOT_OFFSET_MS, wallSlotFor } from '@trmnl-games/desk-crawler/sim/schedule'
 
 export { SLOT_MS, SLOT_OFFSET_MS, wallSlotFor }
@@ -108,6 +110,9 @@ export const simulateBatch = internalMutation({
       .paginate({ numItems: PAGE_SIZE, cursor: run.cursor ?? null })
 
     const counts = { processed: 0, eligible: 0, skippedDormant: 0, quarantined: 0, deaths: 0, levelUps: 0, heldFinds: 0 }
+    // D65: publication runs tally every ranked hero's unlocks for rarity.
+    const unlocks: Record<string, number> = {}
+    let population = 0
     for (const hero of page.page) {
       counts.processed += 1
       if (!hero.isActive || hero.activationState !== 'active' || hero.eligibleFromTick > run.tick || hero.lastTick >= run.tick) continue
@@ -127,6 +132,8 @@ export const simulateBatch = internalMutation({
         if (run.publishes) {
           const scores = await foldScore(ctx, hero, run, { scoreHourXp: hero.scoreHourXp, ...(hero.scoreHour === undefined ? {} : { scoreHour: hero.scoreHour }) })
           await writeRankInput(ctx, run, (await ctx.db.get(hero._id))!, owner, scores)
+          await tallyUnlocks(ctx, owner._id, unlocks)
+          population += 1
         }
         continue
       }
@@ -136,7 +143,9 @@ export const simulateBatch = internalMutation({
         .withIndex('by_heroId', (q) => q.eq('heroId', hero._id))
         .take(40)
       let result
-      const recentLogs = await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id)).order('desc').take(2)
+      const recentLogs = (await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id)).order('desc').take(4))
+        .filter((log) => log.kind !== 'achievement')
+        .slice(0, 2)
       try {
         result = simulateHero({
           hero: toHeroState(hero),
@@ -155,6 +164,8 @@ export const simulateBatch = internalMutation({
         if (run.publishes) {
           const scores = await foldScore(ctx, hero, run, { scoreHourXp: hero.scoreHourXp, ...(hero.scoreHour === undefined ? {} : { scoreHour: hero.scoreHour }) })
           await writeRankInput(ctx, run, (await ctx.db.get(hero._id))!, owner, scores)
+          await tallyUnlocks(ctx, owner._id, unlocks)
+          population += 1
         }
         await ctx.db.insert('simulationFailures', {
           runId,
@@ -202,10 +213,18 @@ export const simulateBatch = internalMutation({
       markers.scoreHourXp = credited.accumulator.scoreHourXp
       markers.scoreHour = credited.accumulator.scoreHour
       await ctx.db.patch(hero._id, markers)
+      // D65: diff lifetime state for new achievements; a hero behind the catalog gets one full pass.
+      if (result.event !== undefined || needsFullPass(hero.achievementsVersion)) {
+        const keepsakes = needsFullPass(hero.achievementsVersion) ? await keepsakeTotal(ctx, owner._id) : 0
+        const updated = (await ctx.db.get(hero._id))!
+        await awardAchievements(ctx, updated, achievementState(hero, keepsakes), achievementState(updated, keepsakes), content, now, run.tick)
+      }
       if (run.publishes) {
         const updated = (await ctx.db.get(hero._id))!
         const scores = await foldScore(ctx, updated, run, credited.accumulator)
         await writeRankInput(ctx, run, (await ctx.db.get(hero._id))!, owner, scores)
+        await tallyUnlocks(ctx, owner._id, unlocks)
+        population += 1
       }
 
       counts.deaths += result.metrics.deaths
@@ -224,6 +243,7 @@ export const simulateBatch = internalMutation({
       deaths: run.deaths + counts.deaths,
       levelUps: run.levelUps + counts.levelUps,
       heldFinds: run.heldFinds + counts.heldFinds,
+      ...(run.publishes ? { achievementCounts: mergeCounts(run.achievementCounts, unlocks), achievementPopulation: (run.achievementPopulation ?? 0) + population } : {}),
     }
     if (!page.isDone) {
       const scheduled = await ctx.scheduler.runAfter(0, internal.sim.runs.tick.simulateBatch, { runId, expectedSequence: progress.batchSequence })

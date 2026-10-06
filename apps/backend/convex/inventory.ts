@@ -8,6 +8,10 @@ import { maxHp, pctOf } from '@trmnl-games/desk-crawler/sim/core/stats'
 import { bagUsed, currentTier, guaranteedTierIndex, isBagFull, nextEarlyTier, nextTier } from '@trmnl-games/desk-crawler/sim/core/bag'
 import type { ContentCatalog, HeroState } from '@trmnl-games/desk-crawler/sim/core/types'
 import { readWorld, worldContent } from './world'
+import { awardAfterIntent } from './lib/achievements'
+import { withCounterDefaults } from '@trmnl-games/desk-crawler/sim/core/starter'
+
+const currentTick = async (ctx: QueryCtx) => (await readWorld(ctx))?.currentTick ?? 0
 
 const intentResult = v.object({
   operationId: v.string(),
@@ -30,7 +34,7 @@ async function heroItems(ctx: QueryCtx, heroId: Id<'heroes'>): Promise<Doc<'item
 const contentOf = async (ctx: QueryCtx): Promise<ContentCatalog> => worldContent(await readWorld(ctx))
 const asBagHero = (hero: Doc<'heroes'>): Pick<HeroState, 'heldItemId' | 'weaponId' | 'armorId' | 'bagCapacity' | 'level' | 'counters'> => ({
   level: hero.level,
-  counters: hero.counters,
+  counters: withCounterDefaults(hero.counters),
   bagCapacity: hero.bagCapacity,
   ...(hero.heldItemId === undefined ? {} : { heldItemId: hero.heldItemId }),
   ...(hero.weaponId === undefined ? {} : { weaponId: hero.weaponId }),
@@ -123,8 +127,9 @@ export const usePotion = mutation({
       if (potion.quantity <= 1) await ctx.db.delete(potion._id)
       else await ctx.db.patch(potion._id, { quantity: potion.quantity - 1 })
       const status = hero.status === 'resting' && hp * 100 >= max * constants.resumeExploringAtPct ? 'exploring' : hero.status
-      await ctx.db.patch(hero._id, { hp, status })
+      await ctx.db.patch(hero._id, { hp, status, counters: { ...withCounterDefaults(hero.counters), potionsUsed: (hero.counters.potionsUsed ?? 0) + 1 } })
       await commandLog(ctx, hero, 'use_potion', 'Drank a potion.', { xpEarned: 0, gold: 0, hp: hp - hero.hp })
+      await awardAfterIntent(ctx, hero, await contentOf(ctx), await currentTick(ctx))
       return { changed: true, hp }
     }),
 })
@@ -179,7 +184,7 @@ async function sellItems(ctx: MutationCtx, hero: Doc<'heroes'>, itemIds: Id<'ite
   }
   const gold = items.reduce((sum, item) => sum + item.saleValue, 0)
   for (const item of items) await ctx.db.delete(item._id)
-  await ctx.db.patch(hero._id, { gold: hero.gold + gold, counters: { ...hero.counters, goldEarned: hero.counters.goldEarned + gold } })
+  await ctx.db.patch(hero._id, { gold: hero.gold + gold, counters: { ...withCounterDefaults(hero.counters), goldEarned: hero.counters.goldEarned + gold, itemsSold: (hero.counters.itemsSold ?? 0) + items.length } })
   return { gold, items }
 }
 
@@ -191,6 +196,7 @@ export const sell = mutation({
       const hero = await requirePlayableHero(ctx, user)
       const { gold, items } = await sellItems(ctx, hero, [args.itemId])
       await commandLog(ctx, (await ctx.db.get(hero._id))!, 'sell', `Sold the ${itemLabel(items[0]!)}.`, { xpEarned: 0, gold, hp: 0 })
+      await awardAfterIntent(ctx, hero, await contentOf(ctx), await currentTick(ctx))
       return { changed: true, gold, count: 1 }
     }),
 })
@@ -205,6 +211,7 @@ export const sellMany = mutation({
       const hero = await requirePlayableHero(ctx, user)
       const { gold } = await sellItems(ctx, hero, args.itemIds)
       await commandLog(ctx, (await ctx.db.get(hero._id))!, 'sell_many', `Sold ${args.itemIds.length} items.`, { xpEarned: 0, gold, hp: 0 })
+      await awardAfterIntent(ctx, hero, await contentOf(ctx), await currentTick(ctx))
       return { changed: true, gold, count: args.itemIds.length }
     }),
 })
@@ -273,6 +280,7 @@ export const buyBag = mutation({
       const from = hero.bagCapacity
       await ctx.db.patch(hero._id, { gold: hero.gold - tier.price, bagCapacity: tier.capacity })
       await commandLog(ctx, (await ctx.db.get(hero._id))!, 'buy_bag', `Bought a [[${tier.name}]]. Bag holds ${tier.capacity}.`, { xpEarned: 0, gold: -tier.price, hp: 0 }, { bagSlots: tier.capacity - from })
+      await awardAfterIntent(ctx, hero, content, await currentTick(ctx))
       return { changed: true, gold: -tier.price, count: tier.capacity }
     }),
 })

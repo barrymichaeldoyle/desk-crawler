@@ -17,6 +17,7 @@ Live implementation evidence is available, with remaining acceptance checks reco
 | `capacity.md` | A11 | 100/1,000-hero environment, CPU/bytes/invocations/latency, 32-row bags, <=672 score slots/hero, all three ranking views, cleanup/conflicts/retries/response bytes and measured cost/headroom |
 | `deletion.md` | A07/A11 | V09 replay attempts after completed purge, dedicated-Clerk purge/checkpoint recovery, replay-safe returning-player proof, minimal revocation and disclosed lifetime |
 | `creator-fund.md` | A01/A12 | Dated V10 type/category eligibility, owner requirements, current payout qualification, evidence source and zero-payout cost assessment; no invented revenue |
+| `achievements.md` | A03/A04/A09 | D65 catalog/evaluator/integration tests, layout badge check, harness unlock shares per cohort at days 1, 7 and 30 with the tier V Legendary gate |
 | `release.md` | A12 | Commit/schema/content/template versions, gate checklist, supported matrix, reviewer access/video, limitations, approval and authorization |
 
 Artifacts identify date, environment, command/action and observed result. Scrub secrets and identities before storing them in this public repository; never commit imported profile data from raw callbacks.

@@ -20,6 +20,7 @@ export type LogKind =
   | 'death'
   | 'revive'
   | 'levelup'
+  | 'achievement'
   | 'system'
 
 // ---------------------------------------------------------------- content
@@ -175,6 +176,12 @@ export interface ContentCatalog {
 
 // ---------------------------------------------------------------- hero and items
 
+/**
+ * Lifetime counters. Every value only grows (D65): achievements are predicates
+ * over these, so a counter that exists from launch makes its achievements
+ * retroactive by construction. `itemsSold` is written by the sell intents,
+ * `potionsUsed` by both the simulator and the drink intent; the rest by ticks.
+ */
 export interface HeroCounters {
   readonly combatWins: number
   readonly retreats: number
@@ -183,7 +190,23 @@ export interface HeroCounters {
   readonly goldEarned: number
   readonly itemsFound: number
   readonly ticksExplored: number
+  /** Victories per monster id; keys are limited to the pinned catalog's monsters. */
+  readonly monsterWins: Readonly<Record<string, number>>
+  readonly eliteWins: number
+  readonly jackpots: number
+  /** Rare gear found, from loot or combat drops. */
+  readonly rareFinds: number
+  readonly potionsUsed: number
+  readonly trapsAvoided: number
+  /** Ticks that healed by resting: resting ticks and rest encounters. */
+  readonly restTicks: number
+  /** Arrivals in another biome. */
+  readonly trips: number
+  readonly itemsSold: number
 }
+
+/** Counter names that hold one number (everything except `monsterWins`). */
+export type NumericCounter = Exclude<keyof HeroCounters, 'monsterWins'>
 
 export interface HeroState {
   readonly id: string

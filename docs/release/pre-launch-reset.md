@@ -4,7 +4,7 @@ One-off, before marketplace submission. Each production step below needs Barry's
 
 ## Why two deployments
 
-The single-catalog release requires every hero to have a `bagCapacity` and every run and publication to have `paginationVersion`. Convex refuses to deploy a schema that existing documents do not satisfy, and production still holds pre-ladder heroes and older runs. So the reset deploys and runs first, on today's schema, and the cleanup deploys afterwards onto empty gameplay tables.
+The single-catalog release requires every hero to have a `bagCapacity` and every run and publication to have `paginationVersion`, D65's nine achievement counters are optional and backfilled, so they need no reset. Convex refuses to deploy a schema that existing documents do not satisfy, and production still holds pre-ladder heroes and older runs. So the reset deploys and runs first, on today's schema, and the cleanup deploys afterwards onto empty gameplay tables.
 
 ## What the reset keeps and deletes
 

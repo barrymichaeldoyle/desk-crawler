@@ -11,7 +11,7 @@ export interface LogDeltas {
 }
 
 /** Reveal only display changes, never the simulator's internal event detail. */
-export function displayLogDeltas(entry: { readonly deltas: LogDeltas; readonly detail: { readonly outcome: { readonly variant: string; readonly found?: string; readonly potionFullFallback?: boolean }; readonly bagUpgrade?: { readonly from: number; readonly to: number } } | { readonly operation: string; readonly bagSlots?: number } }): LogDeltas {
+export function displayLogDeltas(entry: { readonly deltas: LogDeltas; readonly detail: { readonly outcome: { readonly variant: string; readonly found?: string; readonly potionFullFallback?: boolean }; readonly bagUpgrade?: { readonly from: number; readonly to: number } } | { readonly operation: string; readonly bagSlots?: number } | { readonly achievementId: string } }): LogDeltas {
   const outcome = 'outcome' in entry.detail ? entry.detail.outcome : null
   const upgrade = 'outcome' in entry.detail ? entry.detail.bagUpgrade : undefined
   const bagSlots = upgrade ? upgrade.to - upgrade.from : 'operation' in entry.detail ? entry.detail.bagSlots ?? 0 : 0
@@ -20,7 +20,7 @@ export function displayLogDeltas(entry: { readonly deltas: LogDeltas; readonly d
 
 /** Shared display copy. Persisted, versioned simulator summaries stay replayable. */
 export function logPresentation(entry: { readonly summary: string; readonly kind: string; readonly deltas?: LogDeltas }) {
-  if (!entry.deltas) return { narrative: entry.summary, changes: [] as string[] }
+  if (!entry.deltas || entry.kind === 'achievement') return { narrative: entry.summary, changes: [] as string[] }
   const deltas = entry.deltas
   // Transform only plain runs: numbers/units inside marked item names are names.
   let narrative = markedRuns(entry.summary).map((run) => run.bold ? `[[${run.text}]]` : run.text

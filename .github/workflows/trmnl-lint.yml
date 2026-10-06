@@ -1,0 +1,45 @@
+name: TRMNL lint
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/trmnl-lint.yml'
+      - 'tools/trmnl/**'
+      - 'packages/desk-crawler/src/templates/**'
+      - 'packages/desk-crawler/src/art/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/trmnl-lint.yml'
+      - 'tools/trmnl/**'
+      - 'packages/desk-crawler/src/templates/**'
+      - 'packages/desk-crawler/src/art/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v6
+        with:
+          cache: true
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.7'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint:trmnl:setup
+      - run: pnpm lint:trmnl

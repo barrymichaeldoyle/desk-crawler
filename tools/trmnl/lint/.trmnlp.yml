@@ -1,0 +1,2 @@
+# Run every official rule. Any future exception must explain its reason here.
+ignored_lint_rules: []

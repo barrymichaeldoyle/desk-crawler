@@ -51,7 +51,7 @@ Disconnect/deletion prevents future authorized payloads. It cannot retract an im
 
 Each newest outcome stands alone: concrete actor/object, result and the useful effect. Avoid references such as “again” or “it escaped” that require an earlier tick. Death, revival, arrival and level gains remain comprehensible without the preceding screen.
 
-Following D54, the device shows a rolling **Last 12 hours** adventure recap, then the newest stories. The X full/side layouts retain two stories; OG and compact layouts retain one. The recap reports recorded XP/gold grants, fights won, gear and potion finds, and grouped breaks. Up to two important historical facts take priority: bag overflow, knockouts/revivals, level gains, rare finds, arrivals, elite victories and jackpots. Current hero/status and attention messages remain authoritative; “Bag filled up” describes a historical event, not necessarily the current bag state.
+Following D54, the device shows a rolling **Last 12 hours** adventure recap, then the newest stories. D56 supersedes fixed row counts: every layout keeps as many complete recent story/stat pairs as its measured height allows. The recap reports recorded XP/gold grants, fights won, gear and potion finds, and grouped breaks. Up to two important historical facts take priority: bag overflow, knockouts/revivals, level gains, rare finds, arrivals, elite victories and jackpots. Current hero/status and attention messages remain authoritative; “Bag filled up” describes a historical event, not necessarily the current bag state.
 
 The fixed window is independent of refresh, installations, device sleep and companion visit acknowledgement. A refresh cannot prove the player looked at the screen. Smaller layouts show a compact milestone/progress line and the latest outcome; an attention message takes the recap's space when needed. The latest story can be older than the recap window: an empty window says **No new adventures**, while retained history remains intact. Device story labels continue using HH:MM under D44.
 
@@ -64,9 +64,9 @@ The companion retains up to three days of detailed history; beyond that, only pe
 | Layout | Must retain | Simplification order |
 | --- | --- | --- |
 | Full | Hero/status, newest story, HP/XP, seven-day group Top 5/score/personal rank, group/period and service warnings, a standing bag QR (template v17; an action QR replaces rank and bag QR) | Gear → gold → older logs → decorative sprite size |
-| Half horizontal | Hero/status, HP/level, newest story, personal rank and service warnings | Second log → XP/gold → sprite size |
-| Half vertical | Hero/status, HP/level, newest story, personal rank and service warnings | Older logs → XP/gold → sprite size |
-| Quadrant | Name/level, readable status/HP, newest outcome or recovery/setup message and service warnings | Sprite/detail first; no board or second progress bar |
+| Half horizontal | Hero/status, HP/level, newest story, companion QR and service warnings | Second log → XP/gold → sprite size |
+| Half vertical | Hero/status, HP/level, newest story, companion QR and service warnings | Older logs → XP/gold → sprite size |
+| Quadrant | Name/level, readable status/HP, companion QR, newest outcome or recovery/setup message and service warnings | Sprite/detail first; no board or second progress bar |
 
 Missing optional text falls back safely; missing required stats never render as zero. HP 0 is real and must survive Liquid default handling. Keep stable positions for hero, status and service messages across normal/recovery states.
 
@@ -98,4 +98,6 @@ D55 (deployed v26): remove the explicit vertical gap inside each story/stat pair
 
 D56 deployed template v27 moves the X full bag caption into the divider above the QR and the recap beneath it, allocating 7/2/3 grid columns to history/rank/bag. All four OG/X layouts fit the longest complete newest-first prefix from the existing ten stories, measuring actual wrapped boxes after framework terminalization and reserving the footer/following rank line. Shorter stories can show more entries; long descriptions retain their complete change row. Attention keeps priority. Barry approved production rollout on October 6; the actual X server image and natural tick 218 passed with progress preserved ([evidence](evidence/adaptive-log-layout.md)).
 
-D57 local template v28 supersedes D56’s X full arrangement: 6/4/2 history/ranking/bag columns, a 20% smaller standing X QR (integer scale 4), and one complete full-width recap line above the title bar. Rank fitting reserves context width. OG and compact recap placement stays unchanged; adaptive complete-story fitting remains. All 256 previews pass; Barry approved production rollout on October 6; live verification is in progress ([evidence](evidence/recap-ribbon.md)).
+D57 deployed template v28 supersedes D56’s X full arrangement: 6/4/2 history/ranking/bag columns, a 20% smaller standing X QR (integer scale 4), and one complete full-width recap line above the title bar. Rank fitting reserves context width. OG and compact recap placement stays unchanged; adaptive complete-story fitting remains. All 256 previews pass; Barry approved production rollout on October 6; the actual X server image, eight live-data previews and natural tick 222 passed with progress preserved ([evidence](evidence/recap-ribbon.md)).
+
+D58 local template v29 reserves a QR in every layout, uses compact OG full art/ranking and puts the full/half recap at the bottom. Side OG gives XP/art/rank space to recent history; personal ranking remains in full and the companion. X full keeps its 6/4/2 columns with explicit space beneath the story divider and recap rule. Setup/action QRs replace the standing bag link. Production remains v28 until a separately approved rollout; [local verification](evidence/layout-polish.md).

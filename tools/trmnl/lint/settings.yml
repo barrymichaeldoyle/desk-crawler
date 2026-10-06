@@ -1,0 +1,3 @@
+# Local lint metadata; mirrors docs/release/review-package.md, not a deployment config.
+name: Desk Crawler
+description: A quiet office RPG for your TRMNL

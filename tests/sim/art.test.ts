@@ -100,12 +100,12 @@ describe('local scene time', () => {
 describe('companion QR codes', () => {
   it('encode only allowlisted targets and scan back to the companion URL', async () => {
     const { default: jsQR } = await import('jsqr')
-    const { parseQrPath, qrInk, qrPath, renderQrPng, QR_SCALE, QR_LARGE_SCALE } = await import('@trmnl-games/desk-crawler/art/qr')
+    const { parseQrPath, qrInk, qrPath, renderQrPng, QR_SCALE, QR_SCALES } = await import('@trmnl-games/desk-crawler/art/qr')
     expect(parseQrPath(qrPath('bag', QR_SCALE))).toEqual({ target: 'bag', scale: QR_SCALE })
     for (const bad of ['/art/qr/v1/evil/3.png', '/art/qr/v1/app/9.png', '/art/qr/v0/app/3.png', '/art/qr/v1/app/3.png?x=1']) {
       expect(renderQrPng(bad, 'https://example.test')).toBeNull()
     }
-    for (const scale of [QR_SCALE, QR_LARGE_SCALE]) {
+    for (const scale of QR_SCALES) {
       const { size, ink } = qrInk('https://trmnlgames.com/app/desk-crawler/inventory', scale)
       const rgba = new Uint8ClampedArray(size * size * 4)
       for (let i = 0; i < ink.length; i += 1) rgba.fill(ink[i] ? 0 : 255, i * 4, i * 4 + 3), (rgba[i * 4 + 3] = 255)

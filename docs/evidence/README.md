@@ -45,4 +45,6 @@ The [D54 twelve-hour recap](activity-recap.md) passed 200 OG/X layout checks and
 
 The [D56 adaptive layout](adaptive-log-layout.md) is deployed v27, verified by 202 tests, official lint/build and 256 settled OG/X views. X full relocates the bag caption/recap and narrows ranking; all layouts fit complete stories to available height. Barry approved production rollout on October 6; the actual X server image and natural tick 218 passed with progress preserved.
 
-[D57 bottom recap and wider ranking](recap-ribbon.md) is local v28: complete one-line X summary above the title bar, wider ranking and 20% smaller standing QR. All 256 previews and 202 tests pass; Barry approved production rollout on October 6, and live verification is in progress.
+[D57 bottom recap and wider ranking](recap-ribbon.md) is deployed v28: complete one-line X summary above the title bar, wider ranking and 20% smaller standing QR. All 256 previews and 202 tests pass; Barry approved production rollout on October 6; actual X server image, eight live-data previews and natural tick 222 passed with progress preserved.
+
+[Compact layout polish and QR coverage](layout-polish.md) records local template v29, 256 OG/X checks and 248 visible QRs. Production remains v28; no rollout has been performed for this candidate.

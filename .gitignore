@@ -30,6 +30,7 @@ dist-ssr/
 skills-lock.json
 .playwright-mcp/
 .previews/
+.trmnl-lint/
 
 # Impeccable review captures and decision pages (local evidence, regenerated per run).
 .impeccable/review/

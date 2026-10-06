@@ -37,9 +37,15 @@ cp .env.example .env.local     # then fill in values (see comments)
 npx convex dev                 # Convex backend, schema and functions
 pnpm dev                       # web app on http://localhost:3000
 pnpm check                     # typecheck + all tests
+pnpm lint:trmnl:setup           # install the pinned official linter (once)
+pnpm lint:trmnl                 # lint all four TRMNL layouts
 pnpm balance                   # balance harness (see docs/evidence/balance.md)
 pnpm tsx tools/trmnl/preview.ts  # local TRMNL layout previews in .previews/
 ```
+
+TRMNL lint uses the official [`trmnlp lint`](https://github.com/usetrmnl/trmnlp#lint-markup) command from `trmnl_preview` 0.20.0. It requires Ruby 4+ and Bundler; if your default Ruby is older, the wrapper uses `mise exec ruby@4.0.7` (install it with `mise install ruby@4.0.7`). Dependencies stay in ignored `.trmnl-lint/`, and setup uses the committed Gemfile lock. The wrapper extracts the current TypeScript templates into a temporary directory, uses the preview's pinned framework version, and runs every official rule. For JSON output, run `pnpm exec tsx tools/trmnl/lint.ts --json`. Listing name/description are mirrored in `tools/trmnl/lint/settings.yml`; update them when the listing changes.
+
+The separate [TRMNL lint workflow](.github/workflows/trmnl-lint.yml) runs for relevant pull requests and pushes to `main`. `pnpm check` remains the Node-only typecheck/test gate used by Cloudflare builds. Lint complements the required layout previews and live render checks.
 
 What is built and what remains: [implementation status](docs/status.md).
 

@@ -67,6 +67,44 @@ describe('device catch-up summary (D54)', () => {
   })
 })
 
+describe('companion QR in every view', () => {
+  const base = 'https://art.test/art/qr/v3'
+  const liquid = new Liquid({ timezoneOffset: 0 })
+
+  it('keeps a standing bag link in all layouts and lets the action destination take priority', async () => {
+    for (const markup of Object.values(screenMarkup)) {
+      const standing = await liquid.parseAndRender(markup, { ...payload(), companion_qr_base: `${base}/bag` })
+      expect(standing).toContain(`src="${base}/bag/3.png"`)
+      expect(standing).toContain(`src="${base}/bag/4.png"`)
+      expect(standing).toContain('Your bag')
+      const action = await liquid.parseAndRender(markup, { ...payload(), companion_qr_base: `${base}/bag`, qr_base: `${base}/app`, qr_label: 'Open your companion', attention: 'A find is waiting.' })
+      expect(action).toContain(`src="${base}/app/3.png"`)
+      expect(action).toContain('Open your companion')
+      expect(action).toContain('A find is waiting.')
+      expect(action).not.toContain(`src="${base}/bag/`)
+    }
+  })
+
+  it('keeps the setup QR on unlinked and first-run screens without duplicating the bag code', async () => {
+    for (const markup of Object.values(screenMarkup)) {
+      for (const state of [{ status: 'unlinked' }, { first_run: true }]) {
+        const html = await liquid.parseAndRender(markup, { ...payload(), ...state, qr_base: `${base}/app`, companion_qr_base: `${base}/bag` })
+        expect(html).toContain(`src="${base}/app/`)
+        expect(html).not.toContain(`src="${base}/bag/`)
+        expect(html.match(/src="https:\/\/art.test\/art\/qr\//g)).toHaveLength(2)
+      }
+    }
+  })
+
+  it('omits the code when the payload has no art endpoint', async () => {
+    for (const markup of Object.values(screenMarkup)) {
+      const html = await liquid.parseAndRender(markup, payload())
+      expect(html).not.toMatch(/src="\/\d\.png"/)
+      expect(html).not.toContain('data-companion-qr')
+    }
+  })
+})
+
 describe('parseUtcOffset', () => {
   it('accepts whole seconds within ±14 hours', () => {
     expect(parseUtcOffset('7200')).toBe(7200)
@@ -101,7 +139,7 @@ describe('full layout', () => {
     const standing = await render({ ...payload(), companion_qr_base: `${base}/bag` })
     expect(standing).toContain(`src="${base}/bag/3.png"`)
     expect(standing).toContain('Your bag')
-    const action = await render({ ...payload(), companion_qr_base: `${base}/bag`, qr_url: `${base}/bag/3.png`, qr_url_large: `${base}/bag/5.png`, qr_label: 'Scan to open your bag' })
+    const action = await render({ ...payload(), companion_qr_base: `${base}/bag`, qr_base: `${base}/bag`, qr_url: `${base}/bag/3.png`, qr_url_large: `${base}/bag/5.png`, qr_label: 'Scan to open your bag' })
     expect(action).not.toContain('Your bag')
     expect(action).not.toContain('This week')
   })

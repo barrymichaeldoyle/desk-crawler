@@ -6,15 +6,15 @@
 
 | Artifact | Current deployed state | Local submission candidate |
 | --- | --- | --- |
-| Source | `a9b682849722e9349b1b611ccd5873cf948df1fb` | Deployed October 6 at 13:13:33 UTC; [adaptive layout release](adaptive-log-layout.md) |
+| Source | `422b2b3ab7c68e88c20c60379018e93532fc37b5` | Deployed October 6 at 14:14:32 UTC; [bottom recap release](recap-ribbon.md) |
 | Hero schema / simulator / gameplay numbers | 1 / 1 / v2 tuning | Unchanged |
 | Active narrative/catalog | v4 | Unchanged |
-| TRMNL template / art | v27 / scene v4 | Local v28 restores leaderboard width, shrinks the bag QR and moves the recap into a complete bottom line; 256 previews and 202 tests pass, Barry approved rollout on October 6, live verification in progress ([evidence](recap-ribbon.md)). Deployed v27 server render and tick 218 passed ([evidence](adaptive-log-layout.md)) |
+| TRMNL template / art | v28 / scene v4 | Wider ranking, smaller bag QR and complete bottom recap deployed; 256 previews, 202 tests, actual X server image, eight live-data views and natural tick 222 passed ([evidence](recap-ribbon.md)) ([evidence](adaptive-log-layout.md)) |
 | Plugin | 564, `desk_crawler`, Third Party, development | Review package prepared |
 | Companion | https://trmnlgames.com, `/app/desk-crawler` | Updated landing sample, help and potion-find labels live |
 | Backend | `exciting-cormorant-948` | Deployed candidate adds optional pagination versions, portable cursors, deletion/notice guards and ranking cost fix; D53 shared log polish |
 
-The current deployed version is recorded in [adaptive layout](adaptive-log-layout.md); [compact log rows](log-density.md) retain v26 evidence; [activity recap](activity-recap.md), [log-spacing](log-spacing.md) and [scene-time](scene-time.md) preserve earlier release evidence. Older v11/v12 checks are historical, not outstanding candidate work.
+The current deployed version is recorded in [bottom recap](recap-ribbon.md); [adaptive layout](adaptive-log-layout.md) retains v27 evidence; [compact log rows](log-density.md) retain v26 evidence; [activity recap](activity-recap.md), [log-spacing](log-spacing.md) and [scene-time](scene-time.md) preserve earlier release evidence. Older v11/v12 checks are historical, not outstanding candidate work.
 
 ## Verified evidence
 
@@ -60,6 +60,8 @@ Keep these gates visible even though the submission form does not request them. 
 
 ## Waivers and display limits
 
-D43 makes rendered previews the all-layout/mashup gate; Barry does not need to repeat each physical view. The D46 physical glance, real claim and post-claim checks were explicitly waived on 2026-10-05, not passed ([evidence](playlist-retention.md)); do not reopen them as submission prerequisites. Later v25/v26/v27 physical-screen readability remains unobserved. Theme/text-scale/outage behavior is not certified merely by an ordinary full-layout render.
+D43 makes rendered previews the all-layout/mashup gate; Barry does not need to repeat each physical view. The D46 physical glance, real claim and post-claim checks were explicitly waived on 2026-10-05, not passed ([evidence](playlist-retention.md)); do not reopen them as submission prerequisites. Later v25/v26/v27/v28 physical-screen readability remains unobserved. Theme/text-scale/outage behavior is not certified merely by an ordinary full-layout render.
 
-Barry authorized the listing update and companion deployment. The existing production pipeline deployed the polish and D52 read-only query changes; the original installation rendered successfully afterward ([evidence](listing-polish-deploy.md)). Device templates are now v27 after the approved D54/D55/D56 releases. Further submission, media publication and reviewer contact require their own authorization.
+Barry authorized the listing update and companion deployment. The existing production pipeline deployed the polish and D52 read-only query changes; the original installation rendered successfully afterward ([evidence](listing-polish-deploy.md)). Device templates are now v28 after the approved D54/D55/D56/D57 releases. Further submission, media publication and reviewer contact require their own authorization.
+
+Further D58 layout polish is prepared as local template v29, including QR coverage in all views and better compact history density. [Local evidence](layout-polish.md) records passing checks; it has not replaced production v28.

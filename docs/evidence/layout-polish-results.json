@@ -1,0 +1,7151 @@
+{
+  "templateVersion": 29,
+  "frameworkVersion": "3.4.0",
+  "scope": "Local browser previews; no production rollout or physical display acceptance",
+  "checks": 256,
+  "states": 32,
+  "qrRenderedChecks": 248,
+  "qrPresenceMismatches": 0,
+  "results": [
+    {
+      "state": "arrivalRecap",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "arrivalRecap",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1812.50146484375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "arrivalRecap",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "arrivalRecap",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 14,
+          "height": 30.60003662109375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1604.489013671875,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "arrivalRecap",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "arrivalRecap",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "arrivalRecap",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "arrivalRecap",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "dead",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "dead",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "dead",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "dead",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "dead",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "dead",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "dead",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "dead",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "denseLong",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "denseLong",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "denseLong",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        2
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "denseLong",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "denseLong",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "denseLong",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "denseLong",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "denseLong",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "denseShort",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "denseShort",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "denseShort",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "denseShort",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "denseShort",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "denseShort",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "denseShort",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        2
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "denseShort",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "elite",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "elite",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "elite",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        2
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "elite",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "elite",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "elite",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "elite",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "elite",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "emptyHistory",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 132,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "emptyHistory",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 415.7999877929687,
+          "assetWidth": 231
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "emptyHistory",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "emptyHistory",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 297,
+          "assetWidth": 165
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "emptyHistory",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 132,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "emptyHistory",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 297,
+          "assetWidth": 165
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "emptyHistory",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "emptyHistory",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.6000061035156,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "emptyWindow",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 247,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "emptyWindow",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 456.0890502929687,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "emptyWindow",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 247,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "emptyWindow",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 456.0890502929687,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "emptyWindow",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "emptyWindow",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "emptyWindow",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "emptyWindow",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "expense",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "expense",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "expense",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "expense",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "expense",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "expense",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "expense",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "expense",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "firstRun",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 132,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "firstRun",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 415.7999877929687,
+          "assetWidth": 231
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "firstRun",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "firstRun",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 297,
+          "assetWidth": 165
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "firstRun",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 132,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "firstRun",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 297,
+          "assetWidth": 165
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "firstRun",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "firstRun",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.6000061035156,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "fullBagRecap",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "fullBagRecap",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "fullBagRecap",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "fullBagRecap",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "fullBagRecap",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "fullBagRecap",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "fullBagRecap",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "fullBagRecap",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "knockoutRecap",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "knockoutRecap",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "knockoutRecap",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "knockoutRecap",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "knockoutRecap",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "knockoutRecap",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "knockoutRecap",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "knockoutRecap",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "largeRanking",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "largeRanking",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "largeRanking",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "largeRanking",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "largeRanking",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "largeRanking",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "largeRanking",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "largeRanking",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "levelUp",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "levelUp",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "levelUp",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "levelUp",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "levelUp",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "levelUp",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "levelUp",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "levelUp",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "longHero",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "longHero",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "longHero",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "longHero",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "longHero",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "longHero",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "longHero",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "longHero",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "longText",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "longText",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "longText",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        2
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "longText",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "longText",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "longText",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "longText",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "longText",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "milestones",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 291,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "milestones",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1736.07177734375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "milestones",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        2
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 291,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "milestones",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1736.07177734375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "milestones",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "milestones",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "milestones",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "milestones",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "missingQr",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": false,
+      "qrCount": 0,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "missingQr",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": false,
+      "qrCount": 0,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [],
+      "visibleStories": [
+        10
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "missingQr",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": false,
+      "qrCount": 0,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "missingQr",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": false,
+      "qrCount": 0,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "missingQr",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": false,
+      "qrCount": 0,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "missingQr",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": false,
+      "qrCount": 0,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [],
+      "visibleStories": [
+        8
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "missingQr",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": false,
+      "qrCount": 0,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [],
+      "visibleStories": [
+        2
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "missingQr",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": false,
+      "qrCount": 0,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "noMetadata",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        8
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "noMetadata",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        10
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "noMetadata",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "noMetadata",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        10
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "noMetadata",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        8
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "noMetadata",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        10
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "noMetadata",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "noMetadata",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        10
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "normal",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "normal",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "normal",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "normal",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "normal",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "normal",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "normal",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "normal",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "officeDay",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "officeDay",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "officeDay",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "officeDay",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "officeDay",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "officeDay",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "officeDay",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "officeDay",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "officeNight",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "officeNight",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "officeNight",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "officeNight",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "officeNight",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "officeNight",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "officeNight",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "officeNight",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "overnight",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "overnight",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "overnight",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "overnight",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "overnight",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "overnight",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "overnight",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "overnight",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "partial",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 373,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "partial",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 954.4780883789062,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "partial",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 373,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "partial",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 954.4780883789062,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "partial",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "partial",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "partial",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "partial",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "paused",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "paused",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "paused",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "paused",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "paused",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "paused",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "paused",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "paused",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "quarantined",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "quarantined",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "quarantined",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "quarantined",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "quarantined",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "quarantined",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "quarantined",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "quarantined",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "quietMorning",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 172,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "quietMorning",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 321.3421936035156,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "quietMorning",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 172,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "quietMorning",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 321.3421630859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "quietMorning",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "quietMorning",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "quietMorning",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        2
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "quietMorning",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "recordedHistory",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 268,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "recordedHistory",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1298.5452880859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "recordedHistory",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 268,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "recordedHistory",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1298.5452880859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "recordedHistory",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "recordedHistory",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "recordedHistory",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "recordedHistory",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "recoveredRecap",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 329,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "recoveredRecap",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1787.3858642578125,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "recoveredRecap",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 329,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "recoveredRecap",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1787.3858642578125,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "recoveredRecap",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "recoveredRecap",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "recoveredRecap",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "recoveredRecap",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "sleeping",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "sleeping",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "sleeping",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "sleeping",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "sleeping",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "sleeping",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "sleeping",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "sleeping",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "stale",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "stale",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "stale",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "stale",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "stale",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "stale",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "stale",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "stale",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "travelling",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 780
+        }
+      ]
+    },
+    {
+      "state": "travelling",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1836
+        }
+      ]
+    },
+    {
+      "state": "travelling",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        3
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 19,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 260,
+          "width": 760
+        }
+      ]
+    },
+    {
+      "state": "travelling",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.60009765625,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        6
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": [
+        {
+          "fontSize": 16,
+          "height": 35.0999755859375,
+          "horizontalOverflow": false,
+          "singleLine": true,
+          "textWidth": 1487.8265380859375,
+          "width": 1800
+        }
+      ]
+    },
+    {
+      "state": "travelling",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "travelling",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        5
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "travelling",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [
+        1
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "travelling",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [
+        4
+      ],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "unlinked",
+      "device": "og",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 132,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "unlinked",
+      "device": "x",
+      "layout": "markup",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 415.7999572753906,
+          "assetWidth": 231
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "unlinked",
+      "device": "og",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "unlinked",
+      "device": "x",
+      "layout": "markup_half_horizontal",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 297,
+          "assetWidth": 165
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "unlinked",
+      "device": "og",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 132,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "unlinked",
+      "device": "x",
+      "layout": "markup_half_vertical",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 297,
+          "assetWidth": 165
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "unlinked",
+      "device": "og",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 99,
+          "assetWidth": 99
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    },
+    {
+      "state": "unlinked",
+      "device": "x",
+      "layout": "markup_quadrant",
+      "qrExpected": true,
+      "qrCount": 1,
+      "qrLoaded": true,
+      "qrInsideView": true,
+      "qrSizes": [
+        {
+          "renderedWidth": 237.5999755859375,
+          "assetWidth": 132
+        }
+      ],
+      "visibleStories": [],
+      "fitComplete": true,
+      "anotherStoryWouldFit": false,
+      "footerOverflow": 0,
+      "brokenImages": 0,
+      "headerTextOverflow": false,
+      "rankTextOverflow": false,
+      "recapRibbon": []
+    }
+  ]
+}

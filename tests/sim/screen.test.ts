@@ -35,8 +35,15 @@ describe('keepsake footer', () => {
   it('shows the supplied device code in all four layouts and omits it from companion previews', async () => {
     for (const markup of Object.values(screenMarkup)) {
       const liquid = new Liquid({ timezoneOffset: 0 })
-      expect(await liquid.parseAndRender(markup, { ...payload(), desk_keepsake_code: 'ABCD-EFGH' })).toContain('Keepsake ABCD-EFGH')
+      expect(await liquid.parseAndRender(markup, { ...payload(), desk_keepsake_code: 'ABCD-EFGH' })).toContain('Keepsake code ABCD-EFGH')
       expect(await liquid.parseAndRender(markup, payload())).not.toContain('Keepsake')
+    }
+  })
+
+  it('uses the short label in the narrow side and quarter portrait bars', async () => {
+    for (const markup of [screenMarkup.markup_half_vertical, screenMarkup.markup_quadrant]) {
+      const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...payload(), desk_keepsake_code: 'ABCD-EFGH' })
+      expect(html).toContain('>Keepsake ABCD-EFGH<')
     }
   })
 })

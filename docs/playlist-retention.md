@@ -4,7 +4,7 @@ Implemented and deployed on 2026-10-05 under Barry’s request to choose and imp
 
 ## Player experience
 
-The TRMNL title bar shows `Keepsake ABCD-EFGH` in all four layouts while the account has an unclaimed weekly souvenir. The companion home links to Settings → Desk keepsakes. The owner enters that code to collect a permanent, illustrated office souvenir. The companion/public preview never contains the code.
+The TRMNL title bar shows `Keepsake code ABCD-EFGH` in all four layouts (`Keepsake ABCD-EFGH` in the narrow side/quarter portrait bars, where the code replaces the plugin name on 480-pixel panels) while the account has an unclaimed weekly souvenir. The companion home links to Settings → Desk keepsakes. The owner enters that code to collect a permanent, illustrated office souvenir. The companion/public preview never contains the code.
 
 Twelve authored designs arrive in a fixed sequence: stapler, mug, save disk, fern, cabinet key, debugging duck, clock, badge, lamp, tape, pager and trophy. After the first set, each further claim adds another copy of the next design. The shelf shows lifetime counts rather than ending after twelve weeks. Missing weeks does not advance the sequence, expire a design, reset a count or break a streak. There is no streak.
 

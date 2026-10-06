@@ -26,8 +26,12 @@ const RUNE_DIVIDER = svgDataUri(
     '<rect x="262" y="3" width="2" height="6"/><rect x="336" y="3" width="2" height="6"/></svg>',
 )
 
-/** Device-envelope-only code: no code in owner/public preview payloads. Fits the existing footer height. */
-const keepsakeFooter = `{% if desk_keepsake_code %}<span class="instance">Keepsake {{ desk_keepsake_code | escape }}</span>{% endif %}`
+/**
+ * Device-envelope-only code: no code in owner/public preview payloads. Fits the existing footer height. "code" tells a
+ * passer-by it is something to enter; the narrow portrait bars drop the word to fit.
+ */
+const KEEPSAKE_LABEL = 'Keepsake code'
+const keepsakeFooter = `{% if desk_keepsake_code %}<span class="instance">${KEEPSAKE_LABEL} {{ desk_keepsake_code | escape }}</span>{% endif %}`
 
 const titleBar = `
 <div class="title_bar">
@@ -38,9 +42,11 @@ const titleBar = `
 
 /**
  * Narrow portrait columns (side, quarter): a 480-pixel-wide panel can't fit the name beside the code, so while a code
- * is showing it takes the name's place there; the icon still marks the plugin. The X keeps both.
+ * is showing it takes the name's place there; the icon still marks the plugin. The X keeps both. Both use the short label.
  */
-const titleBarNarrow = titleBar.replace('<span class="title">', '<span class="title{% if desk_keepsake_code %} hidden lg:inline-block{% endif %}">')
+const titleBarNarrow = titleBar
+  .replace('<span class="title">', '<span class="title{% if desk_keepsake_code %} hidden lg:inline-block{% endif %}">')
+  .replace(`${KEEPSAKE_LABEL} {{`, 'Keepsake {{')
 
 
 type SceneField = 'scene_url' | 'scene_url_small'

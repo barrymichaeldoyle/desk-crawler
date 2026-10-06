@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { AuthShell } from '../lib/platformShell'
 import { useIntent } from '../lib/intent'
-import { Button, Card, ErrorNote } from '../lib/ui'
+import { Button, ErrorNote } from '../lib/ui'
 import { seo } from '../lib/seo'
 import { preload } from '../lib/preload'
 
@@ -22,27 +22,26 @@ function Account() {
       <h1 className="font-display text-3xl font-bold">Account</h1>
       {isPending ? <p role="status">Loading your account…</p> : (
         <>
-          <Card title="Public identity">
-            {me?.user ? <p>Your public name is <strong>{me.user.publicAlias}</strong>. It is shared across TRMNL Games.</p> : <p>Pick a public name when you connect your first game from TRMNL. Your sign-in is ready.</p>}
-            <p className="mt-3 text-sm text-muted">Use the profile button above to manage your sign-in methods.</p>
-          </Card>
-          <Card title="Privacy and data">
-            <p><Link to="/privacy" className="underline underline-offset-4">Read the privacy policy</Link> for what we store and how deletion works.</p>
-            <p className="mt-3">To remove only Desk Crawler progress and keep your account, use <Link to="/app/desk-crawler/settings" className="underline underline-offset-4">Desk Crawler settings</Link>.</p>
-          </Card>
-          <Card title="Delete TRMNL Games account">
-            <p>This permanently removes your progress and connections from every game on TRMNL Games, and deletes your sign-in. Your public name is hidden immediately. Backups expire within about a week. TRMNL may keep the last screen until you remove the plugin from its playlist.</p>
-            {me ? (
-              <>
-                <label className="mt-4 flex flex-col gap-2 text-sm">
-                  <span className="font-semibold">Type DELETE to confirm</span>
-                  <input value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" autoCapitalize="characters" spellCheck={false} disabled={deletion.pending} className="min-h-11 border-2 border-edge bg-ground px-3 text-base" />
-                </label>
-                <Button className="mt-4" variant="danger" pending={deletion.pending} busyLabel="Removing account…" disabled={confirm !== 'DELETE'} onClick={async () => { if (await deletion.run({ confirm: 'DELETE' })) await clerk.signOut({ redirectUrl: '/' }) }}>Delete my TRMNL Games account</Button>
-                <ErrorNote message={deletion.error} />
-              </>
-            ) : null}
-          </Card>
+          <div className="flex flex-col gap-3">
+            {me?.user ? <p>Playing as <strong>{me.user.publicAlias}</strong> across TRMNL Games.</p> : <p>You pick a public name when you connect your first game from TRMNL.</p>}
+            <p className="text-sm text-muted">Manage your sign-in methods from the profile button above.</p>
+          </div>
+          <nav aria-label="Account" className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
+            <Link to="/privacy" className="inline-flex min-h-11 items-center underline underline-offset-4">Privacy policy</Link>
+            <Link to="/app/desk-crawler/settings" className="inline-flex min-h-11 items-center underline underline-offset-4">Desk Crawler settings</Link>
+          </nav>
+          {me ? (
+            <details className="border-t-2 border-hp pt-4">
+              <summary className="min-h-11 cursor-pointer font-semibold text-hp-ink">Delete TRMNL Games account…</summary>
+              <p>This removes your progress and connections from every game on TRMNL Games and deletes your sign-in, and cannot be undone. Your name is hidden immediately, backups expire within about a week, and TRMNL keeps its last screen until you remove the plugin. To remove only Desk Crawler progress, use <Link to="/app/desk-crawler/settings" className="underline underline-offset-4">Desk Crawler settings</Link>.</p>
+              <label className="mt-4 flex flex-col gap-2 text-sm">
+                <span className="font-semibold">Type DELETE to confirm</span>
+                <input value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" autoCapitalize="characters" spellCheck={false} disabled={deletion.pending} className="min-h-11 border-2 border-edge bg-ground px-3 text-base" />
+              </label>
+              <Button className="mt-4" variant="danger" pending={deletion.pending} busyLabel="Removing account…" disabled={confirm !== 'DELETE'} onClick={async () => { if (await deletion.run({ confirm: 'DELETE' })) await clerk.signOut({ redirectUrl: '/' }) }}>Delete my TRMNL Games account</Button>
+              <ErrorNote message={deletion.error} />
+            </details>
+          ) : null}
         </>
       )}
     </main>

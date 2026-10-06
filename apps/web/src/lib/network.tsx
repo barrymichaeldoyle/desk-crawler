@@ -21,7 +21,7 @@ export function OfflineNote() {
   const online = useOnline()
   return online ? null : (
     <p role="status" className="border-b border-rule px-4 py-3 text-center text-sm">
-      You're offline. Showing the last available update. Reconnect to make changes; actions aren't queued.
+      You’re offline, so this is the last update. Changes need a connection.
     </p>
   )
 }

@@ -124,7 +124,7 @@ function LatestEvent() {
   const gains = changes.filter((part) => part !== 'No effect')
   return (
     <span className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-sm text-[#3a3566]">
-      <span>Last: {markedRuns(narrative).map((run) => run.text).join('')}</span>
+      <span>{markedRuns(narrative).map((run) => run.text).join('')}</span>
       {gains.map((part) => <span key={part} className={`label-px px-1.5 text-night ${CHIP_FILL[changeTone(part)] ?? 'bg-muted'}`}>{keepUnitsTogether(part)}</span>)}
     </span>
   )

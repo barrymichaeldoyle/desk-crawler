@@ -88,7 +88,7 @@ function ConnectForm() {
       if (result.ok) { window.location.assign(result.callbackUrl); return }
       setError(result.message)
     } catch {
-      setError('We couldn’t finish connecting. Check your connection and try again. Your existing hero is safe.')
+      setError('We couldn’t finish connecting. Check your connection and try again.')
     } finally { inFlight.current = false; setSubmitting(false) }
   }
 
@@ -96,13 +96,13 @@ function ConnectForm() {
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       {needsProfile ? (
         <p className="border-y border-edge py-3 text-sm">
-          This sign-in has no TRMNL Games account yet, so connecting creates a new one. Already playing? Switch account and sign in the way you did before (email code, Google or GitHub).
+          This sign-in has no TRMNL Games account yet, so connecting creates one. If you already play, switch account and sign in the way you did before.
         </p>
       ) : null}
       {needsProfile ? (
         <label className="flex flex-col gap-1">
           <span className="font-semibold">Public name</span>
-          <span className="text-sm text-muted">Shown publicly to other players on leaderboards and TRMNL screens. Use any name you're happy to share; never include contact details.</span>
+          <span className="text-sm text-muted">Shown to other players on leaderboards and TRMNL screens. No contact details.</span>
           <input name="publicAlias" required minLength={2} maxLength={20} className="min-h-11 border-2 border-edge bg-ground px-3 text-base" autoComplete="off" disabled={submitting} />
         </label>
       ) : (
@@ -113,7 +113,7 @@ function ConnectForm() {
       {needsHero ? (
         <label className="flex flex-col gap-1">
           <span className="font-semibold">Hero name</span>
-          <span className="text-sm text-muted">Your hero’s name is also public. 2–16 characters.</span>
+          <span className="text-sm text-muted">Also public. 2 to 16 characters.</span>
           <input name="heroName" required minLength={2} maxLength={16} defaultValue="Steve" className="min-h-11 border-2 border-edge bg-ground px-3 text-base" autoComplete="off" disabled={submitting} />
         </label>
       ) : (

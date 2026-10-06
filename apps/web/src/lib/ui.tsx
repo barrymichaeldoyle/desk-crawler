@@ -3,12 +3,16 @@ import { useOnline } from './network'
 
 /** The gold menu choice: shared by Button and links styled as the primary action. */
 export const BUTTON_PRIMARY = 'hud text-hud-sm border-[3px] border-night bg-gold text-night shadow-[inset_0_-4px_0_var(--color-gold-lo)] hover:bg-gold-hi'
+/** The cream-edged alternative, for links that act like a secondary button. */
+export const BUTTON_SECONDARY = 'hud text-hud-sm border-[3px] border-edge text-ink hover:bg-ink hover:text-night'
+/** Layout for a Link that wears a button style. */
+export const LINK_BUTTON = 'inline-flex min-h-11 items-center px-4 py-2 no-underline'
 
 export function Button({ variant = 'primary', className = '', pending = false, busyLabel = 'Working…', allowOffline = false, children, disabled, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'quiet' | 'danger'; pending?: boolean; busyLabel?: string; allowOffline?: boolean }) {
   const online = useOnline()
   const styles = {
     primary: BUTTON_PRIMARY,
-    secondary: 'hud text-hud-sm border-[3px] border-edge text-ink hover:bg-ink hover:text-night',
+    secondary: BUTTON_SECONDARY,
     quiet: 'font-semibold text-muted underline underline-offset-4 hover:text-ink',
     danger: 'hud text-hud-sm border-[3px] border-hp text-hp-ink hover:bg-hp hover:text-night',
   }[variant]

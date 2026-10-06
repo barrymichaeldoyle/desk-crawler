@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, Outlet, createFileRoute, useLocation } from '@tanstack/react-router'
 import { api } from '@trmnl-games/backend/api'
 import { Card, LoadingState } from '../../lib/ui'
+import { RELEASE_STATUS } from '../../lib/prose'
 import { seo } from '../../lib/seo'
 import { NameRepair } from './desk-crawler/-nameRepair'
 import { preload } from '../../lib/preload'
@@ -36,10 +37,9 @@ function SignedInApp() {
     return (
       <main id="main" className="mx-auto w-full max-w-3xl px-4 py-8">
         <Card title="Start on TRMNL">
-          <p>Desk Crawler starts on your TRMNL. Install the Desk Crawler plugin from the TRMNL marketplace, connect it here, then save it in TRMNL.</p>
-          <p className="mt-3 text-sm text-muted">The plugin is in development and will appear in the directory after review.</p>
+          <p>Install the Desk Crawler plugin from the TRMNL marketplace, connect it here, then save it in TRMNL. Your hero sets out from there.</p>
+          <p className="mt-3 text-sm text-muted">{RELEASE_STATUS}</p>
           <Link to="/help/desk-crawler" className="mt-3 inline-flex min-h-11 items-center font-semibold underline underline-offset-4">How to connect Desk Crawler</Link>
-          <Link to="/account" className="ml-4 inline-flex min-h-11 items-center underline underline-offset-4">Account settings</Link>
         </Card>
       </main>
     )
@@ -47,13 +47,12 @@ function SignedInApp() {
   if (me.hero.activationState === 'pending_trmnl' && !settings) {
     return (
       <main id="main" className="mx-auto w-full max-w-3xl px-4 py-8">
-        <Card title="One more step">
+        <Card title="Save in TRMNL to start">
           <p>
-            <strong>{me.hero.name}</strong> is ready. Return to TRMNL and click <strong>Save</strong> on the Desk Crawler plugin to start adventures.
+            <strong>{me.hero.name}</strong> is ready. Back in TRMNL, click <strong>Save</strong> on the Desk Crawler plugin and the first adventure follows.
           </p>
           <Link to="/help/desk-crawler" className="mt-3 inline-flex min-h-11 items-center font-semibold underline underline-offset-4">Help with setup</Link>
-          <Link to="/account" className="ml-4 inline-flex min-h-11 items-center underline underline-offset-4">Account settings</Link>
-          <Link to="/app/desk-crawler/settings" className="inline-flex min-h-11 items-center underline underline-offset-4">Desk Crawler settings</Link>
+          <Link to="/app/desk-crawler/settings" className="ml-4 inline-flex min-h-11 items-center underline underline-offset-4">Desk Crawler settings</Link>
         </Card>
       </main>
     )

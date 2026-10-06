@@ -15,7 +15,7 @@ export function SwitchAccount({ returnTo }: { returnTo: string }) {
   const email = user?.primaryEmailAddress?.emailAddress
   return (
     <p className="text-sm text-muted">
-      {email ? <>Signed in with {email}. </> : null}Not the right account?{' '}
+      {email ? <>Signed in with {email}.</> : <>Signed in.</>}{' '}
       <Button variant="quiet" className="px-0" pending={pending} busyLabel="Switching…" onClick={async () => { setPending(true); setFailed(false); try { await clerk.signOut({ redirectUrl: returnTo }) } catch { setFailed(true); setPending(false) } }}>
         Switch account
       </Button>

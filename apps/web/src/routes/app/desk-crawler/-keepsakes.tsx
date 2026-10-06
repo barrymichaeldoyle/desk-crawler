@@ -46,11 +46,11 @@ export function DeskKeepsakes() {
     try {
       await submission.current.run({ code: normalized }, async (input) => {
         const result = await mutate(input)
-        if (result.outcome === 'invalid_code') setError('That code does not match your current TRMNL connection. Check the letters on your screen; an older screen may need its next scheduled refresh.')
-        else if (result.outcome === 'already_claimed') setMessage('You have collected this week’s keepsake. Your collection is safe; the next code arrives next week.')
+        if (result.outcome === 'invalid_code') setError('That code doesn’t match your TRMNL connection. Check the letters on your screen, or wait for its next refresh.')
+        else if (result.outcome === 'already_claimed') setMessage('This week’s keepsake is already on your shelf. The next code arrives next week.')
         else {
           const earned = DESK_KEEPSAKES[(result.totalCollected - 1) % DESK_KEEPSAKES.length]!
-          setMessage(`${earned.name} collected. It is yours to keep.`)
+          setMessage(`${earned.name} collected.`)
           setCode('')
         }
       }, (caught) => caught instanceof ConvexError)
@@ -63,20 +63,20 @@ export function DeskKeepsakes() {
       <h2 id="keepsakes-title" className="font-display text-2xl font-bold">Desk keepsakes</h2>
       {collection ? <p className="text-sm tabular-nums">{collection.totalCollected.toLocaleString()} collected</p> : null}
     </div>
-    <p className="mt-3 max-w-prose text-sm text-muted">A little souvenir for watching the adventure on your desk. Keep Desk Crawler in your playlist and look for the keepsake code on your TRMNL. Collect one each week, whenever you feel like it.</p>
+    <p className="mt-3 max-w-prose text-sm text-muted">A souvenir for keeping Desk Crawler on your desk. Once a week your TRMNL shows a keepsake code. Enter it here to add the design to your shelf.</p>
     {!collection ? <p role="status" className="mt-4 text-sm">Loading your collection…</p> : <>
       <div className="my-5 flex items-center gap-4">
         <KeepsakeIcon pixels={next.pixels} />
         <div><p className="font-semibold">{collectedThisWeek ? 'Coming next: ' : 'Next keepsake: '}{next.name}</p><p className="mt-1 text-sm text-muted">{next.description}</p></div>
       </div>
-      {collectedThisWeek ? <p className="text-sm font-semibold">This week’s keepsake is yours. {collection.nextAvailableAt ? `The next code arrives ${new Date(collection.nextAvailableAt).toLocaleString(undefined, { weekday: 'long', hour: 'numeric', minute: '2-digit' })}.` : 'The next code arrives next week.'}</p> : <form onSubmit={claim} className="flex flex-wrap items-end gap-3">
+      {collectedThisWeek ? <p className="text-sm font-semibold">Collected this week. {collection.nextAvailableAt ? `The next code arrives ${new Date(collection.nextAvailableAt).toLocaleString(undefined, { weekday: 'long', hour: 'numeric', minute: '2-digit' })}.` : 'The next code arrives next week.'}</p> : <form onSubmit={claim} className="flex flex-wrap items-end gap-3">
         <div className="flex min-w-0 flex-col gap-1">
           <label htmlFor="keepsake-code" className="text-sm font-semibold">Code from your TRMNL</label>
           <input id="keepsake-code" value={code} onChange={(event) => { setCode(event.target.value); setError(null); setMessage(null) }} placeholder="ABCD-EFGH" maxLength={16} autoComplete="off" autoCapitalize="characters" spellCheck={false} disabled={pending || !collection.connected} aria-describedby="keepsake-help" aria-invalid={error ? true : undefined} className="min-h-11 w-48 border-2 border-edge bg-ground px-3 text-base uppercase" />
         </div>
         <Button type="submit" pending={pending} busyLabel="Collecting…" disabled={!collection.connected || !code.trim()}>Collect keepsake</Button>
       </form>}
-      <p id="keepsake-help" className="mt-3 max-w-prose text-sm text-muted">{collection.connected ? 'The code is on your TRMNL screen, beside “Keepsake”. It is hidden in this website’s preview. A mashup works too; faster refresh and extra devices earn no extras.' : 'Reconnect the Desk Crawler plugin in TRMNL to receive a keepsake code. Your existing collection stays yours.'}</p>
+      <p id="keepsake-help" className="mt-3 max-w-prose text-sm text-muted">{collection.connected ? 'The code sits beside “Keepsake” on your TRMNL screen. The preview on this site leaves it out.' : 'Reconnect the Desk Crawler plugin in TRMNL to receive keepsake codes.'}</p>
       <ActionFeedback error={error} message={message} />
       <ul aria-label="Your keepsake shelf" className="mt-5 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">
         {keepsakeShelf(collection.totalCollected).map((item) => <li key={item.id} className={`flex items-start gap-3 ${item.count ? '[&>svg]:text-gold-ink' : 'text-muted'}`}>
@@ -84,7 +84,7 @@ export function DeskKeepsakes() {
           <div><p className="text-sm font-semibold">{item.name}</p><p className="mt-1 text-sm tabular-nums">{item.count ? `${item.count.toLocaleString()} collected` : 'Not collected yet'}</p></div>
         </li>)}
       </ul>
-      <p className="mt-5 max-w-prose text-sm text-muted">Keepsakes are just for your shelf. Skipping weeks loses nothing, and every design stays available. After a full set, you can collect another of each. Your hero’s XP, gear and rankings are unaffected.</p>
+      <p className="mt-5 max-w-prose text-sm text-muted">Keepsakes are for your shelf only. Skip a week and the next design waits for you. After a full set, the designs come round again.</p>
     </>}
   </section>
 }

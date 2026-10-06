@@ -4,6 +4,7 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { api } from '@trmnl-games/backend/api'
 import { seo } from '../../lib/seo'
 import { preload } from '../../lib/preload'
+import { BUTTON_PRIMARY, LINK_BUTTON } from '../../lib/ui'
 
 /** Short library labels; the hero page carries the full status sentence. */
 const STATUS_LABEL: Record<string, string> = { paused: 'Paused', dead: 'Knocked out', sleeping: 'Bag full' }
@@ -21,10 +22,14 @@ function Library() {
             <img src="/games/desk-crawler/icon-192.png" alt="" width={64} height={64} className="h-16 w-16 [image-rendering:pixelated]" />
             <div>
               <h2 id="library-dc" className="font-display text-2xl font-bold text-gold-ink">Desk Crawler</h2>
-              <p className="mt-1 text-muted">{me?.hero ? `${me.hero.name} · ${me.hero.activationState === 'active' ? STATUS_LABEL[me.hero.status] ?? 'Adventuring' : 'Waiting for TRMNL Save'}` : me?.gameState === 'deleting' ? 'Removing your game progress…' : 'An office RPG for your TRMNL.'}</p>
+              {me?.hero ? (
+                <p className="mt-1 text-muted"><strong className="text-ink">{me.hero.name}</strong> <span className="label-px ml-1">{me.hero.activationState === 'active' ? STATUS_LABEL[me.hero.status] ?? 'Adventuring' : 'Waiting for TRMNL Save'}</span></p>
+              ) : (
+                <p className="mt-1 text-muted">{me?.gameState === 'deleting' ? 'Removing your game progress…' : 'An office RPG that plays itself on your TRMNL.'}</p>
+              )}
             </div>
           </div>
-          <Link to={me?.hero || me?.gameState === 'deleting' ? '/app/desk-crawler' : '/games/desk-crawler'} className="inline-flex min-h-11 self-start items-center border-2 border-night bg-gold px-4 font-semibold text-night hover:bg-gold-hi">{me?.hero ? 'Open Desk Crawler' : 'View Desk Crawler'}</Link>
+          <Link to={me?.hero || me?.gameState === 'deleting' ? '/app/desk-crawler' : '/games/desk-crawler'} className={`self-start ${LINK_BUTTON} ${BUTTON_PRIMARY}`}>{me?.hero ? 'Open Desk Crawler' : 'About Desk Crawler'}</Link>
         </section>
       )}
     </main>

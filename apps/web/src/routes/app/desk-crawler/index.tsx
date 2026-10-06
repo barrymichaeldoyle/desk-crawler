@@ -52,7 +52,7 @@ function HeroHome() {
             <Suspense fallback={<div className="aspect-[4/3] overflow-hidden rounded-[1.4rem] border-[12px] border-[#3a3566] bg-white"><img src={artUrl(hero.scenePath)} alt={`${hero.name}'s current scene`} width={760} height={200} className="mt-[15%] w-full [image-rendering:pixelated]" /></div>}>
               <DevicePreview sceneUrl={artUrl(hero.scenePath)} heroName={hero.name} />
             </Suspense>
-            <Link to="/app/desk-crawler/settings" hash="desk-keepsakes" className="inline-flex min-h-11 items-center text-sm underline underline-offset-4">Spot a keepsake code on your TRMNL? Add it to your desk collection.</Link>
+            <Link to="/app/desk-crawler/settings" hash="desk-keepsakes" className="inline-flex min-h-11 items-center text-sm underline underline-offset-4">Enter a keepsake code</Link>
           </section>
         </div>
         <div className="flex min-w-0 flex-col gap-8">
@@ -119,6 +119,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
   const canAct = healthy && (hero.status === 'exploring' || hero.status === 'resting')
   const busy = travel.pending || potion.pending || pause.pending || resume.pending
   const healing = Math.min(hero.maxHp - hero.hp, pctOf(hero.maxHp, POTION_HEAL_PCT))
+  const potionLabel = !bag ? 'Drink potion' : !bag.potions ? 'No potions' : hero.hp >= hero.maxHp ? `Drink potion (${bag.potions})` : `Drink potion +${healing} HP (${bag.potions})`
 
   const stopNote = hero.status === 'paused' ? 'Resume adventures to travel.' : hero.status === 'sleeping' ? 'Make room in your bag to travel.' : hero.status === 'dead' ? 'Travel opens again once your hero is back on their feet.' : null
 
@@ -138,30 +139,23 @@ function HeroSheet({ hero }: { hero: HeroView }) {
               </Button>
             ) : null}
             {canAct ? (
-              <Button variant={hero.hp < hero.maxHp && bag?.potions ? 'primary' : 'secondary'} pending={potion.pending} busyLabel="Drinking…" disabled={busy || hero.hp >= hero.maxHp || !bag?.potions} onClick={() => { setAction('potion'); return potion.run({}, 'Potion used. Your health is updated.') }}>
-                Drink potion{bag ? ` (${bag.potions})` : ''}
+              <Button variant={hero.hp < hero.maxHp && bag?.potions ? 'primary' : 'secondary'} pending={potion.pending} busyLabel="Drinking…" disabled={busy || hero.hp >= hero.maxHp || !bag?.potions} onClick={() => { setAction('potion'); return potion.run({}, `Potion drunk, +${healing} HP.`) }}>
+                {potionLabel}
               </Button>
             ) : null}
             {canAct ? (
-              <Button variant="secondary" pending={pause.pending} busyLabel="Pausing…" disabled={busy} onClick={() => { setAction('pause'); return pause.run({}, 'Adventures paused. Resume whenever you’re ready.') }}>
+              <Button variant="secondary" pending={pause.pending} busyLabel="Pausing…" disabled={busy} onClick={() => { setAction('pause'); return pause.run({}, 'Adventures paused.') }}>
                 Pause adventures
               </Button>
             ) : null}
           </div>
         ) : null}
-        <p className="text-sm text-muted">
-          {canAct ? (hero.hp >= hero.maxHp ? 'Your hero is at full health. ' : bag?.potions ? `A potion restores ${healing} HP; your hero also drinks them when needed. ` : bag ? 'No potions left. Your hero can find more while exploring and rests to recover health. ' : 'Checking potions… ') : null}
-          Gold is saved for later updates; there’s nothing to buy yet.
-        </p>
-        {!healthy ? <p className="text-sm">Your hero is paused for a service check. Progress is safe. <Link to="/support" className="underline underline-offset-4">Get help</Link>.</p> : null}
+        {!healthy ? <p className="text-sm">Paused for a service check. <Link to="/support" className="underline underline-offset-4">Contact support</Link> if it lasts.</p> : null}
         <ActionFeedback error={feedback?.error ?? null} message={feedback?.message ?? null} />
       </section>
 
       <section aria-labelledby="map-title">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-          <h2 id="map-title" className="font-display text-3xl font-bold">World map</h2>
-          <p className="text-sm text-muted">Harder areas give more XP and better gear, but hit harder.</p>
-        </div>
+        <h2 id="map-title" className="font-display text-3xl font-bold">World map</h2>
         <ol className="mt-4 grid gap-3 sm:grid-cols-3 sm:gap-[15px]">
           {hero.biomes.map((biome, index) => {
             const here = biome.id === hero.biomeId
@@ -172,7 +166,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
                   <span aria-label={`World ${index + 1}`} className="hud grid size-7 shrink-0 place-items-center border-[3px] border-night bg-night text-hud-sm text-gold-ink">{index + 1}</span>
                   {biome.name}
                 </span>
-                <span className="text-sm font-semibold">{biome.unlocked ? (here ? 'Exploring' : onTheWay ? 'Arriving next adventure' : 'Unlocked') : `Locked · reach level ${biome.unlockLevel}`}</span>
+                <span className="text-sm font-semibold">{biome.unlocked ? (here ? 'Exploring' : onTheWay ? 'Arriving next adventure' : 'Unlocked') : `Locked until level ${biome.unlockLevel}`}</span>
                 {biome.unlocked && !here && !onTheWay ? (
                   <Button className="mt-2 self-start" pending={travel.pending} busyLabel="Travelling…" aria-label={`Travel to ${biome.name}`} disabled={!canAct || busy} onClick={() => travel.run({ biomeId: biome.id }, `Travelling to ${biome.name}. Arrive on the next adventure.`)}>
                     Travel
@@ -182,7 +176,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
             )
           })}
         </ol>
-        <p className="mt-3 text-sm text-muted">{!canAct && hero.status !== 'travelling' && stopNote ? stopNote : 'You arrive on the next adventure, without an encounter on arrival.'}</p>
+        {!canAct && hero.status !== 'travelling' && stopNote ? <p className="mt-3 text-sm text-muted">{stopNote}</p> : null}
         <ActionFeedback {...travel} />
       </section>
     </div>

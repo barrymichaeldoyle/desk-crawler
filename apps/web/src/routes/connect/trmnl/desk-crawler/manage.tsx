@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { seo } from '../../../../lib/seo'
 import { SwitchAccount } from '../../../../lib/switchAccount'
 import { useIntent } from '../../../../lib/intent'
-import { ActionFeedback, Button, Card, LoadingState } from '../../../../lib/ui'
+import { ActionFeedback, BUTTON_PRIMARY, BUTTON_SECONDARY, Button, Card, LINK_BUTTON, LoadingState } from '../../../../lib/ui'
 import { captureManagement, getManagedInstance } from '../../../../server/manageFns'
 
 type Search = { uuid?: string; jwt?: string; invalid?: boolean }
@@ -83,19 +83,19 @@ function Connection({ uuid }: { uuid: string }) {
           Showing <strong>{heroName ?? 'your hero'}</strong> on your TRMNL. Adventures continue whether or not the screen is connected.
         </p>
       ) : (
-        <p>This installation is disconnected. Install Desk Crawler again from TRMNL to reconnect a screen; your hero keeps its progress.</p>
+        <p>This installation is disconnected. Install Desk Crawler again from TRMNL to reconnect it.</p>
       )}
       <div className="mt-4 flex flex-wrap gap-2">
-        <Link to="/app/desk-crawler" className="inline-flex min-h-11 items-center border-2 border-night bg-gold px-4 font-semibold text-night hover:bg-gold-hi">
+        <Link to="/app/desk-crawler" className={`${LINK_BUTTON} ${BUTTON_PRIMARY}`}>
           Open the companion
         </Link>
         {settingsUrl ? (
-          <a href={settingsUrl} className="inline-flex min-h-11 items-center border-2 border-edge px-4 font-semibold">
+          <a href={settingsUrl} className={`${LINK_BUTTON} ${BUTTON_SECONDARY}`}>
             Back to TRMNL
           </a>
         ) : null}
         {settingsUrl ? (
-          <a href={`${settingsUrl}?force_refresh=true`} className="inline-flex min-h-11 items-center border-2 border-edge px-4 font-semibold">
+          <a href={`${settingsUrl}?force_refresh=true`} className={`${LINK_BUTTON} ${BUTTON_SECONDARY}`}>
             Refresh preview in TRMNL
           </a>
         ) : null}
@@ -105,8 +105,7 @@ function Connection({ uuid }: { uuid: string }) {
           </Button>
         ) : null}
       </div>
-      <p className="mt-3 text-xs text-muted">Disconnecting stops new screens for this installation. TRMNL may keep showing the last image until you remove the plugin from your playlist.</p>
-      {confirming && instance.state === 'active' ? <div className="mt-4 border-t border-rule pt-4"><p className="font-semibold">Disconnect this installation?</p><div className="mt-3 flex flex-wrap gap-2"><Button variant="secondary" pending={disconnect.pending} busyLabel="Disconnecting…" onClick={async () => { if (await disconnect.run({ instanceId: instance.id }, 'Installation disconnected. Your hero keeps adventuring.')) setConfirming(false) }}>Confirm disconnect</Button><Button variant="quiet" disabled={disconnect.pending} onClick={() => setConfirming(false)}>Cancel</Button></div></div> : null}
+      {confirming && instance.state === 'active' ? <div className="mt-4 border-t border-rule pt-4"><p className="font-semibold">Disconnect this installation?</p><p className="mt-2 text-sm">New screens stop for this installation. TRMNL keeps the last image until you remove the plugin from its playlist.</p><div className="mt-3 flex flex-wrap gap-2"><Button variant="secondary" pending={disconnect.pending} busyLabel="Disconnecting…" onClick={async () => { if (await disconnect.run({ instanceId: instance.id }, 'Installation disconnected.')) setConfirming(false) }}>Confirm disconnect</Button><Button variant="quiet" disabled={disconnect.pending} onClick={() => setConfirming(false)}>Cancel</Button></div></div> : null}
       <ActionFeedback {...disconnect} />
     </Card>
   )

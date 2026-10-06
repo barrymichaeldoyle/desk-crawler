@@ -90,7 +90,7 @@ function Ledger({ summary }: { summary: Summary }) {
         <h2 id="ledger-title" className="hud text-sm text-gold-ink">
           Your first visit
         </h2>
-        <p className="mt-2 max-w-prose">Your hero adventures every 15 minutes, even with this page closed and your TRMNL asleep. Come back in a few days and this is where you will see what they got up to.</p>
+        <p className="mt-2 max-w-prose">Your hero sets out every 15 minutes, with this page open or not. This tally fills in between your visits.</p>
         {bag}
       </section>
     )
@@ -119,11 +119,11 @@ function Ledger({ summary }: { summary: Summary }) {
         </h2>
         <p className="text-sm text-muted">
           {since}
-          {summary.newEvents && !quiet ? ` · ${summary.newEvents} log ${summary.newEvents === 1 ? 'entry' : 'entries'}` : ''}
+          {summary.newEvents && !quiet ? `, ${summary.newEvents} log ${summary.newEvents === 1 ? 'entry' : 'entries'}` : ''}
         </p>
       </div>
       {quiet ? (
-        <p className="mt-2">{summary.status === 'paused' ? 'No new adventures while paused. Resume whenever you’re ready.' : summary.status === 'sleeping' ? 'Adventures stopped to keep your new gear safe. Make room in your bag, then resume.' : 'No new progress since your last visit. The next adventure may bring something new.'}</p>
+        <p className="mt-2">{summary.status === 'paused' ? 'Paused, so nothing new since your last visit.' : summary.status === 'sleeping' ? 'Stopped with a full bag. Make room, then resume.' : 'Nothing new since your last visit.'}</p>
       ) : (
         <dl className="mt-3 grid grid-cols-1 min-[480px]:grid-cols-2 min-[480px]:gap-x-6">
           {rows.map(([label, value]) => (

@@ -61,14 +61,14 @@ export function usePulse(hero: PulseHero): { glyph: string; sentence: string; de
   const world = hero.world
   let detail: string | null = null
   let next: string | null = null
-  if (hero.simulationState === 'quarantined') detail = 'Paused for a service check. Nothing is lost.'
-  else if (world?.paused) detail = 'Adventures are paused for maintenance. Nothing is lost.'
+  if (hero.simulationState === 'quarantined') detail = 'Paused for a service check.'
+  else if (world?.paused) detail = 'Paused for maintenance.'
   else if (now !== null && world) {
     const slot = wallSlotFor(now)
     const running = world.lastCompletedTick !== world.currentTick || (world.lastStartedWallSlot ?? 0) < slot
     const late = world.lastCompletedAt !== null && now - world.lastCompletedAt > 2 * SLOT_MS
     const ticksTo = (tick: number | null) => (tick === null ? null : Math.max(1, tick - world.currentTick))
-    if (late) detail = 'Adventures are running late. Your hero will catch the next one; nothing is lost.'
+    if (late) detail = 'Running late. Your hero joins the next adventure.'
     else if (hero.status === 'paused') detail = 'No adventures until you resume.'
     else if (hero.status === 'sleeping') detail = hero.wakeAtTick !== null ? 'Resume is scheduled for the next adventure.' : 'Manage your bag, then choose Resume.'
     else if (running && now - slot < 5 * 60_000) detail = 'Adventuring now…'

@@ -2,7 +2,7 @@ import { PLATFORM_ORIGIN, PLATFORM_NAME } from '@trmnl-games/platform'
 
 export const SITE_ORIGIN = PLATFORM_ORIGIN
 export const SITE_NAME = PLATFORM_NAME
-export const SITE_DESCRIPTION = 'Games for your TRMNL e-ink display. Meet Desk Crawler and manage your adventures in one companion.'
+export const SITE_DESCRIPTION = 'Games for your TRMNL e-ink display. Start with Desk Crawler, an office RPG that plays itself on your desk.'
 
 /**
  * Per-route head tags. Child meta with the same name/property replaces the

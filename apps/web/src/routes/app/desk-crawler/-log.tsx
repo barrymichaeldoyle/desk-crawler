@@ -73,7 +73,7 @@ export function AdventureLog() {
           Reading the log…
         </p>
       ) : days.length === 0 ? (
-        <p className="mt-3 text-muted">{filter === 'all' ? 'Nothing logged yet. The first entries arrive with the next adventure.' : 'Nothing of this kind in the loaded entries.'}</p>
+        <p className="mt-3 text-muted">{filter === 'all' ? 'Nothing logged yet.' : 'No entries of this kind loaded.'}</p>
       ) : (
         <div className="mt-2 flex flex-col">
           {days.map((day) => (

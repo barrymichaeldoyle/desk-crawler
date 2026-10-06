@@ -17,7 +17,7 @@ function Rank({ stopped }: { stopped: boolean }) {
   const board = data as { published: boolean; cohortKey?: string; totalPlayers?: number; own?: { rank: number; rankDelta: number | null } | null }
   const group = board.cohortKey ? `Levels ${board.cohortKey.replace('-', '–').replace('+', ' and up')}` : 'your level group'
   if (!board.published || !board.own) {
-    return <p>{board.published && stopped ? 'No recent rank while adventures are stopped and your seven-day XP has aged out. Lifetime progress stays earned.' : `Your hero joins the ${group} rankings after the next hourly update.`}</p>
+    return <p>{board.published && stopped ? 'Unranked: no XP in the last seven days while stopped.' : `Your hero joins the ${group} rankings after the next hourly update.`}</p>
   }
   const delta = board.own.rankDelta
   return (
@@ -25,7 +25,7 @@ function Rank({ stopped }: { stopped: boolean }) {
       <span className="hud text-base text-gold-ink">#{board.own.rank}</span>
       <span>
         of {board.totalPlayers} in {group}, last 7 days
-        {delta ? <span className={`ml-1 font-semibold ${delta > 0 ? 'text-xp-ink' : 'text-hp-ink'}`}>{delta > 0 ? `· up ${delta}` : `· down ${Math.abs(delta)}`}</span> : null}
+        {delta ? <span className={`ml-1 font-semibold ${delta > 0 ? 'text-xp-ink' : 'text-hp-ink'}`}>{delta > 0 ? `up ${delta}` : `down ${Math.abs(delta)}`}</span> : null}
       </span>
     </p>
   )

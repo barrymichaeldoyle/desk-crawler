@@ -144,10 +144,12 @@ export function DevicePreview({ sceneUrl, heroName }: { sceneUrl: string; heroNa
           ))}
         </div>
       </figcaption>
-      <p className="text-sm text-muted">
-        {failed || payloadError ? 'Preview unavailable. Showing the current scene; your hero’s details are below.' : 'Live game preview. Your TRMNL may show an earlier snapshot until its next refresh.'}
-        {choice.layout === 'markup' ? null : ' Shaded areas are your other plugins.'}
-      </p>
+      {failed || payloadError || choice.layout !== 'markup' ? (
+        <p className="text-sm text-muted">
+          {failed || payloadError ? 'Preview unavailable, so this is the current scene instead.' : null}
+          {choice.layout === 'markup' ? null : ' Shaded areas are your other plugins.'}
+        </p>
+      ) : null}
     </figure>
   )
 }

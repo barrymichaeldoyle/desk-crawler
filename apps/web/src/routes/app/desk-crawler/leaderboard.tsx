@@ -29,7 +29,7 @@ function Leaderboard() {
   const stopped = hero && (hero.status === 'paused' || (hero.status === 'sleeping' && hero.wakeAtTick === null))
   return (
     <>
-      <header><h1 className="font-display text-3xl font-bold">Rankings</h1><p className="mt-2 text-sm text-muted">A little friendly competition. Recent XP is compared with heroes of similar level.</p></header>
+      <h1 className="font-display text-3xl font-bold">Rankings</h1>
       <div role="group" aria-label="Ranking period" className="flex border-2 border-edge">
         {TABS.map((tab) => (
           <button
@@ -50,30 +50,30 @@ function Leaderboard() {
       {!data ? (
         <LoadingState label="Loading rankings…" />
       ) : !data.published ? (
-        <Card title="The first rankings are on their way">
-          <p>Your hero’s first rank appears within the hour. Adventures continue while you wait.</p>
+        <Card title="First rankings within the hour">
+          <p>The board publishes hourly. Your hero is on the next one.</p>
         </Card>
       ) : (
         <Card title={`${groupLabel(data.cohortKey)}, ${data.totalPlayers} ${data.totalPlayers === 1 ? 'hero' : 'heroes'}`}>
           <p className="mb-3 text-sm text-muted">
-            {board === 'overall' ? 'Ranked by level and XP.' : 'XP earned in the period among heroes of similar level.'} Updated{' '}
-            <time dateTime={new Date(data.scoreAt).toISOString()}>{new Date(data.scoreAt).toLocaleString(undefined, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</time>. Refreshes hourly.
+            {board === 'overall' ? 'Ranked by level and lifetime XP.' : 'Ranked by XP earned in the period.'} Updated hourly, last at{' '}
+            <time dateTime={new Date(data.scoreAt).toISOString()}>{new Date(data.scoreAt).toLocaleString(undefined, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</time>.
           </p>
           {data.own ? (
             <p className="mb-3 font-semibold">
               You are <span className="text-gold-ink">#{data.own.rank.toLocaleString()}</span> of {data.totalPlayers.toLocaleString()}
-              {data.own.rankDelta ? ` · ${data.own.rankDelta > 0 ? 'up' : 'down'} ${Math.abs(data.own.rankDelta)} since the previous update` : ''}
-              {board !== 'overall' && data.own.score !== null ? ` · ${data.own.score.toLocaleString()} XP` : ''}
+              {board !== 'overall' && data.own.score !== null ? ` with ${data.own.score.toLocaleString()} XP` : ''}
+              {data.own.rankDelta ? `, ${data.own.rankDelta > 0 ? 'up' : 'down'} ${Math.abs(data.own.rankDelta)} since the last update` : ''}
             </p>
           ) : ownGroup !== data.cohortKey && board !== 'overall' ? (
             <Button variant="quiet" onClick={() => setCohortKey(undefined)}>
               Back to my group
             </Button>
           ) : (
-            <p className="mb-3 text-sm text-muted">{stopped && board !== 'overall' ? 'Unranked while adventures are stopped and no XP remains in this period. Your lifetime progress stays earned.' : 'Your hero’s rank appears at the next hourly update.'}</p>
+            <p className="mb-3 text-sm text-muted">{stopped && board !== 'overall' ? 'Unranked: stopped, with no XP left in this period.' : 'Your hero’s rank appears at the next hourly update.'}</p>
           )}
           {data.entries.length === 0 ? (
-            <p>No ranked heroes in this group for this period. Try your group or a different period.</p>
+            <p>No ranked heroes in this group for this period.</p>
           ) : (
             <ol className="flex flex-col divide-y divide-rule">
               {data.entries.map((row: { rank: number; name: string; hero_name: string; level: number; score: number }) => (
@@ -88,7 +88,7 @@ function Leaderboard() {
               ))}
             </ol>
           )}
-          {data.totalPlayers > data.entries.length ? <p className="mt-3 text-sm text-muted">Showing the top {data.entries.length} of {data.totalPlayers.toLocaleString()} heroes.{data.own ? ' Your exact rank is shown above.' : ''}</p> : null}
+          {data.totalPlayers > data.entries.length ? <p className="mt-3 text-sm text-muted">Top {data.entries.length} of {data.totalPlayers.toLocaleString()} heroes.</p> : null}
         </Card>
       )}
     </>

@@ -136,6 +136,17 @@ const recapStates: Record<string, PayloadInput> = {
   recoveredRecap: { ...base, activity: { entries: [activityEntry({ variant: 'revival', previousBiomeId: 'server_room', safeBiomeId: 'office_cubicles', hpGranted: 30, reviveAtTick: 119 }, 0), activityEntry({ ...fixtureFight, outcome: 'death', goldGranted: 0, gearDropped: false }, 8), ...overnightEntries], truncated: false } },
   arrivalRecap: { ...base, activity: { entries: [activityEntry({ variant: 'travel', phase: 'arrive', fromBiomeId: 'office_cubicles', toBiomeId: 'server_room', arrivalTick: 120 }, 0), ...overnightEntries], truncated: false } },
 }
+// Saturated histories prove layout capacity is measured instead of capped at three stories.
+const denseLogs = (summary: string): PayloadInput['logs'] => Array.from({ length: 10 }, (_, i) => ({ at: NOW - (i + 1) * 900_000, kind: 'rest', summary, deltas: { xpEarned: 0, gold: 0, hp: 0 } }))
+Object.assign(recapStates, {
+  denseShort: { ...base, logs: denseLogs('Took a coffee break anyway.') },
+  emptyHistory: { ...base, logs: [] },
+  missingQr: { ...base, artBaseUrl: null, logs: denseLogs('Took a coffee break anyway.') },
+  denseLong: { ...states.longText!, logs: denseLogs('Sent an elite [[Microwave Wraith]] back to the kitchen. Reached level 12! Found a [[Rare Ladle of Ruin]].') },
+  longHero: { ...base, hero: hero({ name: 'W'.repeat(16) }), logs: denseLogs('Filed a [[Paper Imp]] under defeated.') },
+  noMetadata: { ...base, logs: denseLogs('A quiet moment.').map(({ deltas: _deltas, ...entry }) => entry) },
+  largeRanking: { ...base, logs: denseLogs('Filed a [[Paper Imp]] under defeated.'), ranking: { ...base.ranking!, rank: 12345, totalPlayers: 999999, top5: base.ranking!.top5.map(row => ({ ...row, score: 999999 })) } },
+})
 const sourceIndex = process.argv.indexOf('--recap-source')
 if (sourceIndex >= 0) {
   const source = JSON.parse(readFileSync(process.argv[sourceIndex + 1]!, 'utf8')) as { now: number; entries: Array<ActivityEntry & { kind: string; summary: string }> }
@@ -152,7 +163,7 @@ for (const [name, input] of Object.entries(previewStates)) {
   const payload = sceneUrlsAt(buildPayload(withRecap), input.now, utcOffset)
   if (process.argv.includes('--recap')) writeFileSync(`.previews/${name}--payload.json`, JSON.stringify(payload, null, 2))
   for (const layout of Object.keys(PREVIEW_LAYOUTS) as PreviewLayout[]) {
-    const inner = await liquid.parseAndRender(screenMarkup[layout], { ...payload, desk_keepsake_code: name === 'unlinked' || name === 'sample' ? null : deskKeepsakeCode, utc_offset: utcOffset })
+    const inner = await liquid.parseAndRender(screenMarkup[layout], { ...payload, desk_keepsake_code: name === 'unlinked' || name === 'sample' ? null : deskKeepsakeCode, utc_offset: name === 'noMetadata' ? null : utcOffset })
     for (const device of Object.keys(PREVIEW_DEVICES) as PreviewDevice[]) {
       writeFileSync(`.previews/${name}--${device}--${layout}.html`, previewDocument(inner, device, layout, `${name} · ${device} · ${PREVIEW_LAYOUTS[layout].label}`))
       written++

@@ -41,4 +41,6 @@ An editor preview does not replace the Third Party envelope test or physical dis
 
 Review submission is prepared first. Account changes, reviewer contact, sending credentials, deployment and publication follow the user's authorization.
 
-The [D54 twelve-hour recap](activity-recap.md) passed 200 OG/X layout checks and the separate window/authorization/no-write tests, then deployed as v25 with approval. Server render, delivery and natural tick 202 are verified. The subsequent [D55 tighter log-row candidate](log-density.md) passes 202 tests and 200 previews as local v26, awaiting its additional rollout approval.
+The [D54 twelve-hour recap](activity-recap.md) passed 200 OG/X layout checks and the separate window/authorization/no-write tests, then deployed as v25 with approval. Server render, delivery and natural tick 202 are verified. The subsequent [D55 tighter log rows](log-density.md) deployed as v26 with approval after 202 tests and 200 previews. Live full/side previews, the actual server image and natural tick 203 are verified; explicit device delivery is not yet observed.
+
+The [D56 adaptive layout](adaptive-log-layout.md) is local v27, verified by 202 tests, official lint/build and 256 settled OG/X views. X full relocates the bag caption/recap and narrows ranking; all layouts fit complete stories to available height. Barry approved production rollout on October 6; live verification is in progress.

@@ -1,8 +1,8 @@
 {
   "date": "2026-10-06",
-  "status": "deployment_authorized_pending_live_verification",
+  "status": "deployed_verified_server_render",
   "templateVersion": 26,
-  "productionTemplateVersion": 25,
+  "productionTemplateVersion": 26,
   "frameworkVersion": "3.4.0",
   "verification": {
     "tests": 202,
@@ -1028,5 +1028,73 @@
       "overflow": 0,
       "failedImages": 0
     }
-  ]
+  ],
+  "deployment": {
+    "approvedBy": "Barry",
+    "approvalDate": "2026-10-06",
+    "commit": "93b18c7bb02a503b4bbf6f95f18818fba04b09ae",
+    "convex": "exciting-cormorant-948",
+    "worker": "trmnl-games",
+    "buildId": "add49097-c1f9-4599-8b74-4bc3306004f7",
+    "buildStatus": "success",
+    "deploymentId": "ec499609-bbc2-4259-8bc4-bf3f926399f9",
+    "versionId": "d4ec7180-548c-4950-9978-20ed8a76b210",
+    "trafficPercent": 100,
+    "deployedAt": "2026-10-06T09:29:33.129089Z"
+  },
+  "livePreview": {
+    "xFullStories": 3,
+    "xSideStories": 3,
+    "zeroGapStoryGrid": true,
+    "restoredTo": "xFull"
+  },
+  "serverRender": {
+    "renderedAt": "2026-10-06T09:30:56Z",
+    "durationMs": 970,
+    "sizeKB": 27.7,
+    "imageWidth": 1872,
+    "imageHeight": 1404,
+    "visuallyInspected": true,
+    "localScreenshot": ".previews/density-trmnl-server-image.png",
+    "deliveryExplicitlyObserved": false,
+    "physicalDisplayObserved": false,
+    "deviceCheckedInAt": "2026-10-06T09:31:04Z",
+    "nextScreenRefreshAt": "2026-10-06T09:45:57Z"
+  },
+  "preservation": {
+    "heroIdentityAndCreationPreserved": true,
+    "progressNonregression": true,
+    "naturalTick": {
+      "paginationVersion": 1,
+      "processed": 1,
+      "quarantined": 0,
+      "state": "completed",
+      "tick": 203
+    },
+    "boards": [
+      {
+        "board": "overall",
+        "state": "ready",
+        "total": 1
+      },
+      {
+        "board": "recent_24h",
+        "state": "ready",
+        "total": 1
+      },
+      {
+        "board": "recent_7d",
+        "state": "ready",
+        "total": 1
+      }
+    ]
+  },
+  "productionLogs": {
+    "completions": 89,
+    "errors": 0,
+    "retries": 0,
+    "sampleStart": "2026-10-06T09:30:06.066263+00:00",
+    "sampleEnd": "2026-10-06T09:31:15.012362+00:00",
+    "installationQueries": 1
+  }
 }

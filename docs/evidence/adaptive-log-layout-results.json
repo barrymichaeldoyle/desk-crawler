@@ -1,0 +1,3830 @@
+{
+  "date": "2026-10-06",
+  "status": "approved_deployment_in_progress",
+  "templateVersion": 27,
+  "productionTemplateVersion": 26,
+  "frameworkVersion": "3.4.0",
+  "verification": {
+    "tests": 202,
+    "testFiles": 31,
+    "typecheck": "passed",
+    "officialTrmnlLint": "passed",
+    "build": "passed",
+    "states": 32,
+    "layoutChecks": 256,
+    "footerOverflowFailures": 0,
+    "visibleImageFailures": 0,
+    "extraEntryWouldFitFailures": 0,
+    "fitterReadinessFailures": 0,
+    "fullHeaderChecks": 64,
+    "fullHeaderTextOverflowFailures": 0
+  },
+  "xFullColumnSpans": {
+    "logs": 7,
+    "leaderboard": 2,
+    "bagAndRecap": 3
+  },
+  "verificationLimit": "Local settled browser previews. No v27 production deployment, server render or physical display check.",
+  "checks": [
+    {
+      "name": "arrivalRecap--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 160.5,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 12.5,
+          "visibleCount": 3
+        }
+      ]
+    },
+    {
+      "name": "arrivalRecap--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 570.0093383789062,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 11.390625,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "arrivalRecap--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 51.8515625,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "arrivalRecap--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 417.729736328125,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 77.75146484375,
+          "nextItemWouldFit": false,
+          "remainingHeight": 21.77197265625,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "arrivalRecap--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 9,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "arrivalRecap--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 65.64215087890625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "dead--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 116.5,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 56.5,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "dead--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 325.9827880859375,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 255.43121337890625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "dead--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 80.3515625,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 32.3515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "dead--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 355.62969970703125,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 270.6781005859375,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "dead--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "dead--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "denseLong--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 170.5,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 2.5,
+          "visibleCount": 3
+        }
+      ]
+    },
+    {
+      "name": "denseLong--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 577.9124641418457,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 145.40625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.48748779296875,
+          "visibleCount": 4
+        }
+      ]
+    },
+    {
+      "name": "denseLong--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 53.8515625,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 1.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "denseLong--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 437.8531494140625,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 110.8546142578125,
+          "nextItemWouldFit": false,
+          "remainingHeight": 1.6343994140625,
+          "visibleCount": 4
+        }
+      ]
+    },
+    {
+      "name": "denseLong--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 33,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "denseLong--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 218.22027587890625,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 110.85467529296876,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.7109375,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "denseShort--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 172.5,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 0.5,
+          "visibleCount": 4
+        }
+      ]
+    },
+    {
+      "name": "denseShort--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 559.2374649047852,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 22.176513671875,
+          "visibleCount": 7
+        }
+      ]
+    },
+    {
+      "name": "denseShort--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 51.8515625,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "denseShort--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 417.729736328125,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.75146484375,
+          "nextItemWouldFit": false,
+          "remainingHeight": 21.77197265625,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "denseShort--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 9,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "denseShort--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 65.64215087890625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "elite--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 158.5,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 14.5,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "elite--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 547.6921539306641,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 33.72186279296875,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "elite--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 53.8515625,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 1.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "elite--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 417.729736328125,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.75146484375,
+          "nextItemWouldFit": false,
+          "remainingHeight": 21.77197265625,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "elite--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 33,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "elite--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 65.64215087890625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "emptyWindow--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 160.5,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 12.5,
+          "visibleCount": 3
+        }
+      ]
+    },
+    {
+      "name": "emptyWindow--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 570.0093383789062,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 11.390625,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "emptyWindow--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 65.3515625,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 17.3515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "emptyWindow--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 523.7328491210938,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 50.0234375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "emptyWindow--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 9,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "emptyWindow--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 65.64215087890625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "expense--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 160.5,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 12.5,
+          "visibleCount": 3
+        }
+      ]
+    },
+    {
+      "name": "expense--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 570.0093383789062,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 11.390625,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "expense--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 51.8515625,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "expense--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 417.729736328125,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.75146484375,
+          "nextItemWouldFit": false,
+          "remainingHeight": 21.77197265625,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "expense--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 9,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "expense--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 65.64215087890625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "firstRun--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "firstRun--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "firstRun--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "firstRun--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "firstRun--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "firstRun--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "fullBagRecap--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 126.5,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 46.5,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "fullBagRecap--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 342.5343322753906,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 238.87966918945312,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "fullBagRecap--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 72.3515625,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 20.3515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "fullBagRecap--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 364.9812622070313,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 261.3265380859375,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "fullBagRecap--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "fullBagRecap--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "knockoutRecap--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 116.5,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 56.5,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "knockoutRecap--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 325.9827880859375,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 255.43121337890625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "knockoutRecap--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 80.3515625,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 32.3515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "knockoutRecap--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 355.62969970703125,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 270.6781005859375,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "knockoutRecap--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "knockoutRecap--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "largeRanking--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 160.5,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 12.5,
+          "visibleCount": 3
+        }
+      ]
+    },
+    {
+      "name": "largeRanking--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 559.2374649047852,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 22.176513671875,
+          "visibleCount": 7
+        }
+      ]
+    },
+    {
+      "name": "largeRanking--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 51.8515625,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "largeRanking--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 417.729736328125,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.75146484375,
+          "nextItemWouldFit": false,
+          "remainingHeight": 21.77197265625,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "largeRanking--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 9,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "largeRanking--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 65.64215087890625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "levelUp--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 160.5,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 12.5,
+          "visibleCount": 3
+        }
+      ]
+    },
+    {
+      "name": "levelUp--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 547.6921539306641,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 33.72186279296875,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "levelUp--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 53.8515625,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 1.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "levelUp--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 417.729736328125,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.75146484375,
+          "nextItemWouldFit": false,
+          "remainingHeight": 21.77197265625,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "levelUp--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 9,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "levelUp--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 65.64215087890625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "longHero--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 160.5,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 12.5,
+          "visibleCount": 3
+        }
+      ]
+    },
+    {
+      "name": "longHero--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 559.2374649047852,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 22.176513671875,
+          "visibleCount": 7
+        }
+      ]
+    },
+    {
+      "name": "longHero--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 51.8515625,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "longHero--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 417.729736328125,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.75146484375,
+          "nextItemWouldFit": false,
+          "remainingHeight": 21.77197265625,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "longHero--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 9,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "longHero--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 65.64215087890625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "longText--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 158.5,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 14.5,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "longText--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 564.9609031677246,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 16.43902587890625,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "longText--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 53.8515625,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 1.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "longText--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 427.081298828125,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.75146484375,
+          "nextItemWouldFit": false,
+          "remainingHeight": 12.42041015625,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "longText--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 33,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "longText--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 32.5390625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "milestones--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 158.5,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 14.5,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "milestones--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 564.9609031677246,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 16.43902587890625,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "milestones--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 53.8515625,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 1.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "milestones--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 427.081298828125,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.75146484375,
+          "nextItemWouldFit": false,
+          "remainingHeight": 12.42041015625,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "milestones--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 33,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "milestones--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 32.5390625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "noMetadata--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 168.5,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 24,
+          "nextItemWouldFit": false,
+          "remainingHeight": 4.5,
+          "visibleCount": 7
+        }
+      ]
+    },
+    {
+      "name": "noMetadata--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 503.09996795654297,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 78.29998779296875,
+          "visibleCount": 10
+        }
+      ]
+    },
+    {
+      "name": "noMetadata--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 79.3515625,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 24,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.3515625,
+          "visibleCount": 3
+        }
+      ]
+    },
+    {
+      "name": "noMetadata--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 462.9266357421875,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 23.7265625,
+          "visibleCount": 10
+        }
+      ]
+    },
+    {
+      "name": "noMetadata--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 24,
+          "nextItemWouldFit": false,
+          "remainingHeight": 1,
+          "visibleCount": 4
+        }
+      ]
+    },
+    {
+      "name": "noMetadata--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 215.3656005859375,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 43.20001220703125,
+          "nextItemWouldFit": false,
+          "remainingHeight": 6.56561279296875,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "normal--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 160.5,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 12.5,
+          "visibleCount": 3
+        }
+      ]
+    },
+    {
+      "name": "normal--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 570.0093383789062,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 11.390625,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "normal--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 51.8515625,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "normal--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 417.729736328125,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 77.75146484375,
+          "nextItemWouldFit": false,
+          "remainingHeight": 21.77197265625,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "normal--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 9,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "normal--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 65.64215087890625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "officeDay--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 116.5,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 56.5,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "officeDay--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 325.9827880859375,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 255.43121337890625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "officeDay--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 51.8515625,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "officeDay--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 262.22662353515625,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 177.2750244140625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "officeDay--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 53,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "officeDay--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 143.39373779296875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "officeNight--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 116.5,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 56.5,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "officeNight--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 325.9827880859375,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 255.43121337890625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "officeNight--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 51.8515625,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "officeNight--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 262.22662353515625,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 177.2750244140625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "officeNight--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 53,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "officeNight--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 143.39373779296875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "overnight--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 160.5,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 12.5,
+          "visibleCount": 3
+        }
+      ]
+    },
+    {
+      "name": "overnight--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 570.0093383789062,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 11.390625,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "overnight--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 51.8515625,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "overnight--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 417.729736328125,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 77.75146484375,
+          "nextItemWouldFit": false,
+          "remainingHeight": 21.77197265625,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "overnight--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 9,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "overnight--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 65.64215087890625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "partial--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 160.5,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 12.5,
+          "visibleCount": 3
+        }
+      ]
+    },
+    {
+      "name": "partial--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 570.0093383789062,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 11.390625,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "partial--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 51.8515625,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "partial--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 478.36724853515625,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 4.6578369140625,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "partial--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 9,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "partial--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 65.64215087890625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "paused--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 160.5,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 12.5,
+          "visibleCount": 3
+        }
+      ]
+    },
+    {
+      "name": "paused--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 570.0093383789062,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 11.390625,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "paused--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 65.3515625,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 17.3515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "paused--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 480.1812744140625,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 6.471923828125,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "paused--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 9,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "paused--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 65.64215087890625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "quarantined--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 116.5,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 56.5,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "quarantined--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 342.5343322753906,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 238.87966918945312,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "quarantined--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 80.3515625,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 32.3515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "quarantined--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 355.62969970703125,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 270.6781005859375,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "quarantined--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "quarantined--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "quietMorning--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 172.5,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 0.5,
+          "visibleCount": 4
+        }
+      ]
+    },
+    {
+      "name": "quietMorning--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 570.0093383789062,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 11.390625,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "quietMorning--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 51.8515625,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "quietMorning--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 500.1500244140625,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 26.440673828125,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "quietMorning--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 9,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "quietMorning--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 65.64215087890625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "recordedHistory--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 160.5,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 12.5,
+          "visibleCount": 3
+        }
+      ]
+    },
+    {
+      "name": "recordedHistory--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 575.7890281677246,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 110.85467529296876,
+          "nextItemWouldFit": false,
+          "remainingHeight": 5.625,
+          "visibleCount": 7
+        }
+      ]
+    },
+    {
+      "name": "recordedHistory--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 51.8515625,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "recordedHistory--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 456.050048828125,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 26.9891357421875,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "recordedHistory--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 9,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "recordedHistory--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 65.64215087890625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "recoveredRecap--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 160.5,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 12.5,
+          "visibleCount": 3
+        }
+      ]
+    },
+    {
+      "name": "recoveredRecap--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 570.0093383789062,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 11.390625,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "recoveredRecap--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 51.8515625,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "recoveredRecap--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 417.729736328125,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 77.75146484375,
+          "nextItemWouldFit": false,
+          "remainingHeight": 21.77197265625,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "recoveredRecap--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 9,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "recoveredRecap--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 65.64215087890625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "sleeping--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 126.5,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 46.5,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "sleeping--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 342.5343322753906,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 238.87966918945312,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "sleeping--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 72.3515625,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 20.3515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "sleeping--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 364.9812622070313,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 261.3265380859375,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "sleeping--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "sleeping--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "stale--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 116.5,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 56.5,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "stale--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 342.5343322753906,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 238.87966918945312,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "stale--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 80.3515625,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 32.3515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "stale--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 355.62969970703125,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 270.6781005859375,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "stale--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "stale--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "travelling--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 160.5,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 12.5,
+          "visibleCount": 3
+        }
+      ]
+    },
+    {
+      "name": "travelling--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 570.0093383789062,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 11.390625,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "travelling--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 51.8515625,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 3.8515625,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "travelling--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 417.729736328125,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 77.75146484375,
+          "nextItemWouldFit": false,
+          "remainingHeight": 21.77197265625,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "travelling--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 9,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "travelling--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 213.94528198242188,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 77.75152587890625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 65.64215087890625,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "unlinked--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "unlinked--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "unlinked--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "unlinked--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "unlinked--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "unlinked--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "emptyHistory--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "emptyHistory--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "emptyHistory--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "emptyHistory--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "emptyHistory--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "emptyHistory--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": []
+    },
+    {
+      "name": "missingQr--og--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 172.5,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 0.5,
+          "visibleCount": 4
+        }
+      ]
+    },
+    {
+      "name": "missingQr--x--markup_half_horizontal",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 559.2374649047852,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 22.176513671875,
+          "visibleCount": 7
+        }
+      ]
+    },
+    {
+      "name": "missingQr--og--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 135.8515625,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": -0.1484375,
+          "visibleCount": 3
+        }
+      ]
+    },
+    {
+      "name": "missingQr--x--markup_half_vertical",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 642.3500366210938,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 13.1375732421875,
+          "visibleCount": 8
+        }
+      ]
+    },
+    {
+      "name": "missingQr--og--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 93,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 9,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "missingQr--x--markup_quadrant",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "fit": [
+        {
+          "availableHeight": 429.9452819824219,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 48.387451171875,
+          "visibleCount": 5
+        }
+      ]
+    },
+    {
+      "name": "arrivalRecap--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "arrivalRecap--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 66.5296630859375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "dead--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 99.3671875,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 51.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "dead--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 493.08746337890625,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 408.1359252929687,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "denseLong--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "denseLong--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 110.854736328125,
+          "nextItemWouldFit": false,
+          "remainingHeight": 82.4202880859375,
+          "visibleCount": 4
+        }
+      ]
+    },
+    {
+      "name": "denseShort--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 21.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "denseShort--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 66.5296630859375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "elite--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "elite--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 66.5296630859375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "emptyHistory--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": []
+    },
+    {
+      "name": "emptyHistory--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": []
+    },
+    {
+      "name": "emptyWindow--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "emptyWindow--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 66.5296630859375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "expense--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "expense--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 66.5296630859375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "firstRun--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": []
+    },
+    {
+      "name": "firstRun--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": []
+    },
+    {
+      "name": "fullBagRecap--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 79.3671875,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 17.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "fullBagRecap--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 506.0390625,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 380.7843627929687,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "knockoutRecap--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 99.3671875,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 51.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "knockoutRecap--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 493.08746337890625,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 408.1359252929687,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "largeRanking--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "largeRanking--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 66.5296630859375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "levelUp--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "levelUp--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 66.5296630859375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "longHero--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "longHero--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 66.5296630859375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "longText--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "longText--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 26.2265625,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "milestones--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "milestones--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 26.2265625,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "missingQr--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 276.3671875,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 8.3671875,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "missingQr--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 810.9843444824219,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 26.2686767578125,
+          "visibleCount": 10
+        }
+      ]
+    },
+    {
+      "name": "noMetadata--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 24,
+          "nextItemWouldFit": false,
+          "remainingHeight": 17.3671875,
+          "visibleCount": 2
+        }
+      ]
+    },
+    {
+      "name": "noMetadata--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 101.0390625,
+          "visibleCount": 10
+        }
+      ]
+    },
+    {
+      "name": "normal--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "normal--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 66.5296630859375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "officeDay--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "officeDay--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 455.2874755859375,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "officeNight--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "officeNight--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 455.2874755859375,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "overnight--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "overnight--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 66.5296630859375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "partial--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "partial--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 66.5296630859375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "paused--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "paused--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 66.5296630859375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "quarantined--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 99.3671875,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 37.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "quarantined--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 493.08746337890625,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 408.1359252929687,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "quietMorning--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 21.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "quietMorning--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 7,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 66.5296630859375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "recordedHistory--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "recordedHistory--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 10,
+          "fitComplete": true,
+          "nextItemHeight": 77.7515869140625,
+          "nextItemWouldFit": false,
+          "remainingHeight": 66.5296630859375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "recoveredRecap--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "recoveredRecap--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 66.5296630859375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "sleeping--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 79.3671875,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 17.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "sleeping--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 506.0390625,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 380.7843627929687,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "stale--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 99.3671875,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 37.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "stale--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 493.08746337890625,
+          "candidateCount": 1,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 408.1359252929687,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "travelling--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 69.3671875,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": 44,
+          "nextItemWouldFit": false,
+          "remainingHeight": 7.3671875,
+          "visibleCount": 1
+        }
+      ]
+    },
+    {
+      "name": "travelling--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": [
+        {
+          "availableHeight": 540.239013671875,
+          "candidateCount": 6,
+          "fitComplete": true,
+          "nextItemHeight": null,
+          "nextItemWouldFit": false,
+          "remainingHeight": 66.5296630859375,
+          "visibleCount": 6
+        }
+      ]
+    },
+    {
+      "name": "unlinked--og--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": []
+    },
+    {
+      "name": "unlinked--x--markup",
+      "footerOverflow": 0,
+      "failedVisibleImages": 0,
+      "headerTextOverflow": false,
+      "fit": []
+    }
+  ]
+}

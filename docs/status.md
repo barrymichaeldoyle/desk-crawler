@@ -10,7 +10,7 @@ Migration progress:
 
 - M0–M3 done. Monorepo move, platform boundaries (two deletion levels, per-game handoff cookies) and the dev rehearsal ([platform rehearsal](evidence/platform-rehearsal.md)).
 - M4 done. Clerk domain moved to `trmnlgames.com`, `main` deployed at 13:58 UTC, ticks continued on the new :00 slot, data backfilled and Barry's account rebound with hero "Baz" kept (decisions revisions 18–19). Email-code, Google and GitHub sign-in work on the new domain; plugin 564's installation, management and knowledge-base URLs point at `trmnlgames.com`; signed Clerk webhook delivered; prod `COMPANION_ORIGIN` unset, so QR codes use the `https://trmnlgames.com` default (revision 20). Fresh install → Save → Configure → render → uninstall passed as Baz with setting 495979 (revision 21).
-- M5 review preparation. Domain/DNS/Worker/repository migration and preview coverage are complete. Production templates v25 and scene v4 include the October 5 log, sky and spacing changes ([spacing](evidence/log-spacing.md), [sky](evidence/scene-time.md)). Authorized listing updates and companion polish are deployed from `392829c`, including the landing sample, clearer help and D52 potion-find labels; the actual listing image was regenerated and verified ([release evidence](evidence/listing-polish-deploy.md)). Extended balance reports and offline recovery preparation are complete. Health/cost headroom and isolated engineering rehearsals are now recorded; remaining: ongoing capture/provider/funding decisions, final recording/hosting and submission authorization. See the [current release checklist](evidence/release.md).
+- M5 review preparation. Domain/DNS/Worker/repository migration and preview coverage are complete. Production templates v26 and scene v4 include the October 5 log, sky and spacing changes ([spacing](evidence/log-spacing.md), [sky](evidence/scene-time.md)). Authorized listing updates and companion polish are deployed from `392829c`, including the landing sample, clearer help and D52 potion-find labels; the actual listing image was regenerated and verified ([release evidence](evidence/listing-polish-deploy.md)). Extended balance reports and offline recovery preparation are complete. Health/cost headroom and isolated engineering rehearsals are now recorded; remaining: ongoing capture/provider/funding decisions, final recording/hosting and submission authorization. See the [current release checklist](evidence/release.md).
 
 ## Built and verified
 
@@ -31,9 +31,10 @@ Deployed on 2026-10-05 following Barry’s approval: D46 weekly permanent Desk k
 | A11 operations | Daily bounded retention cleanup; account deletion with durable purge, revocation hashes and Clerk user deletion | convex-test; live deletion ([evidence](evidence/deletion.md)) |
 | D27 incident notices | One incident per stalled run, deduplicated alert + recovery via Resend with idempotency keys and bounded retries; production key configured, staging pair accepted by Resend | convex-test; [recovery](evidence/recovery.md), production Delivered event verified; preview retry exhaustion passed in [engineering checks](evidence/engineering-readiness.md) |
 | D23 admin | Server-side allowlist, health view, audited name repair / suspend / restore / release / resume-run, owner name replacement | convex-test |
-| Layout matrix | Production v25 includes D54 recap; candidate v26 tightens log rows. 25 states × four sizes × OG/X, 200 settled previews checked; D43 assigns coverage to previews | Deployed [recap](evidence/activity-recap.md); candidate [log rows](evidence/log-density.md) |
+| Layout matrix | Production v26 includes D54 recap and D55 tighter log rows. 25 states × four sizes × OG/X, 200 settled previews checked; D43 assigns coverage to previews | Deployed [recap](evidence/activity-recap.md) and [log rows](evidence/log-density.md) |
 | D54 device recap | Deployed with approval: rolling 12-hour summary, milestones, recent stories, bounded indexed reads, partial labels and additive combat rarity annotation. Server render/delivery and natural tick 202 verified | [Recap evidence](evidence/activity-recap.md) |
-| D55 compact device logs | Local v26: closer story/stat rows and three stories on X full/side. 202 tests and 200 layout checks pass; awaiting additional deployment approval | [Log density](evidence/log-density.md) |
+| D56 adaptive device history | Local v27: bag label above QR in the divider, recap below QR and narrower ranking on X full; all layouts fit complete recent entries to available height. 202 tests and 256 OG/X checks pass; Barry approved production deployment on October 6; live verification is in progress | [Adaptive layout](evidence/adaptive-log-layout.md) |
+| D55 compact device logs | Deployed v26: closer story/stat rows and three stories on X full/side. 202 tests and 200 layout checks pass; live preview, server image and natural tick 203 verified | [Log density](evidence/log-density.md) |
 | D25 return recap | Single server checkpoint, guarded visible acknowledgement | convex-test; live browser check |
 
 ## Deliberate differences from the plan
@@ -46,7 +47,7 @@ Deployed on 2026-10-05 following Barry’s approval: D46 weekly permanent Desk k
 
 ## Remaining before submission and public release
 
-The [current release checklist](evidence/release.md) is the gate source. Install/manage/render/uninstall on trmnlgames.com, all four preview layouts under D43, current v25 rendering, capacity measurements, backups and the delivered test alert are recorded.
+The [current release checklist](evidence/release.md) is the gate source. Install/manage/render/uninstall on trmnlgames.com, all four preview layouts under D43, current v26 server rendering, capacity measurements, backups and the delivered test alert are recorded.
 
 Submission work:
 

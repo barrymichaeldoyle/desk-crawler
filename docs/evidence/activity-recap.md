@@ -1,6 +1,6 @@
 # Twelve-hour device recap — 2026-10-06
 
-Barry approved D54's rolling recap and then requested less space between the full-screen HP/XP bars and Weapon/Armor labels. Template **v25** was deployed with Barry's explicit approval on 2026-10-06 from commit `a7116c761da482d87dd305011c7360baa7928974`. The production rollout, live installation render and next natural tick are verified below. A subsequent [log-spacing candidate](log-density.md) is local v26 and has not been deployed.
+Barry approved D54's rolling recap and then requested less space between the full-screen HP/XP bars and Weapon/Armor labels. Template **v25** was deployed with Barry's explicit approval on 2026-10-06 from commit `a7116c761da482d87dd305011c7360baa7928974`. The production rollout, live installation render and next natural tick are verified below. The subsequent [log-spacing release](log-density.md) is now deployed as v26 with its own approval and live verification.
 
 The recap reads `(now − 12 hours, now]` independently of the ten newest stories. It counts adventure XP, gross gold grants, victories, gear/potion finds and breaks, with historical milestones for levels, known rare finds, knockouts/revivals, arrivals, elites, jackpots and bag overflow. Companion commands do not inflate adventure rewards. X full/side retain two recent stories; other views retain one. Compact views prioritize a milestone or progress fact. Attention messages take priority over the recap. Refreshing never acknowledges a visit or changes gameplay; D25's companion return summary remains separate.
 

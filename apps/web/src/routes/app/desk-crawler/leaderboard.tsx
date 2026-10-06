@@ -12,8 +12,9 @@ export const Route = createFileRoute('/app/desk-crawler/leaderboard')({ head: ()
 
 type Board = 'recent_7d' | 'recent_24h' | 'overall'
 const TABS: Array<{ board: Board; label: string }> = [
-  { board: 'recent_7d', label: 'Last 7 days' },
-  { board: 'recent_24h', label: 'Last 24 hours' },
+  // Short enough to sit on one line in a third of a phone screen.
+  { board: 'recent_7d', label: '7 days' },
+  { board: 'recent_24h', label: '24 hours' },
   { board: 'overall', label: 'Lifetime' },
 ]
 

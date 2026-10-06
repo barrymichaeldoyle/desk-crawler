@@ -78,10 +78,10 @@ export function DeskKeepsakes() {
       </form>}
       <p id="keepsake-help" className="mt-3 max-w-prose text-sm text-muted">{collection.connected ? 'The code sits beside “Keepsake” on your TRMNL screen. The preview on this site leaves it out.' : 'Reconnect the Desk Crawler plugin in TRMNL to receive keepsake codes.'}</p>
       <ActionFeedback error={error} message={message} />
-      <ul aria-label="Your keepsake shelf" className="mt-5 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">
-        {keepsakeShelf(collection.totalCollected).map((item) => <li key={item.id} className={`flex items-start gap-3 ${item.count ? '[&>svg]:text-gold-ink' : 'text-muted'}`}>
+      <ul aria-label="Your keepsake shelf" className="mt-5 grid grid-cols-1 gap-x-6 gap-y-4 min-[480px]:grid-cols-2 sm:grid-cols-3 sm:gap-y-5">
+        {keepsakeShelf(collection.totalCollected).map((item) => <li key={item.id} className={`flex items-center gap-3 ${item.count ? '[&>svg]:text-gold-ink' : 'text-muted'}`}>
           <KeepsakeIcon pixels={item.pixels} />
-          <div><p className="text-sm font-semibold">{item.name}</p><p className="mt-1 text-sm tabular-nums">{item.count ? `${item.count.toLocaleString()} collected` : 'Not collected yet'}</p></div>
+          <div className="min-w-0"><p className="text-sm font-semibold">{item.name}</p><p className="mt-0.5 text-sm tabular-nums">{item.count ? `${item.count.toLocaleString()} collected` : 'Not collected yet'}</p></div>
         </li>)}
       </ul>
       <p className="mt-5 max-w-prose text-sm text-muted">Keepsakes are for your shelf only. Skip a week and the next design waits for you. After a full set, the designs come round again.</p>

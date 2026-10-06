@@ -17,7 +17,7 @@ export const Route = createFileRoute('/app/desk-crawler')({
 const NAV = [
   { to: '/app/desk-crawler', label: 'Hero' },
   { to: '/app/desk-crawler/inventory', label: 'Bag' },
-  { to: '/app/desk-crawler/leaderboard', label: 'Rankings' },
+  { to: '/app/desk-crawler/leaderboard', label: 'Ranks' },
   { to: '/app/desk-crawler/settings', label: 'Settings' },
 ] as const
 
@@ -60,18 +60,18 @@ function SignedInApp() {
   }
   return (
     <>
-      <nav aria-label="Desk Crawler" className="window sticky top-0 z-10 !border-x-0 !border-t-0 px-2">
-        <ul className={`mx-auto flex items-stretch ${wide ? 'max-w-6xl' : 'max-w-3xl'}`}>
+      <nav aria-label="Desk Crawler" className="hud sticky top-0 z-10 border-b-4 border-raised bg-night px-2">
+        <ul className={`mx-auto flex min-h-13 items-stretch ${wide ? 'max-w-6xl' : 'max-w-3xl'}`}>
           <li className="hidden items-center pr-4 pl-2 sm:flex">
             <img src="/games/desk-crawler/favicon.svg" alt="" width={24} height={24} className="[image-rendering:pixelated]" />
-            <span className="ml-2 font-display text-lg font-semibold text-gold-ink">Desk Crawler</span>
+            <span className="ml-3 text-xs text-gold-ink">Desk Crawler</span>
           </li>
           {NAV.map((item) => (
             <li key={item.to} className="flex-1">
               <Link
                 to={item.to}
                 activeOptions={{ exact: true }}
-                className="menu-cursor flex min-h-11 items-center justify-center text-sm font-semibold text-muted hover:text-ink aria-[current=page]:text-gold-ink"
+                className="menu-cursor flex min-h-13 items-center justify-center text-hud-sm text-muted hover:text-ink aria-[current=page]:text-gold-ink"
               >
                 {item.label}
               </Link>

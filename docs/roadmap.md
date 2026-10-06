@@ -36,6 +36,7 @@ Core batch: stances, configurable rest/potion thresholds, a small set of event c
 | Merchant | Bounded offers/price validation, four-tick expiry, purchase receipts; no push spam |
 | Effects | Typed duration/modifier rules; death ordering and rest cleansing explicitly designed |
 | Affixes/Epic | Versioned generation and owned-item compatibility; extend inventory UI |
+| Bag expansion | Proposed (P25): capped merchant purchase, 30 → 40 in +5 steps; harness-measured sleep share and rank spread first. See [inventory progression](#inventory-progression--proposed-p25p27) |
 | Daily quests | Stretch, not required; timezone/DST and timezone-change abuse design first |
 | Lost-and-found | Stretch; extend the approved single held-find/inventory-sleep system only with a clear bounded migration; never reintroduce silent disposal |
 | Web push/email alerts | Deferred by default; user opt-in, delivery cost and calmness review |
@@ -69,9 +70,19 @@ Core batch: Archive and Parking Garage first, persistent elite encounters with e
 
 Persistent fight design must define saved monster state, damage/reward idempotency, abandonment, pause/travel restrictions, policy ordering, max fight duration, defeat/revival and inventory concurrency. Dungeons require keys/reward tables and bounded run histories.
 
-Legendary gear, salvage/crafting, lore and hardcore are separate slices. Hardcore requires a new hero lifecycle, separate eligibility/ranking, permanent-death confirmation, retirement/Hall of Heroes model and recovery behavior. It is not a boolean toggle on a live normal hero.
+Legendary gear, salvage/crafting, lore and hardcore are separate slices; salvage and crafting have a proposed shape below. Hardcore requires a new hero lifecycle, separate eligibility/ranking, permanent-death confirmation, retirement/Hall of Heroes model and recovery behavior. It is not a boolean toggle on a live normal hero.
 
 Gate: no repeatable boss rewards, no blocked fights after deployments, progression remains viable for existing high-level heroes, content compatible with retained items/logs. Compare retention by account age/level as a diagnostic rather than assert a predetermined percentage.
+
+### Inventory progression — proposed (P25–P27)
+
+Not approved; see [decisions](decisions.md) P25–P27 and O12/O13. Three small slices, each shippable alone, in this order:
+
+1. **Bag expansion (Month 2, with the merchant).** A capped permanent upgrade bought with gold: the first gold sink and a direct quality-of-life reward. Bigger bags mean less inventory sleep, which changes recent-rank spread, so the harness sets the cap before it ships.
+2. **Salvage (Month 2–4).** A third choice beside Sell for unwanted bag gear: materials stored as stack rows outside the bag, chosen explicitly, never automatic.
+3. **Owned-gear upgrades (Month 4).** Spend materials and gold to raise an item's tier (later, reroll an affix). No recipe tree. Keeps finds useful after best-in-slot at days 35–45.
+
+Gate: no change to bag sleep rules (D18/D19) beyond capacity; every purchase, salvage and upgrade is one idempotent receipt; bounded reads updated together with capacity; existing gold, items and logs keep their meaning.
 
 ## Month 5 — Guilds
 

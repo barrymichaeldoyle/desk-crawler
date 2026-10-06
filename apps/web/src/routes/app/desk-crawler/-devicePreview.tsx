@@ -96,7 +96,7 @@ export function DevicePreview({ sceneUrl, heroName }: { sceneUrl: string; heroNa
 
   return (
     <figure className="flex flex-col gap-3">
-      <div className="rounded-[1.4rem] bg-night p-[clamp(0.5rem,2.5vw,1rem)] dark:bg-[#2b3474]">
+      <div className="rounded-[1.4rem] bg-[#3a3566] p-[clamp(0.5rem,2.5vw,1rem)]">
         <div ref={frame} className="relative overflow-hidden rounded-md bg-white" style={{ aspectRatio: `${device.width} / ${device.height}` }}>
           {/* Scene stand-in: also what screen readers get, since the iframe is decorative duplication of the page. */}
           <img src={localSceneUrl} alt={`${heroName}'s current scene`} width={760} height={200} decoding="async" className={`absolute inset-0 m-auto w-full [image-rendering:pixelated] transition-opacity duration-200 ${!payloadError && html && scale && loaded === html ? 'opacity-0' : 'opacity-100'}`} />

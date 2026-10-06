@@ -2,24 +2,24 @@ import { useId, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { useOnline } from './network'
 
 /** The gold menu choice: shared by Button and links styled as the primary action. */
-export const BUTTON_PRIMARY = 'border-2 border-night bg-gold text-night hover:bg-gold-hi'
+export const BUTTON_PRIMARY = 'hud text-hud-sm border-[3px] border-night bg-gold text-night shadow-[inset_0_-4px_0_var(--color-gold-lo)] hover:bg-gold-hi'
 
 export function Button({ variant = 'primary', className = '', pending = false, busyLabel = 'Working…', allowOffline = false, children, disabled, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'quiet' | 'danger'; pending?: boolean; busyLabel?: string; allowOffline?: boolean }) {
   const online = useOnline()
   const styles = {
     primary: BUTTON_PRIMARY,
-    secondary: 'border-2 border-edge text-ink hover:bg-ink hover:text-ground',
-    quiet: 'text-muted underline underline-offset-4 hover:text-ink',
-    danger: 'border-2 border-hp text-hp-ink hover:bg-hp hover:text-night',
+    secondary: 'hud text-hud-sm border-[3px] border-edge text-ink hover:bg-ink hover:text-night',
+    quiet: 'font-semibold text-muted underline underline-offset-4 hover:text-ink',
+    danger: 'hud text-hud-sm border-[3px] border-hp text-hp-ink hover:bg-hp hover:text-night',
   }[variant]
-  return <button type="button" {...props} aria-busy={pending || undefined} disabled={disabled || pending || (!online && !allowOffline)} className={`min-h-11 px-4 py-2 font-semibold ${styles} disabled:cursor-not-allowed disabled:border-dashed disabled:border-faint disabled:bg-transparent disabled:text-muted disabled:no-underline ${className}`}>{pending ? busyLabel : children}</button>
+  return <button type="button" {...props} aria-busy={pending || undefined} disabled={disabled || pending || (!online && !allowOffline)} className={`min-h-11 px-4 py-2 ${styles} disabled:cursor-not-allowed disabled:border-dashed disabled:border-faint disabled:bg-transparent disabled:text-muted disabled:shadow-none disabled:no-underline ${className}`}>{pending ? busyLabel : children}</button>
 }
 
 export function Card({ title, children, className = '' }: { title?: string; children: ReactNode; className?: string }) {
   const id = useId()
   return (
     <section aria-labelledby={title ? id : undefined} className={`window min-w-0 px-4 pt-3 pb-4 sm:px-5 ${className}`}>
-      {title ? <h2 id={id} className="mb-3 font-display text-xl font-semibold text-gold-ink">{title}</h2> : null}
+      {title ? <h2 id={id} className="mb-3 font-display text-2xl font-bold">{title}</h2> : null}
       {children}
     </section>
   )
@@ -49,12 +49,12 @@ export function Meter({ label, value, max, tone = 'xp' }: { label: string; value
   return (
     <div className="min-w-0">
       <div className="flex flex-wrap items-baseline justify-between gap-x-2 text-sm">
-        <span className={`caps font-semibold ${METER_INK[tone]}`}>{label}</span>
+        <span className={`label-px ${METER_INK[tone]}`}>{label}</span>
         <span className="min-w-0 max-w-full tabular-nums [overflow-wrap:anywhere]">
           {value}/{max}
         </span>
       </div>
-      <div className="mt-1 h-4 overflow-hidden border-2 border-edge bg-night" role="meter" aria-label={label} aria-valuenow={value} aria-valuemin={0} aria-valuemax={max} aria-valuetext={`${value} of ${max}`}>
+      <div className="mt-1 h-4 overflow-hidden border-2 border-night bg-night outline-2 outline-raised" role="meter" aria-label={label} aria-valuenow={value} aria-valuemin={0} aria-valuemax={max} aria-valuetext={`${value} of ${max}`}>
         <div className={`h-full ${METER_FILL[tone]} shadow-[inset_0_2px_0_rgb(255_255_255/0.35)]`} style={{ width: `${pct}%` }} />
       </div>
     </div>

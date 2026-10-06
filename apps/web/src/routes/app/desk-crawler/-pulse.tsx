@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { nextSlotAfter, slotEta, wallSlotFor, SLOT_MS } from '@trmnl-games/desk-crawler/sim/schedule'
-import { PixelIcon } from './-pixelIcon'
 
 const STATUS_GLYPH: Record<string, string> = { exploring: 'combat', resting: 'rest', travelling: 'travel', dead: 'death', paused: 'system', sleeping: 'loot' }
 
@@ -54,14 +53,14 @@ function sentence(hero: PulseHero): string {
 }
 
 /**
- * The dialogue box above the device: what the hero is doing and when the next
- * adventure lands. Calm by design: no urgency, and delays are explained
- * without blaming the player (PRODUCT.md).
+ * What the hero is doing and when the next adventure lands. Calm by design: no
+ * urgency, and delays are explained without blaming the player (PRODUCT.md).
  */
-export function Pulse({ hero }: { hero: PulseHero }) {
+export function usePulse(hero: PulseHero): { glyph: string; sentence: string; detail: string | null; countdown: string | null } {
   const now = useNow()
   const world = hero.world
   let detail: string | null = null
+  let next: string | null = null
   if (hero.simulationState === 'quarantined') detail = 'Paused for a service check. Nothing is lost.'
   else if (world?.paused) detail = 'Adventures are paused for maintenance. Nothing is lost.'
   else if (now !== null && world) {
@@ -75,21 +74,7 @@ export function Pulse({ hero }: { hero: PulseHero }) {
     else if (running && now - slot < 5 * 60_000) detail = 'Adventuring now…'
     else if (hero.status === 'travelling' && ticksTo(hero.arriveAtTick)) detail = `Arrives about ${clock(slotEta(now, ticksTo(hero.arriveAtTick)!))}`
     else if (hero.status === 'dead' && ticksTo(hero.reviveAtTick)) detail = `Back on their feet about ${clock(slotEta(now, ticksTo(hero.reviveAtTick)!))}`
-    else detail = `Next adventure in ${countdown(nextSlotAfter(now) - now)}`
+    else next = countdown(nextSlotAfter(now) - now)
   }
-  return (
-    <div className="window relative flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-4 py-3 pr-8">
-      <p className="flex items-center gap-2 font-bold">
-        <PixelIcon kind={STATUS_GLYPH[hero.status] ?? 'system'} />
-        {sentence(hero)}
-      </p>
-      <p className="text-sm tabular-nums text-muted" aria-live="off">
-        {detail ?? ' '}
-      </p>
-      {/* The dialogue box's waiting arrow. */}
-      <svg viewBox="0 0 5 3" width={10} height={6} aria-hidden="true" shapeRendering="crispEdges" className="absolute right-3 bottom-2 fill-gold animate-[menu-bob_1.2s_infinite]">
-        <path d="M0 0h5v1H0zM1 1h3v1H1zM2 2h1v1H2z" />
-      </svg>
-    </div>
-  )
+  return { glyph: STATUS_GLYPH[hero.status] ?? 'system', sentence: sentence(hero), detail, countdown: next }
 }

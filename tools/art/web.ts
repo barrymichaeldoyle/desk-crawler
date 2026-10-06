@@ -2,19 +2,9 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import type { Canvas } from '@trmnl-games/desk-crawler/art/canvas'
 import { composeScene, STAGE_WIDTH } from '@trmnl-games/desk-crawler/art/scene'
-import { BRAND, Image, colourMark, inkImage, markSvg, pixelText, pixelTextWidth } from './colour'
+import { BRAND, Image, bandedScene, colourMark, inkImage, markSvg, pixelText, pixelTextWidth } from './colour'
 import { faviconCanvas, iconCanvas } from './iconArt'
 import { platformFaviconCanvas, platformIconCanvas } from './platformArt'
-
-/** The 6x6 menu-window frame from styles.css: notched night outline, cream line. */
-function windowFrame(image: Image, left: number, top: number, width: number, height: number): void {
-  image.rect(left + 1, top, width - 2, 1, BRAND.night)
-  image.rect(left + 1, top + height - 1, width - 2, 1, BRAND.night)
-  image.rect(left, top + 1, 1, height - 2, BRAND.night)
-  image.rect(left + width - 1, top + 1, 1, height - 2, BRAND.night)
-  image.rect(left + 1, top + 1, width - 2, height - 2, BRAND.cream)
-  image.rect(left + 2, top + 2, width - 4, height - 4, BRAND.navy)
-}
 
 function writeIconSet(out: string, title: string, iconArt: Canvas, faviconArt: Canvas): void {
   mkdirSync(out, { recursive: true })
@@ -60,19 +50,23 @@ function writeIconSet(out: string, title: string, iconArt: Canvas, faviconArt: C
   png('icon-192.png', icon, 6)
   png('icon-512.png', icon, 16)
 
-  // Social card, 1200x630 = 240x126 x 5: a navy menu window with the mark and gold pixel wordmark above the device's own 1-bit fight scene.
+  // Social card, 1200x630 = 240x126 x 5: the mark and gold pixel wordmark over the game screen, the fight scene in Server Room colours.
   const card = new Image(240, 126, BRAND.ground)
-  windowFrame(card, 3, 3, 234, 120)
   const wordWidth = pixelTextWidth(title, 2)
   const rowLeft = Math.round((240 - (32 + 8 + wordWidth)) / 2)
-  card.blit(icon, rowLeft, 14)
-  pixelText(card, title, rowLeft + 40, 23, 2, BRAND.gold)
-  const scene = inkImage(composeScene('server_room', 'fight', { kind: 'monster', id: 'legacy_mainframe', elite: true }))
-  card.rect((240 - STAGE_WIDTH) / 2 - 3, 57, STAGE_WIDTH + 6, scene.height + 6, BRAND.night)
-  card.blit(scene, (240 - STAGE_WIDTH) / 2, 60)
+  card.blit(icon, rowLeft, 12)
+  pixelText(card, title, rowLeft + 40, 21, 2, BRAND.gold)
+  const scene = bandedScene(composeScene('server_room', 'fight', { kind: 'monster', id: 'legacy_mainframe', elite: true }), BRAND.serverBands)
+  card.rect((240 - STAGE_WIDTH) / 2 - 3, 55, STAGE_WIDTH + 6, scene.height + 6, BRAND.night)
+  card.blit(scene, (240 - STAGE_WIDTH) / 2, 58)
   png('og.png', card, 5)
 }
 
 // The platform mark at the site root; Desk Crawler's Warrior under its game path.
 writeIconSet('apps/web/public', 'TRMNL Games', platformIconCanvas(), platformFaviconCanvas())
 writeIconSet('apps/web/public/games/desk-crawler', 'Desk Crawler', iconCanvas(), faviconCanvas())
+
+// The landing page's sample game screen: the device's own 1-bit fight scene, which the page multiplies over the biome bands.
+const sample = inkImage(composeScene('server_room', 'fight', { kind: 'monster', id: 'cable_serpent', elite: false })).scaled(5)
+writeFileSync('apps/web/public/games/desk-crawler/scene-sample.png', sample.png())
+console.log(`wrote apps/web/public/games/desk-crawler/scene-sample.png ${sample.width}x${sample.height}`)

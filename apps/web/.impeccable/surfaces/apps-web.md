@@ -9,20 +9,20 @@ related_targets: []
 
 Scope: every companion route (platform shell, Desk Crawler hero/bag/rankings/settings, install/manage, account, admin, public landing and help). Visitor mode: Operate (help/privacy/terms: Read; landing: Persuade inside the same world).
 
-Audience/job: TRMNL owners checking on a passive hero, managing gear, travel and rank. Barry found the 1-bit companion hard to follow; colour must restore hierarchy and state, and anticipates colour TRMNL devices (BWRY).
+Audience/job: TRMNL owners checking on a passive hero, managing gear, travel and rank. Barry found the 1-bit companion hard to follow and the first colour pass (Party Menu) still a recolour; he chose the Platformer HUD mock from a three-direction canvas (https://claude.ai/artifact/X5d5YhRChqunLzXuizPPg1) on 2026-10-06.
 
-Constraints: device screens stay 1-bit/greyscale TRMNL templates (unchanged); pixel theme kept; 44px targets; light and dark themes; no information by colour alone.
+Constraints: device screens stay TRMNL framework templates (BWRY colour layer and portrait pass are separate work); pixel theme kept; 44px targets; dark arcade theme only; no information by colour alone.
 
 ## Direction contract
 
-THESIS: The companion is the game's pause menu. Sections are 16-bit RPG menu windows; stats have their game colours (HP red, XP green, gold gold). Refuses the 1-bit logbook and the rounded-card casual-game app.
+THESIS: The companion is the game screen. The hero's real scene leads in colour under a platformer HUD; the rest of the page is the level-select and quest log around it. Refuses the 1-bit logbook and the menu-window recolour.
 
-OWN-WORLD: Navy menu windows (#1e2a6e) with a notched 2-pixel frame (dark outline, cream line) on a pale periwinkle overworld ground (night indigo in dark). Cream text in windows, lavender secondary text, gold for selection, primary action and currency; red HP and green XP bars with a 1px highlight row; sky for travel; purple rare, green uncommon. Pixelify Sans for window titles and names at integer-friendly sizes; system sans for reading. Square controls, pixel cursor arrow marks the current menu choice. Raises: integer pixel type (Bitmap Specimen); states stamp rather than vanish (Ticket Wallet); rarity and events carry glyph/shape plus colour (Star Atlas); ledger figures stay tabular and dense (Datamatics).
+OWN-WORLD: Dark arcade ground #15122b, panels #221d44 in 3px #0c0a1c outlines, cream text. Hearts red, XP green, coins gold, travel sky, rare violet. Press Start 2P for HUD labels, nav, counters and buttons (two small steps); Pixelify Sans for page and section titles; system sans for reading. Scenes are the device's 1-bit art multiplied over per-biome colour bands. Gold primary buttons with a darker bottom lip; dashed stamps for locked/disabled.
 
-STORY: The owner glances, sees status in the dialogue box, HP/XP/gold in coloured bars, scans a colour-keyed log, makes a gear or travel choice with the gold button, leaves.
+STORY: The owner opens Hero, sees hearts, XP, coins and the countdown over their hero's scene, reads the dialogue strip, drinks a potion or travels from the world map, scans the colour-badged quest log and leaves.
 
-FIRST VIEWPORT: Hero name large in pixel type over a navy command-bar nav with cursor on the current tab. Left: dialogue-box status window above the device bezel. Right: Status window (HP/XP bars, attack/defense/gold), then Explore window with biome rows. Primary action gold.
+FIRST VIEWPORT: HUD nav bar; full-width game screen (party box with portrait, hearts, XP, ATK/DEF top-left; coins and next-adventure timer top-right; cream dialogue strip beneath); command buttons; world map of three biome tiles with Travel in gold.
 
-FORM: Party Menu, candidate 4 of 7 (seed 9d9d3322), code-led.
+FORM: Platformer HUD, candidate C of the mock canvas (seed 9d9d3322 round superseded by user choice), code-led.
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance

@@ -22,7 +22,7 @@ function Rank({ stopped }: { stopped: boolean }) {
   const delta = board.own.rankDelta
   return (
     <p className="flex flex-wrap items-baseline gap-x-2">
-      <span className="font-display text-4xl font-bold tabular-nums text-gold-ink">#{board.own.rank}</span>
+      <span className="hud text-base text-gold-ink">#{board.own.rank}</span>
       <span>
         of {board.totalPlayers} in {group}, last 7 days
         {delta ? <span className={`ml-1 font-semibold ${delta > 0 ? 'text-xp-ink' : 'text-hp-ink'}`}>{delta > 0 ? `· up ${delta}` : `· down ${Math.abs(delta)}`}</span> : null}
@@ -45,7 +45,7 @@ export function Records({ counters, lifetimeXp, stopped = false }: { counters: C
   return (
     <section aria-labelledby="records-title" className="window flex min-w-0 flex-col gap-3 px-4 pt-3 pb-4 sm:px-5">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-        <h2 id="records-title" className="font-display text-xl font-semibold text-gold-ink">
+        <h2 id="records-title" className="font-display text-3xl font-bold">
           Records
         </h2>
         <Link to="/app/desk-crawler/leaderboard" className="text-sm underline underline-offset-4">
@@ -53,10 +53,10 @@ export function Records({ counters, lifetimeXp, stopped = false }: { counters: C
         </Link>
       </div>
       <Rank stopped={stopped} />
-      <dl className="grid grid-cols-1 border-t-2 border-edge min-[480px]:grid-cols-2 min-[480px]:gap-x-6">
+      <dl className="grid grid-cols-1 min-[480px]:grid-cols-2 min-[480px]:gap-x-6">
         {rows.map(([label, value]) => (
-          <div key={label} className="flex items-baseline justify-between gap-3 border-b border-rule py-2">
-            <dt className="caps text-sm whitespace-nowrap text-muted">{label}</dt>
+          <div key={label} className="flex items-baseline justify-between gap-3 border-t-2 border-dashed border-rule py-2">
+            <dt className="label-px whitespace-nowrap text-muted">{label}</dt>
             <dd className="font-bold whitespace-nowrap tabular-nums">{value}</dd>
           </div>
         ))}

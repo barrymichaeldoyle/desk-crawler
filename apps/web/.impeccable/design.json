@@ -1,277 +1,127 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-06T12:00:00Z",
+  "generatedAt": "2026-10-06T18:00:00Z",
   "title": "Design System: Desk Crawler Companion",
   "extensions": {
     "colorMeta": {
-      "overworld-ground": {
+      "arcade-ground": {
         "role": "neutral",
-        "displayName": "Periwinkle Overworld",
-        "canonical": "#e8ecf9",
+        "displayName": "Arcade Ground",
+        "canonical": "#15122b",
         "tonalRamp": [
-          "#0b0b0c",
-          "#242527",
-          "#414245",
-          "#5f6166",
-          "#808289",
-          "#a2a5ae",
-          "#c5c9d4",
-          "#eaeefb"
+          "#0a071e",
+          "#23213b",
+          "#403e5b",
+          "#5f5d7c",
+          "#807e9f",
+          "#a2a1c3",
+          "#c6c5e8",
+          "#ebeaff"
         ]
       },
-      "overworld-ink": {
+      "window-plum": {
         "role": "neutral",
-        "displayName": "Overworld Navy Ink",
-        "canonical": "#18214f",
+        "displayName": "Window Plum",
+        "canonical": "#221d44",
         "tonalRamp": [
-          "#040529",
-          "#17204d",
-          "#343f69",
-          "#545f85",
-          "#7781a1",
-          "#9ca4be",
-          "#c2c9dc",
-          "#eaeef9"
+          "#0b0327",
+          "#231e45",
+          "#3f3c66",
+          "#5e5b88",
+          "#7e7cab",
+          "#a19fd0",
+          "#c5c3f6",
+          "#eae8ff"
         ]
       },
-      "overworld-muted": {
+      "raised-plum": {
         "role": "neutral",
-        "displayName": "Slate Lavender",
-        "canonical": "#4b5694",
+        "displayName": "Raised Plum",
+        "canonical": "#2c2650",
         "tonalRamp": [
-          "#060624",
-          "#1b2049",
-          "#343d71",
-          "#505c99",
-          "#737eb5",
-          "#97a2d2",
-          "#bdc7ef",
-          "#e5edff"
+          "#0c0328",
+          "#241d46",
+          "#403b67",
+          "#5f5a89",
+          "#7f7cad",
+          "#a29ed2",
+          "#c6c2f8",
+          "#ebe8ff"
         ]
       },
-      "overworld-faint": {
+      "arcade-night": {
         "role": "neutral",
-        "displayName": "Faded Periwinkle",
-        "canonical": "#7d87b8",
+        "displayName": "Arcade Night",
+        "canonical": "#0c0a1c",
         "tonalRamp": [
-          "#080a18",
-          "#1f2339",
-          "#3a405e",
-          "#575e85",
-          "#767fae",
-          "#99a2d0",
-          "#bec7ef",
-          "#e5edff"
+          "#0a081a",
+          "#242236",
+          "#403f55",
+          "#5f5e76",
+          "#807f98",
+          "#a3a2bc",
+          "#c7c6e1",
+          "#ecebff"
         ]
       },
-      "overworld-rule": {
+      "cream": {
         "role": "neutral",
-        "displayName": "Pale Periwinkle Rule",
-        "canonical": "#bcc4e9",
+        "displayName": "Cream",
+        "canonical": "#f4f1ff",
         "tonalRamp": [
-          "#0a0b0f",
-          "#23242e",
-          "#3e414f",
-          "#5c6074",
-          "#7b819a",
-          "#9ca3c3",
-          "#bfc7ec",
-          "#e6edff"
+          "#0c0a12",
+          "#26232d",
+          "#43404b",
+          "#625f6b",
+          "#83808d",
+          "#a6a3b0",
+          "#cac7d4",
+          "#efecfa"
         ]
       },
-      "night-ground": {
+      "muted-lilac": {
         "role": "neutral",
-        "displayName": "Night Indigo",
-        "canonical": "#0b0f2e",
+        "displayName": "Muted Lilac",
+        "canonical": "#b9b2e6",
         "tonalRamp": [
-          "#050723",
-          "#1c2240",
-          "#3a405c",
-          "#5a6078",
-          "#7c8195",
-          "#a0a4b3",
-          "#c6c9d2",
-          "#eceef5"
+          "#0d0227",
+          "#261d45",
+          "#423a66",
+          "#615a88",
+          "#827bac",
+          "#a49dd0",
+          "#c8c1f6",
+          "#eee7ff"
         ]
       },
-      "night-text": {
+      "faint-lilac": {
         "role": "neutral",
-        "displayName": "Moonlit Text",
-        "canonical": "#e8ebfb",
+        "displayName": "Faint Lilac",
+        "canonical": "#8d86c0",
         "tonalRamp": [
-          "#0b0b0d",
-          "#242527",
-          "#414246",
-          "#606167",
-          "#80828a",
-          "#a2a4af",
-          "#c6c8d6",
-          "#ebedfd"
+          "#0d002c",
+          "#251b4b",
+          "#41396c",
+          "#60588f",
+          "#817ab3",
+          "#a39cd8",
+          "#c7c0fe",
+          "#ece6ff"
         ]
       },
-      "night-muted": {
+      "bezel-plum": {
         "role": "neutral",
-        "displayName": "Night Lavender",
-        "canonical": "#a3acdc",
+        "displayName": "Bezel Plum",
+        "canonical": "#3a3566",
         "tonalRamp": [
-          "#090a13",
-          "#212433",
-          "#3c4057",
-          "#5a5f7d",
-          "#7980a5",
-          "#99a2d0",
-          "#bec6f3",
-          "#e4ecff"
-        ]
-      },
-      "night-faint": {
-        "role": "neutral",
-        "displayName": "Night Faint",
-        "canonical": "#6f79ad",
-        "tonalRamp": [
-          "#07091b",
-          "#1e233d",
-          "#393f62",
-          "#555e8a",
-          "#757fb2",
-          "#98a2d0",
-          "#bec7ef",
-          "#e5edff"
-        ]
-      },
-      "night-rule": {
-        "role": "neutral",
-        "displayName": "Night Rule",
-        "canonical": "#272f63",
-        "tonalRamp": [
-          "#050528",
-          "#191f4d",
-          "#343d6f",
-          "#545e8b",
-          "#7680a7",
-          "#9ba3c4",
-          "#c1c8e1",
-          "#e9eeff"
-        ]
-      },
-      "menu-navy": {
-        "role": "primary",
-        "displayName": "Menu Navy",
-        "canonical": "#1e2a6e",
-        "tonalRamp": [
-          "#030132",
-          "#131c59",
-          "#2d3b7c",
-          "#4d5d97",
-          "#7180b1",
-          "#96a4cc",
-          "#bec8e7",
-          "#e7eeff"
-        ]
-      },
-      "menu-navy-night": {
-        "role": "primary",
-        "displayName": "Menu Navy Night",
-        "canonical": "#1c286c",
-        "tonalRamp": [
-          "#030132",
-          "#131b5a",
-          "#2d3c7b",
-          "#4d5e96",
-          "#7180b1",
-          "#96a4cc",
-          "#bec8e7",
-          "#e7eeff"
-        ]
-      },
-      "window-cream": {
-        "role": "neutral",
-        "displayName": "Window Cream",
-        "canonical": "#f6f1de",
-        "tonalRamp": [
-          "#0c0b09",
-          "#262523",
-          "#43423d",
-          "#63615a",
-          "#858279",
-          "#a8a598",
-          "#cdc9ba",
-          "#f4efdc"
-        ]
-      },
-      "window-lavender": {
-        "role": "neutral",
-        "displayName": "Window Lavender",
-        "canonical": "#b5bdea",
-        "tonalRamp": [
-          "#0a0b11",
-          "#222430",
-          "#3e4153",
-          "#5b5f78",
-          "#7a80a0",
-          "#9ba2ca",
-          "#bec6f2",
-          "#e5ecff"
-        ]
-      },
-      "window-faint": {
-        "role": "neutral",
-        "displayName": "Window Faint",
-        "canonical": "#8590c9",
-        "tonalRamp": [
-          "#080a19",
-          "#1f233b",
-          "#393f60",
-          "#565e88",
-          "#757eb2",
-          "#96a1d8",
-          "#bcc6f6",
-          "#e3ecff"
-        ]
-      },
-      "window-rule": {
-        "role": "neutral",
-        "displayName": "Window Rule",
-        "canonical": "#34418d",
-        "tonalRamp": [
-          "#04022f",
-          "#161c56",
-          "#2d3981",
-          "#4c5ba1",
-          "#6e7ebc",
-          "#94a2d7",
-          "#bbc7f2",
-          "#e4edff"
-        ]
-      },
-      "frame-night": {
-        "role": "neutral",
-        "displayName": "Frame Night",
-        "canonical": "#0a0f2c",
-        "tonalRamp": [
-          "#050822",
-          "#1c233f",
-          "#39415a",
-          "#5a6077",
-          "#7c8294",
-          "#a0a5b3",
-          "#c6c9d2",
-          "#eceef5"
-        ]
-      },
-      "bezel-night": {
-        "role": "neutral",
-        "displayName": "Bezel Night",
-        "canonical": "#2b3474",
-        "tonalRamp": [
-          "#05032d",
-          "#181d53",
-          "#313b7a",
-          "#515d95",
-          "#737fb1",
-          "#98a3cc",
-          "#bfc8e8",
-          "#e7eeff"
+          "#0c012b",
+          "#231c4b",
+          "#3f3a6c",
+          "#5d5a8e",
+          "#7e7bb2",
+          "#a09ed7",
+          "#c4c2fd",
+          "#e9e7ff"
         ]
       },
       "screen-white": {
@@ -289,79 +139,124 @@
           "#eeeeee"
         ]
       },
-      "hp-red": {
+      "coin-gold": {
+        "role": "primary",
+        "displayName": "Coin Gold",
+        "canonical": "#ffd166",
+        "tonalRamp": [
+          "#1f0000",
+          "#411900",
+          "#613800",
+          "#835900",
+          "#a67b00",
+          "#ca9e2b",
+          "#f0c257",
+          "#ffe98d"
+        ]
+      },
+      "coin-gold-hi": {
+        "role": "primary",
+        "displayName": "Coin Gold Hi",
+        "canonical": "#ffe08f",
+        "tonalRamp": [
+          "#1c0300",
+          "#391f00",
+          "#583d00",
+          "#795d00",
+          "#9c7f2b",
+          "#bfa251",
+          "#e5c676",
+          "#ffec9a"
+        ]
+      },
+      "coin-gold-lo": {
+        "role": "primary",
+        "displayName": "Coin Gold Lo",
+        "canonical": "#b07a00",
+        "tonalRamp": [
+          "#230000",
+          "#451400",
+          "#663400",
+          "#895500",
+          "#ac7700",
+          "#d19a38",
+          "#f7be60",
+          "#ffe58f"
+        ]
+      },
+      "heart-red": {
         "role": "secondary",
-        "displayName": "HP Red",
+        "displayName": "Heart Red",
         "canonical": "#e5483b",
         "tonalRamp": [
-          "#250000",
-          "#4e0000",
-          "#7b140f",
-          "#ab2c23",
-          "#de4538",
-          "#ff7464",
-          "#ffa292",
-          "#ffd0c1"
+          "#2d0000",
+          "#660000",
+          "#8e0000",
+          "#b60e0c",
+          "#df4236",
+          "#ff6a59",
+          "#ff907d",
+          "#ffd0c0"
+        ]
+      },
+      "heart-red-ink": {
+        "role": "secondary",
+        "displayName": "Heart Red Ink",
+        "canonical": "#ff7b72",
+        "tonalRamp": [
+          "#2d0000",
+          "#5d0000",
+          "#830008",
+          "#aa2d2c",
+          "#d2524c",
+          "#fa776e",
+          "#ff9c91",
+          "#ffcfc5"
         ]
       },
       "xp-green": {
         "role": "secondary",
         "displayName": "XP Green",
-        "canonical": "#3dbb6c",
+        "canonical": "#4fd18b",
         "tonalRamp": [
-          "#001102",
-          "#002f11",
-          "#045026",
-          "#19743e",
-          "#2c9956",
-          "#47c072",
-          "#81e29d",
-          "#b5ffca"
+          "#001600",
+          "#003700",
+          "#005719",
+          "#007939",
+          "#009c5a",
+          "#3bc17c",
+          "#67e69f",
+          "#a9ffcd"
         ]
       },
-      "gold": {
-        "role": "primary",
-        "displayName": "Gold",
-        "canonical": "#f2c14e",
-        "tonalRamp": [
-          "#100a01",
-          "#2f2308",
-          "#513f14",
-          "#775d22",
-          "#9e7d30",
-          "#c89f3f",
-          "#f2c24f",
-          "#ffe98c"
-        ]
-      },
-      "gold-hi": {
-        "role": "primary",
-        "displayName": "Gold Hi",
-        "canonical": "#f8d77f",
-        "tonalRamp": [
-          "#0e0b04",
-          "#2b2415",
-          "#4b4126",
-          "#6f6038",
-          "#94804c",
-          "#bca360",
-          "#e5c675",
-          "#ffec9b"
-        ]
-      },
-      "sky": {
+      "travel-sky": {
         "role": "tertiary",
         "displayName": "Travel Sky",
-        "canonical": "#4aa8ff",
+        "canonical": "#5d8fd6",
         "tonalRamp": [
-          "#000b1f",
-          "#022646",
-          "#114471",
-          "#23649f",
-          "#3786cf",
-          "#4daaff",
-          "#82cfff",
-          "#b4f5ff"
+          "#00003c",
+          "#001f5d",
+          "#0f4080",
+          "#3161a4",
+          "#5283c9",
+          "#74a7ef",
+          "#97cbff",
+          "#bbf1ff"
+        ]
+      },
+      "travel-sky-ink": {
+        "role": "tertiary",
+        "displayName": "Travel Sky Ink",
+        "canonical": "#86c8ff",
+        "tonalRamp": [
+          "#000632",
+          "#002653",
+          "#004574",
+          "#236697",
+          "#4788bc",
+          "#6bace1",
+          "#8ed1ff",
+          "#b3f7ff"
         ]
       },
       "rare-violet": {
@@ -369,194 +264,112 @@
         "displayName": "Rare Violet",
         "canonical": "#a77bff",
         "tonalRamp": [
-          "#0f0323",
-          "#2b174c",
-          "#493079",
-          "#6b4ba9",
-          "#8e67db",
-          "#b189ff",
-          "#d3b3ff",
-          "#f7ddff"
+          "#140036",
+          "#350073",
+          "#501397",
+          "#6f3ebd",
+          "#9062e4",
+          "#b287ff",
+          "#d6acff",
+          "#f6deff"
         ]
       },
-      "hp-ink-day": {
-        "role": "secondary",
-        "displayName": "HP Ink (Day)",
-        "canonical": "#b42318",
-        "tonalRamp": [
-          "#2a0000",
-          "#540000",
-          "#810000",
-          "#b12116",
-          "#d05546",
-          "#ed8273",
-          "#ffaea0",
-          "#ffdace"
-        ]
-      },
-      "xp-ink-day": {
-        "role": "secondary",
-        "displayName": "XP Ink (Day)",
-        "canonical": "#17733d",
-        "tonalRamp": [
-          "#001200",
-          "#00300d",
-          "#005124",
-          "#19743e",
-          "#4e9464",
-          "#7bb58b",
-          "#a8d7b3",
-          "#d5f9dd"
-        ]
-      },
-      "gold-ink-day": {
-        "role": "primary",
-        "displayName": "Gold Ink (Day)",
-        "canonical": "#85570a",
-        "tonalRamp": [
-          "#190500",
-          "#3a1d00",
-          "#5e3900",
-          "#845609",
-          "#a37943",
-          "#c29e71",
-          "#e2c49e",
-          "#ffeacd"
-        ]
-      },
-      "sky-ink-day": {
+      "rare-violet-ink": {
         "role": "tertiary",
-        "displayName": "Sky Ink (Day)",
-        "canonical": "#1d5bb8",
-        "tonalRamp": [
-          "#000332",
-          "#001f5c",
-          "#063d8a",
-          "#205db9",
-          "#4d81d3",
-          "#79a6ed",
-          "#a5cbff",
-          "#d2f0ff"
-        ]
-      },
-      "rare-ink-day": {
-        "role": "tertiary",
-        "displayName": "Rare Ink (Day)",
-        "canonical": "#6b3fd1",
-        "tonalRamp": [
-          "#110038",
-          "#2b0066",
-          "#481f97",
-          "#673ccb",
-          "#8567e7",
-          "#a691ff",
-          "#c9baff",
-          "#eee4ff"
-        ]
-      },
-      "hp-ink-window": {
-        "role": "secondary",
-        "displayName": "HP Ink (Window/Night)",
-        "canonical": "#ff8a7e",
-        "tonalRamp": [
-          "#190504",
-          "#3d1815",
-          "#65302b",
-          "#914942",
-          "#bf645b",
-          "#ef8075",
-          "#ffa79b",
-          "#ffd2c6"
-        ]
-      },
-      "xp-ink-window": {
-        "role": "secondary",
-        "displayName": "XP Ink (Window/Night)",
-        "canonical": "#62d891",
-        "tonalRamp": [
-          "#010f05",
-          "#0b2c19",
-          "#1b4d30",
-          "#2d7149",
-          "#409663",
-          "#54bd7e",
-          "#76e4a0",
-          "#abffca"
-        ]
-      },
-      "sky-ink-window": {
-        "role": "tertiary",
-        "displayName": "Sky Ink (Window/Night)",
-        "canonical": "#86c8ff",
-        "tonalRamp": [
-          "#040c14",
-          "#152735",
-          "#2a455b",
-          "#416583",
-          "#5987ae",
-          "#72abdb",
-          "#91d0ff",
-          "#bef6ff"
-        ]
-      },
-      "rare-ink-window": {
-        "role": "tertiary",
-        "displayName": "Rare Ink (Window/Night)",
+        "displayName": "Rare Violet Ink",
         "canonical": "#c4a6ff",
         "tonalRamp": [
-          "#0d0816",
-          "#281f39",
-          "#473a60",
-          "#68568a",
-          "#8b74b6",
-          "#af94e5",
-          "#d4b8ff",
-          "#f7e0ff"
+          "#150035",
+          "#300958",
+          "#4d2d7b",
+          "#6c4e9f",
+          "#8d6fc4",
+          "#b092ea",
+          "#d4b6ff",
+          "#f9ddff"
+        ]
+      },
+      "cubicle-tan": {
+        "role": "tertiary",
+        "displayName": "Cubicle Tan",
+        "canonical": "#f3d394",
+        "tonalRamp": [
+          "#1b0400",
+          "#391f00",
+          "#583d00",
+          "#795c1c",
+          "#9b7e40",
+          "#bfa163",
+          "#e4c586",
+          "#ffeaaa"
+        ]
+      },
+      "cafeteria-coral": {
+        "role": "tertiary",
+        "displayName": "Cafeteria Coral",
+        "canonical": "#f08a6b",
+        "tonalRamp": [
+          "#2d0000",
+          "#540000",
+          "#781c00",
+          "#9d4022",
+          "#c46244",
+          "#eb8566",
+          "#ffaa89",
+          "#ffd2b4"
         ]
       }
     },
     "typographyMeta": {
       "display": {
         "displayName": "Display",
-        "purpose": "The hero's name in the page header; rank number at 2.25rem in gold."
+        "purpose": "Landing page title only."
       },
       "headline": {
         "displayName": "Headline",
-        "purpose": "Page titles on Bag, Rankings and Settings."
+        "purpose": "Page titles and hero-page section titles."
       },
       "title": {
-        "displayName": "Window Title",
-        "purpose": "Gold Pixelify title opening every menu window."
+        "displayName": "Title",
+        "purpose": "Window titles and world-tile biome names."
       },
-      "figure": {
-        "displayName": "Figure",
-        "purpose": "Stat and recap values in tabular numerals."
+      "hud-title": {
+        "displayName": "HUD Title",
+        "purpose": "Hero name and level, away tally heading and figures, countdown, top-three ranks."
+      },
+      "hud-label": {
+        "displayName": "HUD Label",
+        "purpose": "Buttons, nav from 640px, dialogue sentence, world-number chips."
+      },
+      "small-label": {
+        "displayName": "Small Label",
+        "purpose": "label-px: ledger labels, party-box figures, gain chips, log filters, day headers (system sans, bold, tabular caps)."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Sentences, log narrative, item and biome names."
+        "purpose": "Sentences, log narrative, item and player names."
       },
-      "label": {
-        "displayName": "Label",
-        "purpose": "Small-caps labels for stat rows and meters."
+      "body-sm": {
+        "displayName": "Body Small",
+        "purpose": "Notes, captions and secondary lines."
       },
       "meta": {
         "displayName": "Meta",
-        "purpose": "Log timestamps and coloured change chips."
+        "purpose": "Log timestamps and change chips."
       }
     },
     "shadows": [
       {
-        "name": "meter-highlight",
-        "value": "inset 0 2px 0 rgb(255 255 255 / 0.35)",
-        "purpose": "One-art-pixel lit row along the top of a meter fill; pixel shading, not elevation."
+        "name": "button-lip",
+        "value": "inset 0 -4px 0 var(--color-gold-lo)",
+        "purpose": "The primary button's darker bottom row; pixel shading, not elevation. Removed when disabled."
       }
     ],
     "motion": [
       {
         "name": "menu-bob",
         "value": "1.2s infinite; 0-49% translateY(0), 50-100% translateY(2px)",
-        "purpose": "The dialogue box's gold 'more' arrow: the only idle motion."
+        "purpose": "The dialogue strip's \"more\" arrow: the only idle motion."
       },
       {
         "name": "eink-refresh",
@@ -576,6 +389,10 @@
     ],
     "breakpoints": [
       {
+        "name": "ledger-2col",
+        "value": "480px"
+      },
+      {
         "name": "sm",
         "value": "640px"
       },
@@ -590,106 +407,98 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "The one gold choice in a window: the decision the game is asking for.",
-      "html": "<div class=\"ds-window\"><button class=\"ds-btn-primary\">Travel</button></div>",
-      "css": ".ds-window { background: #1e2a6e padding-box; color: #f6f1de; border: 4px solid transparent; border-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' shape-rendering='crispEdges'%3E%3Cpath fill='%230a0f2c' d='M1 0h4v1H1zM0 1h1v4H0zM5 1h1v4H5zM1 5h4v1H1z'/%3E%3Cpath fill='%23f6f1de' d='M1 1h4v1H1zM1 4h4v1H1zM1 2h1v2H1zM4 2h1v2H4z'/%3E%3C/svg%3E\") 2; padding: 12px 16px 16px; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-btn-primary { font: 600 1rem/1.5 ui-sans-serif, system-ui, sans-serif; min-height: 44px; padding: 8px 16px; border-radius: 0; cursor: pointer; background: #f2c14e; color: #0a0f2c; border: 2px solid #0a0f2c; } .ds-btn-primary:hover { background: #f8d77f; } .ds-btn-primary:focus-visible { outline: 2px solid #f2c14e; outline-offset: 2px; } .ds-btn-primary:disabled { background: transparent; color: #b5bdea; border: 2px dashed #8590c9; cursor: not-allowed; }"
+      "description": "The decision the game is asking for: gold key with a darker bottom lip.",
+      "html": "<div class=\"ds-root ds-stage\"><button class=\"ds-btn ds-btn-primary\">Drink potion (4)</button><button class=\"ds-btn ds-btn-primary\" disabled>Travel</button></div>",
+      "css": ":host,.ds-root{--ground:#15122b;--ink:#f4f1ff;--muted:#b9b2e6;--faint:#8d86c0;--edge:#f4f1ff;--window:#221d44;--night:#0c0a1c;--gold:#ffd166;--gold-hi:#ffe08f;--gold-lo:#b07a00;--raised:#2c2650;--hp:#e5483b;--hp-ink:#ff7b72;--xp:#4fd18b;} .ds-stage{background:var(--ground);color:var(--ink);padding:16px;font-family:ui-sans-serif,system-ui,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center} .ds-btn{font-family:'Press Start 2P',ui-monospace,monospace;text-transform:uppercase;letter-spacing:.02em;line-height:1.6;font-size:.6875rem;min-height:44px;padding:8px 16px;border-radius:0;cursor:pointer;} .ds-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px} .ds-btn:disabled{border:3px dashed var(--faint);background:transparent;color:var(--muted);box-shadow:none;cursor:not-allowed} .ds-btn-primary{background:var(--gold);color:var(--night);border:3px solid var(--night);box-shadow:inset 0 -4px 0 var(--gold-lo)} .ds-btn-primary:hover:not(:disabled){background:var(--gold-hi)}"
     },
     {
       "name": "Secondary Button",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Routine actions: two-pixel edge in the context ink, inverts on hover.",
-      "html": "<div class=\"ds-window\"><button class=\"ds-btn-secondary\">Pause adventures</button></div>",
-      "css": ".ds-window { background: #1e2a6e padding-box; color: #f6f1de; border: 4px solid transparent; border-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' shape-rendering='crispEdges'%3E%3Cpath fill='%230a0f2c' d='M1 0h4v1H1zM0 1h1v4H0zM5 1h1v4H5zM1 5h4v1H1z'/%3E%3Cpath fill='%23f6f1de' d='M1 1h4v1H1zM1 4h4v1H1zM1 2h1v2H1zM4 2h1v2H4z'/%3E%3C/svg%3E\") 2; padding: 12px 16px 16px; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-btn-secondary { font: 600 1rem/1.5 ui-sans-serif, system-ui, sans-serif; min-height: 44px; padding: 8px 16px; border-radius: 0; cursor: pointer; background: transparent; color: #f6f1de; border: 2px solid #f6f1de; } .ds-btn-secondary:hover { background: #f6f1de; color: #1e2a6e; } .ds-btn-secondary:focus-visible { outline: 2px solid #f2c14e; outline-offset: 2px; }"
-    },
-    {
-      "name": "Quiet Button",
-      "kind": "button",
-      "refersTo": "button-quiet",
-      "description": "Continuations such as load more and unequip.",
-      "html": "<div class=\"ds-window\"><button class=\"ds-btn-quiet\">Load more</button></div>",
-      "css": ".ds-window { background: #1e2a6e padding-box; color: #f6f1de; border: 4px solid transparent; border-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' shape-rendering='crispEdges'%3E%3Cpath fill='%230a0f2c' d='M1 0h4v1H1zM0 1h1v4H0zM5 1h1v4H5zM1 5h4v1H1z'/%3E%3Cpath fill='%23f6f1de' d='M1 1h4v1H1zM1 4h4v1H1zM1 2h1v2H1zM4 2h1v2H4z'/%3E%3C/svg%3E\") 2; padding: 12px 16px 16px; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-btn-quiet { font: 600 1rem/1.5 ui-sans-serif, system-ui, sans-serif; min-height: 44px; padding: 8px 16px; border-radius: 0; cursor: pointer; background: none; border: 0; color: #b5bdea; text-decoration: underline; text-underline-offset: 4px; } .ds-btn-quiet:hover { color: #f6f1de; } .ds-btn-quiet:focus-visible { outline: 2px solid #f2c14e; outline-offset: 2px; }"
+      "description": "Routine actions: cream edge, inverts to cream on hover.",
+      "html": "<div class=\"ds-root ds-stage\"><button class=\"ds-btn ds-btn-secondary\">Pause adventures</button></div>",
+      "css": ":host,.ds-root{--ground:#15122b;--ink:#f4f1ff;--muted:#b9b2e6;--faint:#8d86c0;--edge:#f4f1ff;--window:#221d44;--night:#0c0a1c;--gold:#ffd166;--gold-hi:#ffe08f;--gold-lo:#b07a00;--raised:#2c2650;--hp:#e5483b;--hp-ink:#ff7b72;--xp:#4fd18b;} .ds-stage{background:var(--ground);color:var(--ink);padding:16px;font-family:ui-sans-serif,system-ui,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center} .ds-btn{font-family:'Press Start 2P',ui-monospace,monospace;text-transform:uppercase;letter-spacing:.02em;line-height:1.6;font-size:.6875rem;min-height:44px;padding:8px 16px;border-radius:0;cursor:pointer;} .ds-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px} .ds-btn:disabled{border:3px dashed var(--faint);background:transparent;color:var(--muted);box-shadow:none;cursor:not-allowed} .ds-btn-secondary{background:transparent;color:var(--ink);border:3px solid var(--edge)} .ds-btn-secondary:hover{background:var(--ink);color:var(--night)}"
     },
     {
       "name": "Danger Button",
       "kind": "button",
       "refersTo": "button-danger",
       "description": "Destructive confirmations only.",
-      "html": "<div class=\"ds-window\"><button class=\"ds-btn-danger\">Delete progress</button></div>",
-      "css": ".ds-window { background: #1e2a6e padding-box; color: #f6f1de; border: 4px solid transparent; border-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' shape-rendering='crispEdges'%3E%3Cpath fill='%230a0f2c' d='M1 0h4v1H1zM0 1h1v4H0zM5 1h1v4H5zM1 5h4v1H1z'/%3E%3Cpath fill='%23f6f1de' d='M1 1h4v1H1zM1 4h4v1H1zM1 2h1v2H1zM4 2h1v2H4z'/%3E%3C/svg%3E\") 2; padding: 12px 16px 16px; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-btn-danger { font: 600 1rem/1.5 ui-sans-serif, system-ui, sans-serif; min-height: 44px; padding: 8px 16px; border-radius: 0; cursor: pointer; background: transparent; color: #ff8a7e; border: 2px solid #e5483b; } .ds-btn-danger:hover { background: #e5483b; color: #0a0f2c; } .ds-btn-danger:focus-visible { outline: 2px solid #f2c14e; outline-offset: 2px; }"
+      "html": "<div class=\"ds-root ds-stage\"><button class=\"ds-btn ds-btn-danger\">Delete progress</button></div>",
+      "css": ":host,.ds-root{--ground:#15122b;--ink:#f4f1ff;--muted:#b9b2e6;--faint:#8d86c0;--edge:#f4f1ff;--window:#221d44;--night:#0c0a1c;--gold:#ffd166;--gold-hi:#ffe08f;--gold-lo:#b07a00;--raised:#2c2650;--hp:#e5483b;--hp-ink:#ff7b72;--xp:#4fd18b;} .ds-stage{background:var(--ground);color:var(--ink);padding:16px;font-family:ui-sans-serif,system-ui,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center} .ds-btn{font-family:'Press Start 2P',ui-monospace,monospace;text-transform:uppercase;letter-spacing:.02em;line-height:1.6;font-size:.6875rem;min-height:44px;padding:8px 16px;border-radius:0;cursor:pointer;} .ds-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px} .ds-btn:disabled{border:3px dashed var(--faint);background:transparent;color:var(--muted);box-shadow:none;cursor:not-allowed} .ds-btn-danger{background:transparent;color:var(--hp-ink);border:3px solid var(--hp)} .ds-btn-danger:hover{background:var(--hp);color:var(--night)}"
     },
     {
-      "name": "Menu Window",
+      "name": "Window",
       "kind": "card",
-      "refersTo": "menu-window",
-      "description": "Every section: navy fill in a notched two-pixel frame, gold pixel title, ruled stat rows.",
-      "html": "<section class=\"ds-window\"><h2 class=\"ds-window-title\">Records</h2><dl class=\"ds-rows\"><div><dt>Lifetime XP</dt><dd>8,421</dd></div><div><dt>Fights won</dt><dd>212</dd></div></dl></section>",
-      "css": ".ds-window { background: #1e2a6e padding-box; color: #f6f1de; border: 4px solid transparent; border-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' shape-rendering='crispEdges'%3E%3Cpath fill='%230a0f2c' d='M1 0h4v1H1zM0 1h1v4H0zM5 1h1v4H5zM1 5h4v1H1z'/%3E%3Cpath fill='%23f6f1de' d='M1 1h4v1H1zM1 4h4v1H1zM1 2h1v2H1zM4 2h1v2H4z'/%3E%3C/svg%3E\") 2; padding: 12px 16px 16px; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-window-title { margin: 0 0 12px; font: 600 1.25rem/1.4 'Pixelify Sans', ui-sans-serif, system-ui, sans-serif; color: #f2c14e; } .ds-rows { margin: 0; border-top: 2px solid #f6f1de; } .ds-rows div { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; border-bottom: 1px solid #34418d; } .ds-rows dt { font-size: 0.875rem; font-variant-caps: all-small-caps; letter-spacing: 0.04em; color: #b5bdea; } .ds-rows dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }"
+      "refersTo": "window",
+      "description": "Grouped content: plum panel in a 3px night outline, Pixelify title, dashed-rule ledger in HUD labels.",
+      "html": "<div class=\"ds-root ds-stage\"><section class=\"ds-window\"><h2>Records</h2><dl><div><dt>Lifetime XP</dt><dd>8,421</dd></div><div><dt>Fights won</dt><dd>212</dd></div></dl></section></div>",
+      "css": ":host,.ds-root{--ground:#15122b;--ink:#f4f1ff;--muted:#b9b2e6;--faint:#8d86c0;--edge:#f4f1ff;--window:#221d44;--night:#0c0a1c;--gold:#ffd166;--gold-hi:#ffe08f;--gold-lo:#b07a00;--raised:#2c2650;--hp:#e5483b;--hp-ink:#ff7b72;--xp:#4fd18b;} .ds-stage{background:var(--ground);color:var(--ink);padding:16px;font-family:ui-sans-serif,system-ui,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center} .ds-window{background:var(--window);color:var(--ink);border:3px solid var(--night);padding:12px 20px 16px;min-width:280px} .ds-window h2{margin:0 0 12px;font:700 1.875rem/1.2 'Pixelify Sans',ui-sans-serif,sans-serif} .ds-window dl{margin:0} .ds-window dl div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:8px 0;border-top:2px dashed var(--raised)} .ds-window dt{font-family:'Press Start 2P',ui-monospace,monospace;text-transform:uppercase;letter-spacing:.02em;line-height:1.6;font-size:.625rem;color:var(--muted)} .ds-window dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}"
     },
     {
-      "name": "Command Bar",
+      "name": "HUD Nav",
       "kind": "nav",
-      "refersTo": "command-bar",
-      "description": "Sticky navy menu bar; the current tab is gold with the pixel cursor arrow.",
-      "html": "<nav class=\"ds-nav\"><a href=\"#\" aria-current=\"page\">Hero</a><a href=\"#\">Bag</a><a href=\"#\">Rankings</a><a href=\"#\">Settings</a></nav>",
-      "css": ".ds-nav { display: flex; background: #1e2a6e padding-box; border: 4px solid transparent; border-top: 0; border-left: 0; border-right: 0; border-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' shape-rendering='crispEdges'%3E%3Cpath fill='%230a0f2c' d='M1 0h4v1H1zM0 1h1v4H0zM5 1h1v4H5zM1 5h4v1H1z'/%3E%3Cpath fill='%23f6f1de' d='M1 1h4v1H1zM1 4h4v1H1zM1 2h1v2H1zM4 2h1v2H4z'/%3E%3C/svg%3E\") 2; font: 600 0.875rem/1.4 ui-sans-serif, system-ui, sans-serif; } .ds-nav a { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 44px; color: #b5bdea; text-decoration: none; } .ds-nav a:hover { color: #f6f1de; } .ds-nav a::before { content: ''; width: 6px; height: 10px; margin-right: 6px; visibility: hidden; background: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='3' height='5' shape-rendering='crispEdges'%3E%3Cpath fill='%23f2c14e' d='M0 0h1v5H0zM1 1h1v3H1zM2 2h1v1H2z'/%3E%3C/svg%3E\") center / 100% 100% no-repeat; } .ds-nav a[aria-current=page] { color: #f2c14e; } .ds-nav a[aria-current=page]::before { visibility: visible; } .ds-nav a:focus-visible { outline: 2px solid #f2c14e; outline-offset: 2px; }"
+      "refersTo": "hud-nav",
+      "description": "Sticky night bar; the current tab is gold with the pixel cursor arrow.",
+      "html": "<nav class=\"ds-root ds-nav\"><a href=\"#\" aria-current=\"page\">Hero</a><a href=\"#\">Bag</a><a href=\"#\">Ranks</a><a href=\"#\">Settings</a></nav>",
+      "css": ":host,.ds-root{--ground:#15122b;--ink:#f4f1ff;--muted:#b9b2e6;--faint:#8d86c0;--edge:#f4f1ff;--window:#221d44;--night:#0c0a1c;--gold:#ffd166;--gold-hi:#ffe08f;--gold-lo:#b07a00;--raised:#2c2650;--hp:#e5483b;--hp-ink:#ff7b72;--xp:#4fd18b;} .ds-nav{display:flex;background:var(--night);border-bottom:4px solid var(--raised);font-family:'Press Start 2P',ui-monospace,monospace;text-transform:uppercase;letter-spacing:.02em;line-height:1.6;font-size:.6875rem} .ds-nav a{flex:1;display:flex;align-items:center;justify-content:center;min-height:52px;color:var(--muted);text-decoration:none} .ds-nav a:hover{color:var(--ink)} .ds-nav a::before{content:'';width:6px;height:10px;margin-right:6px;visibility:hidden;background:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='3' height='5' shape-rendering='crispEdges'%3E%3Cpath fill='%23ffd166' d='M0 0h1v5H0zM1 1h1v3H1zM2 2h1v1H2z'/%3E%3C/svg%3E\") center/100% 100% no-repeat} .ds-nav a[aria-current=page]{color:var(--gold)} .ds-nav a[aria-current=page]::before{visibility:visible} .ds-nav a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}"
     },
     {
       "name": "Segmented Tabs",
       "kind": "chip",
       "refersTo": "segmented-tab",
-      "description": "Ranking period and device layout: square cells in a two-pixel edge; the pressed cell fills navy with gold text.",
-      "html": "<div class=\"ds-seg\" role=\"group\"><button aria-pressed=\"true\">7 days</button><button aria-pressed=\"false\">30 days</button><button aria-pressed=\"false\">All time</button></div>",
-      "css": ".ds-seg { display: flex; border: 2px solid #18214f; background: #e8ecf9; } .ds-seg button { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 12px; border: 0; background: none; font: 600 0.875rem ui-sans-serif, system-ui, sans-serif; color: #4b5694; cursor: pointer; } .ds-seg button:not(:last-child) { border-right: 2px solid #18214f; } .ds-seg button:hover { color: #18214f; } .ds-seg button::before { content: ''; width: 6px; height: 10px; margin-right: 6px; visibility: hidden; background: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='3' height='5' shape-rendering='crispEdges'%3E%3Cpath fill='%23f2c14e' d='M0 0h1v5H0zM1 1h1v3H1zM2 2h1v1H2z'/%3E%3C/svg%3E\") center / 100% 100% no-repeat; } .ds-seg button[aria-pressed=true] { background: #1e2a6e; color: #f2c14e; } .ds-seg button[aria-pressed=true]::before { visibility: visible; } .ds-seg button:focus-visible { outline: 2px solid #18214f; outline-offset: 2px; }"
+      "description": "Ranking period: square cells in a cream edge; the pressed cell fills raised plum with gold text and the cursor.",
+      "html": "<div class=\"ds-root ds-stage\"><div class=\"ds-seg\" role=\"group\"><button aria-pressed=\"true\">7 days</button><button aria-pressed=\"false\">30 days</button><button aria-pressed=\"false\">Overall</button></div></div>",
+      "css": ":host,.ds-root{--ground:#15122b;--ink:#f4f1ff;--muted:#b9b2e6;--faint:#8d86c0;--edge:#f4f1ff;--window:#221d44;--night:#0c0a1c;--gold:#ffd166;--gold-hi:#ffe08f;--gold-lo:#b07a00;--raised:#2c2650;--hp:#e5483b;--hp-ink:#ff7b72;--xp:#4fd18b;} .ds-stage{background:var(--ground);color:var(--ink);padding:16px;font-family:ui-sans-serif,system-ui,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center} .ds-seg{display:flex;border:2px solid var(--edge)} .ds-seg button{display:flex;align-items:center;justify-content:center;min-height:44px;padding:0 12px;border:0;background:none;color:var(--muted);cursor:pointer;font-family:'Press Start 2P',ui-monospace,monospace;text-transform:uppercase;letter-spacing:.02em;line-height:1.6;font-size:.625rem} .ds-seg button:not(:last-child){border-right:2px solid var(--edge)} .ds-seg button:hover{background:var(--raised);color:var(--ink)} .ds-seg button::before{content:'';width:6px;height:10px;margin-right:6px;visibility:hidden;background:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='3' height='5' shape-rendering='crispEdges'%3E%3Cpath fill='%23ffd166' d='M0 0h1v5H0zM1 1h1v3H1zM2 2h1v1H2z'/%3E%3C/svg%3E\") center/100% 100% no-repeat} .ds-seg button[aria-pressed=true]{background:var(--raised);color:var(--gold)} .ds-seg button[aria-pressed=true]::before{visibility:visible} .ds-seg button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}"
     },
     {
-      "name": "Meter",
+      "name": "Game Screen HUD",
       "kind": "custom",
-      "refersTo": "meter-track",
-      "description": "Game stat bar: night track in a two-pixel edge, coloured fill with a one-art-pixel highlight row.",
-      "html": "<div class=\"ds-window\"><div class=\"ds-meter-head\"><span class=\"ds-hp\">Health</span><span>46/72</span></div><div class=\"ds-meter\"><div style=\"width:64%\"></div></div></div>",
-      "css": ".ds-window { background: #1e2a6e padding-box; color: #f6f1de; border: 4px solid transparent; border-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' shape-rendering='crispEdges'%3E%3Cpath fill='%230a0f2c' d='M1 0h4v1H1zM0 1h1v4H0zM5 1h1v4H5zM1 5h4v1H1z'/%3E%3Cpath fill='%23f6f1de' d='M1 1h4v1H1zM1 4h4v1H1zM1 2h1v2H1zM4 2h1v2H4z'/%3E%3C/svg%3E\") 2; padding: 12px 16px 16px; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-meter-head { display: flex; justify-content: space-between; font-size: 0.875rem; font-variant-numeric: tabular-nums; } .ds-hp { font-weight: 600; font-variant-caps: all-small-caps; letter-spacing: 0.04em; color: #ff8a7e; } .ds-meter { margin-top: 4px; height: 16px; border: 2px solid #f6f1de; background: #0a0f2c; overflow: hidden; } .ds-meter div { height: 100%; background: #e5483b; box-shadow: inset 0 2px 0 rgb(255 255 255 / 0.35); }"
+      "refersTo": "hud-box",
+      "description": "Party box and coin counter over the biome bands, with the cream dialogue strip beneath.",
+      "html": "<div class=\"ds-root ds-screen\"><div class=\"ds-bands\"><i></i><i></i><i></i><i></i></div><div class=\"ds-hud\"><div class=\"ds-box\">Pip <span class=\"ds-gold\">Lv7</span><div class=\"ds-xp\">XP <b><s style=\"width:60%\"></s></b> 310/520</div><div class=\"ds-dim\">ATK <span>21</span> · DEF <span>14</span></div></div><div class=\"ds-box ds-gold\">1,284 gold</div></div><div class=\"ds-dialogue\">Exploring the Server Room<svg viewBox=\"0 0 5 3\" width=\"10\" height=\"6\" shape-rendering=\"crispEdges\"><path d=\"M0 0h5v1H0zM1 1h3v1H1zM2 2h1v1H2z\"/></svg></div></div>",
+      "css": ":host,.ds-root{--ground:#15122b;--ink:#f4f1ff;--muted:#b9b2e6;--faint:#8d86c0;--edge:#f4f1ff;--window:#221d44;--night:#0c0a1c;--gold:#ffd166;--gold-hi:#ffe08f;--gold-lo:#b07a00;--raised:#2c2650;--hp:#e5483b;--hp-ink:#ff7b72;--xp:#4fd18b;} .ds-screen{position:relative;border:4px solid var(--night);background:var(--night);color:var(--ink)} .ds-bands{display:grid;grid-template-rows:18% 14% 40% 28%;height:180px} .ds-bands i:nth-child(1){background:#5d8fd6} .ds-bands i:nth-child(2){background:#78a9e4} .ds-bands i:nth-child(3){background:#9fd0f0} .ds-bands i:nth-child(4){background:#ffd166;border-top:6px solid rgb(12 10 28/.25)} .ds-hud{position:absolute;inset:0 0 auto;display:flex;justify-content:space-between;gap:12px;padding:12px;font-family:'Press Start 2P',ui-monospace,monospace;text-transform:uppercase;letter-spacing:.02em;line-height:1.6;font-size:.625rem} .ds-box{background:rgb(12 10 28/.85);border:3px solid var(--night);padding:10px 12px;display:flex;flex-direction:column;gap:6px;align-self:flex-start} .ds-gold{color:var(--gold)} .ds-dim{color:var(--muted)} .ds-dim span{color:var(--ink)} .ds-xp{display:flex;align-items:center;gap:8px;color:var(--xp)} .ds-xp b{display:block;width:112px;height:10px;border:2px solid var(--ink);background:var(--night)} .ds-xp s{display:block;height:100%;background:var(--xp)} .ds-dialogue{position:relative;border-top:4px solid var(--night);background:var(--ink);color:var(--night);padding:12px 36px 12px 12px;font-family:'Press Start 2P',ui-monospace,monospace;text-transform:uppercase;letter-spacing:.02em;line-height:1.6;font-size:.6875rem} .ds-dialogue svg{position:absolute;right:12px;bottom:12px;fill:var(--night);animation:ds-bob 1.2s infinite} @keyframes ds-bob{0%,49%{transform:translateY(0)}50%,100%{transform:translateY(2px)}}"
     },
     {
       "name": "Pixel Checkbox and Select",
       "kind": "input",
       "refersTo": "",
-      "description": "Native controls redrawn as pixel parts: night box filling gold with a pixel tick; square select with a pixel chevron.",
-      "html": "<div class=\"ds-window\"><label class=\"ds-check\"><input type=\"checkbox\" checked> Sell Keyboard Mace</label><select class=\"ds-select\"><option>Server Room</option></select></div>",
-      "css": ".ds-window { background: #1e2a6e padding-box; color: #f6f1de; border: 4px solid transparent; border-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' shape-rendering='crispEdges'%3E%3Cpath fill='%230a0f2c' d='M1 0h4v1H1zM0 1h1v4H0zM5 1h1v4H5zM1 5h4v1H1z'/%3E%3Cpath fill='%23f6f1de' d='M1 1h4v1H1zM1 4h4v1H1zM1 2h1v2H1zM4 2h1v2H4z'/%3E%3C/svg%3E\") 2; padding: 12px 16px 16px; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-check { display: flex; align-items: center; gap: 12px; min-height: 44px; } .ds-check input { appearance: none; width: 20px; height: 20px; margin: 0; border: 2px solid #f6f1de; background: #0a0f2c; cursor: pointer; } .ds-check input:checked { background: #f2c14e url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' shape-rendering='crispEdges'%3E%3Cpath fill='%230a0f2c' d='M4 1h1v1H4zM3 2h1v1H3zM0 3h1v1H0zM2 3h1v1H2zM1 4h1v1H1z'/%3E%3C/svg%3E\") center / 75% no-repeat; } .ds-check input:focus-visible { outline: 2px solid #f2c14e; outline-offset: 2px; } .ds-select { appearance: none; min-height: 44px; padding: 0 2.25rem 0 12px; border: 2px solid #f6f1de; border-radius: 0; color: #f6f1de; font: inherit; background: #1e2a6e url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='3' shape-rendering='crispEdges'%3E%3Cpath fill='%23f2c14e' d='M0 0h5v1H0zM1 1h3v1H1zM2 2h1v1H2z'/%3E%3C/svg%3E\") right 0.75rem center / 10px 6px no-repeat; } .ds-select:focus-visible { outline: 2px solid #f2c14e; outline-offset: 2px; }"
+      "description": "Native controls as pixel parts: night box filling gold with a pixel tick; square select with a gold chevron.",
+      "html": "<div class=\"ds-root ds-stage\"><label class=\"ds-check\"><input type=\"checkbox\" checked> Sell Keyboard Mace</label><select class=\"ds-select\"><option>Server Room</option></select></div>",
+      "css": ":host,.ds-root{--ground:#15122b;--ink:#f4f1ff;--muted:#b9b2e6;--faint:#8d86c0;--edge:#f4f1ff;--window:#221d44;--night:#0c0a1c;--gold:#ffd166;--gold-hi:#ffe08f;--gold-lo:#b07a00;--raised:#2c2650;--hp:#e5483b;--hp-ink:#ff7b72;--xp:#4fd18b;} .ds-stage{background:var(--ground);color:var(--ink);padding:16px;font-family:ui-sans-serif,system-ui,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center} .ds-check{display:flex;align-items:center;gap:12px;min-height:44px} .ds-check input{appearance:none;width:20px;height:20px;margin:0;border:2px solid var(--edge);background:var(--night);cursor:pointer} .ds-check input:checked{background:var(--gold) url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' shape-rendering='crispEdges'%3E%3Cpath fill='%230c0a1c' d='M4 1h1v1H4zM3 2h1v1H3zM0 3h1v1H0zM2 3h1v1H2zM1 4h1v1H1z'/%3E%3C/svg%3E\") center/75% no-repeat} .ds-check input:focus-visible,.ds-select:focus-visible{outline:2px solid var(--gold);outline-offset:2px} .ds-select{appearance:none;min-height:44px;padding:0 2.25rem 0 12px;border:2px solid var(--edge);border-radius:0;color:var(--ink);font:inherit;background:var(--ground) url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='3' shape-rendering='crispEdges'%3E%3Cpath fill='%23ffd166' d='M0 0h5v1H0zM1 1h3v1H1zM2 2h1v1H2z'/%3E%3C/svg%3E\") right .75rem center/10px 6px no-repeat}"
     }
   ],
   "narrative": {
-    "northStar": "The Party Menu",
-    "overview": "The companion is the game's pause menu. Every section is a 16-bit RPG menu window: a navy panel inside a notched two-pixel frame (night outline, cream line), set on a pale periwinkle overworld by day and a night-indigo overworld after dark. Inside the windows the text is cream, secondary text is lavender, and window titles are gold pixel type. Stats wear their game colours: red health, green experience, gold currency, sky-blue travel, violet for rare things and traps. Colour exists to restore hierarchy and state, and it never travels alone: every coloured mark also carries a glyph, a label, a sign or a shape.\n\nDensity is menu-like rather than dashboard-like. Facts sit in ruled rows inside a window (a two-pixel cream rule opens the list, hairlines in window-rule divide rows), small-caps labels on the left, bold tabular figures on the right. The one gold choice in a window is the action the game is asking for. The current menu option carries a gold pixel cursor arrow, the way an SNES menu marks where you are.\n\nThe TRMNL device is the one monochrome object in the world. It sits in a dark drawn bezel with a white e-ink screen, showing the same 1-bit templates the plugin serves; the companion's colour stops at its edge. Motion is scarce and stepped: the dialogue box's two-step \"more\" arrow bob, and the six-step e-ink refresh flash when a new screen lands.",
+    "northStar": "The Game Screen",
+    "overview": "The companion is not a dashboard about a game; it is the game's own screen. The hero page opens on the hero's real scene, the same 1-bit art the TRMNL draws, multiplied over its biome's colour bands so the ink stays crisp and the paper takes the colour, with a platformer HUD laid over it: a party box (portrait, half-heart health, XP bar, ATK and DEF), a coin counter and a next-adventure timer, and a cream dialogue strip saying what is happening. Everything below is the level select and quest log around that screen: commands, a three-tile world map, the \"While you were away\" tally, the TRMNL preview, a badge-coded quest log and records.\n\nThe ground is a dark arcade screen. Panels sit one step lighter inside a hard 3px black outline. Game colours mean one thing everywhere: hearts red, XP green, coins gold, travel sky, rare violet. Arcade lettering (Press Start 2P) is reserved for the HUD voice: labels, nav, counters, buttons and the dialogue line, always small and uppercase. Pixelify Sans titles the page and its sections; the system sans carries every sentence so reading stays fast. The world is dark only.\n\nThe TRMNL is the one monochrome object. It sits in a plum bezel with a white e-ink screen showing the device's own framework templates; the companion's colour stops at its edge. Motion is scarce and stepped: the dialogue arrow's two-step bob and the e-ink refresh flash.",
     "keyCharacteristics": [
-      "Navy menu windows with a notched two-pixel frame, on a periwinkle (day) or night-indigo (dark) overworld.",
-      "Gold for selection, the primary action and currency; red, green, sky and violet for HP, XP, travel and rare.",
-      "Pixelify Sans for names, window titles and headline numbers; system sans for reading.",
-      "Square controls with two-pixel edges; a gold pixel arrow marks the current choice.",
-      "Native controls redrawn as pixel parts: checkbox, select chevron, disclosure triangle.",
-      "Flat; depth is drawn by frames and fills, never by blur.",
-      "The device preview stays 1-bit inside its bezel."
+      "Dark arcade ground, plum windows in 3px night outlines, cream text; dark theme only.",
+      "The hero's scene leads, in colour, under a platformer HUD and a cream dialogue strip.",
+      "Hearts red, XP green, coins gold, travel sky, rare violet; never colour alone.",
+      "Press Start 2P for the HUD voice at two small steps; Pixelify Sans for titles; system sans for reading.",
+      "Gold primary buttons with a darker bottom lip; dashed edges stamp locked and disabled states.",
+      "Square everything; only the TRMNL bezel and screen curve.",
+      "Pixel parts drawn as crisp SVG cell grids; pixel art rendered pixelated at integer scale."
     ],
     "rules": [
       {
-        "name": "The Context Ink Rule",
-        "body": "Ground, ink, muted, faint, rule, edge, focus and every *-ink tone are re-declared inside a menu window. A component uses the role, not the hex, so it reads correctly on the overworld and inside a window alike.",
+        "name": "The One Meaning Rule",
+        "body": "Each game colour means one stat everywhere: red is health and harm, green is XP and recovery, gold is coins and the current choice, sky is travel and defence, violet is rare. A new surface reuses these meanings; it does not invent a sixth.",
         "section": "colors"
       },
       {
         "name": "The Never Colour Alone Rule",
-        "body": "Every coloured mark also carries a glyph, a sign, a label or a shape: rarity has a gem whose facets grow, log kinds have pixel glyphs, changes carry their unit and sign, biomes carry their name beside the swatch.",
+        "body": "Every coloured mark also carries a glyph, a sign, a label or a shape: log kinds sit in glyph badges, changes carry their sign and unit, rarity has a gem whose facets grow, biomes carry their name and number, hearts fill by half-heart shape.",
         "section": "colors"
       },
       {
-        "name": "The One Gold Choice Rule",
-        "body": "In any window, at most one control is gold-filled: the decision the game is asking for (Drink potion when hurt, Travel, Claim find, Resume). Everything routine is the outlined secondary button.",
+        "name": "The Ink-On-Dark Rule",
+        "body": "Text on the dark ground uses a stat's ink tone (heart-red-ink, travel-sky-ink, rare-violet-ink); the raw fill is for bars, hearts, tiles and button fills.",
         "section": "colors"
       },
       {
-        "name": "The Menu Lettering Rule",
-        "body": "Pixelify Sans is for names, titles and headline numbers. Never set sentences, buttons, labels or figures in it.",
+        "name": "The Two Steps Rule",
+        "body": "Press Start 2P runs only at 0.6875rem for nav and buttons and 0.875rem or larger for HUD headings and counters; it is always uppercase and never sets a sentence the owner must read at length. Smaller labels and figures use Small Label.",
         "section": "typography"
       },
       {
@@ -699,12 +508,12 @@
       },
       {
         "name": "The Drawn Depth Rule",
-        "body": "If something must sit above something else, give it a window frame, a navy fill or a two-pixel edge. Never a blur or drop shadow.",
+        "body": "If something must sit above something else, give it a lighter fill and a night outline, or a gold outline when it is the current choice. Never a blur, glow or drop shadow.",
         "section": "elevation"
       },
       {
         "name": "The Only Curve Is the Device Rule",
-        "body": "Rounded corners belong to the TRMNL bezel and screen. Nothing interactive is rounded.",
+        "body": "Rounded corners belong to the TRMNL bezel and its screen. Nothing interactive is rounded.",
         "section": "shapes"
       },
       {
@@ -714,22 +523,24 @@
       }
     ],
     "dos": [
-      "Do put every section in a menu window with the notched two-pixel frame and a gold Pixelify title.",
-      "Do use each stat's game colour (HP red, XP green, gold, sky travel, violet rare) and pair it with a glyph, sign, label or shape.",
-      "Do set text in the context ink tone (hp-ink, gold-ink and so on), not the raw fill.",
-      "Do mark the current menu choice with the gold pixel cursor arrow.",
-      "Do keep every control square, two-pixel-edged and at least 44px tall.",
-      "Do draw icons, arrows, checks and chevrons as crisp SVG cell grids, and render pixel art pixelated at integer scale.",
+      "Do lead with the hero's scene in colour under the HUD; it is the companion's first viewport.",
+      "Do put grouped content in a window: Window Plum inside a 3px Arcade Night outline.",
+      "Do keep each game colour to its one meaning and pair it with a glyph, sign, label or shape.",
+      "Do set text on the dark ground in the stat's ink tone, not the raw fill.",
+      "Do set HUD labels, nav, counters and buttons in Press Start 2P at its small steps, uppercase.",
+      "Do mark the current choice with the gold pixel cursor arrow or a gold outline.",
+      "Do keep every control square, hard-edged and at least 44px tall.",
+      "Do draw icons, hearts, arrows, checks and chevrons as crisp SVG cell grids, and render pixel art pixelated at integer scale.",
       "Do stamp disabled and locked states with a dashed edge and muted text.",
-      "Do keep the device preview 1-bit inside its bezel."
+      "Do keep the device preview 1-bit inside its plum bezel."
     ],
     "donts": [
-      "Don't fill more than one control gold in a window.",
-      "Don't round buttons, inputs, tabs, windows or meters; only the bezel and its screen curve.",
-      "Don't use drop shadows, blurs or glows for depth; the meter's highlight row is the only shading.",
-      "Don't set sentences, buttons, labels or figures in Pixelify Sans.",
+      "Don't add a light theme; the arcade screen is dark only.",
+      "Don't set sentences or long prose in Press Start 2P, or labels and buttons in Pixelify Sans.",
+      "Don't round buttons, inputs, tabs, windows, tiles or badges; only the bezel and its screen curve.",
+      "Don't use drop shadows, blurs or glows for depth; the primary button's inset lip is the only shading.",
       "Don't convey state by colour alone.",
-      "Don't fall back to the 1-bit paper logbook or rounded white casual-game cards; this world replaced both.",
+      "Don't fall back to the 1-bit logbook or the navy menu-window recolour; this world replaced both.",
       "Don't add idle motion beyond the dialogue arrow bob and the e-ink refresh."
     ]
   }

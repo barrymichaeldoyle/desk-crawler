@@ -100,7 +100,7 @@ function Inventory() {
             <p>{bag.canResume ? 'Your find is claimed and there’s room for more. Resume here or head to another unlocked area.' : 'Your find is claimed. Sell one more item to leave a free slot, then resume.'}</p>
             <label className="mt-4 flex flex-col gap-2 text-sm">
               <span className="font-semibold">Resume in</span>
-              <select value={destination} disabled={locked || !manageable} onChange={(event) => setDestination(event.target.value)} className="pixel-select min-h-11 border-2 border-edge px-3 text-base">
+              <select value={destination} disabled={locked || !manageable} onChange={(event) => setDestination(event.target.value)} className="pixel-select min-h-11 border-2 border-edge pr-9 pl-3 text-base">
                 <option value="">{hero.biomes.find((biome: { id: string }) => biome.id === hero.biomeId)?.name ?? 'Current area'}</option>
                 {hero.biomes.filter((biome: { unlocked: boolean; id: string }) => biome.unlocked && biome.id !== hero.biomeId).map((biome: { id: string; name: string }) => <option key={biome.id} value={biome.id}>{biome.name}</option>)}
               </select>
@@ -128,7 +128,7 @@ function Inventory() {
       </Card>
       <section aria-labelledby="bag-gear-title" className="window min-w-0 px-4 pt-3 pb-4 sm:px-5">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 id="bag-gear-title" ref={selectionHeading} tabIndex={-1} className="font-display text-xl font-semibold text-gold-ink">Gear to review</h2>
+          <h2 id="bag-gear-title" ref={selectionHeading} tabIndex={-1} className="font-display text-2xl font-bold">Gear to review</h2>
           <p className="text-sm">{sellable.length} {sellable.length === 1 ? 'item' : 'items'}</p>
         </div>
         {bag.used >= 24 && hero.status !== 'sleeping' ? <p className="mt-3 text-sm">{bag.used >= bag.capacity ? 'Your bag is full. Adventures continue until the next gear find, which will be held safely.' : 'Your bag is filling up. Sell gear you no longer need to make room for new finds.'}</p> : null}

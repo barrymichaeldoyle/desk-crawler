@@ -48,10 +48,10 @@ export function AdventureLog() {
   const days = useMemo(() => group((results as Entry[]).filter((entry) => kinds === null || kinds.includes(entry.kind))), [results, kinds])
 
   return (
-    <section aria-labelledby="log-title" className="window min-w-0 px-4 pt-3 pb-4 sm:px-5">
+    <section aria-labelledby="log-title" className="min-w-0">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
-        <h2 id="log-title" className="font-display text-xl font-semibold text-gold-ink">
-          Adventure log
+        <h2 id="log-title" className="font-display text-3xl font-bold">
+          Quest log
         </h2>
         <div role="group" aria-label="Filter adventure log" className="-mx-1 flex flex-wrap">
           {FILTERS.map((item) => (
@@ -60,7 +60,7 @@ export function AdventureLog() {
               type="button"
               aria-pressed={filter === item.key}
               onClick={() => setFilter(item.key)}
-              className="menu-cursor inline-flex min-h-11 items-center px-1.5 text-sm text-muted hover:text-ink aria-pressed:font-semibold aria-pressed:text-gold-ink"
+              className="menu-cursor inline-flex min-h-11 items-center px-1.5 label-px text-muted hover:text-ink aria-pressed:text-gold-ink"
             >
               {item.label}
             </button>
@@ -78,13 +78,13 @@ export function AdventureLog() {
         <div className="mt-2 flex flex-col">
           {days.map((day) => (
             <section key={day.label} aria-label={day.label}>
-              <h3 className="sticky top-12 z-[1] border-b-2 border-edge bg-ground py-2 text-sm font-bold">{day.label}</h3>
-              <ol>
+              <h3 className="sticky top-14 z-[1] bg-ground py-2 label-px text-muted">{day.label}</h3>
+              <ol className="flex flex-col gap-2 pb-3">
                 {day.encounters.map((encounter) => (
                   <li key={encounter.key}>
-                    <ul>
+                    <ul className="flex flex-col gap-2">
                       {encounter.entries.map((entry) => (
-                        <li key={entry.id} className="border-b border-rule py-3">
+                        <li key={entry.id} className="window px-3 py-2.5">
                           <LogStory entry={entry} />
                         </li>
                       ))}

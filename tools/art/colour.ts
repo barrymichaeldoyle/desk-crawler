@@ -9,10 +9,11 @@ export const BRAND = {
   gold: [0xf2, 0xc1, 0x4e],
   cream: [0xf6, 0xf1, 0xde],
   night: [0x0a, 0x0f, 0x2c],
-  navy: [0x1e, 0x2a, 0x6e],
-  ground: [0xe8, 0xec, 0xf9],
+  navy: [0x22, 0x1d, 0x44],
+  ground: [0x15, 0x12, 0x2b],
+  serverBands: [[0x5d, 0x8f, 0xd6], [0x78, 0xa9, 0xe4], [0x9f, 0xd0, 0xf0], [0xff, 0xd1, 0x66]],
   white: [0xff, 0xff, 0xff],
-} as const satisfies Record<string, Rgb>
+} as const
 
 /** An RGB raster. */
 export class Image {
@@ -98,6 +99,17 @@ export function colourMark(canvas: Canvas, tile: Rgb = BRAND.gold): Image {
   }
   const image = new Image(width, height)
   for (let i = 0; i < width * height; i += 1) image.set(i % width, Math.floor(i / width), ink[i] ? BRAND.night : outside[i] ? tile : BRAND.cream)
+  return image
+}
+
+/** A 1-bit scene with its paper replaced by colour bands (ceiling, upper wall, wall, floor at 18/14/40/28%), as the companion's game screen shows it. */
+export function bandedScene(canvas: Canvas, bands: readonly Rgb[]): Image {
+  const image = new Image(canvas.width, canvas.height)
+  const stops = [0.18, 0.32, 0.72, 1]
+  for (let y = 0; y < canvas.height; y += 1) {
+    const band = bands[stops.findIndex((stop) => y < stop * canvas.height)] ?? bands[bands.length - 1]!
+    for (let x = 0; x < canvas.width; x += 1) image.set(x, y, canvas.ink[y * canvas.width + x] ? BRAND.night : band)
+  }
   return image
 }
 

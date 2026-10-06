@@ -40,7 +40,7 @@ function Leaderboard() {
               setBoard(tab.board)
               setCohortKey(undefined)
             }}
-            className={`menu-cursor flex min-h-11 flex-1 items-center justify-center px-2 py-2 text-sm font-semibold not-last:border-r-2 not-last:border-edge ${board === tab.board ? 'bg-navy text-gold' : 'text-muted hover:bg-rule hover:text-ink'}`}
+            className={`menu-cursor flex min-h-11 flex-1 items-center justify-center px-2 py-2 label-px not-last:border-r-2 not-last:border-edge ${board === tab.board ? 'bg-navy text-gold' : 'text-muted hover:bg-rule hover:text-ink'}`}
           >
             {tab.label}
           </button>
@@ -78,7 +78,7 @@ function Leaderboard() {
             <ol className="flex flex-col divide-y divide-rule">
               {data.entries.map((row: { rank: number; name: string; hero_name: string; level: number; score: number }) => (
                 <li key={row.rank} aria-current={data.own?.rank === row.rank ? 'true' : undefined} className={`flex min-w-0 items-start gap-3 py-3 ${data.own?.rank === row.rank ? '-mx-2 bg-ground px-2 outline-2 outline-gold' : ''}`}>
-                  <span className={`w-8 text-right font-bold tabular-nums ${row.rank <= 3 ? 'font-display text-lg leading-6 text-gold-ink' : ''}`}>{row.rank}</span>
+                  <span className={`w-8 text-right font-bold tabular-nums ${row.rank <= 3 ? 'hud text-sm leading-6 text-gold-ink' : ''}`}>{row.rank}</span>
                   <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">
                     <span className="block font-semibold">{row.name}</span>
                     {row.hero_name ? <span className="block text-sm text-muted">{row.hero_name}</span> : null}

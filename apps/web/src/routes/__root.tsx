@@ -88,8 +88,8 @@ function RootDocument({ children }: { children: ReactNode }) {
       <head>
         <HeadContent />
         {/* Outside route head: HeadContent keeps only one meta per name. */}
-        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#e8ecf9" />
-        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0f2e" />
+        <meta name="theme-color" content="#15122b" />
+        
       </head>
       <body className="antialiased">
         <a href="#main" className="sr-only border-2 border-night bg-gold px-4 py-3 font-semibold text-night focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50">

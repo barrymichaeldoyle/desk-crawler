@@ -15,7 +15,7 @@ Implementation was authorized on 2026-10-03. This index includes the original pl
 | [Monetization](monetization.md) | Creator Fund assumptions, eligibility evidence and operating costs |
 | [Playlist retention](playlist-retention.md) | Optional permanent keepsakes, weekly screen codes, authority and verification limits |
 | [Achievements](achievements.md) | Tiered, rarity-rated, release-appended achievements over bounded counters (D65) |
-| [Roadmap](roadmap.md) | Named releases: v1.0 submission scope and freeze, later versions, guardrails for future systems |
+| [Roadmap](roadmap.md) | Named releases: v1.0 submission scope, continuous iteration after submission, later versions, guardrails for future systems |
 | [Gameplay](gameplay.md) | State machine, simulation rules, initial balance and content |
 | [Architecture](architecture.md) | Service boundaries, planned file structure, implementation spikes |
 | [Domain contracts](domain-contracts.md) | Pure-core input/output, adapter ownership, typed event details |

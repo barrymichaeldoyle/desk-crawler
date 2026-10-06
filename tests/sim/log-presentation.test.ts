@@ -13,6 +13,13 @@ describe('story and stat changes', () => {
       .toEqual({ narrative: 'Found a healing potion. Drank a potion.', changes: ['+1 healing potion', '+20 HP'] })
   })
 
+  it('names the HP an automatic potion restored beside net HP, and not again for a manual drink', () => {
+    const auto = displayLogDeltas({ deltas: { xpEarned: 9, gold: 0, hp: -3 }, detail: { outcome: { variant: 'combat' }, potionHealing: 12 } })
+    expect(present('Beat [[Paper Imp]]. +9 XP. Drank a potion.', auto, 'combat').changes).toEqual(['+9 XP', '−3 HP', '+12 HP from potion'])
+    const manual = displayLogDeltas({ deltas: { xpEarned: 0, gold: 0, hp: 12 }, detail: { operation: 'use_potion' } })
+    expect(present('Drank a potion.', manual, 'command').changes).toEqual(['+12 HP'])
+    expect(displayLogDeltas({ deltas: { xpEarned: 0, gold: 0, hp: 5 }, detail: { outcome: { variant: 'rest' } } }).potionHealing).toBe(0)
+  })
   it('does not report a potion for full-stack gold fallback or narrative alone', () => {
     const zero = { xpEarned: 0, gold: 0, hp: 0 }
     const fallback = displayLogDeltas({ deltas: { ...zero, gold: 5 }, detail: { outcome: { variant: 'loot', found: 'gold', potionFullFallback: true } } })

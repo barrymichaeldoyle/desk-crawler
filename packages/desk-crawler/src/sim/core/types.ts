@@ -332,6 +332,8 @@ export interface LogDetail {
   readonly disposition: Disposition
   readonly encounterKind?: EncounterKind
   readonly potionsUsed: number
+  /** HP the automatic potion restored this tick, so the log can show it apart from net HP. Absent on logs written before 2026-10-07. */
+  readonly potionHealing?: number
   readonly levelsGained: number
   readonly goldPenalty: number
   readonly heldFind: boolean

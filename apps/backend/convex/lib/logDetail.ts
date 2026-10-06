@@ -78,6 +78,8 @@ export const simulationDetail = v.object({
   disposition,
   encounterKind: v.optional(encounterKind),
   potionsUsed: v.number(),
+  /** HP restored by the automatic potion (added 2026-10-07; older logs omit it). */
+  potionHealing: v.optional(v.number()),
   levelsGained: v.number(),
   goldPenalty: v.number(),
   heldFind: v.boolean(),

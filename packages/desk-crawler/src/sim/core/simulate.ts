@@ -192,9 +192,11 @@ class TickRun {
     const potionRow = input.inventory.find((item) => item.kind === 'potion')
     let potionQty = potionRow?.quantity ?? 0
     let potionsUsed = 0
+    let potionHealing = 0
 
     if (h.hp * 100 < max * c.autoPotionBelowPct && potionRow !== undefined && potionQty > 0) {
-      h.hp = Math.min(max, h.hp + pctOf(max, c.potionHealPct))
+      potionHealing = Math.min(max - h.hp, pctOf(max, c.potionHealPct))
+      h.hp += potionHealing
       potionQty -= 1
       potionsUsed = 1
       this.changes.push({ type: 'potion_decrement', itemId: potionRow.id, deleteRow: potionQty === 0 })
@@ -212,7 +214,7 @@ class TickRun {
       return this.finish(
         'rested',
         { kind: 'rest', summary: composeSummary(text, text, potionSuffix, c.summaryMaxCodePoints), outcome: { variant: 'rest', healing, automatic: true, resultingStatus: 'resting' } },
-        { potionsUsed },
+        { potionsUsed, potionHealing },
       )
     }
 
@@ -483,7 +485,7 @@ class TickRun {
     return this.finish(
       disposition,
       { kind: logKind, summary: composeSummary(primary, compact, consequences, c.summaryMaxCodePoints), outcome, encounterKind: kind },
-      { potionsUsed, levelsGained, goldPenalty, heldFind, xpGranted, ...(upgrade === undefined ? {} : { bagUpgrade: upgrade }) },
+      { potionsUsed, potionHealing, levelsGained, goldPenalty, heldFind, xpGranted, ...(upgrade === undefined ? {} : { bagUpgrade: upgrade }) },
     )
   }
 
@@ -551,7 +553,7 @@ class TickRun {
   private finish(
     disposition: Disposition,
     event?: { kind: LogKind; summary: string; outcome: OutcomeDetail; encounterKind?: EncounterKind },
-    extra: { potionsUsed?: number; levelsGained?: number; goldPenalty?: number; heldFind?: boolean; xpGranted?: number; bagUpgrade?: BagUpgrade } = {},
+    extra: { potionsUsed?: number; potionHealing?: number; levelsGained?: number; goldPenalty?: number; heldFind?: boolean; xpGranted?: number; bagUpgrade?: BagUpgrade } = {},
   ): SimulationResult {
     const { h, input } = this
     const nextHero = toHeroState(h)
@@ -564,6 +566,7 @@ class TickRun {
       disposition,
       ...(event.encounterKind === undefined ? {} : { encounterKind: event.encounterKind }),
       potionsUsed: extra.potionsUsed ?? 0,
+      ...(extra.potionHealing ? { potionHealing: extra.potionHealing } : {}),
       levelsGained: extra.levelsGained ?? 0,
       goldPenalty: extra.goldPenalty ?? 0,
       heldFind: extra.heldFind ?? false,

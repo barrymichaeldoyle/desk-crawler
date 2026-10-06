@@ -1,6 +1,6 @@
 # Release roadmap
 
-Updated 2026-10-06 (D64). Work is planned as named releases rather than calendar months. Every passing change may still ship continuously; a release groups a coherent block of work, its release note and its gate. The earlier "Month 1–6" themes map onto the versions below and keep their feature boundaries and gates; nothing from them was dropped.
+Updated 2026-10-07 (D64, D70). Work is planned as named releases rather than calendar months. Every passing change may still ship continuously; a release groups a coherent block of work, its release note and its gate. The earlier "Month 1–6" themes map onto the versions below and keep their feature boundaries and gates; nothing from them was dropped.
 
 Version meaning:
 
@@ -8,7 +8,7 @@ Version meaning:
 - **Minor (v1.x)**: a new optional system on the existing hero (stances, merchant, salvage, meetings). Additive schema and content, old payloads and templates keep their meaning.
 - **Major (v2, v3)**: a change to progression ceilings or the hero lifecycle (bigger bags past 20, elite fights, prestige, seasons). Needs its own design amendment, migration plan and progress-preservation proof before it starts.
 
-Release order is a commitment; the dates are not. A release ends when its gate passes, and work on the next release starts after the current one is submitted or deployed, not in parallel with its final checks.
+Release order is a commitment; the dates are not. A release ends when its gate passes. Work never pauses for a gate or a review (D70): while one release waits on an external check, the next one is designed, built and, when it preserves progress and payload meaning, deployed.
 
 ## Current focus: v1.0 — Submission
 
@@ -29,7 +29,7 @@ Scope still to deploy (all local, approved):
 
 Then: reset-first deployment ([runbook](release/pre-launch-reset.md)), fresh install → Save → first adventure recording, review package and email, Submit for Review. Each external action needs its own authorization.
 
-**Scope freeze.** From the D63 reset deployment until marketplace approval, v1.0 takes fixes and copy only. New systems (salvage, merchant, stances, affixes, colour device templates) wait for v1.1 even if they are small. The reason is the reset: it is the last chance to change stored meaning without a migration, and anything added after it ships under the post-launch preservation rule. The freeze covers deploys, not design: use the review wait to design v1.1 on a branch.
+**After submission (D70).** There is no scope freeze. The D63 reset is the last moment stored meaning changes without a migration; from that deployment on, every change ships under the post-launch preservation rule (progress preserved, old payload fields and templates keep their meaning, balance under a new content version). Review may take a while, so v1.1 work starts immediately and additive systems deploy as they pass their checks. The one courtesy to reviewers: keep the submitted listing, recording and help accurate, and refresh the review package when a deployed change alters what they see.
 
 Content floor (unchanged): 3 biomes, 12 authored monsters, gear across 3 tiers / 2 slots / 3 rarities, 48 encounter variants plus lifecycle and lucky-moment summaries, two Warrior sprite states, D24 pacing, bounded return recap, D54 device recap, D46 keepsakes.
 
@@ -42,7 +42,7 @@ Runs from submission through the first weeks of public play. Patch releases only
 - Live monitoring and protected capture (the inactive [hourly capture template](../tools/recovery/checkpoint-workflow.yml.txt)), real-provider deletion/expiry/reinstall proof, funding decision O11 from measured costs.
 - Measured balance passes under a new content version. D61 numbers are measurement starting points: watch three-day/seven-day sleep share and the level-8 date for weekly managers (harness: day 17).
 - Physical checks that were waived or unverified: portrait display, keepsake claim path.
-- Listing, help and companion copy from reviewer and first-player feedback.
+- Listing, help and companion copy from reviewer and first-player feedback. Done 2026-10-07: potion heal amount on the help and Bag pages. Also done: the tick detail records `potionHealing` and the change row shows `+N HP from potion`, so an automatic drink is no longer hidden inside net HP (additive optional field, same simulation version; older logs simply omit it).
 - Colour (BWRY) device templates are a candidate here only if they are a pure template change; previews already exist (D62). Anything that changes payload meaning waits.
 - Watch retention by hero level. **Reorder trigger:** if heroes that reached best-in-slot or level 12 drop off faster than younger heroes, pull v2.0 Depth ahead of v1.2 Other people. Decide this once from live data, not from the harness.
 
@@ -59,6 +59,7 @@ Core batch: stances, configurable rest/potion thresholds, a small set of event c
 | Stances/policies | Versioned resolver modifiers; validate thresholds and avoid infinite rest/potion loops |
 | Narrative choices | Pending-choice table, expiry/default resolution, transactionally idempotent selection; passive players continue |
 | Merchant | Bounded offers/price validation, four-tick expiry, purchase receipts; no push spam. Prices sit beside the D61 bag prices (40/150/600/2,000), the first gold sink |
+| Potion pouch (P29) | The potion stack cap becomes a content ladder (one additive tier field on the hero, cap from content like `bagCapacity`); milestones, a rare find and a `buyBag`-shaped purchase advance it. Potions stay outside the bag and the 32-row read. Second gold sink; tune with the merchant and the configurable potion threshold |
 | Effects | Typed duration/modifier rules; death ordering and rest cleansing explicitly designed |
 | Affixes/Epic | Versioned generation and owned-item compatibility; extend inventory UI |
 | Achievements (D65) | Shipped early, in v1.0 (2026-10-06). v1.1 appends families for merchant purchases, stance changes and event choices under a new catalog version. See [achievements](achievements.md) |
@@ -99,6 +100,7 @@ Persistent fight design must define saved monster state, damage/reward idempoten
 | --- | --- |
 | Salvage (P26) | Third choice beside Sell: materials as stack rows outside the bag (new `itemKind`, like potions), explicit, never automatic, same bounds and receipt shape as `sellMany`. Settle O13 (one material per rarity) first. Ships in the same release as upgrades so materials have a use from day one |
 | Gear upgrades (P27) | Spend salvage materials plus gold to raise an owned item one tier within its slot (later, reroll an affix). Replaces the item's copied stats in place under a new catalog version and a receipt; retained logs and ranks untouched. No recipe tree. Keeps finds useful after best-in-slot |
+| Potion strengths (P30) | Minor / healing / major as separate `kind: potion` rows with authored heal percentages, biome-tier drop weights, weakest-first automatic use and explicit manual choice. One flat rule turns minors plus a salvage material into a major, a second sink for materials. New content version because recap labels change |
 | Bigger bags | New tiers appended to the content bag ladder above the Rolling Suitcase (20), earned through crafting, raids or new areas. Capacity stays "a ladder tier's capacity" (invariant `BAG_CAPACITY`); the bounded inventory read and `sellMany` bound grow with the new top tier |
 | Legendary gear, lore, hardcore | Separate slices. Hardcore needs a new hero lifecycle, separate eligibility/ranking, permanent-death confirmation, retirement/Hall of Heroes model and recovery behaviour. It is not a boolean toggle on a live normal hero |
 
@@ -140,6 +142,7 @@ Checked against the local v1.0 candidate on 2026-10-06. Keep these true in any v
 | Bounded inventory reads | Read bound is fixed at 32 rows; `sellMany` accepts up to 30 | Derive both from the ladder's top capacity plus stack kinds before the first bigger bag ships |
 | Salvage materials (v2.0) | Potions are item rows (`itemKind: 'potion'`) counted outside gear capacity | Materials follow the same stack-row pattern with a new `itemKind` literal. Do not add material counters to the hero document |
 | Gear upgrades (v2.0) | Items copy catalog stats at creation under a `contentVersion` | Keep copied stats and version on items; upgrades rewrite them under a receipt. Do not move item stats to catalog lookups |
+| Potion pouch and strengths (v1.1 / v2.0) | One potion stack row with a hidden cap of 20 (`potionStackCap`) and one shared heal constant | Keep the cap a content constant read through one place so it can become a per-hero ladder lookup; keep heal percentage reachable from the template rather than hard-coding the constant in new code; keep potion rows keyed by template id so more strengths are more rows, not a quantity split |
 | Gold economy (v1.1 merchant) | Bag prices 40/150/600/2,000 are the only gold sink | Merchant prices are tuned against bag prices and D30 income; never remove the bag purchase path |
 | Five gear slots (later) | Capacity counts unequipped gear only | Keep that rule, so new slots never shrink a bag |
 | Balance after launch | D63 keeps the content-version mechanism; the pre-launch reset is the last reset | Every post-launch balance change is a new content version; the D41 exception ends at launch |

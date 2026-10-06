@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useRef, useState } from 'react'
 import { nextSlotAfter } from '@trmnl-games/desk-crawler/sim/schedule'
+import { POTION_HEAL_PCT } from '@trmnl-games/desk-crawler/content/sustain'
+import { pctOf } from '@trmnl-games/desk-crawler/sim/core/stats'
 import { api } from '@trmnl-games/backend/api'
 import type { Id } from '@trmnl-games/backend/data-model'
 import { useIntent } from '../../../lib/intent'
@@ -130,7 +132,7 @@ function Inventory() {
           <div className="col-span-2 min-w-0 border-t-2 border-dashed border-rule pt-4 sm:col-span-1 sm:border-t-0 sm:pt-0">
             <h3 className="caps text-sm text-muted">Potions</h3>
             <p className="mt-1 font-semibold tabular-nums"><span className="text-rare-ink">{bag.potions}</span> {bag.potions === 1 ? 'potion' : 'potions'}</p>
-            <p className="mt-1 text-sm text-muted">Drunk automatically when needed, or <Link to="/app/desk-crawler" className="underline underline-offset-4">from Hero</Link>. No slots used.</p>
+            <p className="mt-1 text-sm text-muted tabular-nums">Each heals {POTION_HEAL_PCT}% of max HP (+{pctOf(hero.maxHp, POTION_HEAL_PCT)} HP). Drunk automatically when needed, or <Link to="/app/desk-crawler" className="underline underline-offset-4">from Hero</Link>. No slots used.</p>
           </div>
         </div>
         <ActionFeedback error={gearFeedback?.error ?? null} message={gearFeedback?.message ?? null} />

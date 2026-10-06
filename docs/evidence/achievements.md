@@ -2,6 +2,10 @@
 
 Local run on 2026-10-06, `pnpm balance --heroes 200 --days 30`, content v1, simulation v1. Shares are the percentage of each cohort's heroes holding the achievement at the end of the day; the harness applies no keepsakes, so that family stays at zero.
 
+## Deployment
+
+Deployed 2026-10-06 at Barry's request from the shared working tree (commit a155421 plus the other agent's in-flight work, 276 tests passing). `npx convex deploy` to `exciting-cormorant-948` reported no index deletions; `achievements:backfillCounters` patched the one production hero (`patched: 1, done: true`), after which its document carried all nine counters; `achievements.js:mine` and `achievements.js:backfillCounters` appear in the production function spec; the Worker deployed at 21:54:39 UTC and trmnlgames.com answers 200. The first `achievementStats` document arrives with the next hourly publication.
+
 ## Tests
 
 - `tests/sim/achievements.test.ts`: catalog integrity (131 ids, unique, catalog-backed), shared monster ladder, rarity bands, threshold crossing, fast path over many small steps equals one full pass, set pieces, level/bag/keepsake predicates, family progress, and the nine simulator counters.

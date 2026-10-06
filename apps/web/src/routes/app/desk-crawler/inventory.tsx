@@ -123,7 +123,7 @@ function Inventory() {
             return <div key={kind} className="min-w-0">
               <h3 className="caps text-sm text-muted">{kind === 'weapon' ? 'Weapon' : 'Armor'}</h3>
               {item ? <ItemName label={item.label} rarity={item.rarity} className="mt-1" /> : <p className="mt-1 font-semibold">{`No ${kind} equipped`}</p>}
-              <p className="mt-1 text-sm text-muted">{item ? <><StatChange item={item} /> · {item.rarity}</> : 'Equip something from your bag below.'}</p>
+              <p className="mt-1 text-sm text-muted">{item ? <><StatChange item={item} />, {item.rarity}</> : 'Equip something from your bag below.'}</p>
               {item ? <Button variant="quiet" className="mt-1 -ml-4" disabled={!manageable || locked} pending={unequip.pending} busyLabel="Removing…" aria-label={`Unequip ${item.label}`} onClick={() => { setGearAction('unequip'); return unequip.run({ slot: kind }, `${item.label} unequipped.`) }}>Unequip</Button> : null}
             </div>
           })}
@@ -153,7 +153,7 @@ function Inventory() {
               </label>
               <div className="min-w-0">
                 <ItemName label={item.label} rarity={item.rarity} />
-                <p className="mt-1 text-sm"><StatChange item={item} /> <span className={`font-semibold ${delta > 0 ? 'text-xp-ink' : delta < 0 ? 'text-hp-ink' : 'text-muted'}`}>{delta > 0 ? `, +${delta} upgrade` : delta < 0 ? `, ${delta} vs equipped` : ', same as equipped'}</span></p>
+                <p className="mt-1 text-sm"><StatChange item={item} /><span className={`font-semibold ${delta > 0 ? 'text-xp-ink' : delta < 0 ? 'text-hp-ink' : 'text-muted'}`}>{delta > 0 ? `, +${delta} upgrade` : delta < 0 ? `, ${delta} vs equipped` : ', same as equipped'}</span></p>
                 <p className="mt-1 text-sm text-muted">{item.rarity}, level {item.requiredLevel}, sells for <span className="text-gold-ink">{item.saleValue} gold</span></p>
               </div>
               <Button variant={delta > 0 && canEquip ? 'primary' : 'secondary'} className="col-start-2 mt-2 justify-self-start sm:col-start-3 sm:row-start-1 sm:mt-0 sm:self-center" aria-label={`Equip ${item.label}`} disabled={!manageable || locked || !canEquip} pending={equip.pending} busyLabel="Equipping…" onClick={async () => {

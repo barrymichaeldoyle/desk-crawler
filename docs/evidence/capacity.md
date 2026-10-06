@@ -51,3 +51,5 @@ These are single runs with small sequential latency samples, one level group and
 ## D54 candidate read-budget change (2026-10-06)
 
 The pending twelve-hour device recap adds one indexed owner/time range read, capped at 201 logs (aggregate 200; partial label on overflow), alongside the existing ten-story read. An ordinary twelve-hour sample contained 48 tick events. No per-tick aggregation writes/table are added. Earlier screen-cost/load measurements predate this extra read and are not a measured cost certification of v25; include it in the next authorized deployed capacity sample and funding forecast. Existing funding decisions remain open.
+
+D54 live one-hero sample after the approved October 6 release: the noncached `trmnlPayload:forInstance` call took 46.02 ms, read 51,358 bytes / 78 documents, wrote zero bytes and returned 4,643 bytes. The 52-completion health sample had zero errors/retries. This measures the new read path at current population, without recertifying the historical 100/1,000-hero cost scenario ([release](activity-recap.md)).

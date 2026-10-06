@@ -7,7 +7,7 @@
  */
 import { GLYPHS, glyphRows } from '../art/glyphs'
 
-export const TEMPLATE_VERSION = 25
+export const TEMPLATE_VERSION = 26
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -132,9 +132,9 @@ const fitClamp = (plain: string, clamp: number, fit: number) =>
 
 const plainOf = (expr: string) => `${expr} | replace: "[[", "" | replace: "]]", ""`
 
-/** Story uses an icon-sized gutter; metadata has its own intrinsic time width. `fit`: OG character budget. */
-const logLine = (entry: string, classes: string, clamp: number, size: number, fit: number, wrapper = 'flex') =>
-  `{% assign line_story = ${entry}.n | default: ${entry}.s %}{% assign line_plain = ${plainOf('line_story')} %}<div class="${wrapper} flex--col flex--left flex--stretch-x stretch-x gap--xsmall">${entry === 'log[0]' ? '' : '<div class="border--h-30 stretch-x"></div>'}<div class="flex flex--row flex--left flex--top gap--xsmall"><div class="no-shrink">${logIcon(`${entry}.k`, size)}</div><span class="${classes} grow" ${fitClamp('line_plain', clamp, Math.max(0, fit - 10))}>${storyText}</span></div>{% if utc_offset != nil or ${entry}.d != nil and ${entry}.d != "" %}<div class="flex flex--row flex--left flex--top gap--xsmall">{% if utc_offset != nil %}<span class="label lg:title--small no-shrink">{{ ${entry}.u | plus: utc_offset | date: "%H:%M" }}</span>{% endif %}{% if ${entry}.d != nil and ${entry}.d != "" %}<span class="label lg:title--small grow">{{ ${entry}.d | escape }}</span>{% endif %}</div>{% endif %}</div>`
+/** Story uses an icon-sized gutter; a zero-gap grid keeps its stats directly beneath it. */
+const logLine = (entry: string, classes: string, clamp: number, size: number, fit: number, wrapper = 'block') =>
+  `{% assign line_story = ${entry}.n | default: ${entry}.s %}{% assign line_plain = ${plainOf('line_story')} %}<div class="${wrapper} stretch-x"><div class="grid grid--cols-1 gap--none">${entry === 'log[0]' ? '' : '<div class="border--h-30 stretch-x"></div>'}<div class="flex flex--row flex--left flex--top gap--xsmall"><div class="no-shrink">${logIcon(`${entry}.k`, size)}</div><span class="${classes} grow" ${fitClamp('line_plain', clamp, Math.max(0, fit - 10))}>${storyText}</span></div>{% if utc_offset != nil or ${entry}.d != nil and ${entry}.d != "" %}<div class="flex flex--row flex--left flex--top gap--xsmall">{% if utc_offset != nil %}<span class="label lg:title--small no-shrink">{{ ${entry}.u | plus: utc_offset | date: "%H:%M" }}</span>{% endif %}{% if ${entry}.d != nil and ${entry}.d != "" %}<span class="label lg:title--small grow">{{ ${entry}.d | escape }}</span>{% endif %}</div>{% endif %}</div></div>`
 
 const newestStory = (clamp: number, classes: string, size = 16, fit = 60) => `
       {% if log.size > 0 %}${logLine('log[0]', classes, clamp, size, fit)}{% else %}<span class="${classes}">The first adventure starts soon.</span>{% endif %}`
@@ -149,7 +149,7 @@ const celebrationBadge = (classes: string) => `
 
 /** Older entries have separators and are shown only where the larger screen has room. */
 const olderStories = (count: number) => `
-      {% for entry in log offset: 1 limit: ${count} %}${logLine('entry', 'label lg:title--small', 1, 16, 28, 'hidden lg:flex')}{% endfor %}`
+      {% for entry in log offset: 1 limit: ${count} %}${logLine('entry', 'label lg:title--small', 1, 16, 28, 'hidden lg:block')}{% endfor %}`
 
 /** Device recap is read-only and uses its own window, independent of the recent-story list. */
 const recapBlock = (compact = false) => `
@@ -271,10 +271,10 @@ export const markupFull = `${glyphAssigns([16, 24])}
   <div class="flex flex--col gap--small">${scene('scene_url')}${divider}
   </div>
   <div class="grid stretch-x gap--large lg:gap--xlarge">
-    <div class="{% if qr_url == "" and companion_qr_base != "" %}col--span-6{% else %}col--span-7{% endif %} flex flex--col flex--left flex--top gap--small lg:gap--medium">
+    <div class="{% if qr_url == "" and companion_qr_base != "" %}col--span-6{% else %}col--span-7{% endif %} flex flex--col flex--left flex--top gap--xsmall lg:gap--small">
       ${attention('label lg:title--small', 2)}{% unless attention %}${recapBlock()}{% endunless %}
       {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${newestStory(2, 'title lg:title', 24, 46)}
-      {% unless attention %}${olderStories(1)}{% endunless %}
+      {% unless attention %}${olderStories(2)}{% endunless %}
     </div>
     {% if qr_url != "" %}<div class="col--span-5 flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small">${qr}
     </div>{% else %}<div class="{% if companion_qr_base != "" %}col--span-6{% else %}col--span-5{% endif %} flex flex--row flex--top gap--medium">
@@ -315,7 +315,7 @@ export const markupHalfVertical = `${glyphAssigns([16, 24])}
   </div>${scene('scene_url_small')}${divider}
   <div class="flex flex--col flex--left flex--stretch-x gap--small">
     {% unless attention %}${recapBlock()}{% endunless %}
-    {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${newestStory(2, 'title title--small lg:title', 24, 50)}{% unless attention %}${olderStories(1)}{% endunless %}${rankLine}
+    {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${newestStory(2, 'title title--small lg:title', 24, 50)}{% unless attention %}${olderStories(2)}{% endunless %}${rankLine}
   </div>
   {% endif %}
 </div>${titleBar}`

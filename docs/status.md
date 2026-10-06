@@ -1,8 +1,8 @@
 # Implementation status
 
-Updated 2026-10-05. Production companion is live at `trmnlgames.com` (TRMNL Games platform, Desk Crawler under `/app/desk-crawler`), Convex `exciting-cormorant-948`, the TRMNL Games Clerk production instance, TRMNL plugin 564. The old `desk-crawler.grandprixpicks.com` host no longer serves the companion. Review preparation resumes after the migration; [release evidence](evidence/release.md) records verified behavior and open checks.
+Updated 2026-10-06. Production companion is live at `trmnlgames.com` (TRMNL Games platform, Desk Crawler under `/app/desk-crawler`), Convex `exciting-cormorant-948`, the TRMNL Games Clerk production instance, TRMNL plugin 564. The old `desk-crawler.grandprixpicks.com` host no longer serves the companion. Review preparation resumes after the migration; [release evidence](evidence/release.md) records verified behavior and open checks.
 
-The latest [engineering pass](evidence/engineering-readiness.md) completed authz/reviewer/health/cost checks, actual subscription inspection and isolated recovery/lifecycle/failure rehearsals. Four reproduced backend defects are fixed locally; D53 shows `No effect` for known zero-delta logs. The candidate passes 187 tests, typechecks, build and Worker dry run; it was [deployed with approval on October 6](evidence/engineering-deploy.md). Ongoing protected capture, real-provider fixtures and funding/tuning decisions remain open. The [hourly capture template](../tools/recovery/checkpoint-workflow.yml.txt) is prepared but inactive.
+The latest [engineering pass](evidence/engineering-readiness.md) completed authz/reviewer/health/cost checks, actual subscription inspection and isolated recovery/lifecycle/failure rehearsals. Four reproduced backend defects are deployed; D53 shows `No effect` for known zero-delta logs. The candidate passes 187 tests, typechecks, build and Worker dry run; it was [deployed with approval on October 6](evidence/engineering-deploy.md). Ongoing protected capture, real-provider fixtures and funding/tuning decisions remain open. The [hourly capture template](../tools/recovery/checkpoint-workflow.yml.txt) is prepared but inactive.
 
 Barry asked for shared infrastructure across future games on `trmnlgames.com` (D40). The [TRMNL Games migration plan](trmnl-games-migration.md) staged the monorepo, platform and domain work before final marketplace submission. This was a pre-launch migration with no public player base (D41). That exception does not relax progress preservation for later public releases.
 
@@ -10,7 +10,7 @@ Migration progress:
 
 - M0–M3 done. Monorepo move, platform boundaries (two deletion levels, per-game handoff cookies) and the dev rehearsal ([platform rehearsal](evidence/platform-rehearsal.md)).
 - M4 done. Clerk domain moved to `trmnlgames.com`, `main` deployed at 13:58 UTC, ticks continued on the new :00 slot, data backfilled and Barry's account rebound with hero "Baz" kept (decisions revisions 18–19). Email-code, Google and GitHub sign-in work on the new domain; plugin 564's installation, management and knowledge-base URLs point at `trmnlgames.com`; signed Clerk webhook delivered; prod `COMPANION_ORIGIN` unset, so QR codes use the `https://trmnlgames.com` default (revision 20). Fresh install → Save → Configure → render → uninstall passed as Baz with setting 495979 (revision 21).
-- M5 review preparation. Domain/DNS/Worker/repository migration and preview coverage are complete. Production templates v24 and scene v4 include the October 5 log, sky and spacing changes ([spacing](evidence/log-spacing.md), [sky](evidence/scene-time.md)). Authorized listing updates and companion polish are deployed from `392829c`, including the landing sample, clearer help and D52 potion-find labels; the actual listing image was regenerated and verified ([release evidence](evidence/listing-polish-deploy.md)). Extended balance reports and offline recovery preparation are complete. Health/cost headroom and isolated engineering rehearsals are now recorded; remaining: ongoing capture/provider/funding decisions, final recording/hosting and submission authorization. See the [current release checklist](evidence/release.md).
+- M5 review preparation. Domain/DNS/Worker/repository migration and preview coverage are complete. Production templates v25 and scene v4 include the October 5 log, sky and spacing changes ([spacing](evidence/log-spacing.md), [sky](evidence/scene-time.md)). Authorized listing updates and companion polish are deployed from `392829c`, including the landing sample, clearer help and D52 potion-find labels; the actual listing image was regenerated and verified ([release evidence](evidence/listing-polish-deploy.md)). Extended balance reports and offline recovery preparation are complete. Health/cost headroom and isolated engineering rehearsals are now recorded; remaining: ongoing capture/provider/funding decisions, final recording/hosting and submission authorization. See the [current release checklist](evidence/release.md).
 
 ## Built and verified
 
@@ -31,8 +31,9 @@ Deployed on 2026-10-05 following Barry’s approval: D46 weekly permanent Desk k
 | A11 operations | Daily bounded retention cleanup; account deletion with durable purge, revocation hashes and Clerk user deletion | convex-test; live deletion ([evidence](evidence/deletion.md)) |
 | D27 incident notices | One incident per stalled run, deduplicated alert + recovery via Resend with idempotency keys and bounded retries; production key configured, staging pair accepted by Resend | convex-test; [recovery](evidence/recovery.md), production Delivered event verified; preview retry exhaustion passed in [engineering checks](evidence/engineering-readiness.md) |
 | D23 admin | Server-side allowlist, health view, audited name repair / suspend / restore / release / resume-run, owner name replacement | convex-test |
-| Layout matrix | Production v24; candidate v25 adds D54 recap. 25 states × four sizes × OG/X, 200 settled previews checked; D43 assigns coverage to previews | Candidate [recap](evidence/activity-recap.md); production [spacing](evidence/log-spacing.md) |
-| D54 device recap | Implemented locally: rolling 12-hour summary, milestones, recent stories, bounded indexed reads, partial labels and additive combat rarity annotation. Awaiting deployment approval/live render | [Recap evidence](evidence/activity-recap.md) |
+| Layout matrix | Production v25 includes D54 recap; candidate v26 tightens log rows. 25 states × four sizes × OG/X, 200 settled previews checked; D43 assigns coverage to previews | Deployed [recap](evidence/activity-recap.md); candidate [log rows](evidence/log-density.md) |
+| D54 device recap | Deployed with approval: rolling 12-hour summary, milestones, recent stories, bounded indexed reads, partial labels and additive combat rarity annotation. Server render/delivery and natural tick 202 verified | [Recap evidence](evidence/activity-recap.md) |
+| D55 compact device logs | Local v26: closer story/stat rows and three stories on X full/side. 202 tests and 200 layout checks pass; awaiting additional deployment approval | [Log density](evidence/log-density.md) |
 | D25 return recap | Single server checkpoint, guarded visible acknowledgement | convex-test; live browser check |
 
 ## Deliberate differences from the plan
@@ -45,7 +46,7 @@ Deployed on 2026-10-05 following Barry’s approval: D46 weekly permanent Desk k
 
 ## Remaining before submission and public release
 
-The [current release checklist](evidence/release.md) is the gate source. Install/manage/render/uninstall on trmnlgames.com, all four preview layouts under D43, current v24 rendering, capacity measurements, backups and the delivered test alert are recorded.
+The [current release checklist](evidence/release.md) is the gate source. Install/manage/render/uninstall on trmnlgames.com, all four preview layouts under D43, current v25 rendering, capacity measurements, backups and the delivered test alert are recorded.
 
 Submission work:
 

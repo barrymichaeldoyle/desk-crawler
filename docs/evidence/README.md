@@ -41,4 +41,4 @@ An editor preview does not replace the Third Party envelope test or physical dis
 
 Review submission is prepared first. Account changes, reviewer contact, sending credentials, deployment and publication follow the user's authorization.
 
-The locally verified [D54 twelve-hour recap candidate](activity-recap.md) includes all 200 OG/X layout checks and the separate window/authorization/no-write tests. Production remains v24 until separate approval and live render verification.
+The [D54 twelve-hour recap](activity-recap.md) passed 200 OG/X layout checks and the separate window/authorization/no-write tests, then deployed as v25 with approval. Server render, delivery and natural tick 202 are verified. The subsequent [D55 tighter log-row candidate](log-density.md) passes 202 tests and 200 previews as local v26, awaiting its additional rollout approval.

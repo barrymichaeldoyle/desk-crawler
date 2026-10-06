@@ -53,14 +53,15 @@ export function AdventureLog() {
         <h2 id="log-title" className="font-display text-3xl font-bold">
           Quest log
         </h2>
-        <div role="group" aria-label="Filter adventure log" className="-mx-1.5 flex flex-wrap">
+        {/* One row: on phones it scrolls sideways instead of wrapping a lone filter onto a second line. */}
+        <div role="group" aria-label="Filter adventure log" className="-mx-1.5 flex max-w-full flex-nowrap overflow-x-auto [scrollbar-width:none] sm:flex-wrap">
           {FILTERS.map((item) => (
             <button
               key={item.key}
               type="button"
               aria-pressed={filter === item.key}
               onClick={() => setFilter(item.key)}
-              className="menu-cursor inline-flex min-h-11 items-center px-1.5 label-px text-muted hover:text-ink aria-pressed:text-gold-ink"
+              className="menu-cursor inline-flex min-h-11 shrink-0 items-center px-1.5 label-px whitespace-nowrap text-muted hover:text-ink aria-pressed:text-gold-ink"
             >
               {item.label}
             </button>

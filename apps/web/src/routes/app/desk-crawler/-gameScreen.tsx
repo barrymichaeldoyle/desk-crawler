@@ -5,6 +5,7 @@ import { keepUnitsTogether } from '@trmnl-games/desk-crawler/payload'
 import { markedRuns } from '@trmnl-games/desk-crawler/sim/core/narrative'
 import { logPresentation, type LogDeltas } from '@trmnl-games/desk-crawler/log'
 import { artUrl } from '../../../lib/intent'
+import { localSceneUrl, useMinute } from '../../../lib/localClock'
 import { changeTone } from './-logStory'
 
 import { BIOME_BANDS } from '../../../lib/palette'
@@ -53,6 +54,7 @@ type ScreenHero = PulseHero & { name: string; level: number; hp: number; maxHp: 
  */
 export function GameScreen({ hero }: { hero: ScreenHero }) {
   const pulse = usePulse(hero)
+  const now = useMinute()
   const bands = BIOME_BANDS[hero.biomeId] ?? FALLBACK_BANDS
   const xpPct = hero.xpToNext > 0 ? Math.min(100, Math.round((hero.xp * 100) / hero.xpToNext)) : 0
   return (
@@ -99,7 +101,7 @@ export function GameScreen({ hero }: { hero: ScreenHero }) {
           <div style={{ background: bands[2] }} />
           <div className="border-t-[6px] border-night/25" style={{ background: bands[3] }} />
         </div>
-        <img src={artUrl(hero.scenePath)} alt={`${hero.name}: ${pulse.sentence}`} width={760} height={200} className="relative block h-[160px] w-full object-cover object-[41%_50%] mix-blend-multiply [image-rendering:pixelated] sm:h-auto sm:pt-[9.5rem] lg:mx-auto lg:w-[1064px] lg:pt-28" />
+        <img src={localSceneUrl(artUrl(hero.scenePath), now)} alt={`${hero.name}: ${pulse.sentence}`} width={760} height={200} className="relative block h-[160px] w-full object-cover object-[41%_50%] mix-blend-multiply [image-rendering:pixelated] sm:h-auto sm:pt-[9.5rem] lg:mx-auto lg:w-[1064px] lg:pt-28" />
       </div>
 
       {/* Reserved for the status line plus one detail line, so the strip holds its height while the log loads. */}

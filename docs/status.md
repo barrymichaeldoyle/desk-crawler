@@ -53,11 +53,11 @@ The [current release checklist](evidence/release.md) is the gate source. Install
 Submission work:
 
 - Listing image regenerated from the original installation and verified on the actual install page. The fictional [sample](release/featured-image.png) is deployed on the landing page ([evidence](evidence/listing-polish-deploy.md)).
-- [Video plan](release/recording-checklist.md): capture a from-scratch installation including first signup, Save and first adventure, then host at an approved reviewer-accessible URL. The existing returning-owner slideshow is supporting evidence.
+- Install video: done 2026-10-07. Barry recorded and hosted it; the link is in his email draft.
 - [Review package](release/review-package.md): 33-character description and games/entertainment categories saved and verified; accurate bag-sleep/keepsake help is deployed.
-- [Review email](review-email.md): owner/sender barry@barrymichaeldoyle.com confirmed; Barry plans to promote TRMNL at launch, with channels/timing unspecified. Author-entitlement check complete ([evidence](evidence/author-entitlement.md)); hosted video URL remains open. Submit for Review and sending the email require explicit approval.
+- [Review email](review-email.md): owner/sender barry@barrymichaeldoyle.com confirmed; Barry plans to promote TRMNL at launch, with channels/timing unspecified. Author-entitlement check complete ([evidence](evidence/author-entitlement.md)); the final draft with the video link is done (2026-10-07) and Barry will send it himself after Submit for Review.
 
-Engineering launch gates remain: configure ongoing independent protected capture and monitoring; prove the controlled real-provider deletion/expiry/reinstall paths; decide funding/spending thresholds and the numerical questions raised by the balance report. Isolated cloud denial reconciliation, interrupted work/receipt replay, preview lifecycle edges and alert failure exhaustion passed. No recovery tool approves reopening. See the [recovery runbook](release/recovery-runbook.md).
+Engineering launch gates remain: configure ongoing independent protected capture and monitoring; prove the controlled real-provider deletion/expiry/reinstall paths; decide funding/spending thresholds. The balance questions are decided (D71): content v2 raises the potion/rest thresholds to 50%/35% and late upgrade saturation is accepted for v1.0; v2 is local until deployed and switched. Isolated cloud denial reconciliation, interrupted work/receipt replay, preview lifecycle edges and alert failure exhaustion passed. No recovery tool approves reopening. See the [recovery runbook](release/recovery-runbook.md).
 
 D43 does not require Barry to check every physical layout. D46's physical/claim/post-claim verification was waived, not performed; the waiver remains respected. The authorized listing and companion release are complete. Media publication, submission and further external actions require their own authorization.
 

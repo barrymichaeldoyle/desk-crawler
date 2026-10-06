@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
-import { sceneTimeAt, sceneUrlAt, sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
+import { sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
+import { browserUtcOffset, localSceneUrl as sceneForNow, useMinute } from '../../../lib/localClock'
 import { PREVIEW_DEVICES, PREVIEW_LAYOUTS, previewDocument, type PreviewDevice, type PreviewLayout } from '@trmnl-games/desk-crawler/templates/preview'
 
 const STORAGE_KEY = 'desk-crawler.preview'
@@ -29,19 +30,6 @@ function remembered(): { device: PreviewDevice; layout: PreviewLayout } {
   }
 }
 
-/** Minute-rounded clock so the preview query stays cacheable and refreshes like the device's labels. */
-function useMinute(): number | null {
-  const [minute, setMinute] = useState<number | null>(null)
-  useEffect(() => {
-    const update = () => { if (document.visibilityState === 'visible') setMinute(Math.floor(Date.now() / 60_000) * 60_000) }
-    update()
-    const timer = window.setInterval(update, 15_000)
-    document.addEventListener('visibilitychange', update)
-    return () => { window.clearInterval(timer); document.removeEventListener('visibilitychange', update) }
-  }, [])
-  return minute
-}
-
 /**
  * What the owner's TRMNL is showing: the same canonical payload and Liquid
  * templates the plugin serves, rendered in the pinned framework inside a
@@ -57,8 +45,8 @@ export function DevicePreview({ sceneUrl, heroName }: { sceneUrl: string; heroNa
   const [failed, setFailed] = useState(false)
   const frame = useRef<HTMLDivElement>(null)
   const device = PREVIEW_DEVICES[choice.device]
-  const utcOffset = now === null ? null : -new Date(now).getTimezoneOffset() * 60
-  const localSceneUrl = sceneUrlAt(sceneUrl, sceneTimeAt(now ?? 0, utcOffset))
+  const utcOffset = browserUtcOffset(now)
+  const localSceneUrl = sceneForNow(sceneUrl, now)
 
   useEffect(() => setChoice(remembered()), [])
 

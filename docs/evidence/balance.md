@@ -1,5 +1,47 @@
 # Balance evidence — A03
 
+## Content v2 sustain thresholds (D71), 2026-10-07
+
+Barry asked for the two open balance questions to be decided and tuned before submission. Both were re-measured on the release catalog v1 first, because the earlier numbers below came from v4, before the D61 bag ladder and the D66 gear split.
+
+**What the re-measurement showed.** Early Cafeteria knockouts were worse than the v4 report, not better: death-day probability in the first 30 days was 10.8% (daily), 10.5% (three-day) and 31.5% (seven-day), against 13.3 / 12.0 / 20.2% on v4. The bag ladder sends weekly managers into the Cafeteria later (level 8 at day 16.9, was 11.4) and poorer: they arrive with no potions (final count p10 0, median 5) because a six-slot Paper Bag puts them to sleep for almost half the month (47.7% sleeping). Daily and three-day managers were unaffected on the way in but still knocked out roughly one day in ten.
+
+**Why.** It is arithmetic, not bad luck. A level-8 hero has 184 HP and, in tier-2 gear, takes about 25 HP a round from a Leftovers Hydra over a four- or five-round fight: 100–125 HP from one encounter. The v1 hero drank a potion only below 35% (64 HP) and rested only below 25%, so it kept walking into a tier-3 fight it could not survive. By level 12 the same fight costs about 65 HP and the problem disappears on its own, which is why the 90-day averages looked acceptable.
+
+**Decision.** Content v2 raises the automatic potion threshold from 35% to 50% and the rest threshold from 25% to 35%. Nothing else changes: monsters, rewards, gear, rarities, trap damage and the bag ladder are byte-for-byte v1, so owned items and runs pinned to v1 keep their meaning. Weakening the tier-3 monsters instead (tested at 90% attack) helped less and would have changed the late game permanently; the chosen change makes the hero more careful rather than the office safer. Late upgrade saturation is accepted for v1.0: three gear tiers run out of upgrades around day 40 by design, v1.1 affixes/Epic and v2.0 upgrades are the planned answer, and the v1.0.x retention trigger stays.
+
+Reproduction (deterministic, 300 heroes, all six cohorts):
+
+```sh
+pnpm balance --heroes 300 --days 30 --content v1 --json docs/evidence/balance-v1-30-days.json
+pnpm balance --heroes 300 --days 90 --content v1 --json docs/evidence/balance-v1-90-days.json
+pnpm balance --heroes 300 --days 30 --content v2 --json docs/evidence/balance-v2-30-days.json
+pnpm balance --heroes 300 --days 90 --content v2 --json docs/evidence/balance-v2-90-days.json
+```
+
+| Cohort | Cafeteria death-day %, first 30 days: v1 → v2 | Cafeteria, 90 days: v1 → v2 | Server Room, 30 days: v1 → v2 | Time dead, 30 days: v1 → v2 |
+| --- | --- | --- | --- | --- |
+| Daily | 10.8 → **2.9** | 2.9 → 0.8 | 0.8 → 0.0 | 0.7% → 0.2% |
+| Three-day | 10.5 → **3.0** | 2.3 → 0.7 | 0.6 → 0.0 | 0.5% → 0.2% |
+| Seven-day | 31.5 → **7.6** | 3.0 → 0.9 | 0.2 → 0.0 | 0.3% → 0.1% |
+| Undergeared three-day | 81.8 → 47.2 | 16.2 → 8.1 | 5.1 → 0.6 | 1.8% → 1.5% |
+
+Knockouts remain possible and still cost eight ticks and 10% of gold; a never-re-equipping hero is still punished, which is the intended signal that gear matters. The seven-day figure is bounded by potion supply (median potions at day 30 drop from 5 to 0 because the hero now uses them), which the v1.1 potion pouch addresses.
+
+| Cohort, 90 days | Level 12 median day: v1 → v2 | Best-in-slot median day: v1 → v2 | Reached by day 90 | Gold at day 90: v1 → v2 | Last-24h XP, median |
+| --- | --- | --- | --- | --- | --- |
+| Daily | 13.8 → 13.0 | 36.9 → 36.8 | 288 → 288 | 57,246 → 57,499 | unchanged |
+| Three-day | 18.0 → 15.9 | 42.9 → 42.2 | 283 → 284 | 54,158 → 55,389 | unchanged |
+| Seven-day | 35.8 → 30.0 | 70.7 → 63.6 | 193 → 210 | 27,273 → 29,278 | unchanged |
+
+Pacing targets hold: level 8 medians are unchanged (7.8 / 9.2 / 16.8 days), the three-day best-in-slot stays inside the D30 window of days 35–45, gold rises 0.4–7% because fewer knockouts forfeit it, and daily XP is identical. Potion use rises from 3.7 to 4.0 a day for managed cohorts in the first month and is unchanged over 90 days, when stacks sit at 20 anyway. Resting share rises from about 1.5% to 2.7% of ticks. Unattended and safe-farming cohorts never leave the Office Cubicles and are unaffected.
+
+Variants tried and rejected (200 heroes, 30 days, scratch runs): potion 50% alone (8.0 / 6.9 / 19.9%), potion 45% alone (8.3 / 7.7 / 18.9%), rest 35% alone (7.7 / 8.1 / 24.1%), tier-3 attack ×0.9 (5.1 / 4.8 / 14.3%), potion 45% with tier-3 attack ×0.9 (2.8 / 3.3 / 7.0%, but faster levelling and permanently easier late game). The two thresholds together were the only content-only change that fixed all three managed cohorts without touching the authored monsters.
+
+**Known and accepted, for v1.0.x to watch (D61 starting points):** weekly managers reach level 8 at day 16.8 against the D24 target of 8–14 and sleep 46% of their first month with the small starting bags. This is the bag ladder trading early pace for a visible first-day loop, not a v2 regression; the live three-day/seven-day sleep share decides whether the ladder's early tiers need loosening.
+
+Deployment: the catalog ships beside v1 and the live world switches between runs with `npx convex run world:setActiveContentVersion '{"contentVersion":"v2"}' --prod` ([operations](../operations.md)). Not deployed or switched at the time of writing.
+
 ## Gear stat split (D66), 2026-10-06
 
 Same-tier items no longer share stats: each template carries a stat offset (starter pair at the tier stat, tier-1 partners +1, tier-2/3 pairs ±1). That halves the chance that a rare drop is the top item in its slot, so rare weight doubles (common 70 / uncommon 26 / rare 4, was 70/28/2) to keep the per-find chance of a best-in-slot rare at 2%. The harness's best-in-slot target now includes the top template's offset.
@@ -67,7 +109,7 @@ Useful eligible gear finds per hero-day drop from 0.5 / 0.8 / 1.3 over 30 days (
 
 At day 90, the three-day cohort's last-24h XP is p10 1,645 / median 1,947 / p90 2,318; seven-day XP is 12,955 / 13,907 / 14,763. Seven-day managers have weekly median 11,431 (about 18% lower), with p10 9,309 / p90 13,640. The long window smooths luck, while bag downtime remains visible. This harness does not publish or validate the app's immutable per-level-group leaderboard generations; that proof belongs to ranking tests and capacity evidence.
 
-Completed: extended runs, undergeared/safe policies, potion and upgrade reporting, corrected death units and uncertainty. Remaining: accept or adjust early dangerous-zone difficulty and late upgrade saturation, using an additive, progress-preserving balance release if changed. No numerical tuning was deployed.
+Completed: extended runs, undergeared/safe policies, potion and upgrade reporting, corrected death units and uncertainty. The two questions this report left open, early dangerous-zone difficulty and late upgrade saturation, were decided on 2026-10-07 (D71, top of this file).
 
 ## Historical v1 → v2 comparison, 2026-10-03
 

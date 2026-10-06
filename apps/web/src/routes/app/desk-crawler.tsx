@@ -68,8 +68,9 @@ function SignedInApp() {
   }
   return (
     <>
-      <nav aria-label="Desk Crawler" className="hud sticky top-0 z-10 border-b-4 border-raised bg-night px-2">
-        <ul className={`mx-auto flex min-h-13 items-stretch ${wide ? 'max-w-6xl' : 'max-w-3xl'}`}>
+      <nav aria-label="Desk Crawler" className="hud sticky top-0 z-30 border-b-4 border-raised bg-night px-2">
+        {/* One width on every tab: following the page width made the tabs resize and jump when switching. */}
+        <ul className="mx-auto flex min-h-13 max-w-6xl items-stretch">
           <li className="hidden items-center pr-4 pl-2 sm:flex">
             <img src="/games/desk-crawler/favicon.svg" alt="" width={24} height={24} className="[image-rendering:pixelated]" />
             <span className="ml-3 text-xs text-gold-ink">Desk Crawler</span>

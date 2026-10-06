@@ -1,12 +1,12 @@
 {
   "meta": {
     "reportVersion": 2,
-    "contentVersion": "v1",
+    "contentVersion": "v2",
     "simulationVersion": 1,
     "heroes": 300,
-    "days": 30,
-    "ticks": 2880,
-    "seconds": 80.553,
+    "days": 90,
+    "ticks": 8640,
+    "seconds": 288.48,
     "cumulativeXpToLevel8": 3608,
     "deathDenominator": "hero-days with at least one exploring/resting tick in the biome; multiple deaths count once for probability",
     "uncertainty": "Wilson 95% descriptive interval; repeated days per seeded hero are correlated, not a player forecast"
@@ -15,7 +15,7 @@
     {
       "policy": "unattended",
       "heroes": 300,
-      "days": 30,
+      "days": 90,
       "reach": [
         {
           "level": 2,
@@ -27,22 +27,22 @@
         {
           "level": 4,
           "p10": 2.2,
-          "median": ">30",
-          "p90": ">30",
+          "median": ">90",
+          "p90": ">90",
           "reached": 113
         },
         {
           "level": 8,
-          "p10": ">30",
-          "median": ">30",
-          "p90": ">30",
+          "p10": ">90",
+          "median": ">90",
+          "p90": ">90",
           "reached": 0
         },
         {
           "level": 12,
-          "p10": ">30",
-          "median": ">30",
-          "p90": ">30",
+          "p10": ">90",
+          "median": ">90",
+          "p90": ">90",
           "reached": 0
         }
       ],
@@ -64,11 +64,11 @@
         }
       },
       "stateSharePct": {
-        "exploring": 8.2,
+        "exploring": 2.7,
         "resting": 0,
         "travelling": 0,
         "dead": 0,
-        "sleeping": 91.8
+        "sleeping": 97.3
       },
       "firstInventorySleep": {
         "p10": 1.4,
@@ -76,11 +76,11 @@
         "p90": 3.7,
         "reached": 300
       },
-      "gearPerDay": 0.4,
-      "usefulGearPerDay": 0.3,
+      "gearPerDay": 0.1,
+      "usefulGearPerDay": 0.1,
       "equippedUpgradesPerHero": 0,
       "potions": {
-        "acquiredPerHeroDay": 0.4,
+        "acquiredPerHeroDay": 0.1,
         "usedPerHeroDay": 0,
         "fullStackFallbacksPerHeroDay": 0,
         "finalCount": {
@@ -92,9 +92,9 @@
       "retreatsPerHeroDay": 0,
       "rescuesPerHeroDay": 0,
       "bestInSlot": {
-        "p10": ">30",
-        "median": ">30",
-        "p90": ">30",
+        "p10": ">90",
+        "median": ">90",
+        "p90": ">90",
         "reached": 0
       },
       "goldDayEnd": {
@@ -103,7 +103,7 @@
       },
       "goldDay30": 225,
       "jackpotGoldShare": 3,
-      "elitesPerHeroDay": 0.07,
+      "elitesPerHeroDay": 0.02,
       "bag": {
         "reach": [
           {
@@ -117,21 +117,21 @@
             "capacity": 13,
             "p10": 0.3,
             "median": 2.7,
-            "p90": ">30",
+            "p90": ">90",
             "reached": 154
           },
           {
             "capacity": 16,
-            "p10": ">30",
-            "median": ">30",
-            "p90": ">30",
+            "p10": ">90",
+            "median": ">90",
+            "p90": ">90",
             "reached": 23
           },
           {
             "capacity": 20,
-            "p10": ">30",
-            "median": ">30",
-            "p90": ">30",
+            "p10": ">90",
+            "median": ">90",
+            "p90": ">90",
             "reached": 0
           }
         ],
@@ -155,8 +155,8 @@
         "day1": {
           "bands": {
             "common": 13,
-            "uncommon": 4,
-            "rare": 2,
+            "uncommon": 5,
+            "rare": 1,
             "legendary": 112
           },
           "monsterTiers": {
@@ -351,7 +351,7 @@
             "retreats_2": 0,
             "retreats_3": 0,
             "retreats_4": 0,
-            "potions_1": 7.7,
+            "potions_1": 21.3,
             "potions_2": 0,
             "potions_3": 0,
             "potions_4": 0,
@@ -382,8 +382,8 @@
         "day7": {
           "bands": {
             "common": 17,
-            "uncommon": 8,
-            "rare": 4,
+            "uncommon": 9,
+            "rare": 3,
             "legendary": 102
           },
           "monsterTiers": {
@@ -578,7 +578,7 @@
             "retreats_2": 0,
             "retreats_3": 0,
             "retreats_4": 0,
-            "potions_1": 8,
+            "potions_1": 26,
             "potions_2": 0,
             "potions_3": 0,
             "potions_4": 0,
@@ -609,8 +609,8 @@
         "day30": {
           "bands": {
             "common": 17,
-            "uncommon": 8,
-            "rare": 4,
+            "uncommon": 9,
+            "rare": 3,
             "legendary": 102
           },
           "monsterTiers": {
@@ -805,7 +805,7 @@
             "retreats_2": 0,
             "retreats_3": 0,
             "retreats_4": 0,
-            "potions_1": 8,
+            "potions_1": 26,
             "potions_2": 0,
             "potions_3": 0,
             "potions_4": 0,
@@ -838,7 +838,7 @@
     {
       "policy": "daily",
       "heroes": 300,
-      "days": 30,
+      "days": 90,
       "reach": [
         {
           "level": 2,
@@ -863,58 +863,58 @@
         },
         {
           "level": 12,
-          "p10": 12.7,
-          "median": 13.8,
-          "p90": 15.1,
+          "p10": 12.3,
+          "median": 13,
+          "p90": 13.9,
           "reached": 300
         }
       ],
-      "finalLevelMedian": 19,
+      "finalLevelMedian": 32,
       "deathByBiome": {
         "server_room": {
-          "eligibleHeroDays": 1893,
-          "heroDaysWithDeath": 16,
-          "deathProbabilityPct": 0.8,
+          "eligibleHeroDays": 1887,
+          "heroDaysWithDeath": 0,
+          "deathProbabilityPct": 0,
           "wilson95Pct": [
-            0.5,
-            1.4
+            0,
+            0.2
           ],
-          "deathsPerEligibleHeroDay": 0.008
+          "deathsPerEligibleHeroDay": 0
         },
         "cafeteria_depths": {
-          "eligibleHeroDays": 6633,
-          "heroDaysWithDeath": 717,
-          "deathProbabilityPct": 10.8,
+          "eligibleHeroDays": 24641,
+          "heroDaysWithDeath": 191,
+          "deathProbabilityPct": 0.8,
           "wilson95Pct": [
-            10.1,
-            11.6
+            0.7,
+            0.9
           ],
-          "deathsPerEligibleHeroDay": 0.11
+          "deathsPerEligibleHeroDay": 0.008
         }
       },
       "stateSharePct": {
-        "exploring": 97.3,
-        "resting": 1.7,
-        "travelling": 0.3,
-        "dead": 0.7,
+        "exploring": 99,
+        "resting": 0.9,
+        "travelling": 0.1,
+        "dead": 0.1,
         "sleeping": 0
       },
       "firstInventorySleep": {
-        "p10": ">30",
-        "median": ">30",
-        "p90": ">30",
+        "p10": ">90",
+        "median": ">90",
+        "p90": ">90",
         "reached": 4
       },
-      "gearPerDay": 4.7,
-      "usefulGearPerDay": 0.5,
-      "equippedUpgradesPerHero": 10.1,
+      "gearPerDay": 4.8,
+      "usefulGearPerDay": 0.2,
+      "equippedUpgradesPerHero": 10.8,
       "potions": {
-        "acquiredPerHeroDay": 4.2,
-        "usedPerHeroDay": 3.7,
-        "fullStackFallbacksPerHeroDay": 0.5,
+        "acquiredPerHeroDay": 1.9,
+        "usedPerHeroDay": 1.7,
+        "fullStackFallbacksPerHeroDay": 2.9,
         "finalCount": {
-          "p10": 13,
-          "median": 19,
+          "p10": 20,
+          "median": 20,
           "p90": 20
         }
       },
@@ -922,17 +922,17 @@
       "rescuesPerHeroDay": 0,
       "bestInSlot": {
         "p10": 18.2,
-        "median": ">30",
-        "p90": ">30",
-        "reached": 102
+        "median": 36.8,
+        "p90": 65.3,
+        "reached": 288
       },
       "goldDayEnd": {
-        "median": 13366,
-        "p90": 14833
+        "median": 57499,
+        "p90": 59322
       },
-      "goldDay30": 13366,
-      "jackpotGoldShare": 2.6,
-      "elitesPerHeroDay": 1.16,
+      "goldDay30": 13777,
+      "jackpotGoldShare": 2.8,
+      "elitesPerHeroDay": 1.25,
       "bag": {
         "reach": [
           {
@@ -959,33 +959,33 @@
           {
             "capacity": 20,
             "p10": 8,
-            "median": 9.3,
-            "p90": 11.8,
+            "median": 9.1,
+            "p90": 10.6,
             "reached": 300
           }
         ],
-        "findsPerHero": 0.96,
-        "purchasesPerHero": 2.05,
-        "goldSpentMedian": 2150
+        "findsPerHero": 0.88,
+        "purchasesPerHero": 2.13,
+        "goldSpentMedian": 2600
       },
       "xpLastDay": {
-        "p10": 1636,
-        "median": 1966,
-        "p90": 2368,
-        "ratio": 1.45
+        "p10": 1645,
+        "median": 1947,
+        "p90": 2318,
+        "ratio": 1.41
       },
       "xpLast7Days": {
-        "p10": 13061,
-        "median": 13992,
-        "p90": 14808,
-        "ratio": 1.13
+        "p10": 12955,
+        "median": 13907,
+        "p90": 14763,
+        "ratio": 1.14
       },
       "achievements": {
         "day1": {
           "bands": {
             "common": 13,
-            "uncommon": 4,
-            "rare": 2,
+            "uncommon": 5,
+            "rare": 1,
             "legendary": 112
           },
           "monsterTiers": {
@@ -1180,7 +1180,7 @@
             "retreats_2": 0,
             "retreats_3": 0,
             "retreats_4": 0,
-            "potions_1": 7,
+            "potions_1": 19.7,
             "potions_2": 0,
             "potions_3": 0,
             "potions_4": 0,
@@ -1212,63 +1212,63 @@
           "bands": {
             "common": 41,
             "uncommon": 5,
-            "rare": 5,
-            "legendary": 80
+            "rare": 3,
+            "legendary": 82
           },
           "monsterTiers": {
             "slay_paper_imp": [
               100,
               100,
-              27.3,
+              26.3,
               0,
               0
             ],
             "slay_rogue_roomba": [
               100,
               100,
-              27.3,
+              26,
               0,
               0
             ],
             "slay_stapler_mimic": [
               100,
               100,
-              25.3,
+              22.3,
               0,
               0
             ],
             "slay_dust_daemon": [
               100,
               100,
-              30.7,
+              29.3,
               0,
               0
             ],
             "slay_cable_serpent": [
               100,
               100,
-              95.7,
+              96.3,
               0,
               0
             ],
             "slay_overheated_rack": [
               100,
               100,
-              97.7,
+              98,
               0,
               0
             ],
             "slay_firewall_gremlin": [
               100,
               100,
-              98,
+              98.3,
               0,
               0
             ],
             "slay_legacy_mainframe": [
               100,
               100,
-              96.7,
+              97.3,
               0,
               0
             ],
@@ -1304,42 +1304,42 @@
           "shares": {
             "slay_paper_imp_1": 100,
             "slay_paper_imp_2": 100,
-            "slay_paper_imp_3": 27.3,
+            "slay_paper_imp_3": 26.3,
             "slay_paper_imp_4": 0,
             "slay_paper_imp_5": 0,
             "slay_rogue_roomba_1": 100,
             "slay_rogue_roomba_2": 100,
-            "slay_rogue_roomba_3": 27.3,
+            "slay_rogue_roomba_3": 26,
             "slay_rogue_roomba_4": 0,
             "slay_rogue_roomba_5": 0,
             "slay_stapler_mimic_1": 100,
             "slay_stapler_mimic_2": 100,
-            "slay_stapler_mimic_3": 25.3,
+            "slay_stapler_mimic_3": 22.3,
             "slay_stapler_mimic_4": 0,
             "slay_stapler_mimic_5": 0,
             "slay_dust_daemon_1": 100,
             "slay_dust_daemon_2": 100,
-            "slay_dust_daemon_3": 30.7,
+            "slay_dust_daemon_3": 29.3,
             "slay_dust_daemon_4": 0,
             "slay_dust_daemon_5": 0,
             "slay_cable_serpent_1": 100,
             "slay_cable_serpent_2": 100,
-            "slay_cable_serpent_3": 95.7,
+            "slay_cable_serpent_3": 96.3,
             "slay_cable_serpent_4": 0,
             "slay_cable_serpent_5": 0,
             "slay_overheated_rack_1": 100,
             "slay_overheated_rack_2": 100,
-            "slay_overheated_rack_3": 97.7,
+            "slay_overheated_rack_3": 98,
             "slay_overheated_rack_4": 0,
             "slay_overheated_rack_5": 0,
             "slay_firewall_gremlin_1": 100,
             "slay_firewall_gremlin_2": 100,
-            "slay_firewall_gremlin_3": 98,
+            "slay_firewall_gremlin_3": 98.3,
             "slay_firewall_gremlin_4": 0,
             "slay_firewall_gremlin_5": 0,
             "slay_legacy_mainframe_1": 100,
             "slay_legacy_mainframe_2": 100,
-            "slay_legacy_mainframe_3": 96.7,
+            "slay_legacy_mainframe_3": 97.3,
             "slay_legacy_mainframe_4": 0,
             "slay_legacy_mainframe_5": 0,
             "slay_coffee_slime_1": 0,
@@ -1364,14 +1364,14 @@
             "slay_leftovers_hydra_5": 0,
             "office_census": 0,
             "full_tour": 0,
-            "floor_cleared_1": 1,
-            "floor_cleared_2": 90.3,
+            "floor_cleared_1": 0.3,
+            "floor_cleared_2": 91,
             "floor_cleared_3": 0,
             "elites_1": 100,
             "elites_2": 82.3,
             "elites_3": 0,
             "elites_4": 0,
-            "jackpots_1": 66.3,
+            "jackpots_1": 65.7,
             "jackpots_2": 0,
             "jackpots_3": 0,
             "rare_finds_1": 79.3,
@@ -1392,11 +1392,11 @@
             "gold_3": 0,
             "gold_4": 0,
             "levels_1": 100,
-            "levels_2": 1.7,
+            "levels_2": 2,
             "levels_3": 0,
             "levels_4": 0,
             "levels_5": 0,
-            "knockouts_1": 5,
+            "knockouts_1": 0,
             "knockouts_2": 0,
             "knockouts_3": 0,
             "knockouts_4": 0,
@@ -1408,11 +1408,11 @@
             "retreats_3": 0,
             "retreats_4": 0,
             "potions_1": 100,
-            "potions_2": 98.7,
+            "potions_2": 100,
             "potions_3": 0,
             "potions_4": 0,
             "traps_1": 100,
-            "traps_2": 24,
+            "traps_2": 23.7,
             "traps_3": 0,
             "traps_4": 0,
             "breaks_1": 100,
@@ -1437,37 +1437,37 @@
         },
         "day30": {
           "bands": {
-            "common": 78,
-            "uncommon": 2,
-            "rare": 2,
-            "legendary": 49
+            "common": 73,
+            "uncommon": 7,
+            "rare": 1,
+            "legendary": 50
           },
           "monsterTiers": {
             "slay_paper_imp": [
               100,
               100,
-              83,
+              45,
               0,
               0
             ],
             "slay_rogue_roomba": [
               100,
               100,
-              83.7,
+              42.7,
               0,
               0
             ],
             "slay_stapler_mimic": [
               100,
               100,
-              82,
+              41,
               0,
               0
             ],
             "slay_dust_daemon": [
               100,
               100,
-              80.3,
+              42,
               0,
               0
             ],
@@ -1531,22 +1531,22 @@
           "shares": {
             "slay_paper_imp_1": 100,
             "slay_paper_imp_2": 100,
-            "slay_paper_imp_3": 83,
+            "slay_paper_imp_3": 45,
             "slay_paper_imp_4": 0,
             "slay_paper_imp_5": 0,
             "slay_rogue_roomba_1": 100,
             "slay_rogue_roomba_2": 100,
-            "slay_rogue_roomba_3": 83.7,
+            "slay_rogue_roomba_3": 42.7,
             "slay_rogue_roomba_4": 0,
             "slay_rogue_roomba_5": 0,
             "slay_stapler_mimic_1": 100,
             "slay_stapler_mimic_2": 100,
-            "slay_stapler_mimic_3": 82,
+            "slay_stapler_mimic_3": 41,
             "slay_stapler_mimic_4": 0,
             "slay_stapler_mimic_5": 0,
             "slay_dust_daemon_1": 100,
             "slay_dust_daemon_2": 100,
-            "slay_dust_daemon_3": 80.3,
+            "slay_dust_daemon_3": 42,
             "slay_dust_daemon_4": 0,
             "slay_dust_daemon_5": 0,
             "slay_cable_serpent_1": 100,
@@ -1591,18 +1591,18 @@
             "slay_leftovers_hydra_5": 0,
             "office_census": 100,
             "full_tour": 100,
-            "floor_cleared_1": 58.3,
+            "floor_cleared_1": 9.7,
             "floor_cleared_2": 100,
             "floor_cleared_3": 100,
             "elites_1": 100,
             "elites_2": 100,
-            "elites_3": 95.7,
+            "elites_3": 96.3,
             "elites_4": 0,
-            "jackpots_1": 99,
-            "jackpots_2": 51.3,
+            "jackpots_1": 98.3,
+            "jackpots_2": 48,
             "jackpots_3": 0,
             "rare_finds_1": 99.3,
-            "rare_finds_2": 67,
+            "rare_finds_2": 66,
             "rare_finds_3": 0,
             "rare_finds_4": 0,
             "adventures_1": 100,
@@ -1622,31 +1622,31 @@
             "levels_2": 100,
             "levels_3": 100,
             "levels_4": 100,
-            "levels_5": 35,
-            "knockouts_1": 95.7,
-            "knockouts_2": 6,
+            "levels_5": 61.3,
+            "knockouts_1": 50,
+            "knockouts_2": 0,
             "knockouts_3": 0,
             "knockouts_4": 0,
             "rescues_1": 0,
             "rescues_2": 0,
             "rescues_3": 0,
-            "retreats_1": 8,
+            "retreats_1": 12.3,
             "retreats_2": 0,
             "retreats_3": 0,
             "retreats_4": 0,
             "potions_1": 100,
             "potions_2": 100,
-            "potions_3": 92,
+            "potions_3": 98.7,
             "potions_4": 0,
             "traps_1": 100,
             "traps_2": 100,
-            "traps_3": 42.3,
+            "traps_3": 45.7,
             "traps_4": 0,
             "breaks_1": 100,
             "breaks_2": 100,
             "breaks_3": 0,
             "trips_1": 100,
-            "trips_2": 0.3,
+            "trips_2": 0,
             "trips_3": 0,
             "bags_1": 100,
             "bags_2": 100,
@@ -1667,7 +1667,7 @@
     {
       "policy": "three-day",
       "heroes": 300,
-      "days": 30,
+      "days": 90,
       "reach": [
         {
           "level": 2,
@@ -1685,83 +1685,83 @@
         },
         {
           "level": 8,
-          "p10": 8.1,
-          "median": 9.3,
+          "p10": 8,
+          "median": 9.2,
           "p90": 11.1,
           "reached": 300
         },
         {
           "level": 12,
-          "p10": 15.3,
-          "median": 18,
-          "p90": 21.4,
+          "p10": 13.7,
+          "median": 15.9,
+          "p90": 18,
           "reached": 300
         }
       ],
-      "finalLevelMedian": 18,
+      "finalLevelMedian": 32,
       "deathByBiome": {
         "server_room": {
-          "eligibleHeroDays": 2107,
-          "heroDaysWithDeath": 12,
-          "deathProbabilityPct": 0.6,
+          "eligibleHeroDays": 2096,
+          "heroDaysWithDeath": 1,
+          "deathProbabilityPct": 0,
           "wilson95Pct": [
-            0.3,
-            1
+            0,
+            0.3
           ],
-          "deathsPerEligibleHeroDay": 0.006
+          "deathsPerEligibleHeroDay": 0
         },
         "cafeteria_depths": {
-          "eligibleHeroDays": 5157,
-          "heroDaysWithDeath": 544,
-          "deathProbabilityPct": 10.5,
+          "eligibleHeroDays": 23702,
+          "heroDaysWithDeath": 170,
+          "deathProbabilityPct": 0.7,
           "wilson95Pct": [
-            9.7,
-            11.4
+            0.6,
+            0.8
           ],
-          "deathsPerEligibleHeroDay": 0.105
+          "deathsPerEligibleHeroDay": 0.007
         }
       },
       "stateSharePct": {
-        "exploring": 94,
-        "resting": 1.3,
-        "travelling": 0.2,
-        "dead": 0.5,
-        "sleeping": 4
+        "exploring": 97.3,
+        "resting": 0.8,
+        "travelling": 0.1,
+        "dead": 0.1,
+        "sleeping": 1.7
       },
       "firstInventorySleep": {
         "p10": 1.8,
         "median": 2.9,
-        "p90": 18.7,
-        "reached": 276
+        "p90": 29.6,
+        "reached": 294
       },
-      "gearPerDay": 4.6,
-      "usefulGearPerDay": 0.8,
-      "equippedUpgradesPerHero": 8.8,
+      "gearPerDay": 4.8,
+      "usefulGearPerDay": 0.3,
+      "equippedUpgradesPerHero": 9.7,
       "potions": {
-        "acquiredPerHeroDay": 3.9,
-        "usedPerHeroDay": 3.6,
-        "fullStackFallbacksPerHeroDay": 0.9,
+        "acquiredPerHeroDay": 2,
+        "usedPerHeroDay": 1.8,
+        "fullStackFallbacksPerHeroDay": 2.7,
         "finalCount": {
-          "p10": 2,
-          "median": 12,
+          "p10": 20,
+          "median": 20,
           "p90": 20
         }
       },
       "retreatsPerHeroDay": 0,
       "rescuesPerHeroDay": 0,
       "bestInSlot": {
-        "p10": 27.5,
-        "median": ">30",
-        "p90": ">30",
-        "reached": 38
+        "p10": 24.2,
+        "median": 42.2,
+        "p90": 72.7,
+        "reached": 284
       },
       "goldDayEnd": {
-        "median": 10732,
-        "p90": 12968
+        "median": 55389,
+        "p90": 57516
       },
-      "goldDay30": 10732,
-      "jackpotGoldShare": 2.6,
-      "elitesPerHeroDay": 1.07,
+      "goldDay30": 12097,
+      "jackpotGoldShare": 2.8,
+      "elitesPerHeroDay": 1.22,
       "bag": {
         "reach": [
           {
@@ -1789,32 +1789,32 @@
             "capacity": 20,
             "p10": 9.3,
             "median": 12,
-            "p90": 12.8,
+            "p90": 12.9,
             "reached": 300
           }
         ],
-        "findsPerHero": 1.24,
-        "purchasesPerHero": 1.5,
+        "findsPerHero": 1.26,
+        "purchasesPerHero": 1.48,
         "goldSpentMedian": 2000
       },
       "xpLastDay": {
-        "p10": 1623,
-        "median": 1958,
-        "p90": 2340,
-        "ratio": 1.44
+        "p10": 1627,
+        "median": 1938,
+        "p90": 2315,
+        "ratio": 1.42
       },
       "xpLast7Days": {
-        "p10": 12783,
-        "median": 13753,
-        "p90": 14626,
-        "ratio": 1.14
+        "p10": 12812,
+        "median": 13860,
+        "p90": 14759,
+        "ratio": 1.15
       },
       "achievements": {
         "day1": {
           "bands": {
             "common": 13,
-            "uncommon": 4,
-            "rare": 2,
+            "uncommon": 5,
+            "rare": 1,
             "legendary": 112
           },
           "monsterTiers": {
@@ -2009,7 +2009,7 @@
             "retreats_2": 0,
             "retreats_3": 0,
             "retreats_4": 0,
-            "potions_1": 7,
+            "potions_1": 19.7,
             "potions_2": 0,
             "potions_3": 0,
             "potions_4": 0,
@@ -2048,56 +2048,56 @@
             "slay_paper_imp": [
               100,
               100,
-              66.7,
+              64.7,
               0,
               0
             ],
             "slay_rogue_roomba": [
               100,
               100,
-              67,
+              65,
               0,
               0
             ],
             "slay_stapler_mimic": [
               100,
               100,
-              67.7,
+              65.3,
               0,
               0
             ],
             "slay_dust_daemon": [
               100,
               100,
-              66,
+              64.3,
               0,
               0
             ],
             "slay_cable_serpent": [
               98,
-              83.7,
-              45.7,
+              84.7,
+              48.7,
               0,
               0
             ],
             "slay_overheated_rack": [
-              96.7,
-              83,
-              45,
+              97,
+              84,
+              47,
               0,
               0
             ],
             "slay_firewall_gremlin": [
-              97.7,
-              83.3,
-              45.7,
+              98,
+              84,
+              48,
               0,
               0
             ],
             "slay_legacy_mainframe": [
               98,
-              82.7,
-              44.7,
+              83.7,
+              47.7,
               0,
               0
             ],
@@ -2133,42 +2133,42 @@
           "shares": {
             "slay_paper_imp_1": 100,
             "slay_paper_imp_2": 100,
-            "slay_paper_imp_3": 66.7,
+            "slay_paper_imp_3": 64.7,
             "slay_paper_imp_4": 0,
             "slay_paper_imp_5": 0,
             "slay_rogue_roomba_1": 100,
             "slay_rogue_roomba_2": 100,
-            "slay_rogue_roomba_3": 67,
+            "slay_rogue_roomba_3": 65,
             "slay_rogue_roomba_4": 0,
             "slay_rogue_roomba_5": 0,
             "slay_stapler_mimic_1": 100,
             "slay_stapler_mimic_2": 100,
-            "slay_stapler_mimic_3": 67.7,
+            "slay_stapler_mimic_3": 65.3,
             "slay_stapler_mimic_4": 0,
             "slay_stapler_mimic_5": 0,
             "slay_dust_daemon_1": 100,
             "slay_dust_daemon_2": 100,
-            "slay_dust_daemon_3": 66,
+            "slay_dust_daemon_3": 64.3,
             "slay_dust_daemon_4": 0,
             "slay_dust_daemon_5": 0,
             "slay_cable_serpent_1": 98,
-            "slay_cable_serpent_2": 83.7,
-            "slay_cable_serpent_3": 45.7,
+            "slay_cable_serpent_2": 84.7,
+            "slay_cable_serpent_3": 48.7,
             "slay_cable_serpent_4": 0,
             "slay_cable_serpent_5": 0,
-            "slay_overheated_rack_1": 96.7,
-            "slay_overheated_rack_2": 83,
-            "slay_overheated_rack_3": 45,
+            "slay_overheated_rack_1": 97,
+            "slay_overheated_rack_2": 84,
+            "slay_overheated_rack_3": 47,
             "slay_overheated_rack_4": 0,
             "slay_overheated_rack_5": 0,
-            "slay_firewall_gremlin_1": 97.7,
-            "slay_firewall_gremlin_2": 83.3,
-            "slay_firewall_gremlin_3": 45.7,
+            "slay_firewall_gremlin_1": 98,
+            "slay_firewall_gremlin_2": 84,
+            "slay_firewall_gremlin_3": 48,
             "slay_firewall_gremlin_4": 0,
             "slay_firewall_gremlin_5": 0,
             "slay_legacy_mainframe_1": 98,
-            "slay_legacy_mainframe_2": 82.7,
-            "slay_legacy_mainframe_3": 44.7,
+            "slay_legacy_mainframe_2": 83.7,
+            "slay_legacy_mainframe_3": 47.7,
             "slay_legacy_mainframe_4": 0,
             "slay_legacy_mainframe_5": 0,
             "slay_coffee_slime_1": 0,
@@ -2193,23 +2193,23 @@
             "slay_leftovers_hydra_5": 0,
             "office_census": 0,
             "full_tour": 0,
-            "floor_cleared_1": 40.3,
-            "floor_cleared_2": 28.7,
+            "floor_cleared_1": 37,
+            "floor_cleared_2": 29.7,
             "floor_cleared_3": 0,
             "elites_1": 99.7,
-            "elites_2": 63.7,
+            "elites_2": 65.3,
             "elites_3": 0,
             "elites_4": 0,
             "jackpots_1": 60.3,
             "jackpots_2": 0.7,
             "jackpots_3": 0,
-            "rare_finds_1": 72.3,
+            "rare_finds_1": 72.7,
             "rare_finds_2": 0.3,
             "rare_finds_3": 0,
             "rare_finds_4": 0,
             "adventures_1": 100,
             "adventures_2": 100,
-            "adventures_3": 83.7,
+            "adventures_3": 84,
             "adventures_4": 0,
             "adventures_5": 0,
             "finds_1": 100,
@@ -2217,7 +2217,7 @@
             "finds_3": 0,
             "finds_4": 0,
             "gold_1": 100,
-            "gold_2": 55,
+            "gold_2": 58.3,
             "gold_3": 0,
             "gold_4": 0,
             "levels_1": 100,
@@ -2225,23 +2225,23 @@
             "levels_3": 0,
             "levels_4": 0,
             "levels_5": 0,
-            "knockouts_1": 4,
+            "knockouts_1": 0.3,
             "knockouts_2": 0,
             "knockouts_3": 0,
             "knockouts_4": 0,
             "rescues_1": 0,
             "rescues_2": 0,
             "rescues_3": 0,
-            "retreats_1": 0.7,
+            "retreats_1": 1,
             "retreats_2": 0,
             "retreats_3": 0,
             "retreats_4": 0,
-            "potions_1": 95.3,
-            "potions_2": 59,
+            "potions_1": 97.7,
+            "potions_2": 64.7,
             "potions_3": 0,
             "potions_4": 0,
             "traps_1": 100,
-            "traps_2": 8.3,
+            "traps_2": 8,
             "traps_3": 0,
             "traps_4": 0,
             "breaks_1": 100,
@@ -2266,38 +2266,38 @@
         },
         "day30": {
           "bands": {
-            "common": 78,
-            "uncommon": 1,
-            "rare": 5,
-            "legendary": 47
+            "common": 77,
+            "uncommon": 3,
+            "rare": 1,
+            "legendary": 50
           },
           "monsterTiers": {
             "slay_paper_imp": [
               100,
               100,
-              99,
-              2,
+              85.3,
+              0,
               0
             ],
             "slay_rogue_roomba": [
               100,
               100,
-              97.7,
-              2.7,
+              83.7,
+              0,
               0
             ],
             "slay_stapler_mimic": [
               100,
               100,
-              98.3,
-              1,
+              83.3,
+              0,
               0
             ],
             "slay_dust_daemon": [
               100,
               100,
-              99,
-              2.3,
+              82,
+              0,
               0
             ],
             "slay_cable_serpent": [
@@ -2332,51 +2332,51 @@
               100,
               100,
               100,
-              95.3,
+              100,
               0
             ],
             "slay_crumb_golem": [
               100,
               100,
               100,
-              94,
+              100,
               0
             ],
             "slay_microwave_wraith": [
               100,
               100,
               100,
-              95,
+              100,
               0
             ],
             "slay_leftovers_hydra": [
               100,
               100,
               100,
-              94.3,
+              100,
               0
             ]
           },
           "shares": {
             "slay_paper_imp_1": 100,
             "slay_paper_imp_2": 100,
-            "slay_paper_imp_3": 99,
-            "slay_paper_imp_4": 2,
+            "slay_paper_imp_3": 85.3,
+            "slay_paper_imp_4": 0,
             "slay_paper_imp_5": 0,
             "slay_rogue_roomba_1": 100,
             "slay_rogue_roomba_2": 100,
-            "slay_rogue_roomba_3": 97.7,
-            "slay_rogue_roomba_4": 2.7,
+            "slay_rogue_roomba_3": 83.7,
+            "slay_rogue_roomba_4": 0,
             "slay_rogue_roomba_5": 0,
             "slay_stapler_mimic_1": 100,
             "slay_stapler_mimic_2": 100,
-            "slay_stapler_mimic_3": 98.3,
-            "slay_stapler_mimic_4": 1,
+            "slay_stapler_mimic_3": 83.3,
+            "slay_stapler_mimic_4": 0,
             "slay_stapler_mimic_5": 0,
             "slay_dust_daemon_1": 100,
             "slay_dust_daemon_2": 100,
-            "slay_dust_daemon_3": 99,
-            "slay_dust_daemon_4": 2.3,
+            "slay_dust_daemon_3": 82,
+            "slay_dust_daemon_4": 0,
             "slay_dust_daemon_5": 0,
             "slay_cable_serpent_1": 100,
             "slay_cable_serpent_2": 100,
@@ -2401,43 +2401,43 @@
             "slay_coffee_slime_1": 100,
             "slay_coffee_slime_2": 100,
             "slay_coffee_slime_3": 100,
-            "slay_coffee_slime_4": 95.3,
+            "slay_coffee_slime_4": 100,
             "slay_coffee_slime_5": 0,
             "slay_crumb_golem_1": 100,
             "slay_crumb_golem_2": 100,
             "slay_crumb_golem_3": 100,
-            "slay_crumb_golem_4": 94,
+            "slay_crumb_golem_4": 100,
             "slay_crumb_golem_5": 0,
             "slay_microwave_wraith_1": 100,
             "slay_microwave_wraith_2": 100,
             "slay_microwave_wraith_3": 100,
-            "slay_microwave_wraith_4": 95,
+            "slay_microwave_wraith_4": 100,
             "slay_microwave_wraith_5": 0,
             "slay_leftovers_hydra_1": 100,
             "slay_leftovers_hydra_2": 100,
             "slay_leftovers_hydra_3": 100,
-            "slay_leftovers_hydra_4": 94.3,
+            "slay_leftovers_hydra_4": 100,
             "slay_leftovers_hydra_5": 0,
             "office_census": 100,
             "full_tour": 100,
-            "floor_cleared_1": 97,
+            "floor_cleared_1": 70,
             "floor_cleared_2": 100,
             "floor_cleared_3": 100,
             "elites_1": 100,
             "elites_2": 100,
-            "elites_3": 88.3,
+            "elites_3": 93,
             "elites_4": 0,
-            "jackpots_1": 99.3,
-            "jackpots_2": 50.7,
+            "jackpots_1": 99,
+            "jackpots_2": 45,
             "jackpots_3": 0,
-            "rare_finds_1": 99.3,
-            "rare_finds_2": 64.3,
+            "rare_finds_1": 98.7,
+            "rare_finds_2": 63,
             "rare_finds_3": 0,
             "rare_finds_4": 0,
             "adventures_1": 100,
             "adventures_2": 100,
             "adventures_3": 100,
-            "adventures_4": 97,
+            "adventures_4": 93.3,
             "adventures_5": 0,
             "finds_1": 100,
             "finds_2": 100,
@@ -2445,31 +2445,31 @@
             "finds_4": 0,
             "gold_1": 100,
             "gold_2": 100,
-            "gold_3": 57.3,
+            "gold_3": 89.3,
             "gold_4": 0,
             "levels_1": 100,
             "levels_2": 100,
             "levels_3": 100,
-            "levels_4": 96,
-            "levels_5": 0.3,
-            "knockouts_1": 97,
-            "knockouts_2": 0.3,
+            "levels_4": 100,
+            "levels_5": 4,
+            "knockouts_1": 51,
+            "knockouts_2": 0,
             "knockouts_3": 0,
             "knockouts_4": 0,
             "rescues_1": 0,
             "rescues_2": 0,
             "rescues_3": 0,
-            "retreats_1": 9.3,
+            "retreats_1": 16.3,
             "retreats_2": 0,
             "retreats_3": 0,
             "retreats_4": 0,
             "potions_1": 100,
             "potions_2": 100,
-            "potions_3": 73.7,
+            "potions_3": 95.7,
             "potions_4": 0,
             "traps_1": 100,
             "traps_2": 100,
-            "traps_3": 17.3,
+            "traps_3": 24.7,
             "traps_4": 0,
             "breaks_1": 100,
             "breaks_2": 100,
@@ -2496,7 +2496,7 @@
     {
       "policy": "seven-day",
       "heroes": 300,
-      "days": 30,
+      "days": 90,
       "reach": [
         {
           "level": 2,
@@ -2515,47 +2515,47 @@
         {
           "level": 8,
           "p10": 14.9,
-          "median": 16.9,
+          "median": 16.8,
           "p90": 23,
           "reached": 300
         },
         {
           "level": 12,
-          "p10": 25.4,
-          "median": ">30",
-          "p90": ">30",
-          "reached": 65
+          "p10": 24.4,
+          "median": 30,
+          "p90": 36.5,
+          "reached": 300
         }
       ],
-      "finalLevelMedian": 10,
+      "finalLevelMedian": 25,
       "deathByBiome": {
         "server_room": {
-          "eligibleHeroDays": 2569,
-          "heroDaysWithDeath": 6,
-          "deathProbabilityPct": 0.2,
+          "eligibleHeroDays": 2572,
+          "heroDaysWithDeath": 0,
+          "deathProbabilityPct": 0,
           "wilson95Pct": [
-            0.1,
-            0.5
+            0,
+            0.1
           ],
-          "deathsPerEligibleHeroDay": 0.002
+          "deathsPerEligibleHeroDay": 0
         },
         "cafeteria_depths": {
-          "eligibleHeroDays": 1023,
-          "heroDaysWithDeath": 322,
-          "deathProbabilityPct": 31.5,
+          "eligibleHeroDays": 15158,
+          "heroDaysWithDeath": 135,
+          "deathProbabilityPct": 0.9,
           "wilson95Pct": [
-            28.7,
-            34.4
+            0.8,
+            1.1
           ],
-          "deathsPerEligibleHeroDay": 0.315
+          "deathsPerEligibleHeroDay": 0.009
         }
       },
       "stateSharePct": {
-        "exploring": 51.7,
-        "resting": 0.2,
-        "travelling": 0.1,
-        "dead": 0.3,
-        "sleeping": 47.7
+        "exploring": 58.6,
+        "resting": 0.8,
+        "travelling": 0,
+        "dead": 0,
+        "sleeping": 40.5
       },
       "firstInventorySleep": {
         "p10": 1.8,
@@ -2563,34 +2563,34 @@
         "p90": 4.4,
         "reached": 300
       },
-      "gearPerDay": 2.5,
-      "usefulGearPerDay": 0.7,
-      "equippedUpgradesPerHero": 6.1,
+      "gearPerDay": 2.9,
+      "usefulGearPerDay": 0.3,
+      "equippedUpgradesPerHero": 9,
       "potions": {
-        "acquiredPerHeroDay": 1.8,
-        "usedPerHeroDay": 1.6,
-        "fullStackFallbacksPerHeroDay": 0.9,
+        "acquiredPerHeroDay": 1.9,
+        "usedPerHeroDay": 1.7,
+        "fullStackFallbacksPerHeroDay": 1,
         "finalCount": {
-          "p10": 0,
-          "median": 5,
+          "p10": 19,
+          "median": 20,
           "p90": 20
         }
       },
       "retreatsPerHeroDay": 0,
       "rescuesPerHeroDay": 0,
       "bestInSlot": {
-        "p10": ">30",
-        "median": ">30",
-        "p90": ">30",
-        "reached": 2
+        "p10": 42,
+        "median": 63.6,
+        "p90": ">90",
+        "reached": 210
       },
       "goldDayEnd": {
-        "median": 2372,
-        "p90": 5034
+        "median": 29278,
+        "p90": 32897
       },
-      "goldDay30": 2372,
-      "jackpotGoldShare": 2.8,
-      "elitesPerHeroDay": 0.53,
+      "goldDay30": 3737,
+      "jackpotGoldShare": 2.7,
+      "elitesPerHeroDay": 0.72,
       "bag": {
         "reach": [
           {
@@ -2618,32 +2618,32 @@
             "capacity": 20,
             "p10": 16.3,
             "median": 21.8,
-            "p90": 28.7,
-            "reached": 292
+            "p90": 28.6,
+            "reached": 300
           }
         ],
-        "findsPerHero": 1.32,
+        "findsPerHero": 1.34,
         "purchasesPerHero": 1.38,
         "goldSpentMedian": 2000
       },
       "xpLastDay": {
-        "p10": 188,
-        "median": 1652,
-        "p90": 2150,
-        "ratio": 11.44
+        "p10": 0,
+        "median": 0,
+        "p90": 1783,
+        "ratio": null
       },
       "xpLast7Days": {
-        "p10": 1388,
-        "median": 3214,
-        "p90": 5869,
-        "ratio": 4.23
+        "p10": 5984,
+        "median": 8296,
+        "p90": 10997,
+        "ratio": 1.84
       },
       "achievements": {
         "day1": {
           "bands": {
             "common": 13,
-            "uncommon": 4,
-            "rare": 2,
+            "uncommon": 5,
+            "rare": 1,
             "legendary": 112
           },
           "monsterTiers": {
@@ -2838,7 +2838,7 @@
             "retreats_2": 0,
             "retreats_3": 0,
             "retreats_4": 0,
-            "potions_1": 7,
+            "potions_1": 19.7,
             "potions_2": 0,
             "potions_3": 0,
             "potions_4": 0,
@@ -2869,8 +2869,8 @@
         "day7": {
           "bands": {
             "common": 18,
-            "uncommon": 10,
-            "rare": 2,
+            "uncommon": 11,
+            "rare": 1,
             "legendary": 101
           },
           "monsterTiers": {
@@ -3065,7 +3065,7 @@
             "retreats_2": 0,
             "retreats_3": 0,
             "retreats_4": 0,
-            "potions_1": 7.3,
+            "potions_1": 23.7,
             "potions_2": 0,
             "potions_3": 0,
             "potions_4": 0,
@@ -3095,38 +3095,38 @@
         },
         "day30": {
           "bands": {
-            "common": 60,
-            "uncommon": 8,
-            "rare": 6,
-            "legendary": 57
+            "common": 65,
+            "uncommon": 4,
+            "rare": 4,
+            "legendary": 58
           },
           "monsterTiers": {
             "slay_paper_imp": [
               100,
               100,
-              94.7,
-              0.3,
+              83,
+              0,
               0
             ],
             "slay_rogue_roomba": [
               100,
               100,
-              95.3,
-              0.7,
+              82.7,
+              0,
               0
             ],
             "slay_stapler_mimic": [
               100,
               100,
-              96.3,
-              1.3,
+              82,
+              0,
               0
             ],
             "slay_dust_daemon": [
               100,
               100,
-              95.7,
-              0.7,
+              80.3,
+              0,
               0
             ],
             "slay_cable_serpent": [
@@ -3158,54 +3158,54 @@
               0
             ],
             "slay_coffee_slime": [
-              96,
-              82.7,
-              26,
-              0.3,
+              98.7,
+              96.3,
+              56.3,
+              0.7,
               0
             ],
             "slay_crumb_golem": [
+              99.3,
               96,
-              80.3,
-              26.7,
+              57.7,
               0.3,
               0
             ],
             "slay_microwave_wraith": [
-              95,
-              80.3,
-              28,
-              0.3,
+              99.7,
+              96.3,
+              56,
+              0.7,
               0
             ],
             "slay_leftovers_hydra": [
+              99.3,
               96.3,
-              79.3,
-              25.3,
-              0.3,
+              55.7,
+              0.7,
               0
             ]
           },
           "shares": {
             "slay_paper_imp_1": 100,
             "slay_paper_imp_2": 100,
-            "slay_paper_imp_3": 94.7,
-            "slay_paper_imp_4": 0.3,
+            "slay_paper_imp_3": 83,
+            "slay_paper_imp_4": 0,
             "slay_paper_imp_5": 0,
             "slay_rogue_roomba_1": 100,
             "slay_rogue_roomba_2": 100,
-            "slay_rogue_roomba_3": 95.3,
-            "slay_rogue_roomba_4": 0.7,
+            "slay_rogue_roomba_3": 82.7,
+            "slay_rogue_roomba_4": 0,
             "slay_rogue_roomba_5": 0,
             "slay_stapler_mimic_1": 100,
             "slay_stapler_mimic_2": 100,
-            "slay_stapler_mimic_3": 96.3,
-            "slay_stapler_mimic_4": 1.3,
+            "slay_stapler_mimic_3": 82,
+            "slay_stapler_mimic_4": 0,
             "slay_stapler_mimic_5": 0,
             "slay_dust_daemon_1": 100,
             "slay_dust_daemon_2": 100,
-            "slay_dust_daemon_3": 95.7,
-            "slay_dust_daemon_4": 0.7,
+            "slay_dust_daemon_3": 80.3,
+            "slay_dust_daemon_4": 0,
             "slay_dust_daemon_5": 0,
             "slay_cable_serpent_1": 100,
             "slay_cable_serpent_2": 100,
@@ -3227,40 +3227,40 @@
             "slay_legacy_mainframe_3": 100,
             "slay_legacy_mainframe_4": 1.3,
             "slay_legacy_mainframe_5": 0,
-            "slay_coffee_slime_1": 96,
-            "slay_coffee_slime_2": 82.7,
-            "slay_coffee_slime_3": 26,
-            "slay_coffee_slime_4": 0.3,
+            "slay_coffee_slime_1": 98.7,
+            "slay_coffee_slime_2": 96.3,
+            "slay_coffee_slime_3": 56.3,
+            "slay_coffee_slime_4": 0.7,
             "slay_coffee_slime_5": 0,
-            "slay_crumb_golem_1": 96,
-            "slay_crumb_golem_2": 80.3,
-            "slay_crumb_golem_3": 26.7,
+            "slay_crumb_golem_1": 99.3,
+            "slay_crumb_golem_2": 96,
+            "slay_crumb_golem_3": 57.7,
             "slay_crumb_golem_4": 0.3,
             "slay_crumb_golem_5": 0,
-            "slay_microwave_wraith_1": 95,
-            "slay_microwave_wraith_2": 80.3,
-            "slay_microwave_wraith_3": 28,
-            "slay_microwave_wraith_4": 0.3,
+            "slay_microwave_wraith_1": 99.7,
+            "slay_microwave_wraith_2": 96.3,
+            "slay_microwave_wraith_3": 56,
+            "slay_microwave_wraith_4": 0.7,
             "slay_microwave_wraith_5": 0,
-            "slay_leftovers_hydra_1": 96.3,
-            "slay_leftovers_hydra_2": 79.3,
-            "slay_leftovers_hydra_3": 25.3,
-            "slay_leftovers_hydra_4": 0.3,
+            "slay_leftovers_hydra_1": 99.3,
+            "slay_leftovers_hydra_2": 96.3,
+            "slay_leftovers_hydra_3": 55.7,
+            "slay_leftovers_hydra_4": 0.7,
             "slay_leftovers_hydra_5": 0,
-            "office_census": 89,
-            "full_tour": 99.3,
-            "floor_cleared_1": 91,
+            "office_census": 98.3,
+            "full_tour": 99.7,
+            "floor_cleared_1": 67.3,
             "floor_cleared_2": 100,
-            "floor_cleared_3": 17.7,
+            "floor_cleared_3": 51,
             "elites_1": 100,
-            "elites_2": 99.7,
-            "elites_3": 3,
+            "elites_2": 100,
+            "elites_3": 5.7,
             "elites_4": 0,
-            "jackpots_1": 90.7,
-            "jackpots_2": 15.7,
+            "jackpots_1": 88.3,
+            "jackpots_2": 12.7,
             "jackpots_3": 0,
             "rare_finds_1": 96,
-            "rare_finds_2": 20,
+            "rare_finds_2": 20.3,
             "rare_finds_3": 0,
             "rare_finds_4": 0,
             "adventures_1": 100,
@@ -3278,23 +3278,23 @@
             "gold_4": 0,
             "levels_1": 100,
             "levels_2": 100,
-            "levels_3": 21.7,
+            "levels_3": 50.3,
             "levels_4": 0.3,
             "levels_5": 0,
-            "knockouts_1": 87.3,
+            "knockouts_1": 38.7,
             "knockouts_2": 0,
             "knockouts_3": 0,
             "knockouts_4": 0,
             "rescues_1": 0,
             "rescues_2": 0,
             "rescues_3": 0,
-            "retreats_1": 2.3,
+            "retreats_1": 10.7,
             "retreats_2": 0,
             "retreats_3": 0,
             "retreats_4": 0,
             "potions_1": 100,
             "potions_2": 100,
-            "potions_3": 0,
+            "potions_3": 0.7,
             "potions_4": 0,
             "traps_1": 100,
             "traps_2": 100,
@@ -3325,7 +3325,7 @@
     {
       "policy": "undergeared-three-day",
       "heroes": 300,
-      "days": 30,
+      "days": 90,
       "reach": [
         {
           "level": 2,
@@ -3344,63 +3344,63 @@
         {
           "level": 8,
           "p10": 8.3,
-          "median": 10.4,
-          "p90": 11.9,
+          "median": 9.6,
+          "p90": 11.2,
           "reached": 300
         },
         {
           "level": 12,
-          "p10": 28.4,
-          "median": ">30",
-          "p90": ">30",
-          "reached": 53
+          "p10": 22.2,
+          "median": 25.7,
+          "p90": 29,
+          "reached": 300
         }
       ],
-      "finalLevelMedian": 11,
+      "finalLevelMedian": 30,
       "deathByBiome": {
         "server_room": {
-          "eligibleHeroDays": 2214,
-          "heroDaysWithDeath": 112,
-          "deathProbabilityPct": 5.1,
+          "eligibleHeroDays": 2142,
+          "heroDaysWithDeath": 13,
+          "deathProbabilityPct": 0.6,
           "wilson95Pct": [
-            4.2,
-            6.1
+            0.4,
+            1
           ],
-          "deathsPerEligibleHeroDay": 0.051
+          "deathsPerEligibleHeroDay": 0.006
         },
         "cafeteria_depths": {
-          "eligibleHeroDays": 2282,
-          "heroDaysWithDeath": 1867,
-          "deathProbabilityPct": 81.8,
+          "eligibleHeroDays": 21379,
+          "heroDaysWithDeath": 1723,
+          "deathProbabilityPct": 8.1,
           "wilson95Pct": [
-            80.2,
-            83.3
+            7.7,
+            8.4
           ],
-          "deathsPerEligibleHeroDay": 0.818
+          "deathsPerEligibleHeroDay": 0.081
         }
       },
       "stateSharePct": {
-        "exploring": 93.3,
-        "resting": 0.2,
-        "travelling": 0.5,
-        "dead": 1.8,
-        "sleeping": 4.1
+        "exploring": 95.2,
+        "resting": 2.4,
+        "travelling": 0.2,
+        "dead": 0.5,
+        "sleeping": 1.6
       },
       "firstInventorySleep": {
         "p10": 1.8,
         "median": 2.9,
-        "p90": 12.1,
-        "reached": 284
+        "p90": 18.6,
+        "reached": 296
       },
-      "gearPerDay": 4.7,
-      "usefulGearPerDay": 3.5,
+      "gearPerDay": 4.6,
+      "usefulGearPerDay": 4.3,
       "equippedUpgradesPerHero": 0,
       "potions": {
-        "acquiredPerHeroDay": 2.8,
-        "usedPerHeroDay": 2.3,
-        "fullStackFallbacksPerHeroDay": 2.3,
+        "acquiredPerHeroDay": 3.5,
+        "usedPerHeroDay": 3.3,
+        "fullStackFallbacksPerHeroDay": 1.2,
         "finalCount": {
-          "p10": 9,
+          "p10": 19,
           "median": 20,
           "p90": 20
         }
@@ -3408,18 +3408,18 @@
       "retreatsPerHeroDay": 0,
       "rescuesPerHeroDay": 0,
       "bestInSlot": {
-        "p10": ">30",
-        "median": ">30",
-        "p90": ">30",
+        "p10": ">90",
+        "median": ">90",
+        "p90": ">90",
         "reached": 0
       },
       "goldDayEnd": {
-        "median": 2695,
-        "p90": 3671
+        "median": 44056,
+        "p90": 47758
       },
-      "goldDay30": 2695,
-      "jackpotGoldShare": 3.3,
-      "elitesPerHeroDay": 0.85,
+      "goldDay30": 4053,
+      "jackpotGoldShare": 2.7,
+      "elitesPerHeroDay": 1.1,
       "bag": {
         "reach": [
           {
@@ -3445,34 +3445,34 @@
           },
           {
             "capacity": 20,
-            "p10": 9.5,
-            "median": 12.3,
-            "p90": 14.7,
+            "p10": 9.4,
+            "median": 12.1,
+            "p90": 12.9,
             "reached": 300
           }
         ],
-        "findsPerHero": 1.24,
-        "purchasesPerHero": 1.51,
+        "findsPerHero": 1.22,
+        "purchasesPerHero": 1.53,
         "goldSpentMedian": 2000
       },
       "xpLastDay": {
-        "p10": 154,
-        "median": 198,
-        "p90": 252,
-        "ratio": 1.64
+        "p10": 1627,
+        "median": 1938,
+        "p90": 2315,
+        "ratio": 1.42
       },
       "xpLast7Days": {
-        "p10": 1575,
-        "median": 2143,
-        "p90": 3514,
-        "ratio": 2.23
+        "p10": 12812,
+        "median": 13860,
+        "p90": 14759,
+        "ratio": 1.15
       },
       "achievements": {
         "day1": {
           "bands": {
             "common": 13,
-            "uncommon": 4,
-            "rare": 2,
+            "uncommon": 5,
+            "rare": 1,
             "legendary": 112
           },
           "monsterTiers": {
@@ -3667,7 +3667,7 @@
             "retreats_2": 0,
             "retreats_3": 0,
             "retreats_4": 0,
-            "potions_1": 8,
+            "potions_1": 21.3,
             "potions_2": 0,
             "potions_3": 0,
             "potions_4": 0,
@@ -3698,64 +3698,64 @@
         "day7": {
           "bands": {
             "common": 40,
-            "uncommon": 7,
-            "rare": 3,
+            "uncommon": 6,
+            "rare": 4,
             "legendary": 81
           },
           "monsterTiers": {
             "slay_paper_imp": [
               100,
               100,
-              79.7,
+              66,
               0,
               0
             ],
             "slay_rogue_roomba": [
               100,
               100,
-              80.7,
+              67,
               0,
               0
             ],
             "slay_stapler_mimic": [
               100,
               100,
-              80.3,
+              67.3,
               0,
               0
             ],
             "slay_dust_daemon": [
               100,
               100,
-              78.7,
+              65.3,
               0,
               0
             ],
             "slay_cable_serpent": [
-              97,
-              77.3,
-              26.7,
+              98,
+              84,
+              43,
               0,
               0
             ],
             "slay_overheated_rack": [
-              95.7,
-              75.3,
-              27.7,
+              96.7,
+              82.3,
+              44.7,
               0,
               0
             ],
             "slay_firewall_gremlin": [
-              96.3,
-              73.3,
-              27,
+              98,
+              83,
+              45,
               0,
               0
             ],
             "slay_legacy_mainframe": [
-              97.7,
-              73.3,
-              24,
+              98,
+              82.3,
+              43.7,
               0,
               0
             ],
@@ -3791,42 +3791,42 @@
           "shares": {
             "slay_paper_imp_1": 100,
             "slay_paper_imp_2": 100,
-            "slay_paper_imp_3": 79.7,
+            "slay_paper_imp_3": 66,
             "slay_paper_imp_4": 0,
             "slay_paper_imp_5": 0,
             "slay_rogue_roomba_1": 100,
             "slay_rogue_roomba_2": 100,
-            "slay_rogue_roomba_3": 80.7,
+            "slay_rogue_roomba_3": 67,
             "slay_rogue_roomba_4": 0,
             "slay_rogue_roomba_5": 0,
             "slay_stapler_mimic_1": 100,
             "slay_stapler_mimic_2": 100,
-            "slay_stapler_mimic_3": 80.3,
+            "slay_stapler_mimic_3": 67.3,
             "slay_stapler_mimic_4": 0,
             "slay_stapler_mimic_5": 0,
             "slay_dust_daemon_1": 100,
             "slay_dust_daemon_2": 100,
-            "slay_dust_daemon_3": 78.7,
+            "slay_dust_daemon_3": 65.3,
             "slay_dust_daemon_4": 0,
             "slay_dust_daemon_5": 0,
-            "slay_cable_serpent_1": 97,
-            "slay_cable_serpent_2": 77.3,
-            "slay_cable_serpent_3": 26.7,
+            "slay_cable_serpent_1": 98,
+            "slay_cable_serpent_2": 84,
+            "slay_cable_serpent_3": 43,
             "slay_cable_serpent_4": 0,
             "slay_cable_serpent_5": 0,
-            "slay_overheated_rack_1": 95.7,
-            "slay_overheated_rack_2": 75.3,
-            "slay_overheated_rack_3": 27.7,
+            "slay_overheated_rack_1": 96.7,
+            "slay_overheated_rack_2": 82.3,
+            "slay_overheated_rack_3": 44.7,
             "slay_overheated_rack_4": 0,
             "slay_overheated_rack_5": 0,
-            "slay_firewall_gremlin_1": 96.3,
-            "slay_firewall_gremlin_2": 73.3,
-            "slay_firewall_gremlin_3": 27,
+            "slay_firewall_gremlin_1": 98,
+            "slay_firewall_gremlin_2": 83,
+            "slay_firewall_gremlin_3": 45,
             "slay_firewall_gremlin_4": 0,
             "slay_firewall_gremlin_5": 0,
-            "slay_legacy_mainframe_1": 97.7,
-            "slay_legacy_mainframe_2": 73.3,
-            "slay_legacy_mainframe_3": 24,
+            "slay_legacy_mainframe_1": 98,
+            "slay_legacy_mainframe_2": 82.3,
+            "slay_legacy_mainframe_3": 43.7,
             "slay_legacy_mainframe_4": 0,
             "slay_legacy_mainframe_5": 0,
             "slay_coffee_slime_1": 0,
@@ -3851,23 +3851,23 @@
             "slay_leftovers_hydra_5": 0,
             "office_census": 0,
             "full_tour": 0,
-            "floor_cleared_1": 60,
-            "floor_cleared_2": 14.7,
+            "floor_cleared_1": 40.3,
+            "floor_cleared_2": 25.3,
             "floor_cleared_3": 0,
             "elites_1": 99.7,
-            "elites_2": 62,
+            "elites_2": 63.7,
             "elites_3": 0,
             "elites_4": 0,
-            "jackpots_1": 61.3,
+            "jackpots_1": 59.7,
             "jackpots_2": 1,
             "jackpots_3": 0,
-            "rare_finds_1": 71.7,
+            "rare_finds_1": 72,
             "rare_finds_2": 0.3,
             "rare_finds_3": 0,
             "rare_finds_4": 0,
             "adventures_1": 100,
             "adventures_2": 100,
-            "adventures_3": 83.7,
+            "adventures_3": 84.3,
             "adventures_4": 0,
             "adventures_5": 0,
             "finds_1": 100,
@@ -3875,7 +3875,7 @@
             "finds_3": 0,
             "finds_4": 0,
             "gold_1": 100,
-            "gold_2": 35.7,
+            "gold_2": 54,
             "gold_3": 0,
             "gold_4": 0,
             "levels_1": 100,
@@ -3883,23 +3883,23 @@
             "levels_3": 0,
             "levels_4": 0,
             "levels_5": 0,
-            "knockouts_1": 33.7,
+            "knockouts_1": 4.3,
             "knockouts_2": 0,
             "knockouts_3": 0,
             "knockouts_4": 0,
             "rescues_1": 0,
             "rescues_2": 0,
             "rescues_3": 0,
-            "retreats_1": 5.7,
+            "retreats_1": 9.7,
             "retreats_2": 0,
             "retreats_3": 0,
             "retreats_4": 0,
-            "potions_1": 96.3,
-            "potions_2": 56.3,
+            "potions_1": 98.7,
+            "potions_2": 76.7,
             "potions_3": 0,
             "potions_4": 0,
             "traps_1": 100,
-            "traps_2": 5,
+            "traps_2": 6,
             "traps_3": 0,
             "traps_4": 0,
             "breaks_1": 100,
@@ -3910,7 +3910,7 @@
             "trips_3": 0,
             "bags_1": 100,
             "bags_2": 100,
-            "bags_3": 84,
+            "bags_3": 84.3,
             "bags_4": 0,
             "sales_1": 0,
             "sales_2": 0,
@@ -3924,38 +3924,38 @@
         },
         "day30": {
           "bands": {
-            "common": 70,
-            "uncommon": 2,
+            "common": 78,
+            "uncommon": 0,
             "rare": 6,
-            "legendary": 53
+            "legendary": 47
           },
           "monsterTiers": {
             "slay_paper_imp": [
               100,
               100,
               100,
-              99.7,
+              79,
               0
             ],
             "slay_rogue_roomba": [
               100,
               100,
               100,
-              100,
+              82.7,
               0
             ],
             "slay_stapler_mimic": [
               100,
               100,
               100,
-              99.7,
+              82,
               0
             ],
             "slay_dust_daemon": [
               100,
               100,
               100,
-              99.7,
+              80.7,
               0
             ],
             "slay_cable_serpent": [
@@ -3988,30 +3988,30 @@
             ],
             "slay_coffee_slime": [
               100,
-              96,
-              9.7,
-              0,
+              100,
+              88.7,
+              4.3,
               0
             ],
             "slay_crumb_golem": [
               100,
-              97,
-              9.7,
-              0,
+              100,
+              88.3,
+              4.7,
               0
             ],
             "slay_microwave_wraith": [
-              99.7,
-              91.7,
-              9.7,
-              0,
+              100,
+              100,
+              87,
+              2.7,
               0
             ],
             "slay_leftovers_hydra": [
               100,
-              75.3,
-              4.3,
-              0,
+              100,
+              84.7,
+              1.3,
               0
             ]
           },
@@ -4019,22 +4019,22 @@
             "slay_paper_imp_1": 100,
             "slay_paper_imp_2": 100,
             "slay_paper_imp_3": 100,
-            "slay_paper_imp_4": 99.7,
+            "slay_paper_imp_4": 79,
             "slay_paper_imp_5": 0,
             "slay_rogue_roomba_1": 100,
             "slay_rogue_roomba_2": 100,
             "slay_rogue_roomba_3": 100,
-            "slay_rogue_roomba_4": 100,
+            "slay_rogue_roomba_4": 82.7,
             "slay_rogue_roomba_5": 0,
             "slay_stapler_mimic_1": 100,
             "slay_stapler_mimic_2": 100,
             "slay_stapler_mimic_3": 100,
-            "slay_stapler_mimic_4": 99.7,
+            "slay_stapler_mimic_4": 82,
             "slay_stapler_mimic_5": 0,
             "slay_dust_daemon_1": 100,
             "slay_dust_daemon_2": 100,
             "slay_dust_daemon_3": 100,
-            "slay_dust_daemon_4": 99.7,
+            "slay_dust_daemon_4": 80.7,
             "slay_dust_daemon_5": 0,
             "slay_cable_serpent_1": 100,
             "slay_cable_serpent_2": 100,
@@ -4057,45 +4057,45 @@
             "slay_legacy_mainframe_4": 0,
             "slay_legacy_mainframe_5": 0,
             "slay_coffee_slime_1": 100,
-            "slay_coffee_slime_2": 96,
-            "slay_coffee_slime_3": 9.7,
-            "slay_coffee_slime_4": 0,
+            "slay_coffee_slime_2": 100,
+            "slay_coffee_slime_3": 88.7,
+            "slay_coffee_slime_4": 4.3,
             "slay_coffee_slime_5": 0,
             "slay_crumb_golem_1": 100,
-            "slay_crumb_golem_2": 97,
-            "slay_crumb_golem_3": 9.7,
-            "slay_crumb_golem_4": 0,
+            "slay_crumb_golem_2": 100,
+            "slay_crumb_golem_3": 88.3,
+            "slay_crumb_golem_4": 4.7,
             "slay_crumb_golem_5": 0,
-            "slay_microwave_wraith_1": 99.7,
-            "slay_microwave_wraith_2": 91.7,
-            "slay_microwave_wraith_3": 9.7,
-            "slay_microwave_wraith_4": 0,
+            "slay_microwave_wraith_1": 100,
+            "slay_microwave_wraith_2": 100,
+            "slay_microwave_wraith_3": 87,
+            "slay_microwave_wraith_4": 2.7,
             "slay_microwave_wraith_5": 0,
             "slay_leftovers_hydra_1": 100,
-            "slay_leftovers_hydra_2": 75.3,
-            "slay_leftovers_hydra_3": 4.3,
-            "slay_leftovers_hydra_4": 0,
+            "slay_leftovers_hydra_2": 100,
+            "slay_leftovers_hydra_3": 84.7,
+            "slay_leftovers_hydra_4": 1.3,
             "slay_leftovers_hydra_5": 0,
-            "office_census": 99.7,
+            "office_census": 100,
             "full_tour": 100,
             "floor_cleared_1": 100,
             "floor_cleared_2": 100,
-            "floor_cleared_3": 3.7,
+            "floor_cleared_3": 79.7,
             "elites_1": 100,
             "elites_2": 100,
-            "elites_3": 56.3,
+            "elites_3": 53,
             "elites_4": 0,
             "jackpots_1": 99.7,
-            "jackpots_2": 65.7,
+            "jackpots_2": 53.7,
             "jackpots_3": 0,
-            "rare_finds_1": 100,
-            "rare_finds_2": 67,
+            "rare_finds_1": 99.7,
+            "rare_finds_2": 61.3,
             "rare_finds_3": 0,
             "rare_finds_4": 0,
             "adventures_1": 100,
             "adventures_2": 100,
             "adventures_3": 100,
-            "adventures_4": 98,
+            "adventures_4": 85.7,
             "adventures_5": 0,
             "finds_1": 100,
             "finds_2": 100,
@@ -4107,27 +4107,27 @@
             "gold_4": 0,
             "levels_1": 100,
             "levels_2": 100,
-            "levels_3": 17.7,
-            "levels_4": 0,
+            "levels_3": 92.7,
+            "levels_4": 3,
             "levels_5": 0,
             "knockouts_1": 100,
-            "knockouts_2": 100,
+            "knockouts_2": 81,
             "knockouts_3": 0,
             "knockouts_4": 0,
             "rescues_1": 0,
             "rescues_2": 0,
             "rescues_3": 0,
-            "retreats_1": 33.7,
-            "retreats_2": 0,
+            "retreats_1": 72,
+            "retreats_2": 2.3,
             "retreats_3": 0,
             "retreats_4": 0,
             "potions_1": 100,
             "potions_2": 100,
-            "potions_3": 4.7,
+            "potions_3": 83.3,
             "potions_4": 0,
             "traps_1": 100,
             "traps_2": 100,
-            "traps_3": 0.3,
+            "traps_3": 0.7,
             "traps_4": 0,
             "breaks_1": 100,
             "breaks_2": 100,
@@ -4154,7 +4154,7 @@
     {
       "policy": "safe-farming-three-day",
       "heroes": 300,
-      "days": 30,
+      "days": 90,
       "reach": [
         {
           "level": 2,
@@ -4179,13 +4179,13 @@
         },
         {
           "level": 12,
-          "p10": ">30",
-          "median": ">30",
-          "p90": ">30",
-          "reached": 0
+          "p10": 55.8,
+          "median": 58.3,
+          "p90": 61.1,
+          "reached": 300
         }
       ],
-      "finalLevelMedian": 9,
+      "finalLevelMedian": 14,
       "deathByBiome": {
         "server_room": {
           "eligibleHeroDays": 0,
@@ -4203,25 +4203,25 @@
         }
       },
       "stateSharePct": {
-        "exploring": 93.4,
+        "exploring": 97,
         "resting": 0,
         "travelling": 0,
         "dead": 0,
-        "sleeping": 6.6
+        "sleeping": 3
       },
       "firstInventorySleep": {
         "p10": 1.8,
         "median": 2.9,
         "p90": 9.1,
-        "reached": 297
+        "reached": 300
       },
-      "gearPerDay": 4.8,
-      "usefulGearPerDay": 0.3,
-      "equippedUpgradesPerHero": 4.8,
+      "gearPerDay": 5,
+      "usefulGearPerDay": 0.1,
+      "equippedUpgradesPerHero": 5.3,
       "potions": {
-        "acquiredPerHeroDay": 0.6,
+        "acquiredPerHeroDay": 0.2,
         "usedPerHeroDay": 0,
-        "fullStackFallbacksPerHeroDay": 4.8,
+        "fullStackFallbacksPerHeroDay": 5.4,
         "finalCount": {
           "p10": 20,
           "median": 20,
@@ -4231,18 +4231,18 @@
       "retreatsPerHeroDay": 0,
       "rescuesPerHeroDay": 0,
       "bestInSlot": {
-        "p10": ">30",
-        "median": ">30",
-        "p90": ">30",
+        "p10": ">90",
+        "median": ">90",
+        "p90": ">90",
         "reached": 0
       },
       "goldDayEnd": {
-        "median": 2077,
-        "p90": 4008
+        "median": 10974,
+        "p90": 12913
       },
       "goldDay30": 2077,
-      "jackpotGoldShare": 4,
-      "elitesPerHeroDay": 0.82,
+      "jackpotGoldShare": 4.1,
+      "elitesPerHeroDay": 0.84,
       "bag": {
         "reach": [
           {
@@ -4279,23 +4279,23 @@
         "goldSpentMedian": 2000
       },
       "xpLastDay": {
-        "p10": 151,
-        "median": 196,
+        "p10": 152,
+        "median": 192,
         "p90": 242,
-        "ratio": 1.6
+        "ratio": 1.59
       },
       "xpLast7Days": {
-        "p10": 1218,
-        "median": 1351,
-        "p90": 1493,
-        "ratio": 1.23
+        "p10": 1222,
+        "median": 1356,
+        "p90": 1475,
+        "ratio": 1.21
       },
       "achievements": {
         "day1": {
           "bands": {
             "common": 13,
-            "uncommon": 4,
-            "rare": 2,
+            "uncommon": 5,
+            "rare": 1,
             "legendary": 112
           },
           "monsterTiers": {
@@ -4490,7 +4490,7 @@
             "retreats_2": 0,
             "retreats_3": 0,
             "retreats_4": 0,
-            "potions_1": 7,
+            "potions_1": 19.7,
             "potions_2": 0,
             "potions_3": 0,
             "potions_4": 0,
@@ -4521,8 +4521,8 @@
         "day7": {
           "bands": {
             "common": 29,
-            "uncommon": 0,
-            "rare": 3,
+            "uncommon": 1,
+            "rare": 2,
             "legendary": 99
           },
           "monsterTiers": {
@@ -4717,7 +4717,7 @@
             "retreats_2": 0,
             "retreats_3": 0,
             "retreats_4": 0,
-            "potions_1": 7.3,
+            "potions_1": 23.7,
             "potions_2": 0,
             "potions_3": 0,
             "potions_4": 0,
@@ -4748,8 +4748,8 @@
         "day30": {
           "bands": {
             "common": 41,
-            "uncommon": 1,
-            "rare": 1,
+            "uncommon": 2,
+            "rare": 0,
             "legendary": 88
           },
           "monsterTiers": {
@@ -4944,7 +4944,7 @@
             "retreats_2": 0,
             "retreats_3": 0,
             "retreats_4": 0,
-            "potions_1": 7.3,
+            "potions_1": 23.7,
             "potions_2": 0,
             "potions_3": 0,
             "potions_4": 0,

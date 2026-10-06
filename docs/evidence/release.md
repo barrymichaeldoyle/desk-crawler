@@ -1,6 +1,6 @@
 # Release preparation — 2026-10-05
 
-**Submission preparation is substantially complete, but the application is not ready to send.** Listing updates, companion deployment and author-entitlement verification are complete; the recording/hosted video remains open. Owner/sender is confirmed, and Barry plans to promote TRMNL at launch. [Engineering checks](engineering-readiness.md) now prove synthetic cloud recovery, interrupted work, failed-notice exhaustion and lifecycle edges; four fixes and `No effect` were [deployed on October 6](engineering-deploy.md). Ongoing production capture, real-provider verification and funding decisions remain launch gates. No review submission, media publication or reviewer contact was performed.
+**Submission preparation is substantially complete, but the application is not ready to send.** Listing updates, companion deployment and author-entitlement verification are complete. Barry recorded and hosted the install video and has put its link in the email he is drafting (2026-10-07). Owner/sender is confirmed, and Barry plans to promote TRMNL at launch. [Engineering checks](engineering-readiness.md) now prove synthetic cloud recovery, interrupted work, failed-notice exhaustion and lifecycle edges; four fixes and `No effect` were [deployed on October 6](engineering-deploy.md). Ongoing production capture, real-provider verification and funding decisions remain launch gates. No review submission, media publication or reviewer contact was performed.
 
 ## Release identity
 
@@ -35,9 +35,9 @@ The approved D54 recap release passed 202 tests, all 200 OG/X previews, the actu
 | Listing name, categories, lifecycle URLs and knowledge-base URL | Saved fields verified; categories updated, existing lifecycle/help URLs remain correct ([evidence](listing-polish-deploy.md)) |
 | Description | 33-character description saved and verified on 2026-10-05: `A quiet office RPG for your TRMNL`; games + entertainment categories saved. Live editor currently allows 50 characters; published docs say 35 |
 | Featured image | Regenerated from the existing live installation; new 800×480 image verified on the actual install page ([evidence](listing-polish-deploy.md)). Fictional candidate remains the landing sample |
-| Install video | [Recording checklist](../release/recording-checklist.md) ready; first-signup recording and reviewer-accessible hosting still needed |
+| Install video | Done 2026-10-07: Barry recorded and hosted the install video; the link is in his email draft |
 | Reviewer testing | Supported reviewer-owned email/Google/GitHub signup documented; no owner credentials or auth bypass |
-| Review email | Draft updated for keepsakes and bag sleep; owner/sender barry@barrymichaeldoyle.com confirmed. Barry plans to promote TRMNL at launch; channels/timing unspecified. Video URL remains open |
+| Review email | Done 2026-10-07: Barry is finishing the final email himself, video link included; owner/sender barry@barrymichaeldoyle.com. Not yet sent |
 | Author entitlement | Complete: registered TRMNL X, Developer Perks available and lifetime TRMNL+ observed in the signed-in account ([evidence](author-entitlement.md)) |
 | Submit for Review and email | Not performed; explicit authorization required |
 | Creator Fund | Current public rules and zero-payout assessment recorded; ask TRMNL to confirm this Third Party game's eligibility/onboarding in the submission email |
@@ -53,7 +53,7 @@ TRMNL's [current Going Live instructions](https://docs.trmnl.com/go/plugin-marke
 | Interrupted work and delivery failure | Synthetic cloud simulation/ranking/deletion continuation, potion receipt replay and live alert/recovery exhaustion passed. Actual Clerk provider failure/deletion is not certified; legacy in-flight native cursors remain a recovery limitation |
 | Lifecycle/deletion edge cases | Actual preview routes passed expired attempts, delayed callback, wrong owner, lost callback, tombstone and fresh-UUID reinstall checks. Signed real-provider OAuth/JWT/deletion delivery remains open |
 | Operational costs/health | Actual headroom and post-deploy logs inspected. Choose launch scale/Worker plan and Convex spending threshold with zero assumed payouts; current $5 disable threshold is below the 1,000-installation scenario |
-| Balance interpretation | Extended v4 reports are complete; early Cafeteria deaths and late upgrade saturation need an explicit tuning decision, not a silent numeric patch |
+| Balance interpretation | Decided 2026-10-07 (D71): content v2 raises the potion/rest thresholds to 50%/35%; late upgrade saturation accepted for v1.0. Local only: deploy and switch the live world to v2 between runs ([evidence](balance.md)) |
 | Marketplace approval | External review; submission does not establish approval or Creator Fund qualification |
 
 Keep these gates visible even though the submission form does not request them. Approval can lead to soft launch.

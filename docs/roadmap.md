@@ -40,7 +40,7 @@ Gate: [product acceptance](product.md), [quality checks](quality.md), recorded d
 Runs from submission through the first weeks of public play. Patch releases only.
 
 - Live monitoring and protected capture (the inactive [hourly capture template](../tools/recovery/checkpoint-workflow.yml.txt)), real-provider deletion/expiry/reinstall proof, funding decision O11 from measured costs.
-- Measured balance passes under a new content version. D61 numbers are measurement starting points: watch three-day/seven-day sleep share and the level-8 date for weekly managers (harness: day 17).
+- Measured balance passes under a new content version. First one prepared 2026-10-07: content v2 (D71) raises the auto-potion threshold to 50% and the rest threshold to 35% so a level-8 hero stops walking into the Cafeteria one hit from a knockout; late upgrade saturation is accepted until v1.1 affixes and v2.0 upgrades. D61 numbers are measurement starting points: watch three-day/seven-day sleep share and the level-8 date for weekly managers (harness: day 17).
 - Physical checks that were waived or unverified: portrait display, keepsake claim path.
 - Listing, help and companion copy from reviewer and first-player feedback. Done 2026-10-07: potion heal amount on the help and Bag pages. Also done: the tick detail records `potionHealing` and the change row shows `+N HP from potion`, so an automatic drink is no longer hidden inside net HP (additive optional field, same simulation version; older logs simply omit it).
 - Colour (BWRY) device templates are a candidate here only if they are a pure template change; previews already exist (D62). Anything that changes payload meaning waits.

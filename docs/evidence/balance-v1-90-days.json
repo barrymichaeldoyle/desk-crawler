@@ -4,9 +4,9 @@
     "contentVersion": "v1",
     "simulationVersion": 1,
     "heroes": 300,
-    "days": 30,
-    "ticks": 2880,
-    "seconds": 80.553,
+    "days": 90,
+    "ticks": 8640,
+    "seconds": 288.682,
     "cumulativeXpToLevel8": 3608,
     "deathDenominator": "hero-days with at least one exploring/resting tick in the biome; multiple deaths count once for probability",
     "uncertainty": "Wilson 95% descriptive interval; repeated days per seeded hero are correlated, not a player forecast"
@@ -15,7 +15,7 @@
     {
       "policy": "unattended",
       "heroes": 300,
-      "days": 30,
+      "days": 90,
       "reach": [
         {
           "level": 2,
@@ -27,22 +27,22 @@
         {
           "level": 4,
           "p10": 2.2,
-          "median": ">30",
-          "p90": ">30",
+          "median": ">90",
+          "p90": ">90",
           "reached": 113
         },
         {
           "level": 8,
-          "p10": ">30",
-          "median": ">30",
-          "p90": ">30",
+          "p10": ">90",
+          "median": ">90",
+          "p90": ">90",
           "reached": 0
         },
         {
           "level": 12,
-          "p10": ">30",
-          "median": ">30",
-          "p90": ">30",
+          "p10": ">90",
+          "median": ">90",
+          "p90": ">90",
           "reached": 0
         }
       ],
@@ -64,11 +64,11 @@
         }
       },
       "stateSharePct": {
-        "exploring": 8.2,
+        "exploring": 2.7,
         "resting": 0,
         "travelling": 0,
         "dead": 0,
-        "sleeping": 91.8
+        "sleeping": 97.3
       },
       "firstInventorySleep": {
         "p10": 1.4,
@@ -76,11 +76,11 @@
         "p90": 3.7,
         "reached": 300
       },
-      "gearPerDay": 0.4,
-      "usefulGearPerDay": 0.3,
+      "gearPerDay": 0.1,
+      "usefulGearPerDay": 0.1,
       "equippedUpgradesPerHero": 0,
       "potions": {
-        "acquiredPerHeroDay": 0.4,
+        "acquiredPerHeroDay": 0.1,
         "usedPerHeroDay": 0,
         "fullStackFallbacksPerHeroDay": 0,
         "finalCount": {
@@ -92,9 +92,9 @@
       "retreatsPerHeroDay": 0,
       "rescuesPerHeroDay": 0,
       "bestInSlot": {
-        "p10": ">30",
-        "median": ">30",
-        "p90": ">30",
+        "p10": ">90",
+        "median": ">90",
+        "p90": ">90",
         "reached": 0
       },
       "goldDayEnd": {
@@ -103,7 +103,7 @@
       },
       "goldDay30": 225,
       "jackpotGoldShare": 3,
-      "elitesPerHeroDay": 0.07,
+      "elitesPerHeroDay": 0.02,
       "bag": {
         "reach": [
           {
@@ -117,21 +117,21 @@
             "capacity": 13,
             "p10": 0.3,
             "median": 2.7,
-            "p90": ">30",
+            "p90": ">90",
             "reached": 154
           },
           {
             "capacity": 16,
-            "p10": ">30",
-            "median": ">30",
-            "p90": ">30",
+            "p10": ">90",
+            "median": ">90",
+            "p90": ">90",
             "reached": 23
           },
           {
             "capacity": 20,
-            "p10": ">30",
-            "median": ">30",
-            "p90": ">30",
+            "p10": ">90",
+            "median": ">90",
+            "p90": ">90",
             "reached": 0
           }
         ],
@@ -838,7 +838,7 @@
     {
       "policy": "daily",
       "heroes": 300,
-      "days": 30,
+      "days": 90,
       "reach": [
         {
           "level": 2,
@@ -869,7 +869,7 @@
           "reached": 300
         }
       ],
-      "finalLevelMedian": 19,
+      "finalLevelMedian": 32,
       "deathByBiome": {
         "server_room": {
           "eligibleHeroDays": 1893,
@@ -882,39 +882,39 @@
           "deathsPerEligibleHeroDay": 0.008
         },
         "cafeteria_depths": {
-          "eligibleHeroDays": 6633,
+          "eligibleHeroDays": 24633,
           "heroDaysWithDeath": 717,
-          "deathProbabilityPct": 10.8,
+          "deathProbabilityPct": 2.9,
           "wilson95Pct": [
-            10.1,
-            11.6
+            2.7,
+            3.1
           ],
-          "deathsPerEligibleHeroDay": 0.11
+          "deathsPerEligibleHeroDay": 0.03
         }
       },
       "stateSharePct": {
-        "exploring": 97.3,
-        "resting": 1.7,
-        "travelling": 0.3,
-        "dead": 0.7,
+        "exploring": 99.1,
+        "resting": 0.6,
+        "travelling": 0.1,
+        "dead": 0.2,
         "sleeping": 0
       },
       "firstInventorySleep": {
-        "p10": ">30",
-        "median": ">30",
-        "p90": ">30",
+        "p10": ">90",
+        "median": ">90",
+        "p90": ">90",
         "reached": 4
       },
-      "gearPerDay": 4.7,
-      "usefulGearPerDay": 0.5,
-      "equippedUpgradesPerHero": 10.1,
+      "gearPerDay": 4.9,
+      "usefulGearPerDay": 0.2,
+      "equippedUpgradesPerHero": 10.9,
       "potions": {
-        "acquiredPerHeroDay": 4.2,
-        "usedPerHeroDay": 3.7,
-        "fullStackFallbacksPerHeroDay": 0.5,
+        "acquiredPerHeroDay": 1.6,
+        "usedPerHeroDay": 1.4,
+        "fullStackFallbacksPerHeroDay": 3.2,
         "finalCount": {
-          "p10": 13,
-          "median": 19,
+          "p10": 20,
+          "median": 20,
           "p90": 20
         }
       },
@@ -922,17 +922,17 @@
       "rescuesPerHeroDay": 0,
       "bestInSlot": {
         "p10": 18.2,
-        "median": ">30",
-        "p90": ">30",
-        "reached": 102
+        "median": 36.9,
+        "p90": 65.3,
+        "reached": 288
       },
       "goldDayEnd": {
-        "median": 13366,
-        "p90": 14833
+        "median": 57246,
+        "p90": 59020
       },
       "goldDay30": 13366,
-      "jackpotGoldShare": 2.6,
-      "elitesPerHeroDay": 1.16,
+      "jackpotGoldShare": 2.9,
+      "elitesPerHeroDay": 1.25,
       "bag": {
         "reach": [
           {
@@ -969,16 +969,16 @@
         "goldSpentMedian": 2150
       },
       "xpLastDay": {
-        "p10": 1636,
-        "median": 1966,
-        "p90": 2368,
-        "ratio": 1.45
+        "p10": 1645,
+        "median": 1947,
+        "p90": 2318,
+        "ratio": 1.41
       },
       "xpLast7Days": {
-        "p10": 13061,
-        "median": 13992,
-        "p90": 14808,
-        "ratio": 1.13
+        "p10": 12955,
+        "median": 13907,
+        "p90": 14763,
+        "ratio": 1.14
       },
       "achievements": {
         "day1": {
@@ -1667,7 +1667,7 @@
     {
       "policy": "three-day",
       "heroes": 300,
-      "days": 30,
+      "days": 90,
       "reach": [
         {
           "level": 2,
@@ -1698,7 +1698,7 @@
           "reached": 300
         }
       ],
-      "finalLevelMedian": 18,
+      "finalLevelMedian": 32,
       "deathByBiome": {
         "server_room": {
           "eligibleHeroDays": 2107,
@@ -1711,39 +1711,39 @@
           "deathsPerEligibleHeroDay": 0.006
         },
         "cafeteria_depths": {
-          "eligibleHeroDays": 5157,
+          "eligibleHeroDays": 23156,
           "heroDaysWithDeath": 544,
-          "deathProbabilityPct": 10.5,
+          "deathProbabilityPct": 2.3,
           "wilson95Pct": [
-            9.7,
-            11.4
+            2.2,
+            2.6
           ],
-          "deathsPerEligibleHeroDay": 0.105
+          "deathsPerEligibleHeroDay": 0.023
         }
       },
       "stateSharePct": {
-        "exploring": 94,
-        "resting": 1.3,
-        "travelling": 0.2,
-        "dead": 0.5,
-        "sleeping": 4
+        "exploring": 97.6,
+        "resting": 0.4,
+        "travelling": 0.1,
+        "dead": 0.2,
+        "sleeping": 1.8
       },
       "firstInventorySleep": {
         "p10": 1.8,
         "median": 2.9,
         "p90": 18.7,
-        "reached": 276
+        "reached": 297
       },
-      "gearPerDay": 4.6,
-      "usefulGearPerDay": 0.8,
-      "equippedUpgradesPerHero": 8.8,
+      "gearPerDay": 4.8,
+      "usefulGearPerDay": 0.3,
+      "equippedUpgradesPerHero": 10,
       "potions": {
-        "acquiredPerHeroDay": 3.9,
-        "usedPerHeroDay": 3.6,
-        "fullStackFallbacksPerHeroDay": 0.9,
+        "acquiredPerHeroDay": 1.7,
+        "usedPerHeroDay": 1.5,
+        "fullStackFallbacksPerHeroDay": 3.1,
         "finalCount": {
-          "p10": 2,
-          "median": 12,
+          "p10": 20,
+          "median": 20,
           "p90": 20
         }
       },
@@ -1751,17 +1751,17 @@
       "rescuesPerHeroDay": 0,
       "bestInSlot": {
         "p10": 27.5,
-        "median": ">30",
-        "p90": ">30",
-        "reached": 38
+        "median": 42.9,
+        "p90": 75,
+        "reached": 283
       },
       "goldDayEnd": {
-        "median": 10732,
-        "p90": 12968
+        "median": 54158,
+        "p90": 56705
       },
       "goldDay30": 10732,
-      "jackpotGoldShare": 2.6,
-      "elitesPerHeroDay": 1.07,
+      "jackpotGoldShare": 2.9,
+      "elitesPerHeroDay": 1.21,
       "bag": {
         "reach": [
           {
@@ -1798,16 +1798,16 @@
         "goldSpentMedian": 2000
       },
       "xpLastDay": {
-        "p10": 1623,
-        "median": 1958,
-        "p90": 2340,
-        "ratio": 1.44
+        "p10": 1627,
+        "median": 1938,
+        "p90": 2315,
+        "ratio": 1.42
       },
       "xpLast7Days": {
-        "p10": 12783,
-        "median": 13753,
-        "p90": 14626,
-        "ratio": 1.14
+        "p10": 12812,
+        "median": 13860,
+        "p90": 14759,
+        "ratio": 1.15
       },
       "achievements": {
         "day1": {
@@ -2496,7 +2496,7 @@
     {
       "policy": "seven-day",
       "heroes": 300,
-      "days": 30,
+      "days": 90,
       "reach": [
         {
           "level": 2,
@@ -2522,15 +2522,15 @@
         {
           "level": 12,
           "p10": 25.4,
-          "median": ">30",
-          "p90": ">30",
-          "reached": 65
+          "median": 35.8,
+          "p90": 42.6,
+          "reached": 300
         }
       ],
-      "finalLevelMedian": 10,
+      "finalLevelMedian": 25,
       "deathByBiome": {
         "server_room": {
-          "eligibleHeroDays": 2569,
+          "eligibleHeroDays": 2577,
           "heroDaysWithDeath": 6,
           "deathProbabilityPct": 0.2,
           "wilson95Pct": [
@@ -2540,22 +2540,22 @@
           "deathsPerEligibleHeroDay": 0.002
         },
         "cafeteria_depths": {
-          "eligibleHeroDays": 1023,
-          "heroDaysWithDeath": 322,
-          "deathProbabilityPct": 31.5,
+          "eligibleHeroDays": 14002,
+          "heroDaysWithDeath": 427,
+          "deathProbabilityPct": 3,
           "wilson95Pct": [
-            28.7,
-            34.4
+            2.8,
+            3.3
           ],
-          "deathsPerEligibleHeroDay": 0.315
+          "deathsPerEligibleHeroDay": 0.03
         }
       },
       "stateSharePct": {
-        "exploring": 51.7,
-        "resting": 0.2,
-        "travelling": 0.1,
-        "dead": 0.3,
-        "sleeping": 47.7
+        "exploring": 58.2,
+        "resting": 0.4,
+        "travelling": 0,
+        "dead": 0.1,
+        "sleeping": 41.2
       },
       "firstInventorySleep": {
         "p10": 1.8,
@@ -2563,34 +2563,34 @@
         "p90": 4.4,
         "reached": 300
       },
-      "gearPerDay": 2.5,
-      "usefulGearPerDay": 0.7,
-      "equippedUpgradesPerHero": 6.1,
+      "gearPerDay": 2.9,
+      "usefulGearPerDay": 0.3,
+      "equippedUpgradesPerHero": 9.3,
       "potions": {
-        "acquiredPerHeroDay": 1.8,
-        "usedPerHeroDay": 1.6,
-        "fullStackFallbacksPerHeroDay": 0.9,
+        "acquiredPerHeroDay": 1.6,
+        "usedPerHeroDay": 1.4,
+        "fullStackFallbacksPerHeroDay": 1.2,
         "finalCount": {
-          "p10": 0,
-          "median": 5,
+          "p10": 20,
+          "median": 20,
           "p90": 20
         }
       },
       "retreatsPerHeroDay": 0,
       "rescuesPerHeroDay": 0,
       "bestInSlot": {
-        "p10": ">30",
-        "median": ">30",
-        "p90": ">30",
-        "reached": 2
+        "p10": 49.1,
+        "median": 70.7,
+        "p90": ">90",
+        "reached": 193
       },
       "goldDayEnd": {
-        "median": 2372,
-        "p90": 5034
+        "median": 27273,
+        "p90": 31623
       },
       "goldDay30": 2372,
       "jackpotGoldShare": 2.8,
-      "elitesPerHeroDay": 0.53,
+      "elitesPerHeroDay": 0.7,
       "bag": {
         "reach": [
           {
@@ -2619,24 +2619,24 @@
             "p10": 16.3,
             "median": 21.8,
             "p90": 28.7,
-            "reached": 292
+            "reached": 300
           }
         ],
-        "findsPerHero": 1.32,
-        "purchasesPerHero": 1.38,
+        "findsPerHero": 1.34,
+        "purchasesPerHero": 1.39,
         "goldSpentMedian": 2000
       },
       "xpLastDay": {
-        "p10": 188,
-        "median": 1652,
-        "p90": 2150,
-        "ratio": 11.44
+        "p10": 0,
+        "median": 0,
+        "p90": 1783,
+        "ratio": null
       },
       "xpLast7Days": {
-        "p10": 1388,
-        "median": 3214,
-        "p90": 5869,
-        "ratio": 4.23
+        "p10": 5984,
+        "median": 8296,
+        "p90": 10997,
+        "ratio": 1.84
       },
       "achievements": {
         "day1": {
@@ -3325,7 +3325,7 @@
     {
       "policy": "undergeared-three-day",
       "heroes": 300,
-      "days": 30,
+      "days": 90,
       "reach": [
         {
           "level": 2,
@@ -3351,12 +3351,12 @@
         {
           "level": 12,
           "p10": 28.4,
-          "median": ">30",
-          "p90": ">30",
-          "reached": 53
+          "median": 32.5,
+          "p90": 36.7,
+          "reached": 300
         }
       ],
-      "finalLevelMedian": 11,
+      "finalLevelMedian": 28,
       "deathByBiome": {
         "server_room": {
           "eligibleHeroDays": 2214,
@@ -3369,38 +3369,38 @@
           "deathsPerEligibleHeroDay": 0.051
         },
         "cafeteria_depths": {
-          "eligibleHeroDays": 2282,
-          "heroDaysWithDeath": 1867,
-          "deathProbabilityPct": 81.8,
+          "eligibleHeroDays": 18808,
+          "heroDaysWithDeath": 3048,
+          "deathProbabilityPct": 16.2,
           "wilson95Pct": [
-            80.2,
-            83.3
+            15.7,
+            16.7
           ],
-          "deathsPerEligibleHeroDay": 0.818
+          "deathsPerEligibleHeroDay": 0.162
         }
       },
       "stateSharePct": {
-        "exploring": 93.3,
-        "resting": 0.2,
-        "travelling": 0.5,
-        "dead": 1.8,
-        "sleeping": 4.1
+        "exploring": 95.7,
+        "resting": 1.3,
+        "travelling": 0.3,
+        "dead": 1,
+        "sleeping": 1.8
       },
       "firstInventorySleep": {
         "p10": 1.8,
         "median": 2.9,
         "p90": 12.1,
-        "reached": 284
+        "reached": 297
       },
       "gearPerDay": 4.7,
-      "usefulGearPerDay": 3.5,
+      "usefulGearPerDay": 4.2,
       "equippedUpgradesPerHero": 0,
       "potions": {
-        "acquiredPerHeroDay": 2.8,
-        "usedPerHeroDay": 2.3,
-        "fullStackFallbacksPerHeroDay": 2.3,
+        "acquiredPerHeroDay": 3.1,
+        "usedPerHeroDay": 2.9,
+        "fullStackFallbacksPerHeroDay": 1.8,
         "finalCount": {
-          "p10": 9,
+          "p10": 19,
           "median": 20,
           "p90": 20
         }
@@ -3408,18 +3408,18 @@
       "retreatsPerHeroDay": 0,
       "rescuesPerHeroDay": 0,
       "bestInSlot": {
-        "p10": ">30",
-        "median": ">30",
-        "p90": ">30",
+        "p10": ">90",
+        "median": ">90",
+        "p90": ">90",
         "reached": 0
       },
       "goldDayEnd": {
-        "median": 2695,
-        "p90": 3671
+        "median": 36554,
+        "p90": 40381
       },
       "goldDay30": 2695,
-      "jackpotGoldShare": 3.3,
-      "elitesPerHeroDay": 0.85,
+      "jackpotGoldShare": 2.8,
+      "elitesPerHeroDay": 1.06,
       "bag": {
         "reach": [
           {
@@ -3456,16 +3456,16 @@
         "goldSpentMedian": 2000
       },
       "xpLastDay": {
-        "p10": 154,
-        "median": 198,
-        "p90": 252,
-        "ratio": 1.64
+        "p10": 1627,
+        "median": 1938,
+        "p90": 2315,
+        "ratio": 1.42
       },
       "xpLast7Days": {
-        "p10": 1575,
-        "median": 2143,
-        "p90": 3514,
-        "ratio": 2.23
+        "p10": 12812,
+        "median": 13860,
+        "p90": 14759,
+        "ratio": 1.15
       },
       "achievements": {
         "day1": {
@@ -4154,7 +4154,7 @@
     {
       "policy": "safe-farming-three-day",
       "heroes": 300,
-      "days": 30,
+      "days": 90,
       "reach": [
         {
           "level": 2,
@@ -4179,13 +4179,13 @@
         },
         {
           "level": 12,
-          "p10": ">30",
-          "median": ">30",
-          "p90": ">30",
-          "reached": 0
+          "p10": 55.8,
+          "median": 58.3,
+          "p90": 61.1,
+          "reached": 300
         }
       ],
-      "finalLevelMedian": 9,
+      "finalLevelMedian": 14,
       "deathByBiome": {
         "server_room": {
           "eligibleHeroDays": 0,
@@ -4203,25 +4203,25 @@
         }
       },
       "stateSharePct": {
-        "exploring": 93.4,
+        "exploring": 97,
         "resting": 0,
         "travelling": 0,
         "dead": 0,
-        "sleeping": 6.6
+        "sleeping": 3
       },
       "firstInventorySleep": {
         "p10": 1.8,
         "median": 2.9,
         "p90": 9.1,
-        "reached": 297
+        "reached": 300
       },
-      "gearPerDay": 4.8,
-      "usefulGearPerDay": 0.3,
-      "equippedUpgradesPerHero": 4.8,
+      "gearPerDay": 5,
+      "usefulGearPerDay": 0.1,
+      "equippedUpgradesPerHero": 5.3,
       "potions": {
-        "acquiredPerHeroDay": 0.6,
+        "acquiredPerHeroDay": 0.2,
         "usedPerHeroDay": 0,
-        "fullStackFallbacksPerHeroDay": 4.8,
+        "fullStackFallbacksPerHeroDay": 5.4,
         "finalCount": {
           "p10": 20,
           "median": 20,
@@ -4231,18 +4231,18 @@
       "retreatsPerHeroDay": 0,
       "rescuesPerHeroDay": 0,
       "bestInSlot": {
-        "p10": ">30",
-        "median": ">30",
-        "p90": ">30",
+        "p10": ">90",
+        "median": ">90",
+        "p90": ">90",
         "reached": 0
       },
       "goldDayEnd": {
-        "median": 2077,
-        "p90": 4008
+        "median": 10974,
+        "p90": 12913
       },
       "goldDay30": 2077,
-      "jackpotGoldShare": 4,
-      "elitesPerHeroDay": 0.82,
+      "jackpotGoldShare": 4.2,
+      "elitesPerHeroDay": 0.84,
       "bag": {
         "reach": [
           {
@@ -4279,16 +4279,16 @@
         "goldSpentMedian": 2000
       },
       "xpLastDay": {
-        "p10": 151,
-        "median": 196,
+        "p10": 152,
+        "median": 192,
         "p90": 242,
-        "ratio": 1.6
+        "ratio": 1.59
       },
       "xpLast7Days": {
-        "p10": 1218,
-        "median": 1351,
-        "p90": 1493,
-        "ratio": 1.23
+        "p10": 1222,
+        "median": 1356,
+        "p90": 1475,
+        "ratio": 1.21
       },
       "achievements": {
         "day1": {

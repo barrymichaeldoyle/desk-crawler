@@ -73,8 +73,8 @@ One accepted logical tick yields at most one gameplay encounter per eligible her
 3. Dead: if tick has reached `reviveAtTick`, revive in Office Cubicles at 50% maximum HP, clear death/travel fields, log revival, and stop. Otherwise remain dead with no routine log.
 4. Travelling: resolve arrival and stop, or remain travelling if not due.
 5. Resting: heal `ceil(20% maximum HP)`; resume exploring if HP is at least 75%; log the healing; stop even when leaving rest.
-6. Exploring: if HP is below 35% and potion quantity > 0, drink **one** potion and heal `ceil(40% maximum HP)`.
-7. If HP is still below 25%, enter resting, apply the first resting heal, log, and stop. Potion consumption remains committed even when the hero must rest.
+6. Exploring: if HP is below the catalog's potion threshold (v1: 35%; v2: 50%, D71) and potion quantity > 0, drink **one** potion and heal `ceil(40% maximum HP)`.
+7. If HP is still below the rest threshold (v1: 25%; v2: 35%), enter resting, apply the first resting heal, log, and stop. Potion consumption remains committed even when the hero must rest.
 8. Roll one biome-weighted encounter and resolve it.
 9. Apply death/safe-biome protection before level-up. A lethal encounter cannot be undone by a level-up heal. A dead hero still receives earned XP if the resolver already earned it.
 10. Apply rewards, level-ups, clamps and lifetime counters. If a new gear find exceeded bag capacity, retain it and enter sleeping after those effects. Produce one concise combined summary/detail; prioritize retained-find/sleep explanation. Adapter credits earned XP to both rolling windows once.

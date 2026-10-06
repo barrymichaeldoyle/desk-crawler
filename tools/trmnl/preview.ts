@@ -3,7 +3,7 @@
  * (buildPayload) through Liquid inside the pinned framework 3.4.0 CSS/JS, one
  * HTML page per state with all four sizes. Screenshot the pages for the layout
  * matrix. This approximates TRMNL's renderer; real-device renders stay the
- * acceptance gate.  Usage: pnpm tsx tools/trmnl/preview.ts [artBaseUrl]
+ * acceptance gate.  Usage: pnpm tsx tools/trmnl/preview.ts [artBaseUrl] [--recap] [--portrait]
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { Liquid } from 'liquidjs'
@@ -15,7 +15,7 @@ import { sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
 import { screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
 import { PREVIEW_DEVICES, PREVIEW_LAYOUTS, previewDocument, type PreviewDevice, type PreviewLayout } from '@trmnl-games/desk-crawler/templates/preview'
 
-const artBaseUrl = process.argv[2] ?? 'https://superb-bobcat-74.convex.site'
+const artBaseUrl = process.argv[2]?.startsWith('http') ? process.argv[2] : 'https://superb-bobcat-74.convex.site'
 const NOW = Date.UTC(2026, 9, 4, 8, 20)
 /** TRMNL renders Liquid in UTC; the sample owner is in Johannesburg (UTC+2). */
 const liquid = new Liquid({ timezoneOffset: 0 })
@@ -167,6 +167,10 @@ for (const [name, input] of Object.entries(previewStates)) {
     for (const device of Object.keys(PREVIEW_DEVICES) as PreviewDevice[]) {
       writeFileSync(`.previews/${name}--${device}--${layout}.html`, previewDocument(inner, device, layout, `${name} · ${device} · ${PREVIEW_LAYOUTS[layout].label}`))
       written++
+      if (process.argv.includes('--portrait')) {
+        writeFileSync(`.previews/${name}--${device}-portrait--${layout}.html`, previewDocument(inner, device, layout, `${name} · ${device} portrait · ${PREVIEW_LAYOUTS[layout].label}`, { portrait: true }))
+        written++
+      }
     }
   }
 }

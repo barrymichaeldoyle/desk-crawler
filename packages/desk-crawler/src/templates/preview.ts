@@ -6,10 +6,12 @@
  */
 export const FRAMEWORK_VERSION = '3.4.0'
 
-/** OG (800x480, 1-bit) and X (4-bit) screen classes from framework 3.4; sizes are the framework's CSS layout boxes (X lays out at 1872x1404). */
+/** OG (800x480, 1-bit), X (4-bit) and BWRY (800x480, black/white/red/yellow) screen classes from framework 3.4; sizes are the framework's CSS layout boxes (X lays out at 1872x1404). */
 export const PREVIEW_DEVICES = {
   og: { label: 'TRMNL OG', width: 800, height: 480, classes: 'screen screen--og screen--md screen--1bit screen--landscape' },
   x: { label: 'TRMNL X', width: 1872, height: 1404, classes: 'screen screen--v2 screen--lg screen--4bit screen--landscape' },
+  /** The OG-sized four-ink panel; `screen--preview-colors` shows the muted inks the panel actually prints. */
+  bwry: { label: 'TRMNL BWRY', width: 800, height: 480, classes: 'screen screen--og screen--md screen--color-4bwry screen--preview-colors screen--landscape' },
 } as const
 export type PreviewDevice = keyof typeof PREVIEW_DEVICES
 
@@ -39,9 +41,16 @@ const OTHER_SLOTS_STYLE = `.trmnl .screen .mashup .view:empty{background:conic-g
  * `<base>` points relative framework URLs (its bitmap fonts) at trmnl.com, which
  * a file or srcdoc document could not otherwise resolve.
  */
-export function previewDocument(renderedMarkup: string, device: PreviewDevice, layout: PreviewLayout, title = 'Desk Crawler', options: { shadeOtherSlots?: boolean } = {}): string {
+/** The device's CSS layout box; portrait swaps width and height. */
+export const previewSize = (device: PreviewDevice, portrait = false) => {
+  const { width, height } = PREVIEW_DEVICES[device]
+  return portrait ? { width: height, height: width } : { width, height }
+}
+
+export function previewDocument(renderedMarkup: string, device: PreviewDevice, layout: PreviewLayout, title = 'Desk Crawler', options: { shadeOtherSlots?: boolean; portrait?: boolean } = {}): string {
+  const classes = options.portrait ? PREVIEW_DEVICES[device].classes.replace('screen--landscape', 'screen--portrait') : PREVIEW_DEVICES[device].classes
   return `<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><base href="https://trmnl.com/">
 <link rel="stylesheet" href="https://trmnl.com/css/${FRAMEWORK_VERSION}/plugins.css"><script src="https://trmnl.com/js/${FRAMEWORK_VERSION}/plugins.js"></script>
 <style>html,body{margin:0;overflow:hidden}${options.shadeOtherSlots ? OTHER_SLOTS_STYLE : ''}</style>
-</head><body class="environment trmnl"><div class="${PREVIEW_DEVICES[device].classes}">${PREVIEW_LAYOUTS[layout].wrapper(renderedMarkup)}</div></body></html>`
+</head><body class="environment trmnl"><div class="${classes}">${PREVIEW_LAYOUTS[layout].wrapper(renderedMarkup)}</div></body></html>`
 }

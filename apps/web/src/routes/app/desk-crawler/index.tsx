@@ -7,7 +7,8 @@ import { pctOf } from '@trmnl-games/desk-crawler/sim/core/stats'
 import { api } from '@trmnl-games/backend/api'
 import { seo } from '../../../lib/seo'
 import { artUrl, useIntent } from '../../../lib/intent'
-import { ActionFeedback, Button, LoadingState, Meter } from '../../../lib/ui'
+import { ActionFeedback, BUTTON_PRIMARY, Button, LoadingState, Meter } from '../../../lib/ui'
+import { BIOME_SWATCH } from '../../../lib/palette'
 import { preload } from '../../../lib/preload'
 import { ReturnRecap } from './-recap'
 import { Pulse } from './-pulse'
@@ -38,19 +39,22 @@ function HeroHome() {
 
   return (
     <div className="grid gap-x-10 gap-y-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
-      <header className="flex min-w-0 flex-wrap items-baseline justify-between gap-x-4 gap-y-1 lg:col-span-2">
-        <h1 className="font-display text-4xl font-bold">{hero.name}</h1>
-        <p className="text-sm text-stone-600 dark:text-stone-400">Level {hero.level} Warrior · {biomeName}</p>
+      <header className="flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-1 lg:col-span-2">
+        <div className="flex min-w-0 items-center gap-4">
+          <img src="/games/desk-crawler/icon-192.png" alt="" width={64} height={64} className="window size-16 shrink-0 p-0 [image-rendering:pixelated] sm:size-[4.5rem]" />
+          <h1 className="min-w-0 font-display text-5xl font-bold">{hero.name}</h1>
+        </div>
+        <p className="text-sm text-muted"><span className="font-semibold text-gold-ink">Level {hero.level}</span> Warrior · {biomeName}</p>
       </header>
       <div className="grid grid-cols-2 gap-4 lg:hidden">
-        <Meter label="Health" value={hero.hp} max={hero.maxHp} />
-        <Meter label="Level XP" value={hero.xp} max={hero.xpToNext} />
+        <Meter label="Health" tone="hp" value={hero.hp} max={hero.maxHp} />
+        <Meter label="Level XP" tone="xp" value={hero.xp} max={hero.xpToNext} />
       </div>
       <div className="flex flex-col lg:sticky lg:top-16 lg:self-start">
         <div className="mb-4">
           <Pulse hero={{ ...hero, biomeName, targetName }} />
         </div>
-        <Suspense fallback={<div className="aspect-[4/3] overflow-hidden rounded-[1.4rem] border-[12px] border-stone-900 bg-white dark:border-stone-700"><img src={artUrl(hero.scenePath)} alt={`${hero.name}'s current scene`} width={760} height={200} className="mt-[15%] w-full [image-rendering:pixelated]" /></div>}>
+        <Suspense fallback={<div className="aspect-[4/3] overflow-hidden rounded-[1.4rem] border-[12px] border-night bg-white dark:border-[#2b3474]"><img src={artUrl(hero.scenePath)} alt={`${hero.name}'s current scene`} width={760} height={200} className="mt-[15%] w-full [image-rendering:pixelated]" /></div>}>
           <DevicePreview sceneUrl={artUrl(hero.scenePath)} heroName={hero.name} />
         </Suspense>
         <Link to="/app/desk-crawler/settings" hash="desk-keepsakes" className="mt-3 inline-flex min-h-11 items-center text-sm underline underline-offset-4">Spot a keepsake code on your TRMNL? Add it to your desk collection.</Link>
@@ -88,7 +92,7 @@ function LiveGain({ hero }: { hero: { lifetimeXp: number; level: number; counter
   if (gained.length === 0) return null
   const label = (unit: string, value: number) => (unit === 'XP' || unit === 'gold' || value === 1 ? unit : unit.replace(/^(\w+)/, '$1s'))
   return (
-    <p role="status" className="border-y border-stone-900 py-2 font-semibold tabular-nums dark:border-stone-300">
+    <p role="status" className="border-y-2 border-gold py-2 font-semibold tabular-nums text-gold-ink">
       While you've been here: {gained.map(([unit, value]) => `+${value.toLocaleString()} ${label(unit, value)}`).join(', ')}
     </p>
   )
@@ -126,11 +130,13 @@ function HeroSheet({ hero }: { hero: HeroView }) {
   const healing = Math.min(hero.maxHp - hero.hp, pctOf(hero.maxHp, POTION_HEAL_PCT))
 
   return (
-    <section aria-label="Hero health and actions" className="flex min-w-0 flex-col gap-5">
+    <div className="flex min-w-0 flex-col gap-6">
+    <section aria-labelledby="status-title" className="window flex min-w-0 flex-col gap-5 px-4 pt-3 pb-4 sm:px-5">
+      <h2 id="status-title" className="-mb-2 font-display text-xl font-semibold text-gold-ink">Status</h2>
 
       <div className="hidden grid-cols-2 gap-4 lg:grid">
-        <Meter label="Health" value={hero.hp} max={hero.maxHp} />
-        <Meter label="Level XP" value={hero.xp} max={hero.xpToNext} />
+        <Meter label="Health" tone="hp" value={hero.hp} max={hero.maxHp} />
+        <Meter label="Level XP" tone="xp" value={hero.xp} max={hero.xpToNext} />
       </div>
 
       <dl className="flex flex-wrap gap-x-8 gap-y-2">
@@ -142,17 +148,17 @@ function HeroSheet({ hero }: { hero: HeroView }) {
           ] as const
         ).map(([label, value]) => (
           <div key={label} className="flex items-baseline gap-2">
-            <dt className="caps text-sm text-stone-600 dark:text-stone-400">{label}</dt>
-            <dd className="text-xl font-bold tabular-nums">{value.toLocaleString()}</dd>
+            <dt className="caps text-sm text-muted">{label}</dt>
+            <dd className={`text-xl font-bold tabular-nums ${label === 'Gold' ? 'text-gold-ink' : ''}`}>{value.toLocaleString()}</dd>
           </div>
         ))}
       </dl>
-      <p className="-mt-3 text-sm text-stone-600 dark:text-stone-400">Gold is saved for later updates. There’s nothing to buy yet.</p>
+      <p className="-mt-3 text-sm text-muted">Gold is saved for later updates. There’s nothing to buy yet.</p>
 
       {canAct || hero.status === 'paused' || hero.status === 'sleeping' ? (
         <div className="flex flex-wrap gap-2">
           {hero.status === 'sleeping' ? (
-            <Link to="/app/desk-crawler/inventory" className="inline-flex min-h-11 items-center bg-stone-900 px-4 font-semibold text-white dark:bg-stone-100 dark:text-stone-900">
+            <Link to="/app/desk-crawler/inventory" className={`inline-flex min-h-11 items-center px-4 font-semibold ${BUTTON_PRIMARY}`}>
               Open bag
             </Link>
           ) : null}
@@ -162,7 +168,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
             </Button>
           ) : null}
           {canAct ? (
-            <Button variant="secondary" pending={potion.pending} busyLabel="Drinking…" disabled={busy || hero.hp >= hero.maxHp || !bag?.potions} onClick={() => { setAction('potion'); return potion.run({}, 'Potion used. Your health is updated.') }}>
+            <Button variant={hero.hp < hero.maxHp && bag?.potions ? 'primary' : 'secondary'} pending={potion.pending} busyLabel="Drinking…" disabled={busy || hero.hp >= hero.maxHp || !bag?.potions} onClick={() => { setAction('potion'); return potion.run({}, 'Potion used. Your health is updated.') }}>
               Drink potion{bag ? ` (${bag.potions})` : ''}
             </Button>
           ) : null}
@@ -173,24 +179,26 @@ function HeroSheet({ hero }: { hero: HeroView }) {
           ) : null}
         </div>
       ) : null}
-      {canAct ? <p className="-mt-3 text-sm text-stone-600 dark:text-stone-400">{hero.hp >= hero.maxHp ? 'Your hero is at full health.' : bag?.potions ? `A potion restores ${healing} HP. Your hero also drinks them automatically when needed.` : bag ? 'No potions left. Your hero can find more while exploring and rests to recover health.' : 'Checking potions…'}</p> : null}
+      {canAct ? <p className="-mt-3 text-sm text-muted">{hero.hp >= hero.maxHp ? 'Your hero is at full health.' : bag?.potions ? `A potion restores ${healing} HP. Your hero also drinks them automatically when needed.` : bag ? 'No potions left. Your hero can find more while exploring and rests to recover health.' : 'Checking potions…'}</p> : null}
       {!healthy ? <p className="text-sm">Your hero is paused for a service check. Progress is safe. <Link to="/support" className="underline underline-offset-4">Get help</Link>.</p> : null}
       <ActionFeedback error={feedback?.error ?? null} message={feedback?.message ?? null} />
+    </section>
 
-      <div>
-        <h3 className="font-display text-lg font-semibold">Where to explore</h3>
-        <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">Arrive on the next adventure, without an encounter on arrival. Harder areas offer more XP and better gear, but hit harder.</p>
-        <ul className="mt-2 border-t border-stone-900 dark:border-stone-300">
+      <section aria-labelledby="explore-title" className="window min-w-0 px-4 pt-3 pb-4 sm:px-5">
+        <h2 id="explore-title" className="font-display text-xl font-semibold text-gold-ink">Where to explore</h2>
+        <p className="mt-1 text-sm text-muted">Arrive on the next adventure, without an encounter on arrival. Harder areas offer more XP and better gear, but hit harder.</p>
+        <ul className="mt-3 border-t-2 border-edge">
           {hero.biomes.map((biome) => (
-            <li key={biome.id} className="flex min-h-12 items-center justify-between gap-3 border-b border-stone-300 py-1 dark:border-stone-700">
-              <span className={biome.unlocked ? '' : 'text-stone-500 dark:text-stone-400'}>
+            <li key={biome.id} className="flex min-h-12 items-center justify-between gap-3 border-b border-rule py-1">
+              <span className={`flex min-w-0 flex-wrap items-center gap-x-2 ${biome.unlocked ? '' : 'text-faint'}`}>
+                <span aria-hidden="true" className={`size-3 shrink-0 border-2 border-night ${biome.unlocked ? (BIOME_SWATCH[biome.id] ?? 'bg-muted') : 'dither'}`} />
                 <span className="font-semibold">{biome.name}</span>
-                {biome.id === hero.biomeId ? <span className="ml-2 text-sm text-stone-600 dark:text-stone-400">You are here</span> : null}
-                {biome.id === hero.targetBiomeId ? <span className="ml-2 text-sm text-stone-600 dark:text-stone-400">On the way</span> : null}
-                {!biome.unlocked ? <span className="ml-2 text-sm">Unlocks at level {biome.unlockLevel}</span> : null}
+                {biome.id === hero.biomeId ? <span className="text-sm font-semibold text-gold-ink">You are here</span> : null}
+                {biome.id === hero.targetBiomeId ? <span className="text-sm font-semibold text-sky-ink">On the way</span> : null}
+                {!biome.unlocked ? <span className="border-2 border-dashed border-faint px-1.5 text-xs font-semibold tracking-wide text-muted uppercase">Locked · level {biome.unlockLevel}</span> : null}
               </span>
               {biome.unlocked && biome.id !== hero.biomeId && biome.id !== hero.targetBiomeId ? (
-                <Button variant="secondary" pending={travel.pending} busyLabel="Travelling…" aria-label={`Travel to ${biome.name}`} disabled={!canAct || busy} onClick={() => travel.run({ biomeId: biome.id }, `Travelling to ${biome.name}. Arrive on the next adventure.`)}>
+                <Button pending={travel.pending} busyLabel="Travelling…" aria-label={`Travel to ${biome.name}`} disabled={!canAct || busy} onClick={() => travel.run({ biomeId: biome.id }, `Travelling to ${biome.name}. Arrive on the next adventure.`)}>
                   Travel
                 </Button>
               ) : null}
@@ -198,12 +206,12 @@ function HeroSheet({ hero }: { hero: HeroView }) {
           ))}
         </ul>
         {!canAct && hero.status !== 'travelling' ? (
-          <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
+          <p className="mt-2 text-sm text-muted">
             {hero.status === 'paused' ? 'Resume adventures to travel.' : hero.status === 'sleeping' ? 'Make room in your bag to travel.' : hero.status === 'dead' ? 'Travel opens again once your hero is back on their feet.' : null}
           </p>
         ) : null}
         <ActionFeedback {...travel} />
-      </div>
-    </section>
+      </section>
+    </div>
   )
 }

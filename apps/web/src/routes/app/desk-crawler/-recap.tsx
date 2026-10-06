@@ -76,7 +76,7 @@ function Ledger({ summary }: { summary: Summary }) {
       </Link>
     </p>
   ) : summary.unequipped > 0 ? (
-    <p className="mt-3 text-sm text-stone-700 dark:text-stone-300">
+    <p className="mt-3 text-sm text-muted">
       {summary.unequipped} unequipped {summary.unequipped === 1 ? 'item' : 'items'} in your bag.{' '}
       <Link to="/app/desk-crawler/inventory" className="underline underline-offset-4">
         Review gear
@@ -86,8 +86,8 @@ function Ledger({ summary }: { summary: Summary }) {
 
   if (summary.baseline === null) {
     return (
-      <section aria-labelledby="ledger-title">
-        <h2 id="ledger-title" className="font-display text-xl font-semibold">
+      <section aria-labelledby="ledger-title" className="window min-w-0 px-4 pt-3 pb-4 sm:px-5">
+        <h2 id="ledger-title" className="font-display text-xl font-semibold text-gold-ink">
           Your first visit
         </h2>
         <p className="mt-2 max-w-prose">Your hero adventures every 15 minutes, even with this page closed and your TRMNL asleep. Come back in a few days and this is where you will see what they got up to.</p>
@@ -110,13 +110,14 @@ function Ledger({ summary }: { summary: Summary }) {
       : []),
   ]
   const quiet = rows.every(([, value]) => value === 0)
+  const tone: Record<string, string> = { XP: 'text-xp-ink', Levels: 'text-gold-ink', 'Gold earned': 'text-gold-ink', 'Items found': 'text-rare-ink', Knockouts: 'text-hp-ink' }
   return (
-    <section aria-labelledby="ledger-title">
+    <section aria-labelledby="ledger-title" className="window min-w-0 px-4 pt-3 pb-4 sm:px-5">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-        <h2 id="ledger-title" className="font-display text-xl font-semibold">
+        <h2 id="ledger-title" className="font-display text-xl font-semibold text-gold-ink">
           Since you left
         </h2>
-        <p className="text-sm text-stone-600 dark:text-stone-400">
+        <p className="text-sm text-muted">
           {since}
           {summary.newEvents && !quiet ? ` · ${summary.newEvents} log ${summary.newEvents === 1 ? 'entry' : 'entries'}` : ''}
         </p>
@@ -124,11 +125,11 @@ function Ledger({ summary }: { summary: Summary }) {
       {quiet ? (
         <p className="mt-2">{summary.status === 'paused' ? 'No new adventures while paused. Resume whenever you’re ready.' : summary.status === 'sleeping' ? 'Adventures stopped to keep your new gear safe. Make room in your bag, then resume.' : 'No new progress since your last visit. The next adventure may bring something new.'}</p>
       ) : (
-        <dl className="mt-2 grid grid-cols-2 border-t border-stone-900 sm:grid-cols-3 dark:border-stone-300">
+        <dl className="mt-2 grid grid-cols-1 border-t-2 border-edge min-[480px]:grid-cols-2 min-[480px]:gap-x-6">
           {rows.map(([label, value]) => (
-            <div key={label} className="flex items-baseline justify-between gap-2 border-b border-stone-300 py-2 odd:pr-4 sm:pr-4 dark:border-stone-700">
-              <dt className="caps text-sm text-stone-600 dark:text-stone-400">{label}</dt>
-              <dd className={`text-xl font-bold tabular-nums ${value === 0 ? 'text-stone-500' : ''}`}>{value > 0 ? `+${value.toLocaleString()}` : '0'}</dd>
+            <div key={label} className="flex items-baseline justify-between gap-3 border-b border-rule py-2">
+              <dt className="caps text-sm whitespace-nowrap text-muted">{label}</dt>
+              <dd className={`whitespace-nowrap text-xl font-bold tabular-nums ${value === 0 ? 'text-faint' : (tone[label] ?? '')}`}>{value > 0 ? `+${value.toLocaleString()}` : '0'}</dd>
             </div>
           ))}
         </dl>

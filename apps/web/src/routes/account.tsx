@@ -24,7 +24,7 @@ function Account() {
         <>
           <Card title="Public identity">
             {me?.user ? <p>Your public name is <strong>{me.user.publicAlias}</strong>. It is shared across TRMNL Games.</p> : <p>Pick a public name when you connect your first game from TRMNL. Your sign-in is ready.</p>}
-            <p className="mt-3 text-sm text-stone-600 dark:text-stone-400">Use the profile button above to manage your sign-in methods.</p>
+            <p className="mt-3 text-sm text-muted">Use the profile button above to manage your sign-in methods.</p>
           </Card>
           <Card title="Privacy and data">
             <p><Link to="/privacy" className="underline underline-offset-4">Read the privacy policy</Link> for what we store and how deletion works.</p>
@@ -36,9 +36,9 @@ function Account() {
               <>
                 <label className="mt-4 flex flex-col gap-2 text-sm">
                   <span className="font-semibold">Type DELETE to confirm</span>
-                  <input value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" autoCapitalize="characters" spellCheck={false} disabled={deletion.pending} className="min-h-11 border border-stone-400 bg-stone-50 px-3 text-base dark:border-stone-600 dark:bg-stone-950" />
+                  <input value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" autoCapitalize="characters" spellCheck={false} disabled={deletion.pending} className="min-h-11 border-2 border-edge bg-ground px-3 text-base" />
                 </label>
-                <Button className="mt-4" variant="secondary" pending={deletion.pending} busyLabel="Removing account…" disabled={confirm !== 'DELETE'} onClick={async () => { if (await deletion.run({ confirm: 'DELETE' })) await clerk.signOut({ redirectUrl: '/' }) }}>Delete my TRMNL Games account</Button>
+                <Button className="mt-4" variant="danger" pending={deletion.pending} busyLabel="Removing account…" disabled={confirm !== 'DELETE'} onClick={async () => { if (await deletion.run({ confirm: 'DELETE' })) await clerk.signOut({ redirectUrl: '/' }) }}>Delete my TRMNL Games account</Button>
                 <ErrorNote message={deletion.error} />
               </>
             ) : null}

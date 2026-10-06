@@ -29,8 +29,8 @@ function Leaderboard() {
   const stopped = hero && (hero.status === 'paused' || (hero.status === 'sleeping' && hero.wakeAtTick === null))
   return (
     <>
-      <header><h1 className="font-display text-3xl font-bold">Rankings</h1><p className="mt-2 text-sm text-stone-600 dark:text-stone-400">A little friendly competition. Recent XP is compared with heroes of similar level.</p></header>
-      <div role="group" aria-label="Ranking period" className="flex border border-stone-900 dark:border-stone-300">
+      <header><h1 className="font-display text-3xl font-bold">Rankings</h1><p className="mt-2 text-sm text-muted">A little friendly competition. Recent XP is compared with heroes of similar level.</p></header>
+      <div role="group" aria-label="Ranking period" className="flex border-2 border-edge">
         {TABS.map((tab) => (
           <button
             key={tab.board}
@@ -40,13 +40,13 @@ function Leaderboard() {
               setBoard(tab.board)
               setCohortKey(undefined)
             }}
-            className={`min-h-11 flex-1 px-2 py-2 text-sm font-semibold not-last:border-r not-last:border-stone-900 dark:not-last:border-stone-300 ${board === tab.board ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900' : 'hover:bg-stone-200 dark:hover:bg-stone-800'}`}
+            className={`menu-cursor flex min-h-11 flex-1 items-center justify-center px-2 py-2 text-sm font-semibold not-last:border-r-2 not-last:border-edge ${board === tab.board ? 'bg-navy text-gold' : 'text-muted hover:bg-rule hover:text-ink'}`}
           >
             {tab.label}
           </button>
         ))}
       </div>
-      {board !== 'overall' ? <label className="flex flex-wrap items-center gap-3 text-sm"><span className="font-semibold">Level group</span><select value={cohortKey ?? ownGroup} onChange={(event) => setCohortKey(event.target.value === ownGroup ? undefined : event.target.value)} className="min-h-11 flex-1 border border-stone-400 bg-stone-50 px-3 text-base sm:flex-none dark:border-stone-600 dark:bg-stone-950">{groups.map((key) => <option key={key} value={key}>{groupLabel(key)}{key === ownGroup ? ' (your group)' : ''}</option>)}</select></label> : null}
+      {board !== 'overall' ? <label className="flex flex-wrap items-center gap-3 text-sm"><span className="font-semibold">Level group</span><select value={cohortKey ?? ownGroup} onChange={(event) => setCohortKey(event.target.value === ownGroup ? undefined : event.target.value)} className="pixel-select min-h-11 flex-1 border-2 border-edge px-3 text-base sm:flex-none">{groups.map((key) => <option key={key} value={key}>{groupLabel(key)}{key === ownGroup ? ' (your group)' : ''}</option>)}</select></label> : null}
       {!data ? (
         <LoadingState label="Loading rankings…" />
       ) : !data.published ? (
@@ -55,13 +55,13 @@ function Leaderboard() {
         </Card>
       ) : (
         <Card title={`${groupLabel(data.cohortKey)}, ${data.totalPlayers} ${data.totalPlayers === 1 ? 'hero' : 'heroes'}`}>
-          <p className="mb-3 text-sm text-stone-600 dark:text-stone-400">
+          <p className="mb-3 text-sm text-muted">
             {board === 'overall' ? 'Ranked by level and XP.' : 'XP earned in the period among heroes of similar level.'} Updated{' '}
             <time dateTime={new Date(data.scoreAt).toISOString()}>{new Date(data.scoreAt).toLocaleString(undefined, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</time>. Refreshes hourly.
           </p>
           {data.own ? (
             <p className="mb-3 font-semibold">
-              You are #{data.own.rank.toLocaleString()} of {data.totalPlayers.toLocaleString()}
+              You are <span className="text-gold-ink">#{data.own.rank.toLocaleString()}</span> of {data.totalPlayers.toLocaleString()}
               {data.own.rankDelta ? ` · ${data.own.rankDelta > 0 ? 'up' : 'down'} ${Math.abs(data.own.rankDelta)} since the previous update` : ''}
               {board !== 'overall' && data.own.score !== null ? ` · ${data.own.score.toLocaleString()} XP` : ''}
             </p>
@@ -70,25 +70,25 @@ function Leaderboard() {
               Back to my group
             </Button>
           ) : (
-            <p className="mb-3 text-sm text-stone-600 dark:text-stone-400">{stopped && board !== 'overall' ? 'Unranked while adventures are stopped and no XP remains in this period. Your lifetime progress stays earned.' : 'Your hero’s rank appears at the next hourly update.'}</p>
+            <p className="mb-3 text-sm text-muted">{stopped && board !== 'overall' ? 'Unranked while adventures are stopped and no XP remains in this period. Your lifetime progress stays earned.' : 'Your hero’s rank appears at the next hourly update.'}</p>
           )}
           {data.entries.length === 0 ? (
             <p>No ranked heroes in this group for this period. Try your group or a different period.</p>
           ) : (
-            <ol className="flex flex-col divide-y divide-stone-200 dark:divide-stone-800">
+            <ol className="flex flex-col divide-y divide-rule">
               {data.entries.map((row: { rank: number; name: string; hero_name: string; level: number; score: number }) => (
-                <li key={row.rank} className="flex min-w-0 items-start gap-3 py-3">
-                  <span className="w-8 text-right font-bold tabular-nums">{row.rank}</span>
+                <li key={row.rank} aria-current={data.own?.rank === row.rank ? 'true' : undefined} className={`flex min-w-0 items-start gap-3 py-3 ${data.own?.rank === row.rank ? '-mx-2 bg-ground px-2 outline-2 outline-gold' : ''}`}>
+                  <span className={`w-8 text-right font-bold tabular-nums ${row.rank <= 3 ? 'font-display text-lg leading-6 text-gold-ink' : ''}`}>{row.rank}</span>
                   <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">
                     <span className="block font-semibold">{row.name}</span>
-                    {row.hero_name ? <span className="block text-sm text-stone-600 dark:text-stone-400">{row.hero_name}</span> : null}
+                    {row.hero_name ? <span className="block text-sm text-muted">{row.hero_name}</span> : null}
                   </span>
-                  <span className="min-w-0 max-w-[45%] shrink-0 text-right text-sm tabular-nums text-stone-600 [overflow-wrap:anywhere] dark:text-stone-400">{board === 'overall' ? `Level ${row.level}` : `${row.score.toLocaleString()} XP`}</span>
+                  <span className={`min-w-0 max-w-[45%] shrink-0 text-right text-sm font-semibold tabular-nums [overflow-wrap:anywhere] ${board === 'overall' ? 'text-gold-ink' : 'text-xp-ink'}`}>{board === 'overall' ? `Level ${row.level}` : `${row.score.toLocaleString()} XP`}</span>
                 </li>
               ))}
             </ol>
           )}
-          {data.totalPlayers > data.entries.length ? <p className="mt-3 text-sm text-stone-600 dark:text-stone-400">Showing the top {data.entries.length} of {data.totalPlayers.toLocaleString()} heroes.{data.own ? ' Your exact rank is shown above.' : ''}</p> : null}
+          {data.totalPlayers > data.entries.length ? <p className="mt-3 text-sm text-muted">Showing the top {data.entries.length} of {data.totalPlayers.toLocaleString()} heroes.{data.own ? ' Your exact rank is shown above.' : ''}</p> : null}
         </Card>
       )}
     </>

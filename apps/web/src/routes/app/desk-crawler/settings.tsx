@@ -27,12 +27,12 @@ function Settings() {
   const healthy = hero.simulationState !== 'quarantined'
   return (
     <>
-      <header><h1 className="font-display text-3xl font-bold">Settings</h1><p className="mt-2 text-sm text-stone-600 dark:text-stone-400">Your public name, adventures and TRMNL connections.</p></header>
+      <header><h1 className="font-display text-3xl font-bold">Settings</h1><p className="mt-2 text-sm text-muted">Your public name, adventures and TRMNL connections.</p></header>
       <Card title="Profile">
         <p>
           Public name: <strong>{me.user.publicAlias}</strong>
         </p>
-        <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">Shown publicly on leaderboards and TRMNL screens.</p>
+        <p className="mt-1 text-sm text-muted">Shown publicly on leaderboards and TRMNL screens.</p>
       </Card>
       <Card title="Adventures">
         {hero.activationState !== 'active' ? (
@@ -54,20 +54,20 @@ function Settings() {
             </Button>
           </>
         )}
-        {hero.status === 'dead' || hero.status === 'travelling' ? <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">You can pause after your hero returns from {hero.status === 'dead' ? 'recovering' : 'travelling'}.</p> : null}
+        {hero.status === 'dead' || hero.status === 'travelling' ? <p className="mt-2 text-sm text-muted">You can pause after your hero returns from {hero.status === 'dead' ? 'recovering' : 'travelling'}.</p> : null}
         {!healthy ? <p className="mt-2 text-sm">Your hero is paused for a service check. Progress is safe.</p> : null}
         <ActionFeedback error={feedback?.error ?? null} message={feedback?.message ?? null} />
       </Card>
       <DeskKeepsakes />
       <Card title="TRMNL installations">
-        <p className="mb-3 text-sm text-stone-600 dark:text-stone-400">Plugin installations showing your hero. Your hero keeps adventuring even if all are disconnected.</p>
+        <p className="mb-3 text-sm text-muted">Plugin installations showing your hero. Your hero keeps adventuring even if all are disconnected.</p>
         {connections === undefined ? <LoadingState label="Loading installations…" /> : connections.length > 0 ? (
-          <ul className="flex flex-col divide-y divide-stone-200 dark:divide-stone-800">
+          <ul className="flex flex-col divide-y divide-rule">
             {connections.map((c) => (
               <li key={c.id} className="flex items-center justify-between gap-2 py-2">
                 <span className="min-w-0">
                   <span className="font-semibold">Installation {c.uuid.slice(0, 8)}</span>
-                  <span className="ml-2 text-sm text-stone-600 dark:text-stone-400">{c.state === 'active' ? 'Connected' : c.state === 'uninstalled' ? 'Uninstalled' : 'Disconnected'}</span>
+                  <span className="ml-2 text-sm text-muted">{c.state === 'active' ? 'Connected' : c.state === 'uninstalled' ? 'Uninstalled' : 'Disconnected'}</span>
                 </span>
                 {c.state === 'active' ? (
                   <Button allowOffline variant="secondary" disabled={disconnect.pending} onClick={() => { disconnect.clearFeedback(); setDisconnectId(c.id) }}>
@@ -80,7 +80,7 @@ function Settings() {
         ) : (
           <p>No installations connected. Your activated hero keeps its progress. Connect again through the Desk Crawler plugin in TRMNL.</p>
         )}
-        {disconnectId ? <div className="mt-4 border-t border-stone-300 pt-4 dark:border-stone-700">
+        {disconnectId ? <div className="mt-4 border-t border-rule pt-4">
           <p className="font-semibold">Disconnect installation {connections?.find((connection) => connection.id === disconnectId)?.uuid.slice(0, 8)}?</p>
           <p className="mt-2 text-sm">This stops new screens for this installation. Your hero keeps adventuring. TRMNL may show its last image until you remove the plugin from the playlist.</p>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -91,18 +91,18 @@ function Settings() {
         <ActionFeedback {...disconnect} />
         <Link to="/help/desk-crawler" className="mt-2 inline-flex min-h-11 items-center text-sm underline underline-offset-4">Help with connections and display refresh</Link>
       </Card>
-      <details className="border-t border-stone-900 pt-4 dark:border-stone-300">
-        <summary className="min-h-11 cursor-pointer font-semibold">Delete Desk Crawler progress…</summary>
+      <details className="border-t-2 border-hp pt-4">
+        <summary className="min-h-11 cursor-pointer font-semibold text-hp-ink">Delete Desk Crawler progress…</summary>
         <p>
           This removes your Desk Crawler hero, items, history and TRMNL connections. It cannot be undone. Your TRMNL Games account and sign-in stay available, and progress in other games is unaffected. Your public name disappears from Desk Crawler rankings immediately. Backups expire within about a week; TRMNL may keep its last screen until you remove the plugin.
         </p>
         <label className="mt-3 flex flex-col gap-1 text-sm">
           <span className="font-semibold">Type DELETE to confirm</span>
-          <input value={confirmText} onChange={(e) => setConfirmText(e.target.value)} className="min-h-11 border border-stone-400 bg-stone-50 px-3 text-base dark:border-stone-600 dark:bg-stone-950" autoComplete="off" autoCapitalize="characters" spellCheck={false} disabled={deletion.pending} />
+          <input value={confirmText} onChange={(e) => setConfirmText(e.target.value)} className="min-h-11 border-2 border-edge bg-ground px-3 text-base" autoComplete="off" autoCapitalize="characters" spellCheck={false} disabled={deletion.pending} />
         </label>
         <Button
           className="mt-3"
-          variant="secondary"
+          variant="danger"
           pending={deletion.pending}
           busyLabel="Removing progress…"
           disabled={confirmText !== 'DELETE' || deletion.pending}

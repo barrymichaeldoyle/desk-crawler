@@ -20,7 +20,7 @@ export const useOnline = () => useContext(OnlineContext)
 export function OfflineNote() {
   const online = useOnline()
   return online ? null : (
-    <p role="status" className="border-b border-stone-300 px-4 py-3 text-center text-sm dark:border-stone-700">
+    <p role="status" className="border-b border-rule px-4 py-3 text-center text-sm">
       You're offline. Showing the last available update. Reconnect to make changes; actions aren't queued.
     </p>
   )

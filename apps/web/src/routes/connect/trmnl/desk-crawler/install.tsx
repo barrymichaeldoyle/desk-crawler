@@ -95,15 +95,15 @@ function ConnectForm() {
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       {needsProfile ? (
-        <p className="border-y border-stone-900 py-3 text-sm dark:border-stone-300">
+        <p className="border-y border-edge py-3 text-sm">
           This sign-in has no TRMNL Games account yet, so connecting creates a new one. Already playing? Switch account and sign in the way you did before (email code, Google or GitHub).
         </p>
       ) : null}
       {needsProfile ? (
         <label className="flex flex-col gap-1">
           <span className="font-semibold">Public name</span>
-          <span className="text-sm text-stone-600 dark:text-stone-400">Shown publicly to other players on leaderboards and TRMNL screens. Use any name you're happy to share; never include contact details.</span>
-          <input name="publicAlias" required minLength={2} maxLength={20} className="min-h-11 border border-stone-400 bg-stone-50 px-3 text-base dark:border-stone-600 dark:bg-stone-950" autoComplete="off" disabled={submitting} />
+          <span className="text-sm text-muted">Shown publicly to other players on leaderboards and TRMNL screens. Use any name you're happy to share; never include contact details.</span>
+          <input name="publicAlias" required minLength={2} maxLength={20} className="min-h-11 border-2 border-edge bg-ground px-3 text-base" autoComplete="off" disabled={submitting} />
         </label>
       ) : (
         <p>
@@ -113,8 +113,8 @@ function ConnectForm() {
       {needsHero ? (
         <label className="flex flex-col gap-1">
           <span className="font-semibold">Hero name</span>
-          <span className="text-sm text-stone-600 dark:text-stone-400">Your hero’s name is also public. 2–16 characters.</span>
-          <input name="heroName" required minLength={2} maxLength={16} defaultValue="Steve" className="min-h-11 border border-stone-400 bg-stone-50 px-3 text-base dark:border-stone-600 dark:bg-stone-950" autoComplete="off" disabled={submitting} />
+          <span className="text-sm text-muted">Your hero’s name is also public. 2–16 characters.</span>
+          <input name="heroName" required minLength={2} maxLength={16} defaultValue="Steve" className="min-h-11 border-2 border-edge bg-ground px-3 text-base" autoComplete="off" disabled={submitting} />
         </label>
       ) : (
         <p>
@@ -123,12 +123,12 @@ function ConnectForm() {
       )}
       <SwitchAccount returnTo="/connect/trmnl/desk-crawler/install" />
       {error ? (
-        <p role="alert" className="font-semibold text-red-700 dark:text-red-400">
+        <p role="alert" className="font-semibold text-hp-ink">
           {error}
         </p>
       ) : null}
       <Button type="submit" pending={submitting} busyLabel="Connecting…">Connect this TRMNL installation</Button>
-      <p className="text-sm text-stone-600 dark:text-stone-400">Next, TRMNL asks you to save the plugin. Saving starts your hero's adventures.</p>
+      <p className="text-sm text-muted">Next, TRMNL asks you to save the plugin. Saving starts your hero's adventures.</p>
     </form>
   )
 }

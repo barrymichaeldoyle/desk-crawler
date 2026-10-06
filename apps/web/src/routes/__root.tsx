@@ -59,7 +59,7 @@ export const Route = createRootRouteWithContext<{
 function NotFound() {
   return (
     <main id="main" className="mx-auto flex max-w-2xl flex-col gap-4 px-4 py-16">
-      <h1 className="text-3xl font-bold">This corridor is empty</h1>
+      <h1 className="font-display text-3xl font-bold">This corridor is empty</h1>
       <p>There's no page at this address. It may have moved, or the link may be mistyped.</p>
       <p>
         <Link to="/" className="underline underline-offset-4">
@@ -88,11 +88,11 @@ function RootDocument({ children }: { children: ReactNode }) {
       <head>
         <HeadContent />
         {/* Outside route head: HeadContent keeps only one meta per name. */}
-        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafaf9" />
-        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0c0a09" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#e8ecf9" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0f2e" />
       </head>
-      <body className="bg-stone-50 text-stone-900 antialiased dark:bg-stone-950 dark:text-stone-100">
-        <a href="#main" className="sr-only rounded-md bg-stone-900 px-4 py-3 font-semibold text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 dark:bg-stone-100 dark:text-stone-900">
+      <body className="antialiased">
+        <a href="#main" className="sr-only border-2 border-night bg-gold px-4 py-3 font-semibold text-night focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50">
           Skip to content
         </a>
         {children}

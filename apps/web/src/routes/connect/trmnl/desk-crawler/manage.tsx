@@ -86,16 +86,16 @@ function Connection({ uuid }: { uuid: string }) {
         <p>This installation is disconnected. Install Desk Crawler again from TRMNL to reconnect a screen; your hero keeps its progress.</p>
       )}
       <div className="mt-4 flex flex-wrap gap-2">
-        <Link to="/app/desk-crawler" className="inline-flex min-h-11 items-center bg-stone-900 px-4 font-semibold text-white dark:bg-stone-100 dark:text-stone-900">
+        <Link to="/app/desk-crawler" className="inline-flex min-h-11 items-center border-2 border-night bg-gold px-4 font-semibold text-night hover:bg-gold-hi">
           Open the companion
         </Link>
         {settingsUrl ? (
-          <a href={settingsUrl} className="inline-flex min-h-11 items-center border border-stone-400 px-4 font-semibold">
+          <a href={settingsUrl} className="inline-flex min-h-11 items-center border-2 border-edge px-4 font-semibold">
             Back to TRMNL
           </a>
         ) : null}
         {settingsUrl ? (
-          <a href={`${settingsUrl}?force_refresh=true`} className="inline-flex min-h-11 items-center border border-stone-400 px-4 font-semibold">
+          <a href={`${settingsUrl}?force_refresh=true`} className="inline-flex min-h-11 items-center border-2 border-edge px-4 font-semibold">
             Refresh preview in TRMNL
           </a>
         ) : null}
@@ -105,8 +105,8 @@ function Connection({ uuid }: { uuid: string }) {
           </Button>
         ) : null}
       </div>
-      <p className="mt-3 text-xs text-stone-600 dark:text-stone-400">Disconnecting stops new screens for this installation. TRMNL may keep showing the last image until you remove the plugin from your playlist.</p>
-      {confirming && instance.state === 'active' ? <div className="mt-4 border-t border-stone-300 pt-4 dark:border-stone-700"><p className="font-semibold">Disconnect this installation?</p><div className="mt-3 flex flex-wrap gap-2"><Button variant="secondary" pending={disconnect.pending} busyLabel="Disconnecting…" onClick={async () => { if (await disconnect.run({ instanceId: instance.id }, 'Installation disconnected. Your hero keeps adventuring.')) setConfirming(false) }}>Confirm disconnect</Button><Button variant="quiet" disabled={disconnect.pending} onClick={() => setConfirming(false)}>Cancel</Button></div></div> : null}
+      <p className="mt-3 text-xs text-muted">Disconnecting stops new screens for this installation. TRMNL may keep showing the last image until you remove the plugin from your playlist.</p>
+      {confirming && instance.state === 'active' ? <div className="mt-4 border-t border-rule pt-4"><p className="font-semibold">Disconnect this installation?</p><div className="mt-3 flex flex-wrap gap-2"><Button variant="secondary" pending={disconnect.pending} busyLabel="Disconnecting…" onClick={async () => { if (await disconnect.run({ instanceId: instance.id }, 'Installation disconnected. Your hero keeps adventuring.')) setConfirming(false) }}>Confirm disconnect</Button><Button variant="quiet" disabled={disconnect.pending} onClick={() => setConfirming(false)}>Cancel</Button></div></div> : null}
       <ActionFeedback {...disconnect} />
     </Card>
   )

@@ -54,7 +54,7 @@ function sentence(hero: PulseHero): string {
 }
 
 /**
- * The ink strip under the device: what the hero is doing and when the next
+ * The dialogue box above the device: what the hero is doing and when the next
  * adventure lands. Calm by design: no urgency, and delays are explained
  * without blaming the player (PRODUCT.md).
  */
@@ -78,14 +78,18 @@ export function Pulse({ hero }: { hero: PulseHero }) {
     else detail = `Next adventure in ${countdown(nextSlotAfter(now) - now)}`
   }
   return (
-    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 bg-stone-900 px-4 py-3 text-stone-50 dark:bg-stone-100 dark:text-stone-900">
+    <div className="window relative flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-4 py-3 pr-8">
       <p className="flex items-center gap-2 font-bold">
         <PixelIcon kind={STATUS_GLYPH[hero.status] ?? 'system'} />
         {sentence(hero)}
       </p>
-      <p className="text-sm tabular-nums" aria-live="off">
-        {detail ?? ' '}
+      <p className="text-sm tabular-nums text-muted" aria-live="off">
+        {detail ?? ' '}
       </p>
+      {/* The dialogue box's waiting arrow. */}
+      <svg viewBox="0 0 5 3" width={10} height={6} aria-hidden="true" shapeRendering="crispEdges" className="absolute right-3 bottom-2 fill-gold animate-[menu-bob_1.2s_infinite]">
+        <path d="M0 0h5v1H0zM1 1h3v1H1zM2 2h1v1H2z" />
+      </svg>
     </div>
   )
 }

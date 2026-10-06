@@ -15,7 +15,7 @@ export const Route = createFileRoute('/admin')({
   head: () => seo({ title: 'Admin', index: false }),
   component: () => (
     <main id="main" className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-8">
-      <h1 className="text-2xl font-bold">Desk Crawler admin</h1>
+      <h1 className="font-display text-3xl font-bold">Desk Crawler admin</h1>
       <Show when="signed-in">
         <AdminGate />
       </Show>
@@ -30,7 +30,7 @@ const when = (ts: number | null | undefined) => (ts ? new Date(ts).toLocaleStrin
 
 function AdminGate() {
   const { data: isAdmin } = useQuery(convexQuery(api.admin.isAdmin, {}))
-  if (isAdmin === undefined) return <p role="status" className="text-stone-600 dark:text-stone-400">Checking access…</p>
+  if (isAdmin === undefined) return <p role="status" className="text-muted">Checking access…</p>
   if (!isAdmin) return <p>Not available.</p>
   return (
     <>
@@ -45,7 +45,7 @@ function Health() {
   const resume = useMutation(api.admin.resumeBlockedRun)
   const release = useMutation(api.admin.releaseHero)
   const [error, setError] = useState<string | null>(null)
-  if (!data) return <p role="status" className="text-stone-600 dark:text-stone-400">Loading health…</p>
+  if (!data) return <p role="status" className="text-muted">Loading health…</p>
   const act = async (fn: () => Promise<unknown>) => {
     setError(null)
     try {
@@ -126,11 +126,11 @@ function UserTools() {
     <Card title="Player support">
       <label className="flex flex-col gap-1 text-sm">
         <span className="font-semibold">Public name</span>
-        <input value={alias} onChange={(e) => setAlias(e.target.value)} className="min-h-11 rounded-md border border-stone-400 bg-white px-3 text-stone-900" />
+        <input value={alias} onChange={(e) => setAlias(e.target.value)} className="min-h-11 border-2 border-edge bg-ground px-3 text-ink" />
       </label>
       <label className="mt-2 flex flex-col gap-1 text-sm">
         <span className="font-semibold">Reason (required, audited)</span>
-        <input value={reason} onChange={(e) => setReason(e.target.value)} className="min-h-11 rounded-md border border-stone-400 bg-white px-3 text-stone-900" />
+        <input value={reason} onChange={(e) => setReason(e.target.value)} className="min-h-11 border-2 border-edge bg-ground px-3 text-ink" />
       </label>
       {user ? (
         <div className="mt-3">
@@ -148,7 +148,7 @@ function UserTools() {
           </div>
         </div>
       ) : alias.length >= 2 ? (
-        <p className="mt-3 text-sm text-stone-600 dark:text-stone-400">No player with that public name.</p>
+        <p className="mt-3 text-sm text-muted">No player with that public name.</p>
       ) : null}
       <ErrorNote message={error} />
     </Card>

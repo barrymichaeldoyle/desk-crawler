@@ -6,7 +6,7 @@
 
 TanStack Start + Vite on Cloudflare Workers, React, Clerk, Convex reactive queries. The web app is mobile-first and keyboard-accessible. A basic web app manifest ships with the icons; offline support and game mutations are not an MVP feature. Favicons, app icons and the social card are generated from the marketplace icon art by `pnpm tsx tools/art/web.ts` into `public/`.
 
-Tone: an office adventure ledger with original pixel hero artwork, legible typography and clear action labels. Device art may be monochrome; the web UI may use restrained color. Do not make every stat a competing dashboard card. Hero state and latest story come first; inventory and rank are secondary.
+Tone: an office adventure ledger with original pixel hero artwork, legible typography and clear action labels. Device art may be monochrome; the web UI uses the Party Menu colour system (D59, [DESIGN.md](../apps/web/DESIGN.md)). Do not make every stat a competing dashboard card. Hero state and latest story come first; inventory and rank are secondary.
 
 The implemented companion uses the paper/ink logbook system in [DESIGN.md](../apps/web/DESIGN.md). Hero, Bag, Rankings, Settings, account and connection controls share square buttons and ruled sections. On phones the hero name and health/level-XP meters precede the preview. Bag gear rows place the Equip action below item details; equipped slots are separate, and the sale selection bar allows for the phone's bottom safe area. Expanded sale review flows normally on phones so a short viewport is not covered. Forms use 16px text to avoid automatic zoom on iOS.
 

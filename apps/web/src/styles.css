@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Pixelify Sans, SIL OFL 1.1 (public/fonts/PixelifySans-OFL.txt): the 1-bit display voice. */
+/* Pixelify Sans, SIL OFL 1.1 (public/fonts/PixelifySans-OFL.txt): the menu-window display voice. */
 @font-face {
   font-family: "Pixelify Sans";
   src: url("/fonts/pixelify-sans-latin.woff2") format("woff2");
@@ -14,40 +14,167 @@
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 
+/*
+ * Party Menu palette. Context colours (ground, ink, muted, rule, edge and the
+ * *-ink text tones) are re-declared inside `window`, so a component reads the
+ * right values on the overworld ground and inside a navy menu window alike.
+ * Fills (hp, xp, gold, sky, rare) are constant game colours.
+ */
+@theme inline {
+  --color-ground: var(--ground);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-rule: var(--rule);
+  --color-edge: var(--edge);
+  --color-navy: #1e2a6e;
+  --color-night: #0a0f2c;
+  --color-cream: #f6f1de;
+  --color-hp: #e5483b;
+  --color-xp: #3dbb6c;
+  --color-gold: #f2c14e;
+  --color-gold-hi: #f8d77f;
+  --color-sky: #4aa8ff;
+  --color-rare: #a77bff;
+  --color-hp-ink: var(--hp-ink);
+  --color-xp-ink: var(--xp-ink);
+  --color-gold-ink: var(--gold-ink);
+  --color-sky-ink: var(--sky-ink);
+  --color-rare-ink: var(--rare-ink);
+}
+
 :root {
   color-scheme: light dark;
+  /* Overworld by day: periwinkle ground, navy ink. */
+  --ground: #e8ecf9;
+  --ink: #18214f;
+  --muted: #4b5694;
+  --faint: #7d87b8;
+  --rule: #bcc4e9;
+  --edge: #18214f;
+  --focus: #18214f;
+  --hp-ink: #b42318;
+  --xp-ink: #17733d;
+  --gold-ink: #85570a;
+  --sky-ink: #1d5bb8;
+  --rare-ink: #6b3fd1;
+  --window: #1e2a6e;
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='3' shape-rendering='crispEdges'%3E%3Cpath fill='%2318214f' d='M0 0h5v1H0zM1 1h3v1H1zM2 2h1v1H2z'/%3E%3C/svg%3E");
+}
+
+/* Overworld by night, and the inside of every menu window. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ground: #0b0f2e;
+    --ink: #e8ebfb;
+    --muted: #a3acdc;
+    --faint: #6f79ad;
+    --rule: #272f63;
+    --edge: #e8ebfb;
+    --focus: #f2c14e;
+    --hp-ink: #ff8a7e;
+    --xp-ink: #62d891;
+    --gold-ink: #f2c14e;
+    --sky-ink: #86c8ff;
+    --rare-ink: #c4a6ff;
+    --window: #1c286c;
+    --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='3' shape-rendering='crispEdges'%3E%3Cpath fill='%23f2c14e' d='M0 0h5v1H0zM1 1h3v1H1zM2 2h1v1H2z'/%3E%3C/svg%3E");
+  }
+}
+
+/*
+ * A 16-bit menu window: navy fill inside a notched two-pixel frame (night
+ * outline, cream line), drawn at 2 CSS px per art pixel.
+ */
+@utility window {
+  --ground: var(--window);
+  --ink: #f6f1de;
+  --muted: #b5bdea;
+  --faint: #8590c9;
+  --rule: #34418d;
+  --edge: #f6f1de;
+  --focus: #f2c14e;
+  --hp-ink: #ff8a7e;
+  --xp-ink: #62d891;
+  --gold-ink: #f2c14e;
+  --sky-ink: #86c8ff;
+  --rare-ink: #c4a6ff;
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='3' shape-rendering='crispEdges'%3E%3Cpath fill='%23f2c14e' d='M0 0h5v1H0zM1 1h3v1H1zM2 2h1v1H2z'/%3E%3C/svg%3E");
+  color: var(--ink);
+  background: var(--window) padding-box;
+  border: 4px solid transparent;
+  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' shape-rendering='crispEdges'%3E%3Cpath fill='%230a0f2c' d='M1 0h4v1H1zM0 1h1v4H0zM5 1h1v4H5zM1 5h4v1H1z'/%3E%3Cpath fill='%23f6f1de' d='M1 1h4v1H1zM1 4h4v1H1zM1 2h1v2H1zM4 2h1v2H4z'/%3E%3C/svg%3E") 2;
+}
+
+/* Gold pixel arrow before the current menu choice ([aria-current=page] or [aria-pressed=true]). */
+@utility menu-cursor {
+  &::before {
+    content: "";
+    width: 6px;
+    height: 10px;
+    margin-right: 6px;
+    flex: none;
+    visibility: hidden;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='3' height='5' shape-rendering='crispEdges'%3E%3Cpath fill='%23f2c14e' d='M0 0h1v5H0zM1 1h1v3H1zM2 2h1v1H2z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  }
+  &[aria-current="page"]::before,
+  &[aria-pressed="true"]::before {
+    visibility: visible;
+  }
+}
+
+/* Native controls drawn as pixel parts: a night box that fills gold with a night tick, and a gold chevron on selects. */
+@utility pixel-check {
+  appearance: none;
+  flex: none;
+  border: 2px solid var(--edge);
+  background: var(--color-night);
+  &:checked {
+    background: var(--color-gold) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' shape-rendering='crispEdges'%3E%3Cpath fill='%230a0f2c' d='M4 1h1v1H4zM3 2h1v1H3zM0 3h1v1H0zM2 3h1v1H2zM1 4h1v1H1z'/%3E%3C/svg%3E") center / 75% no-repeat;
+  }
+  &:disabled { border-style: dashed; }
+}
+@utility pixel-select {
+  appearance: none;
+  padding-right: 2.25rem;
+  background: var(--ground) var(--chevron) right 0.75rem center / 10px 6px no-repeat;
 }
 
 @layer base {
-  ::selection {
-    background: var(--color-stone-900);
-    color: var(--color-stone-50);
+  summary { list-style: none; display: flex; align-items: center; gap: 0.5rem; }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: "";
+    width: 6px;
+    height: 10px;
+    flex: none;
+    background: currentColor;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
   }
-  @media (prefers-color-scheme: dark) {
-    ::selection {
-      background: var(--color-stone-100);
-      color: var(--color-stone-900);
-    }
+  details[open] > summary::before { width: 10px; height: 6px; clip-path: polygon(0 0, 100% 0, 50% 100%); }
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-night);
   }
   html {
-    accent-color: var(--color-stone-900);
+    accent-color: var(--color-gold);
     caret-color: currentColor;
     scroll-padding-top: 4rem;
+  }
+  body {
+    background: var(--ground);
+    color: var(--ink);
   }
   button, a, input, select { -webkit-tap-highlight-color: transparent; }
   button:not(:disabled), select:not(:disabled) { cursor: pointer; }
   h1, h2, h3, p { overflow-wrap: anywhere; }
   input, select { font: inherit; }
-  @media (prefers-color-scheme: dark) {
-    html { accent-color: var(--color-stone-100); }
-  }
   :focus-visible {
-    outline: 2px solid var(--color-stone-900);
+    outline: 2px solid var(--focus);
     outline-offset: 2px;
   }
-  @media (prefers-color-scheme: dark) {
-    :focus-visible { outline-color: var(--color-stone-100); }
-  }
+  a { text-decoration-color: color-mix(in oklab, currentColor 55%, transparent); }
+  a:hover { text-decoration-color: currentColor; }
 }
 
 /* Small-caps ledger labels. */
@@ -56,18 +183,24 @@
   letter-spacing: 0.04em;
 }
 
-/* 1-bit checkerboard dither in the current text colour, for empty tracks and slots. */
+/* Checkerboard dither in the current text colour, for empty tracks and slots. */
 @utility dither {
   background-image: conic-gradient(currentColor 25%, transparent 0 50%, currentColor 0 75%, transparent 0);
   background-size: 4px 4px;
 }
 
-/* E-ink full refresh: the panel flashes to ink, then paper, then shows the new image. */
+/* E-ink full refresh: the panel flashes to black, then white, then shows the new image. */
 @keyframes eink-refresh {
-  0% { background: var(--color-stone-900); opacity: 1; }
-  35% { background: var(--color-stone-900); opacity: 1; }
+  0% { background: #111; opacity: 1; }
+  35% { background: #111; opacity: 1; }
   45% { background: #fff; opacity: 1; }
   100% { background: #fff; opacity: 0; }
+}
+
+/* The dialogue box's "more" arrow: a two-step bob, the only idle motion in the world. */
+@keyframes menu-bob {
+  0%, 49% { transform: translateY(0); }
+  50%, 100% { transform: translateY(2px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

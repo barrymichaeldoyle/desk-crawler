@@ -48,9 +48,9 @@ export function AdventureLog() {
   const days = useMemo(() => group((results as Entry[]).filter((entry) => kinds === null || kinds.includes(entry.kind))), [results, kinds])
 
   return (
-    <section aria-labelledby="log-title">
+    <section aria-labelledby="log-title" className="window min-w-0 px-4 pt-3 pb-4 sm:px-5">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
-        <h2 id="log-title" className="font-display text-xl font-semibold">
+        <h2 id="log-title" className="font-display text-xl font-semibold text-gold-ink">
           Adventure log
         </h2>
         <div role="group" aria-label="Filter adventure log" className="-mx-1 flex flex-wrap">
@@ -60,7 +60,7 @@ export function AdventureLog() {
               type="button"
               aria-pressed={filter === item.key}
               onClick={() => setFilter(item.key)}
-              className="min-h-11 px-2 text-sm text-stone-600 underline-offset-4 aria-pressed:font-semibold aria-pressed:text-stone-900 aria-pressed:underline dark:text-stone-400 dark:aria-pressed:text-stone-100"
+              className="menu-cursor inline-flex min-h-11 items-center px-1.5 text-sm text-muted hover:text-ink aria-pressed:font-semibold aria-pressed:text-gold-ink"
             >
               {item.label}
             </button>
@@ -69,22 +69,22 @@ export function AdventureLog() {
       </div>
 
       {status === 'LoadingFirstPage' ? (
-        <p role="status" className="mt-3 text-stone-600 dark:text-stone-400">
+        <p role="status" className="mt-3 text-muted">
           Reading the log…
         </p>
       ) : days.length === 0 ? (
-        <p className="mt-3 text-stone-600 dark:text-stone-400">{filter === 'all' ? 'Nothing logged yet. The first entries arrive with the next adventure.' : 'Nothing of this kind in the loaded entries.'}</p>
+        <p className="mt-3 text-muted">{filter === 'all' ? 'Nothing logged yet. The first entries arrive with the next adventure.' : 'Nothing of this kind in the loaded entries.'}</p>
       ) : (
         <div className="mt-2 flex flex-col">
           {days.map((day) => (
             <section key={day.label} aria-label={day.label}>
-              <h3 className="sticky top-11 z-[1] border-b border-stone-900 bg-stone-50 py-2 text-sm font-bold dark:border-stone-300 dark:bg-stone-950">{day.label}</h3>
+              <h3 className="sticky top-12 z-[1] border-b-2 border-edge bg-ground py-2 text-sm font-bold">{day.label}</h3>
               <ol>
                 {day.encounters.map((encounter) => (
                   <li key={encounter.key}>
                     <ul>
                       {encounter.entries.map((entry) => (
-                        <li key={entry.id} className="border-b border-stone-300 py-3 dark:border-stone-700">
+                        <li key={entry.id} className="border-b border-rule py-3">
                           <LogStory entry={entry} />
                         </li>
                       ))}
@@ -103,7 +103,7 @@ export function AdventureLog() {
         </Button>
       ) : null}
       {status === 'LoadingMore' ? <p role="status" className="mt-3 text-sm">Loading older adventures…</p> : null}
-      {status === 'Exhausted' && days.length > 0 ? <p className="mt-3 text-xs text-stone-600 dark:text-stone-400">Detailed history is kept for three days.</p> : null}
+      {status === 'Exhausted' && days.length > 0 ? <p className="mt-3 text-xs text-muted">Detailed history is kept for three days.</p> : null}
     </section>
   )
 }

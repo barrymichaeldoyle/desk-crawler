@@ -96,7 +96,7 @@ export function DevicePreview({ sceneUrl, heroName }: { sceneUrl: string; heroNa
 
   return (
     <figure className="flex flex-col gap-3">
-      <div className="rounded-[1.4rem] bg-stone-900 p-[clamp(0.5rem,2.5vw,1rem)] dark:bg-stone-700">
+      <div className="rounded-[1.4rem] bg-night p-[clamp(0.5rem,2.5vw,1rem)] dark:bg-[#2b3474]">
         <div ref={frame} className="relative overflow-hidden rounded-md bg-white" style={{ aspectRatio: `${device.width} / ${device.height}` }}>
           {/* Scene stand-in: also what screen readers get, since the iframe is decorative duplication of the page. */}
           <img src={localSceneUrl} alt={`${heroName}'s current scene`} width={760} height={200} decoding="async" className={`absolute inset-0 m-auto w-full [image-rendering:pixelated] transition-opacity duration-200 ${!payloadError && html && scale && loaded === html ? 'opacity-0' : 'opacity-100'}`} />
@@ -117,14 +117,14 @@ export function DevicePreview({ sceneUrl, heroName }: { sceneUrl: string; heroNa
         </div>
       </div>
       <figcaption className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-        <div role="group" aria-label="Preview layout" className="flex border border-stone-900 dark:border-stone-300">
+        <div role="group" aria-label="Preview layout" className="flex border-2 border-edge">
           {LAYOUTS.map((layout) => (
             <button
               key={layout}
               type="button"
               aria-pressed={choice.layout === layout}
               onClick={() => choose({ layout })}
-              className="min-h-11 px-3 text-sm font-semibold text-stone-700 not-last:border-r not-last:border-stone-900 aria-pressed:bg-stone-900 aria-pressed:text-white dark:text-stone-300 dark:not-last:border-stone-300 dark:aria-pressed:bg-stone-100 dark:aria-pressed:text-stone-900"
+              className="menu-cursor flex min-h-11 items-center px-3 text-sm font-semibold text-muted not-last:border-r-2 not-last:border-edge hover:text-ink aria-pressed:bg-navy aria-pressed:text-gold"
             >
               {PREVIEW_LAYOUTS[layout].label}
             </button>
@@ -137,14 +137,14 @@ export function DevicePreview({ sceneUrl, heroName }: { sceneUrl: string; heroNa
               type="button"
               aria-pressed={choice.device === key}
               onClick={() => choose({ device: key })}
-              className="min-h-11 px-1 text-stone-600 underline-offset-4 aria-pressed:font-semibold aria-pressed:text-stone-900 aria-pressed:underline dark:text-stone-400 dark:aria-pressed:text-stone-100"
+              className="min-h-11 px-1 text-muted menu-cursor inline-flex items-center hover:text-ink aria-pressed:font-semibold aria-pressed:text-gold-ink"
             >
               {PREVIEW_DEVICES[key].label}
             </button>
           ))}
         </div>
       </figcaption>
-      <p className="text-sm text-stone-600 dark:text-stone-400">
+      <p className="text-sm text-muted">
         {failed || payloadError ? 'Preview unavailable. Showing the current scene; your hero’s details are below.' : 'Live game preview. Your TRMNL may show an earlier snapshot until its next refresh.'}
         {choice.layout === 'markup' ? null : ' Shaded areas are your other plugins.'}
       </p>

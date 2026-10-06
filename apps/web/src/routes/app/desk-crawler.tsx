@@ -37,7 +37,7 @@ function SignedInApp() {
       <main id="main" className="mx-auto w-full max-w-3xl px-4 py-8">
         <Card title="Start on TRMNL">
           <p>Desk Crawler starts on your TRMNL. Install the Desk Crawler plugin from the TRMNL marketplace, connect it here, then save it in TRMNL.</p>
-          <p className="mt-3 text-sm text-stone-600 dark:text-stone-400">The plugin is in development and will appear in the directory after review.</p>
+          <p className="mt-3 text-sm text-muted">The plugin is in development and will appear in the directory after review.</p>
           <Link to="/help/desk-crawler" className="mt-3 inline-flex min-h-11 items-center font-semibold underline underline-offset-4">How to connect Desk Crawler</Link>
           <Link to="/account" className="ml-4 inline-flex min-h-11 items-center underline underline-offset-4">Account settings</Link>
         </Card>
@@ -60,19 +60,18 @@ function SignedInApp() {
   }
   return (
     <>
-      <nav aria-label="Desk Crawler" className="sticky top-0 z-10 border-b border-stone-300 bg-stone-50 px-2 dark:border-stone-800 dark:bg-stone-950">
+      <nav aria-label="Desk Crawler" className="window sticky top-0 z-10 !border-x-0 !border-t-0 px-2">
         <ul className={`mx-auto flex items-stretch ${wide ? 'max-w-6xl' : 'max-w-3xl'}`}>
           <li className="hidden items-center pr-4 pl-2 sm:flex">
-            <img src="/games/desk-crawler/favicon.svg" alt="" width={20} height={20} className="[image-rendering:pixelated]" />
-            <span className="ml-2 font-bold">Desk Crawler</span>
+            <img src="/games/desk-crawler/favicon.svg" alt="" width={24} height={24} className="[image-rendering:pixelated]" />
+            <span className="ml-2 font-display text-lg font-semibold text-gold-ink">Desk Crawler</span>
           </li>
           {NAV.map((item) => (
             <li key={item.to} className="flex-1">
               <Link
                 to={item.to}
                 activeOptions={{ exact: true }}
-                className="flex min-h-11 items-center justify-center text-sm font-semibold text-stone-600 dark:text-stone-400"
-                activeProps={{ className: 'text-stone-900 underline underline-offset-8 decoration-2 dark:text-stone-100' }}
+                className="menu-cursor flex min-h-11 items-center justify-center text-sm font-semibold text-muted hover:text-ink aria-[current=page]:text-gold-ink"
               >
                 {item.label}
               </Link>

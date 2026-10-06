@@ -14,12 +14,12 @@ export function SwitchAccount({ returnTo }: { returnTo: string }) {
   const [failed, setFailed] = useState(false)
   const email = user?.primaryEmailAddress?.emailAddress
   return (
-    <p className="text-sm text-stone-600 dark:text-stone-400">
+    <p className="text-sm text-muted">
       {email ? <>Signed in with {email}. </> : null}Not the right account?{' '}
       <Button variant="quiet" className="px-0" pending={pending} busyLabel="Switching…" onClick={async () => { setPending(true); setFailed(false); try { await clerk.signOut({ redirectUrl: returnTo }) } catch { setFailed(true); setPending(false) } }}>
         Switch account
       </Button>
-      {failed ? <span role="alert" className="block text-red-700 dark:text-red-400">We couldn’t sign out. Check your connection and try again.</span> : null}
+      {failed ? <span role="alert" className="block text-hp-ink">We couldn’t sign out. Check your connection and try again.</span> : null}
     </p>
   )
 }

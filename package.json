@@ -18,6 +18,7 @@
     "balance": "tsx tools/balance/run.ts",
     "lint:trmnl:setup": "tsx tools/trmnl/lint.ts --install",
     "lint:trmnl": "tsx tools/trmnl/lint.ts",
+    "crosscheck:trmnl": "tsx tools/trmnl/crosscheck.ts",
     "check": "pnpm typecheck && pnpm test",
     "build:deploy": "node tools/deploy/check-target.mjs && pnpm check && convex deploy -y --cmd 'pnpm build'",
     "deploy:web": "pnpm --filter @trmnl-games/web run deploy"

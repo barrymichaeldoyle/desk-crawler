@@ -5,6 +5,7 @@
  * matrix. This approximates TRMNL's renderer; real-device renders stay the
  * acceptance gate. Scenarios live in the shared previewScenarios module; for an
  * interactive gallery run `pnpm dev` and open /dev/desk-crawler.  Usage: pnpm tsx tools/trmnl/preview.ts [artBaseUrl] [--recap] [--portrait]
+ * `--dump-contexts <file>` also writes each Liquid render context, for tools/trmnl/crosscheck.ts.
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { Liquid } from 'liquidjs'
@@ -35,12 +36,16 @@ const previewStates = process.argv.includes('--recap') ? { ...states, ...recapSt
 
 mkdirSync('.previews', { recursive: true })
 let written = 0
+const contextsIndex = process.argv.indexOf('--dump-contexts')
+const contexts: Array<{ name: string; layout: PreviewLayout; context: Record<string, unknown> }> = []
 for (const [name, input] of Object.entries(previewStates)) {
   const withRecap = process.argv.includes('--recap') ? withOvernightRecap(input, overnightEntries) : input
   const payload = sceneUrlsAt(buildPayload(withRecap), input.now, utcOffset)
   if (process.argv.includes('--recap')) writeFileSync(`.previews/${name}--payload.json`, JSON.stringify(payload, null, 2))
   for (const layout of Object.keys(PREVIEW_LAYOUTS) as PreviewLayout[]) {
-    const inner = await liquid.parseAndRender(screenMarkup[layout], { ...payload, desk_keepsake_code: KEEPSAKE_FREE_SCENARIOS.has(name) ? null : deskKeepsakeCode, utc_offset: NO_OFFSET_SCENARIOS.has(name) ? null : utcOffset })
+    const context = { ...payload, desk_keepsake_code: KEEPSAKE_FREE_SCENARIOS.has(name) ? null : deskKeepsakeCode, utc_offset: NO_OFFSET_SCENARIOS.has(name) ? null : utcOffset }
+    if (contextsIndex >= 0) contexts.push({ name, layout, context })
+    const inner = await liquid.parseAndRender(screenMarkup[layout], context)
     for (const device of Object.keys(PREVIEW_DEVICES) as PreviewDevice[]) {
       writeFileSync(`.previews/${name}--${device}--${layout}.html`, previewDocument(inner, device, layout, `${name} · ${device} · ${PREVIEW_LAYOUTS[layout].label}`))
       written++
@@ -51,4 +56,5 @@ for (const [name, input] of Object.entries(previewStates)) {
     }
   }
 }
+if (contextsIndex >= 0) writeFileSync(process.argv[contextsIndex + 1]!, JSON.stringify(contexts))
 console.log(`wrote ${written} previews to .previews/`)

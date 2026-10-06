@@ -7,6 +7,7 @@ on:
       - 'tools/trmnl/**'
       - 'packages/desk-crawler/src/templates/**'
       - 'packages/desk-crawler/src/art/**'
+      - 'packages/desk-crawler/src/lib/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
@@ -17,6 +18,7 @@ on:
       - 'tools/trmnl/**'
       - 'packages/desk-crawler/src/templates/**'
       - 'packages/desk-crawler/src/art/**'
+      - 'packages/desk-crawler/src/lib/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
@@ -43,3 +45,4 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint:trmnl:setup
       - run: pnpm lint:trmnl
+      - run: pnpm crosscheck:trmnl

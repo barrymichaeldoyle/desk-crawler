@@ -106,7 +106,7 @@ Gear rarity: common 70%, uncommon 25%, rare 5%. Choose weapon/armor evenly, then
 | 2 | 7 | 5 | 4 | 12 |
 | 3 | 12 | 9 | 8 | 24 |
 
-Uncommon adds +2 to the slot's stat and doubles sale value. Rare adds +4 and quadruples sale value. Templates may vary their names while preserving these stat budgets. Equipped starter gear counts toward inventory capacity.
+Uncommon adds +2 to the slot's stat and doubles sale value. Rare adds +4 and quadruples sale value. Each template also carries a small stat offset so same-tier items differ: the starter Letter Opener and Cardigan keep the tier stat and their tier-1 partners (Ruler Blade, Lanyard Mail) add 1; tier-2 and tier-3 pairs sit one point either side of the tier stat (for example Cable Cutter 6 ATK, Keyboard Mace 8 ATK), keeping the tier average. Equipped starter gear counts toward inventory capacity.
 
 Initial bag capacity: 30 gear including equipment, plus one bounded potion stack and at most one held gear outside the bag. A new gear find at capacity is retained with its original stats in the held slot; finish earned effects, then sleep. No automatic sale/disposal, hidden queue or expiry. At 24/30 show a quiet warning. Inventory sleep stops encounters/XP until explicit claim/free-space/Resume; see [inventory](inventory.md).
 
@@ -165,7 +165,7 @@ Tick summaries have a 90-code-point backend limit, with render-time clamping for
 
 These targets may conflict with the starting numbers. The balance harness decides; record tuned values and observed confidence intervals before calling the game balanced.
 
-The tables above are the planning baseline. The release catalog v1 (`packages/desk-crawler/src/content/v1.ts`, D63) carries the harness-tuned numbers: lower monster XP/gold and loot gold, rare gear 2% and uncommon 28%, plus the D61 bag ladder. Results and remaining tuning are in [balance evidence](evidence/balance.md) and [bag ladder evidence](evidence/bag-ladder.md).
+The tables above are the planning baseline. The release catalog v1 (`packages/desk-crawler/src/content/v1.ts`, D63) carries the harness-tuned numbers: lower monster XP/gold and loot gold, rare gear 4% and uncommon 26% (D66, after the per-item stat split; previously 2%/28%), plus the D61 bag ladder. Results and remaining tuning are in [balance evidence](evidence/balance.md) and [bag ladder evidence](evidence/bag-ladder.md).
 
 ## Device narrative acceptance
 

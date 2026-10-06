@@ -46,6 +46,8 @@ export interface GearTemplate {
   readonly kind: GearKind
   readonly tier: number
   readonly name: string
+  /** Added to the tier's slot stat (weapon ATK or armor DEF) so same-tier items differ; absent means 0. */
+  readonly statOffset?: number
 }
 
 export interface GearTierStats {

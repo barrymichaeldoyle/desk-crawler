@@ -1,5 +1,19 @@
 # Balance evidence — A03
 
+## Gear stat split (D66), 2026-10-06
+
+Same-tier items no longer share stats: each template carries a stat offset (starter pair at the tier stat, tier-1 partners +1, tier-2/3 pairs ±1). That halves the chance that a rare drop is the top item in its slot, so rare weight doubles (common 70 / uncommon 26 / rare 4, was 70/28/2) to keep the per-find chance of a best-in-slot rare at 2%. The harness's best-in-slot target now includes the top template's offset.
+
+Reproduction: `pnpm balance --heroes 300 --days 90 --content v1 --json docs/evidence/balance-v1-gear-split-90-days.json`
+
+| Cohort | Best-in-slot median days: before → split only → split + 4% rare | Reached by day 90 | Level 8 median | Cafeteria death-day % |
+| --- | --- | --- | --- | --- |
+| Daily | 36.8 → 58.1 → 36.9 | 290 → 220 → 288 | 7.9 → 7.8 | 3.6 → 2.9 |
+| Three-day | 42.5 → 66.6 → 42.9 | 288 → 202 → 283 | 9.5 → 9.3 | 2.7 → 2.3 |
+| Seven-day | 77.1 → >90 → 70.7 | 202 → 103 → 193 | 17.2 → 16.9 | 3.9 → 3.0 |
+
+The three-day cohort stays inside the D30 window of days 35–45. Slightly better average gear trims Cafeteria death days, and end gold rises about 2% (three-day median 53,054 → 54,158). Undergeared, safe-farming and unattended cohorts are unchanged.
+
 ## Current release: v4, 2026-10-05
 
 Simulation version 1; active content v4 retains v2 gameplay tuning. The harness runs the real pure simulator locally, without a database or network. It uses deterministic per-hero/tick PRNG streams (the production SHA-256 seed derivation is not reproduced), staggered visit times and the v4 bounded recent-story context. These are policy simulations, not observed player outcomes. Gameplay numbers were not changed during this pass.

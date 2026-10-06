@@ -529,8 +529,8 @@ class TickRun {
       name: template.name,
       rarity: rarity.rarity,
       requiredLevel: stats.requiredLevel,
-      attack: kind === 'weapon' ? stats.weaponAttack + rarity.statBonus : 0,
-      defense: kind === 'armor' ? stats.armorDefense + rarity.statBonus : 0,
+      attack: kind === 'weapon' ? stats.weaponAttack + (template.statOffset ?? 0) + rarity.statBonus : 0,
+      defense: kind === 'armor' ? stats.armorDefense + (template.statOffset ?? 0) + rarity.statBonus : 0,
       saleValue: stats.saleValue * rarity.saleMultiplier,
       quantity: 1,
     }

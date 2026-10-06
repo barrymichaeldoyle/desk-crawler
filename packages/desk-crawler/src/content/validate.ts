@@ -36,7 +36,9 @@ export function validateCatalog(content: ContentCatalog): string[] {
   }
   for (const template of content.gearTemplates) {
     if ([...template.name].length > CONTENT_LIMITS.itemName) problems.push(`item name too long: ${template.name}`)
-    if (content.gearTiers[template.tier] === undefined) problems.push(`gear ${template.id} has unknown tier`)
+    const tier = content.gearTiers[template.tier]
+    if (tier === undefined) problems.push(`gear ${template.id} has unknown tier`)
+    else if ((template.kind === 'weapon' ? tier.weaponAttack : tier.armorDefense) + (template.statOffset ?? 0) < 1) problems.push(`gear ${template.id} stat offset leaves no stat`)
   }
 
   const biomeIds = new Set(content.biomes.map((biome) => biome.id))

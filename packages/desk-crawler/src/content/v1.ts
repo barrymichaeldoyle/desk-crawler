@@ -356,19 +356,22 @@ export const contentV1: ContentCatalog = {
     monster('microwave_wraith', 'Microwave Wraith', 3, 105, 29, 9, [40, 47], [8, 10]),
     monster('leftovers_hydra', 'Leftovers Hydra', 3, 120, 32, 12, [43, 50], [8, 10]),
   ],
+  // Each tier pairs two items per slot with different stats, so a second find is never a duplicate. The starter pair keeps
+  // the tier stat (first-day pacing unchanged) and its partner is the first small upgrade; tiers 2 and 3 split
+  // one point either side of the tier stat (two apart) so their average holds. Items copy stats at creation.
   gearTemplates: [
     { id: 'letter_opener', kind: 'weapon', tier: 1, name: 'Letter Opener' },
-    { id: 'ruler_blade', kind: 'weapon', tier: 1, name: 'Ruler Blade' },
+    { id: 'ruler_blade', kind: 'weapon', tier: 1, name: 'Ruler Blade', statOffset: 1 },
     { id: 'cardigan', kind: 'armor', tier: 1, name: 'Cardigan' },
-    { id: 'lanyard_mail', kind: 'armor', tier: 1, name: 'Lanyard Mail' },
-    { id: 'cable_cutter', kind: 'weapon', tier: 2, name: 'Cable Cutter' },
-    { id: 'keyboard_mace', kind: 'weapon', tier: 2, name: 'Keyboard Mace' },
-    { id: 'insulated_cardigan', kind: 'armor', tier: 2, name: 'Insulated Cardigan' },
-    { id: 'anti_static_vest', kind: 'armor', tier: 2, name: 'Anti-Static Vest' },
-    { id: 'ladle_of_ruin', kind: 'weapon', tier: 3, name: 'Ladle of Ruin' },
-    { id: 'spork_halberd', kind: 'weapon', tier: 3, name: 'Spork Halberd' },
-    { id: 'apron_of_warding', kind: 'armor', tier: 3, name: 'Apron of Warding' },
-    { id: 'oven_mitt_plate', kind: 'armor', tier: 3, name: 'Oven-Mitt Plate' },
+    { id: 'lanyard_mail', kind: 'armor', tier: 1, name: 'Lanyard Mail', statOffset: 1 },
+    { id: 'cable_cutter', kind: 'weapon', tier: 2, name: 'Cable Cutter', statOffset: -1 },
+    { id: 'keyboard_mace', kind: 'weapon', tier: 2, name: 'Keyboard Mace', statOffset: 1 },
+    { id: 'insulated_cardigan', kind: 'armor', tier: 2, name: 'Insulated Cardigan', statOffset: -1 },
+    { id: 'anti_static_vest', kind: 'armor', tier: 2, name: 'Anti-Static Vest', statOffset: 1 },
+    { id: 'ladle_of_ruin', kind: 'weapon', tier: 3, name: 'Ladle of Ruin', statOffset: -1 },
+    { id: 'spork_halberd', kind: 'weapon', tier: 3, name: 'Spork Halberd', statOffset: 1 },
+    { id: 'apron_of_warding', kind: 'armor', tier: 3, name: 'Apron of Warding', statOffset: -1 },
+    { id: 'oven_mitt_plate', kind: 'armor', tier: 3, name: 'Oven-Mitt Plate', statOffset: 1 },
   ],
   gearTiers: {
     1: { weaponAttack: 3, armorDefense: 2, requiredLevel: 1, saleValue: 5 },
@@ -377,8 +380,8 @@ export const contentV1: ContentCatalog = {
   },
   rarities: [
     { rarity: 'common', weight: 70, statBonus: 0, saleMultiplier: 1 },
-    { rarity: 'uncommon', weight: 28, statBonus: 2, saleMultiplier: 2 },
-    { rarity: 'rare', weight: 2, statBonus: 4, saleMultiplier: 4 },
+    { rarity: 'uncommon', weight: 26, statBonus: 2, saleMultiplier: 2 },
+    { rarity: 'rare', weight: 4, statBonus: 4, saleMultiplier: 4 },
   ],
   potion: { templateId: 'healing_potion', name: 'Healing Potion' },
   // D61: a new hero starts small; milestones guarantee each step, finds and gold may run one ahead.

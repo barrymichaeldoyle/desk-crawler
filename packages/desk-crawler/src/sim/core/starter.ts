@@ -73,8 +73,8 @@ export function starterKit(content: ContentCatalog): { weapon: NewItem; armor: N
       name: template.name,
       rarity: 'common',
       requiredLevel: tier.requiredLevel,
-      attack: kind === 'weapon' ? tier.weaponAttack : 0,
-      defense: kind === 'armor' ? tier.armorDefense : 0,
+      attack: kind === 'weapon' ? tier.weaponAttack + (template.statOffset ?? 0) : 0,
+      defense: kind === 'armor' ? tier.armorDefense + (template.statOffset ?? 0) : 0,
       saleValue: tier.saleValue,
       quantity: 1,
     }

@@ -105,7 +105,8 @@ function bestInSlot(content: ContentCatalog): { attack: number; defense: number 
   const top = Math.max(...content.biomes.map((b) => b.tier))
   const tier = content.gearTiers[top]!
   const bonus = Math.max(...content.rarities.map((r) => r.statBonus))
-  return { attack: tier.weaponAttack + bonus, defense: tier.armorDefense + bonus }
+  const offset = (kind: 'weapon' | 'armor') => Math.max(...content.gearTemplates.filter((t) => t.tier === top && t.kind === kind).map((t) => t.statOffset ?? 0))
+  return { attack: tier.weaponAttack + offset('weapon') + bonus, defense: tier.armorDefense + offset('armor') + bonus }
 }
 
 /** One visit: equip best eligible gear, claim and sell everything else, resume/travel to the hardest unlocked biome (D29). */

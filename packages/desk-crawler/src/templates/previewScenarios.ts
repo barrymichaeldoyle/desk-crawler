@@ -15,7 +15,7 @@ export const PREVIEW_UTC_OFFSET = 2 * 3600
 /** Preview-only sample of the verified device-envelope field; never an actual redeemable code. */
 export const PREVIEW_KEEPSAKE_CODE = 'ABCD-EFGH'
 /** Screens that never show a keepsake code. */
-export const KEEPSAKE_FREE_SCENARIOS: ReadonlySet<string> = new Set(['unlinked', 'sample'])
+export const KEEPSAKE_FREE_SCENARIOS: ReadonlySet<string> = new Set(['unlinked', 'unlinkedPaused', 'sample'])
 /** Scenarios that render without the owner's UTC offset, to prove the fallback. */
 export const NO_OFFSET_SCENARIOS: ReadonlySet<string> = new Set(['noMetadata'])
 
@@ -115,6 +115,8 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
       logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'Sent an elite [[Microwave Wraith]] back to the kitchen. +188 XP, +57 gold. Reached level 12! Found a [[Rare Ladle of Ruin]].', deltas: { xpEarned: 188, gold: 57, hp: -48 } }, ...base.logs],
     },
     unlinked: { ...base, hero: null, ranking: null, logs: [], latestEvent: null },
+    // Setup screen while the service is paused: no code to scan, so the panel says so instead of asking for a scan.
+    unlinkedPaused: { ...base, hero: null, ranking: null, logs: [], latestEvent: null, world: { ...base.world!, maintenanceMode: true } },
     firstRun: { ...base, hero: hero({ level: 1, xp: 0, hp: 60, gold: 0, biomeId: 'office_cubicles', lastTick: 0 }), logs: [], latestEvent: null, ranking: { ...base.ranking!, rank: null, rankDelta: null, status: 'awaiting', score: null, top5: [] } },
   }
 

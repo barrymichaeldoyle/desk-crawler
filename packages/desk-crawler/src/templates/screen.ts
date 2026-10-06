@@ -1,13 +1,14 @@
 /**
- * Four self-contained TRMNL layouts. Template v30 adds a portrait arrangement
- * of every view beside the unchanged landscape one (v29: a companion QR in
- * every view, more room for complete stories on compact OG screens).
+ * Four self-contained TRMNL layouts. Template v31 centers the setup and
+ * first-run panel in every size with the largest served QR codes (v30: a
+ * portrait arrangement of every view beside the landscape one; v29: a
+ * companion QR in every view).
  * User text arrives only through escaped merge_variables; scenes and QR codes
  * use existing integer-scaled artwork. No shared-template registration.
  */
 import { GLYPHS, glyphRows } from '../art/glyphs'
 
-export const TEMPLATE_VERSION = 30
+export const TEMPLATE_VERSION = 31
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -267,45 +268,53 @@ const bagQr = (scale = 3, largeScale = 4, caption = true) => `
 const gearSlot = (slot: string, field: string) => `
       <div class="hidden lg:block text--center"><div><span class="label">${slot}</span></div><div><span class="title--small" data-clamp="2">{% if ${field} != "" %}{{ ${field} | escape }}{% else %}None{% endif %}</span></div></div>`
 
-/** `shortColumn` is the side column for the short portrait slots (quarter, half): no scene on the OG and a smaller QR. */
-type WelcomeLayout = 'full' | 'halfVertical' | 'halfHorizontal' | 'quadrant' | 'shortColumn'
+/**
+ * `shortColumn` is the column for the portrait half and `narrowColumn` for the portrait quarter. Neither slot has the
+ * height for scene art above the full-size code; the 240-pixel OG quarter also keeps the quadrant's one-line text.
+ */
+type WelcomeLayout = 'full' | 'halfVertical' | 'halfHorizontal' | 'quadrant' | 'shortColumn' | 'narrowColumn'
 
 /**
  * First-run panel: setup (no active hero) or a brand-new hero before its first
- * adventure. The QR is the main element, sized per layout; text stays short.
+ * adventure. The QR is the main element: the largest code the OG and the X each
+ * serve, with a short heading and two or three lines. The panel grows to the
+ * title bar and centers its content, so no size leaves a blank band below it.
+ * The scan line only appears while a code is on screen (a paused service has
+ * none); the OG quarter keeps one short line, the X quarter the full set.
+ * The scene sits in a full-width block so the column's centering never lets it overflow a narrow panel.
  */
 const welcome = (layout: WelcomeLayout) => {
-  const compact = layout === 'quadrant'
-  const title = compact ? 'title title--small lg:title' : 'title lg:title--large'
-  const column = layout === 'halfVertical' || layout === 'shortColumn'
-  const line = column ? 'label lg:title--small text--center' : 'label lg:title--small'
-  const heading = `{% if status == "unlinked" %}Finish setting up{% else %}{{ hero_name | escape }} is ready{% endif %}`
+  const compact = layout === 'quadrant' || layout === 'narrowColumn'
+  const title = compact ? 'title title--small lg:title--large' : 'title lg:title--large'
+  const column = layout === 'halfVertical' || layout === 'shortColumn' || layout === 'narrowColumn'
+  const line = (visibility = '') => `${visibility ? `${visibility} ` : ''}label lg:title--small${column ? ' text--center' : ''}`
+  const heading = `{% if status != "unlinked" %}{{ hero_name | escape }} is ready{% elsif data_state == "service_paused" %}Back soon{% else %}Finish setting up{% endif %}`
+  const detail = (visibility = '') => `{% if status == "unlinked" %}{% if qr_base != "" %}<span class="${line(visibility)}" data-clamp="2">Scan with your phone to open the companion.</span>{% endif %}
+      <span class="${line(visibility)}" data-clamp="3">{{ attention | escape }}</span>{% else %}<span class="${line(visibility)}" data-clamp="2">The first adventure starts within 15 minutes.</span>
+      <span class="${line(visibility)}" data-clamp="3">Scan to open your companion: manage gear and pick where to explore.</span>{% endif %}
+      <span class="${line(visibility)}">trmnlgames.com</span>`
   const lines = compact
-    ? `<span class="${line}" data-clamp="2">{% if status == "unlinked" %}Scan to finish setup{% else %}First adventure within 15 minutes{% endif %}</span>`
-    : `{% if status == "unlinked" %}<span class="${line}" data-clamp="2">Scan with your phone to open the companion.</span>
-      <span class="${line}" data-clamp="2">{{ attention | escape }}</span>{% else %}<span class="${line}" data-clamp="2">The first adventure starts within 15 minutes.</span>
-      <span class="${line}" data-clamp="3">Scan to open your companion, where you manage gear and pick where to explore.</span>{% endif %}
-      <span class="${line}">trmnlgames.com</span>`
+    ? `<span class="${line('lg:hidden')}" data-clamp="2">{% if status != "unlinked" %}First adventure within 15 minutes{% elsif qr_base != "" %}Scan with your phone.{% else %}{{ attention | escape }}{% endif %}</span>
+      ${detail('hidden lg:block')}`
+    : detail()
   const text = `
     <div class="flex flex--col flex--left gap--small${column ? ' flex--center-x' : ''}">
       <span class="${title}" data-clamp="1">${heading}</span>
       ${lines}
     </div>`
-  const scales: Record<WelcomeLayout, [number, number]> = { full: [4, 7], halfVertical: [4, 5], halfHorizontal: [3, 5], quadrant: [3, 4], shortColumn: [3, 5] }
-  const [scale, largeScale] = scales[layout]
-  const code = `{% if qr_base != "" %}<div class="no-shrink">${qrImage(scale, largeScale)}</div>{% endif %}`
-  if (column) {
-    const art = layout === 'shortColumn' ? `<div class="hidden lg:block">${scene('scene_url_small')}</div>` : scene('scene_url_small')
-    return `${art}
-  <div class="flex flex--col flex--center-x gap--small">
-    ${code}${text}
+  const code = `{% if qr_base != "" %}<div class="no-shrink">${qrImage(5, 7)}</div>{% endif %}`
+  const body = column
+    ? `${layout === 'halfVertical' ? `<div class="stretch-x">${scene('scene_url_small')}</div>` : ''}
+    <div class="flex flex--col flex--center-x gap--small">
+      ${code}${text}
+    </div>`
+    : `${layout === 'full' ? scene('scene_url') : ''}
+    <div class="flex flex--row flex--center-x flex--center-y gap--large lg:gap--xlarge">
+      ${code}${text}
+    </div>`
+  return `
+  <div class="grow flex flex--col flex--center-x flex--center-y gap--small lg:gap--medium stretch-x">${body}
   </div>`
-  }
-  const row = `
-  <div class="flex flex--row flex--center-x flex--center-y gap--large lg:gap--xlarge">
-    ${code}${text}
-  </div>`
-  return layout === 'full' ? `${scene('scene_url')}${row}` : row
 }
 
 
@@ -333,7 +342,7 @@ const qrFooter = (scale = 3, largeScale = 4) => `
  * stories take the height, with the ranking and companion QR on the last row.
  */
 const fullPortrait = `
-  {% if status == "unlinked" or first_run %}<div class="grow flex flex--col flex--center-x flex--center-y stretch-x">${welcome('halfVertical')}</div>
+  {% if status == "unlinked" or first_run %}${welcome('halfVertical')}
   {% else %}
   <div class="no-shrink flex flex--col flex--left gap--xsmall stretch-x">
     <span class="title lg:hidden" data-clamp="1">{{ hero_name | truncate: 16 | escape }}, level {{ level }}</span>
@@ -376,7 +385,7 @@ const halfVerticalPortrait = `
 
 /** Quarter, portrait: hero line, the stories, then the companion QR across the bottom. */
 const quadrantPortrait = `
-  {% if status == "unlinked" or first_run %}${welcome('shortColumn')}
+  {% if status == "unlinked" or first_run %}${welcome('narrowColumn')}
   {% else %}
   <span class="no-shrink label lg:title--small" data-clamp="2">{{ hero_name | escape }}, level {{ level }} · HP {{ hp }}/{{ max_hp }}</span>
   <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small stretch-x">

@@ -104,6 +104,18 @@ describe('companion QR in every view', () => {
     }
   })
 
+  it('asks for a scan only while a setup code is on screen', async () => {
+    for (const markup of Object.values(screenMarkup)) {
+      const live = await liquid.parseAndRender(markup, { ...payload(), status: 'unlinked', data_state: 'unlinked', attention: 'Sign in to the companion, then save this plugin in TRMNL.', qr_base: `${base}/app` })
+      expect(live).toContain('Finish setting up')
+      expect(live).toContain('Scan with your phone')
+      const paused = await liquid.parseAndRender(markup, { ...payload(), status: 'unlinked', data_state: 'service_paused', attention: 'Desk Crawler is down for maintenance.', qr_base: '' })
+      expect(paused).toContain('Back soon')
+      expect(paused).toContain('Desk Crawler is down for maintenance.')
+      expect(paused).not.toContain('Scan')
+    }
+  })
+
   it('omits the code when the payload has no art endpoint', async () => {
     for (const markup of Object.values(screenMarkup)) {
       const html = await liquid.parseAndRender(markup, payload())

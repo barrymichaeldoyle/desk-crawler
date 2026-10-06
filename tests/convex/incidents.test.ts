@@ -60,4 +60,19 @@ describe('incident notices (D27)', () => {
     expect(incident).toMatchObject({ state: 'recovered', alert: { state: 'disabled' }, recovery: { state: 'disabled' } })
     expect(fetchMock).not.toHaveBeenCalled()
   })
+
+  it('exhausts delivery retries and ignores late workers and results without blocking recovery', async () => {
+    vi.stubEnv('RESEND_API_KEY', 're_test_fake')
+    fetchMock.mockImplementation(async () => new Response('{}', { status: 401 }))
+    await stallRun(t)
+    await t.mutation(internal.sim.runs.tick.watchdog, {})
+    await t.finishAllScheduledFunctions(vi.runAllTimers)
+    const incident = (await t.run(async ctx => await ctx.db.query('operationalIncidents').first()))!
+    expect(incident).toMatchObject({ state: 'recovered', alert: { state: 'failed', attempts: 3 }, recovery: { state: 'failed', attempts: 3 } })
+    expect(fetchMock).toHaveBeenCalledTimes(6)
+    await t.action(internal.incidents.sendNotice, { incidentId: incident._id, notice: 'alert' })
+    await t.mutation(internal.incidents.recordDelivery, { incidentId: incident._id, notice: 'alert', outcome: 'failed' })
+    expect(fetchMock).toHaveBeenCalledTimes(6)
+    expect((await t.run(async ctx => await ctx.db.get(incident._id)))?.alert).toEqual(incident.alert)
+  })
 })

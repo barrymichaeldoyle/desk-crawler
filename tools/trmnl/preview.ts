@@ -104,7 +104,10 @@ const potionStates: Record<string, PayloadInput> = Object.fromEntries([
   ['potionFindAndUse', 'Found a healing potion. Drank a potion.', 1, 0, 20],
   ['potionFullFallback', 'Potion pouch full; sold a spare for 5 gold.', 0, 5, 0],
 ].map(([name, summary, potionsFound, gold, hp]) => [name, { ...base, latestEvent: { kind: 'loot', outcome: { variant: 'loot', found: potionsFound ? 'potion' : 'gold' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'loot', summary: String(summary), deltas: { xpEarned: 0, potionsFound: Number(potionsFound), gold: Number(gold), hp: Number(hp) } }, ...base.logs] }]))
-const previewStates = process.argv.includes('--potion-finds') ? potionStates : process.argv.includes('--marketing') ? {
+const noEffectStates: Record<string, PayloadInput> = {
+  coffeeBreak: { ...base, hero: hero({ biomeId: 'office_cubicles', hp: 148 }), latestEvent: { kind: 'rest' }, logs: [{ at: NOW - 7 * 60_000, kind: 'rest', summary: 'Took a coffee break anyway.', deltas: { xpEarned: 0, gold: 0, hp: 0 } }, ...base.logs] },
+}
+const previewStates = process.argv.includes('--no-effect') ? noEffectStates : process.argv.includes('--potion-finds') ? potionStates : process.argv.includes('--marketing') ? {
   sample: { ...base, ownerAlias: 'Steve', hero: hero({ name: 'Pip' }), ranking: { ...base.ranking!, top5: base.ranking!.top5.map(row => row.rank === 3 ? { ...row, name: 'Steve', hero_name: 'Pip' } : row) } },
 } : states
 

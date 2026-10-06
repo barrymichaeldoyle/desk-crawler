@@ -35,6 +35,8 @@ Select current compatible versions during foundation work. No application test s
 
 ## Transaction and scheduler matrix
 
+D53 log presentation: a known all-zero change set displays `No effect` in the shared stats row; potion acquisition or any nonzero delta does not. Legacy logs without recorded deltas stay unknown. Verify full-health coffee-break copy on the companion and all four OG/X previews.
+
 - Concurrent valid hero creation → exactly one current hero/starter kit, including pending drafts.
 - Direct hero creation without an owned verified attempt → rejected with no writes; forged, expired, revoked and cross-owner attempts also fail.
 - Pending hero → no earned XP/gold/logs, gameplay intents, rank input or population membership; public sample → no persistent game writes.

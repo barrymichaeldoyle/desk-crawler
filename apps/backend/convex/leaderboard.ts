@@ -1,4 +1,6 @@
 import { currentHero, gameProfile } from './lib/gameProfile'
+import { paginator } from 'convex-helpers/server/pagination'
+import schema from './schema'
 import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import type { Doc, Id } from './_generated/dataModel'
@@ -69,6 +71,7 @@ export async function beginBuild(ctx: MutationCtx, run: Doc<'simulationRuns'>, w
     globalTotalPlayers: 0,
     currentBoard: 'overall',
     batchSequence: 0,
+    paginationVersion: 1,
     lastProgressAt: now,
   })
   const scheduled = await ctx.scheduler.runAfter(0, internal.leaderboard.buildBatch, { publicationId, expectedSequence: 0 })
@@ -76,10 +79,11 @@ export async function beginBuild(ctx: MutationCtx, run: Doc<'simulationRuns'>, w
   await ctx.db.patch(run._id, { state: 'ranking', lastProgressAt: now, nextScheduledFunctionId: undefined })
 }
 
-function pageQuery(ctx: MutationCtx, runId: Id<'simulationRuns'>, board: Board) {
-  if (board === 'overall') return ctx.db.query('rankInputs').withIndex('by_run_order', (q) => q.eq('runId', runId))
-  if (board === 'recent_24h') return ctx.db.query('rankInputs').withIndex('by_run_recent24', (q) => q.eq('runId', runId).eq('ranked24h', true))
-  return ctx.db.query('rankInputs').withIndex('by_run_recent7', (q) => q.eq('runId', runId).eq('ranked7d', true))
+function pageQuery(ctx: MutationCtx, publication: Doc<'leaderboardPublications'>, board: Board) {
+  const db = publication.paginationVersion === 1 ? paginator(ctx.db, schema) : ctx.db
+  if (board === 'overall') return db.query('rankInputs').withIndex('by_run_order', (q) => q.eq('runId', publication.runId))
+  if (board === 'recent_24h') return db.query('rankInputs').withIndex('by_run_recent24', (q) => q.eq('runId', publication.runId).eq('ranked24h', true))
+  return db.query('rankInputs').withIndex('by_run_recent7', (q) => q.eq('runId', publication.runId).eq('ranked7d', true))
 }
 
 export const buildBatch = internalMutation({
@@ -92,15 +96,18 @@ export const buildBatch = internalMutation({
     if (run === null || run.state !== 'ranking') return null
     const now = Date.now()
     const board = publication.currentBoard
-    const page = await pageQuery(ctx, run._id, board).paginate({ numItems: PAGE_SIZE, cursor: publication.cursor ?? null })
+    const page = await pageQuery(ctx, publication, board).paginate({ numItems: PAGE_SIZE, cursor: publication.cursor ?? null })
 
     let generation = publication.currentGenerationId ? await ctx.db.get(publication.currentGenerationId) : null
     let pendingEntries: Doc<'leaderboardGenerations'>['entries'] = []
     let globalRanked = publication.globalTotalPlayers
     const flush = async () => {
-      if (generation && pendingEntries.length > 0) {
-        await ctx.db.patch(generation._id, { entries: [...generation.entries, ...pendingEntries] })
-        generation = (await ctx.db.get(generation._id))!
+      if (generation) {
+        const entries = [...generation.entries, ...pendingEntries]
+        // Persist a cohort once per page, rather than rereading its Top 100
+        // document for every hero's rank increment.
+        await ctx.db.patch(generation._id, { nextRank: generation.nextRank, entries })
+        generation = { ...generation, entries }
       }
       pendingEntries = []
     }
@@ -147,7 +154,6 @@ export const buildBatch = internalMutation({
           ...(score === undefined ? {} : { score }),
         })
       }
-      await ctx.db.patch(generation._id, { nextRank: rank + 1 })
       generation = { ...generation, nextRank: rank + 1 }
       if (board === 'recent_7d') globalRanked += 1
     }

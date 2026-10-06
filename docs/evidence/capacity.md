@@ -1,5 +1,7 @@
 # Capacity measurement — 2026-10-04
 
+**October 5 update:** [engineering checks](engineering-readiness.md) records the revised builder's actual 1,000-row worker measurements, current shared-plan headroom and updated scenario estimate. The cost fix is unshipped. The measurements below are the original v2 baseline, not current candidate results.
+
 Measured on disposable Convex preview `precious-pheasant-866`; no real players or TRMNL account load. Simulation v1, content v2, template v11. Sanitized measurements: [capacity-results.json](capacity-results.json).
 
 The harness seeded 100, then 1,000 synthetic heroes with six evenly mixed states (exploring, resting, travelling, dead, paused, sleeping), 30 gear rows plus potions, and 168 hourly score buckets. Sleeping heroes also had a held item: 32 inventory rows. A forced publication run exercised all three boards. Ten authenticated pause commands raced with the scheduled simulation chain. Fifty sequential authorized screen requests followed each run.

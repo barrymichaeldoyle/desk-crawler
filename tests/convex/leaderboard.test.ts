@@ -58,6 +58,25 @@ describe('hourly leaderboard publication', () => {
     expect(publication?.globalTotalPlayers).toBe(1)
   })
 
+  it('keeps Top 100, full populations and consecutive ranks across pages and cohort boundaries', async () => {
+    await seedWorld(t)
+    for (let i = 0; i < 205; i++) await seedHero(t, { status: 'paused', pausedFromStatus: 'exploring', level: i < 103 ? 1 : 5, hp: 100, scoreHour: Math.floor(PUBLISH_SLOT / HOUR) * HOUR, scoreHourXp: 1 })
+    await runTick(t)
+    const w = (await world(t))!
+    const { generations, ranks } = await t.run(async ctx => ({
+      generations: await ctx.db.query('leaderboardGenerations').withIndex('by_publicationId', q => q.eq('publicationId', w.publishedPublicationId!)).collect(),
+      ranks: await ctx.db.query('heroRanks').withIndex('by_publicationId', q => q.eq('publicationId', w.publishedPublicationId!)).collect(),
+    }))
+    expect(ranks).toHaveLength(615)
+    expect(generations).toHaveLength(5)
+    for (const generation of generations) {
+      const expected = generation.board === 'overall' ? 205 : generation.cohortKey === '1-3' ? 103 : 102
+      expect(generation).toMatchObject({ state: 'ready', totalPlayers: expected, nextRank: expected + 1 })
+      expect(generation.entries.map(e => e.rank)).toEqual(Array.from({ length: 100 }, (_, i) => i + 1))
+      expect(ranks.filter(r => r.generationId === generation._id).map(r => r.rank).sort((a,b) => a-b)).toEqual(Array.from({ length: expected }, (_, i) => i + 1))
+    }
+  })
+
   it('computes same-board deltas across publications and cleans sets older than the previous one', async () => {
     await seedWorld(t, { lastPublishedAt: PUBLISH_SLOT - HOUR - 1000 })
     await seedHero(t)

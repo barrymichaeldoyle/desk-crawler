@@ -17,7 +17,7 @@ describe('story and stat changes', () => {
     const zero = { xpEarned: 0, gold: 0, hp: 0 }
     const fallback = displayLogDeltas({ deltas: { ...zero, gold: 5 }, detail: { outcome: { variant: 'loot', found: 'gold', potionFullFallback: true } } })
     expect(present('Potion pouch full; sold a spare for 5 gold.', fallback, 'loot').changes).toEqual(['+5 gold'])
-    expect(present('Found a healing potion.', zero, 'loot').changes).toEqual([])
+    expect(present('Found a healing potion.', zero, 'loot').changes).toEqual(['No effect'])
     expect(displayLogDeltas({ deltas: zero, detail: { operation: 'drink_potion' } }).potionsFound).toBe(0)
   })
   it('keeps expense-claim flavor and shows the reward once', () => {
@@ -47,7 +47,7 @@ describe('story and stat changes', () => {
 
   it('preserves numbers in names and non-stat consequences, omitting zero deltas', () => {
     expect(present('Found a [[24 gold Mace]]. Bag full. Holding it until you make room. Reached level 12!', { xpEarned: 0, gold: 0, hp: 0 }))
-      .toEqual({ narrative: 'Found a [[24 gold Mace]]. Bag full. Holding it until you make room. Reached level 12!', changes: [] })
+      .toEqual({ narrative: 'Found a [[24 gold Mace]]. Bag full. Holding it until you make room. Reached level 12!', changes: ['No effect'] })
     expect(present('+5 gold.').narrative).toBe('Found gold.')
   })
 

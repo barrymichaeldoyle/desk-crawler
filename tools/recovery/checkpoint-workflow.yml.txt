@@ -1,0 +1,40 @@
+# Review template only. Do not activate until destination, cadence, key custody and cost are approved.
+# The encryption key must also be held outside GitHub, in the owner's password manager.
+name: Protected recovery checkpoint
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: protected-recovery-checkpoint
+  cancel-in-progress: false
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: recovery-checkpoints
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Capture and encrypt
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.RECOVERY_CONVEX_DEPLOY_KEY }}
+          RECOVERY_CHECKPOINT_KEY: ${{ secrets.RECOVERY_CHECKPOINT_KEY }}
+        run: |
+          mkdir -m 700 "$RUNNER_TEMP/protected-checkpoint"
+          pnpm tsx tools/recovery/capture-export.ts --source exciting-cormorant-948 --out "$RUNNER_TEMP/protected-checkpoint/checkpoint.dcr"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: protected-checkpoint-${{ github.run_id }}
+          path: ${{ runner.temp }}/protected-checkpoint/checkpoint.dcr
+          retention-days: 14
+          if-no-files-found: error
+# Configure workflow-failure notification and a >90-minute missing-checkpoint alert before enabling.
+# Keep the artifact access restricted. Store only the encrypted checkpoint, never the raw export/key.

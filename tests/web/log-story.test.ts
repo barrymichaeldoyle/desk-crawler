@@ -21,3 +21,10 @@ it('renders a potion find in the change list below the story', () => {
   expect(html).toContain('<p>Found a healing potion.</p>')
   expect(html).toMatch(/<li>\+1 healing potion<\/li>/)
 })
+
+it('explains a full-health coffee break in the stats row', () => {
+  const html = renderToStaticMarkup(createElement(LogStory, { entry: { at: Date.UTC(2026, 9, 5, 11, 30), kind: 'rest', summary: 'Took a coffee break anyway.', deltas: { xpEarned: 0, gold: 0, hp: 0 } } }))
+  expect(html).toContain('<p>Took a coffee break anyway.</p>')
+  expect(html).toContain('<li>No effect</li>')
+  expect(html).not.toContain('+0')
+})

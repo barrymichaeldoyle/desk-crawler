@@ -1,6 +1,6 @@
 # TRMNL marketplace review package (draft)
 
-**Status: draft for Barry's review. Nothing here has been submitted or sent.** Submission, reviewer contact and listing changes need Barry's explicit go-ahead (AGENTS.md).
+**Status: draft for Barry's review. Nothing here has been submitted or sent.** Barry authorized the listing update and companion deployment; those actions are complete ([evidence](../evidence/listing-polish-deploy.md)). Submission and reviewer contact still need explicit authorization.
 
 ## Listing
 
@@ -10,6 +10,7 @@
 | Description (≤35) | A quiet office RPG for your TRMNL (33 characters; saved and verified 2026-10-05) |
 | Icon | [`docs/assets/plugin-icon.png`](../assets/plugin-icon.png) (512×512, 1-bit pixel art; saved in plugin 564) |
 | Featured image candidate | [Current full-layout sample](featured-image.png), 800×480; v24 source template with fictional hero/ranks, no redeemable code. Prepared locally; not uploaded |
+| Saved featured image | Regenerated from the original live installation; current 800×480 Baz scene verified on the install page, blob `19296090`, no redeemable code |
 | Categories | games, entertainment (saved and verified 2026-10-05) |
 | Supported refresh | Every 15 minutes (slower is fine; progress never depends on refresh) |
 | Installation URL | `https://trmnlgames.com/connect/trmnl/desk-crawler/install` |
@@ -43,4 +44,4 @@ TRMNL asks for the plugin "being installed from scratch". Our recording will inc
 
 ## Before submitting (from [status](../status.md))
 
-Use [release preparation](../evidence/release.md) for the current gate checklist. Real install/manage/render/uninstall and current previews are recorded; D43 assigns layout/mashup coverage to previews, and the D46 keepsake live-claim checks were waived. Barry confirmed owner/sender barry@barrymichaeldoyle.com and no promotion commitment on 2026-10-05. The final video, image upload, license confirmation and submission authorization remain open. Recovery reconciliation and the remaining live edge cases remain launch gates.
+Use [release preparation](../evidence/release.md) for the current gate checklist. Real install/manage/render/uninstall and current previews are recorded; D43 assigns layout/mashup coverage to previews, and the D46 keepsake live-claim checks were waived. Barry confirmed owner/sender barry@barrymichaeldoyle.com and plans to promote TRMNL at launch on 2026-10-05; channels/timing remain unspecified. The author-entitlement check is complete ([evidence](../evidence/author-entitlement.md)). The final video and submission authorization remain open. The [engineering pass](../evidence/engineering-readiness.md) proves isolated synthetic recovery and preview edges. Tested fixes await rollout; ongoing protected capture, real-provider verification and funding/tuning decisions remain launch gates.

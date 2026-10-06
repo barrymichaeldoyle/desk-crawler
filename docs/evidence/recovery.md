@@ -1,5 +1,7 @@
 # Backup, restore and notices — 2026-10-04
 
+**October 5 update:** the [engineering rehearsal](engineering-readiness.md) supersedes the remaining synthetic gates below. It proves independent-checkpoint cloud reconciliation, interrupted deletion/simulation/ranking continuation, potion receipt replay and live failed-notice exhaustion. New portable cursors fix a reproduced restore failure. Ongoing production capture, real Clerk-provider reconciliation and legacy in-flight cursor recovery remain open. Historical observations below retain their original scope.
+
 ## Production configuration observed
 
 Convex production `exciting-cormorant-948` has daily backups at 09:03 UTC with seven-day retention. The Oct 4 backup completed at 09:03 UTC in one second, 16.89 KB, tables only. Its name was `barry-michael-doyle-desk-crawler-exciting-cormorant-948-1791104580012`. This confirms completion and cadence, not a production restore. Database backups do not restore code, secrets or external account configuration.

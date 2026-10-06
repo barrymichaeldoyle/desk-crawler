@@ -78,6 +78,19 @@ describe('account deletion (D22)', () => {
     expect((await t.run(async (ctx) => await ctx.db.query('users').first()))?.state).toBe('deleting')
   })
 
+  it('retries network failures, then completes once the provider recovers', async () => {
+    fetchMock.mockRejectedValueOnce(new TypeError('network unavailable'))
+    await seedHero(t, {}, 'NetworkRetry')
+    await t.withIdentity({ issuer: 'issuer', subject: 'NetworkRetry' }).mutation(api.deletion.requestDeletion, { operationId: 'delete-network', confirm: 'DELETE' })
+    await t.finishAllScheduledFunctions(vi.runAllTimers)
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    const job = (await t.run(async ctx => await ctx.db.query('accountDeletionJobs').first()))!
+    expect(job).toMatchObject({ state: 'completed', phase: 'done', providerAttempts: 1 })
+    await t.mutation(internal.deletion.providerResult, { jobId: job._id, ok: false })
+    expect(await t.run(async ctx => await ctx.db.get(job._id))).toEqual(job)
+    expect(await t.run(async ctx => await ctx.db.query('users').first())).toBeNull()
+  })
+
   it('reconciles a verified Clerk user.deleted once, and refuses unsigned or stale deliveries (V09)', async () => {
     vi.stubEnv('CLERK_JWT_ISSUER_DOMAIN', 'issuer')
     const secret = 'whsec_' + btoa('desk-crawler-test-signing-key-32b')

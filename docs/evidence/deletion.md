@@ -1,5 +1,7 @@
 # Account deletion evidence — D22 (partial V09)
 
+**October 5 update:** [engineering checks](engineering-readiness.md) adds independent-checkpoint reconciliation of both deletion levels, interrupted cloud purge/restore, negative restored HTTP access and a network-retry fix. Synthetic provider acknowledgement does not close the real provider-originated deletion gate.
+
 ## Live run, 2026-10-03 (Convex dev `superb-bobcat-74`, Clerk development instance)
 
 Clerk test identity `desk-crawler+clerk_test@example.com` with a seeded hero ("Testy"). From the companion Settings page: typed DELETE, confirmed.

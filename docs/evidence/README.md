@@ -1,5 +1,7 @@
 # Implementation evidence checklist
 
+[Engineering checks](engineering-readiness.md) records the October 5 audit, four reproduced/fixed backend defects, 187 passing tests, isolated checkpoint reconciliation and portable worker restore, real preview lifecycle/failure checks, production log health and measured subscription headroom. The fixes and D53 `No effect` polish await deployment; ongoing capture and real-provider verification remain open.
+
 Live implementation evidence is available, with remaining acceptance checks recorded in [release preparation](release.md). The latest pass adds [capacity measurements](capacity.md), [synthetic recovery](recovery.md), [Creator Fund findings](creator-fund.md) and an [installation walkthrough](install-demo/README.md). The TRMNL Games migration [rehearsal](platform-rehearsal.md) records the M1 gate and the dev-instance run. A successful individual check does not close its entire matrix. Do not create invented success reports.
 
 | Artifact | Owner | Required content |
@@ -30,6 +32,10 @@ Artifacts identify date, environment, command/action and observed result. Scrub 
 [Compact log spacing](log-spacing.md) records D51's narrower story gutters, independent time/stat widths and production release alongside D50. Signed-in companion, live TRMNL preview and post-deployment installation rendering are verified; physical-display acceptance remains unverified.
 
 [Submission preparation](submission-preparation.md) records current companion phone/desktop inspections, local help/sample improvements, review artifacts, 176 passing tests and successful builds. [Balance](balance.md) now includes current six-policy 30/90-day reports and corrected death-day units. [Protected checkpoint results](recovery-checkpoint-results.json) and [recovery](recovery.md) prove source-independent offline planning while keeping live recovery gates open.
+
+[Listing and companion deployment](listing-polish-deploy.md) records the subsequently authorized production release, saved listing fields and regenerated image verified on the install page. [Potion-find labels](potion-find.md) records D52, 181 passing tests, 24 device previews and the live existing-history verification.
+
+[Author entitlement](author-entitlement.md) records the read-only TRMNL X/Developer Perks account verification and Barry's revised launch-promotion answer. No purchase or review submission was performed.
 
 An editor preview does not replace the Third Party envelope test or physical display evidence. Apply the explicit D43 preview coverage decision and D46 waiver in [decisions](../decisions.md); do not describe waived evidence as passed or reopen it as a prerequisite.
 

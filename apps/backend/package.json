@@ -10,13 +10,14 @@
     "typecheck": "tsc --noEmit -p convex/tsconfig.json"
   },
   "dependencies": {
-    "convex": "^1.46.0",
     "@noble/hashes": "^2.4.0",
     "@trmnl-games/desk-crawler": "workspace:*",
-    "@trmnl-games/platform": "workspace:*"
+    "@trmnl-games/platform": "workspace:*",
+    "convex": "^1.46.0",
+    "convex-helpers": "0.1.126"
   },
   "devDependencies": {
-    "typescript": "~6.0.3",
-    "@types/node": "^24.19.1"
+    "@types/node": "^24.19.1",
+    "typescript": "~6.0.3"
   }
 }

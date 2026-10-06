@@ -1,6 +1,6 @@
 # Protected recovery checkpoints and reconciliation
 
-Prepared 2026-10-05. The local tools below are implemented and tested. **Ongoing capture, operator reconciliation and the isolated cloud restore have not been performed.** This advances D27 preparation; it does not close the live recovery gate.
+Updated 2026-10-05. Local checkpoint tools and the isolated synthetic cloud restore have passed, including denial reconciliation, interrupted deletion, simulation/ranking continuation and receipt replay ([engineering evidence](../evidence/engineering-readiness.md)). **Ongoing production capture and real-provider reconciliation remain unconfigured.** The target stayed closed and no production data was restored.
 
 ## Independent evidence
 
@@ -53,8 +53,26 @@ The apply step is intentionally an operator-reviewed, bounded recovery mutation 
 
 ## Remaining production setup
 
-Choose and approve a capture schedule, protected independent destination and monitoring before launch. Daily game backups do not provide complete revocation evidence between checkpoints. Hourly full exports would also consume bandwidth; prefer a small authenticated, paginated revocation export or provider-supported streaming capture when implementing automation. Do not claim a daily checkpoint protects deletions made later that day.
+Choose and approve a capture schedule, protected independent destination and monitoring before launch. Daily game backups do not provide complete revocation evidence between checkpoints. Do not claim a daily checkpoint protects deletions made later that day.
+
+[capture-export.ts](../../tools/recovery/capture-export.ts) now performs a read-only consistent export, derives a minimal encrypted checkpoint using the actual snapshot timestamp, and removes its temporary raw archive in `finally`. It requires an explicit source, refuses mismatched deployment keys and repository output, and writes the encrypted output exclusively with mode 0600. A real preview capture was decrypted and checked. It uses the full export in memory with bounded subprocess buffers; large datasets fail closed rather than producing an incomplete checkpoint.
+
+```sh
+pnpm tsx tools/recovery/capture-export.ts \
+  --source exciting-cormorant-948 \
+  --out /private/protected/checkpoint-TIMESTAMP.dcr
+```
+
+That production command needs authorization. The [hourly workflow template](../../tools/recovery/checkpoint-workflow.yml.txt) is inactive outside `.github/workflows`. It proposes a protected GitHub environment and encrypted artifacts retained for 14 days, with the key also held in a separate password manager. Destination/access, secrets, notifications and a >90-minute missing-checkpoint alert must be configured before activation. Workflow failure notification alone does not detect a disabled schedule. No production capture or secrets setup occurred.
+
+Full exports include unrelated gameplay data temporarily. At the measured synthetic size, an archive is about 2.6 MB, or roughly 1.9 GB transferred over 720 hourly captures; full table reads, snapshot/storage charges and other traffic are additional. The 700-byte encrypted preview checkpoint is not evidence that producing it costs only 700 bytes. Prefer a consistent minimal export or streaming capture if full-export cost becomes material.
+
+## Pagination compatibility
+
+New simulation runs and ranking publications use portable index-key cursors (`paginationVersion: 1`, `convex-helpers` 0.1.126). The cloud rehearsal resumed simulation after 25 heroes and ranking after its first page; duplicate workers were harmless and the previous publication stayed visible.
+
+Legacy rows without the version retain native pagination so a rolling release can drain them on the original deployment. A restored in-flight native cursor fails on another deployment. Before a planned legacy snapshot, drain work on the source and capture a completed-run boundary. An older backup already containing a native cursor needs a separately rehearsed conversion/recovery procedure; this patch does not retroactively make that backup resumable. Never clear cursors or reset tick markers to bypass the failure.
 
 Retain minimal denial evidence while old TRMNL tokens can still be replayed; retain multiple protected checkpoint generations and do not replace a newer checkpoint with an older one. Capturing from a restored database is not new authoritative deletion evidence. Delete temporary raw exports after verification under the privacy retention policy.
 
-The local tests prove encrypted checkpoint integrity, missing-source planning, pending purge capture, two deletion levels, cutoff preservation and installation scoping. The live isolated rehearsal and interrupted scheduler/provider failure scenarios remain open in [release preparation](../evidence/release.md).
+The local tests prove encrypted checkpoint integrity, missing-source planning, pending purge capture, two deletion levels, cutoff preservation and installation scoping. The isolated synthetic cloud rehearsal, guarded scheduler recovery and live failed-notice exhaustion now pass. Real Clerk-provider deletion/reconciliation and ongoing production capture remain open in [release preparation](../evidence/release.md).

@@ -1,4 +1,6 @@
 import { currentHero } from '../../lib/gameProfile'
+import { paginator } from 'convex-helpers/server/pagination'
+import schema from '../../schema'
 import { v } from 'convex/values'
 import { internal } from '../../_generated/api'
 import type { Doc, Id } from '../../_generated/dataModel'
@@ -59,6 +61,7 @@ export const startTick = internalMutation({
       simulationVersion: world.activeSimulationVersion,
       seedVersion: SEED_VERSION,
       state: 'simulating',
+      paginationVersion: 1,
       batchSequence: 0,
       lastProgressAt: now,
       processed: 0,
@@ -97,7 +100,10 @@ export const simulateBatch = internalMutation({
     }
 
     const now = Date.now()
-    const page = await ctx.db
+    // Exported index-key cursors survive an isolated restore. Existing runs
+    // retain their original paginator until they drain on this deployment.
+    const db = run.paginationVersion === 1 ? paginator(ctx.db, schema) : ctx.db
+    const page = await db
       .query('heroes')
       .withIndex('by_createdAt', (q) => q.lt('createdAt', run.cohortCutoff))
       .paginate({ numItems: PAGE_SIZE, cursor: run.cursor ?? null })

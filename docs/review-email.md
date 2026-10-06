@@ -21,7 +21,7 @@ Testing: no demo credentials are needed. In TRMNL, install plugin 564 and choose
 Documentation: https://trmnlgames.com/help/desk-crawler  
 Source: https://github.com/barrymichaeldoyle/trmnl-games
 
-Promotion: No promotion commitment at this time.
+Promotion: Yes, I plan to promote TRMNL when Desk Crawler launches. Specific channels and timing are still to be decided.
 
 Could you also confirm Creator Fund eligibility for this Third Party plugin in the games category and any payment onboarding required of the owner? We are budgeting with zero payouts.
 
@@ -30,4 +30,4 @@ Barry
 
 ## Before sending
 
-Barry confirmed barry@barrymichaeldoyle.com as owner/sender and no promotion commitment on 2026-10-05. Send from that inbox. Replace the hosted video URL; verify the final deployed version and support matrix. The [recording checklist](release/recording-checklist.md) and [featured image candidate](release/featured-image.png) are ready locally. Publishing is unavailable during a BYOD free trial, so confirm the TRMNL account has a license. Barry must explicitly authorize the status change, video publication and email. This draft does not establish TRMNL eligibility or approval.
+Barry confirmed barry@barrymichaeldoyle.com as owner/sender and subsequently confirmed plans to promote TRMNL at launch on 2026-10-05. Channels and timing are not committed. Send from that inbox. Replace the hosted video URL. The companion polish is deployed and the listing image is regenerated and verified ([evidence](evidence/listing-polish-deploy.md)); the [recording checklist](release/recording-checklist.md) is ready. The author-entitlement check is complete: the signed-in account has a registered TRMNL X with Developer Perks available, rather than a BYOD trial ([check evidence](evidence/author-entitlement.md)). Barry must explicitly authorize the status change, video publication and email. This draft does not establish marketplace approval or Creator Fund eligibility.

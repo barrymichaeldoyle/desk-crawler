@@ -2,13 +2,15 @@
 
 Updated 2026-10-05. Production companion is live at `trmnlgames.com` (TRMNL Games platform, Desk Crawler under `/app/desk-crawler`), Convex `exciting-cormorant-948`, the TRMNL Games Clerk production instance, TRMNL plugin 564. The old `desk-crawler.grandprixpicks.com` host no longer serves the companion. Review preparation resumes after the migration; [release evidence](evidence/release.md) records verified behavior and open checks.
 
+The latest [engineering pass](evidence/engineering-readiness.md) completed authz/reviewer/health/cost checks, actual subscription inspection and isolated recovery/lifecycle/failure rehearsals. Four reproduced backend defects are fixed locally; D53 shows `No effect` for known zero-delta logs. The candidate passes 187 tests, typechecks, build and Worker dry run; it is not deployed. Production rollout, ongoing protected capture, real-provider fixtures and funding/tuning decisions remain open. The [hourly capture template](../tools/recovery/checkpoint-workflow.yml.txt) is prepared but inactive.
+
 Barry asked for shared infrastructure across future games on `trmnlgames.com` (D40). The [TRMNL Games migration plan](trmnl-games-migration.md) staged the monorepo, platform and domain work before final marketplace submission. This was a pre-launch migration with no public player base (D41). That exception does not relax progress preservation for later public releases.
 
 Migration progress:
 
 - M0–M3 done. Monorepo move, platform boundaries (two deletion levels, per-game handoff cookies) and the dev rehearsal ([platform rehearsal](evidence/platform-rehearsal.md)).
 - M4 done. Clerk domain moved to `trmnlgames.com`, `main` deployed at 13:58 UTC, ticks continued on the new :00 slot, data backfilled and Barry's account rebound with hero "Baz" kept (decisions revisions 18–19). Email-code, Google and GitHub sign-in work on the new domain; plugin 564's installation, management and knowledge-base URLs point at `trmnlgames.com`; signed Clerk webhook delivered; prod `COMPANION_ORIGIN` unset, so QR codes use the `https://trmnlgames.com` default (revision 20). Fresh install → Save → Configure → render → uninstall passed as Baz with setting 495979 (revision 21).
-- M5 review preparation. Domain/DNS/Worker/repository migration and preview coverage are complete. Production templates v24 and scene v4 include the October 5 log, sky and spacing changes ([spacing](evidence/log-spacing.md), [sky](evidence/scene-time.md)). Current local submission work adds the featured-image candidate, matching landing sample, clearer help, corrected listing/reviewer copy, extended balance reports and offline recovery preparation. Remaining: health/cost headroom, actual listing-image update, final installation recording/hosting and submission details. See the [current release checklist](evidence/release.md).
+- M5 review preparation. Domain/DNS/Worker/repository migration and preview coverage are complete. Production templates v24 and scene v4 include the October 5 log, sky and spacing changes ([spacing](evidence/log-spacing.md), [sky](evidence/scene-time.md)). Authorized listing updates and companion polish are deployed from `392829c`, including the landing sample, clearer help and D52 potion-find labels; the actual listing image was regenerated and verified ([release evidence](evidence/listing-polish-deploy.md)). Extended balance reports and offline recovery preparation are complete. Health/cost headroom and isolated engineering rehearsals are now recorded; remaining: candidate rollout, ongoing capture/provider/funding decisions, final recording/hosting and submission authorization. See the [current release checklist](evidence/release.md).
 
 ## Built and verified
 
@@ -27,7 +29,7 @@ Deployed on 2026-10-05 following Barry’s approval: D46 weekly permanent Desk k
 | A10 art + layouts | Hand-authored 1-bit pixel art (6 hero poses, 12 monsters, props, 3 backdrops), on-demand scene composer (`/art/scene/v4/...`), scene-window layouts for all four sizes | Current [scene](evidence/scene-time.md) and [layout](evidence/log-spacing.md) evidence |
 | A09 companion | Shell, hero page (scene, stats, travel, potion, pause), bag (equip, bulk sell, claim, resume with destination), rankings (3 tabs), settings (pause, installations; timezone removed per D39), help/privacy/support pages | Playwright walkthrough with the Clerk test identity |
 | A11 operations | Daily bounded retention cleanup; account deletion with durable purge, revocation hashes and Clerk user deletion | convex-test; live deletion ([evidence](evidence/deletion.md)) |
-| D27 incident notices | One incident per stalled run, deduplicated alert + recovery via Resend with idempotency keys and bounded retries; production key configured, staging pair accepted by Resend | convex-test; [recovery](evidence/recovery.md), production Delivered event verified; live retry exhaustion open |
+| D27 incident notices | One incident per stalled run, deduplicated alert + recovery via Resend with idempotency keys and bounded retries; production key configured, staging pair accepted by Resend | convex-test; [recovery](evidence/recovery.md), production Delivered event verified; preview retry exhaustion passed in [engineering checks](evidence/engineering-readiness.md) |
 | D23 admin | Server-side allowlist, health view, audited name repair / suspend / restore / release / resume-run, owner name replacement | convex-test |
 | Layout matrix | Template v24: 15 states × four sizes on OG and TRMNL X, 120 pages overflow-checked; D43 assigns layout/mashup coverage to previews | Current [spacing](evidence/log-spacing.md), historical [layouts](evidence/trmnl-layouts.md) |
 | D25 return recap | Single server checkpoint, guarded visible acknowledgement | convex-test; live browser check |
@@ -46,14 +48,14 @@ The [current release checklist](evidence/release.md) is the gate source. Install
 
 Submission work:
 
-- [Featured image](release/featured-image.png): current v24 fictional sample prepared locally; upload/regenerate the actual listing and verify its install page after approval.
+- Listing image regenerated from the original installation and verified on the actual install page. The fictional [sample](release/featured-image.png) is deployed on the landing page ([evidence](evidence/listing-polish-deploy.md)).
 - [Video plan](release/recording-checklist.md): capture a from-scratch installation including first signup, Save and first adventure, then host at an approved reviewer-accessible URL. The existing returning-owner slideshow is supporting evidence.
-- [Review package](release/review-package.md): corrected 33-character description and accurate bag-sleep/keepsake copy; listing changes remain unsaved externally.
-- [Review email](review-email.md): owner/sender barry@barrymichaeldoyle.com and no promotion commitment confirmed; hosted video URL remains open. Author license/BYOD-trial state needs checking. Submit for Review and sending the email require explicit approval.
+- [Review package](release/review-package.md): 33-character description and games/entertainment categories saved and verified; accurate bag-sleep/keepsake help is deployed.
+- [Review email](review-email.md): owner/sender barry@barrymichaeldoyle.com confirmed; Barry plans to promote TRMNL at launch, with channels/timing unspecified. Author-entitlement check complete ([evidence](evidence/author-entitlement.md)); hosted video URL remains open. Submit for Review and sending the email require explicit approval.
 
-Engineering launch gates remain: independent protected post-snapshot deletion/revocation capture and a live restore using it, restored interrupted work/receipt replay, remaining live lifecycle/deletion and alert failure scenarios, actual shared-plan headroom/funding, and the tuning decisions raised by the extended balance report. Local recovery tools prepare encrypted evidence and a denial plan, but do not apply writes or approve reopening. See the [recovery runbook](release/recovery-runbook.md).
+Engineering launch gates remain: authorize the tested production candidate; configure ongoing independent protected capture and monitoring; prove the controlled real-provider deletion/expiry/reinstall paths; decide funding/spending thresholds and the numerical questions raised by the balance report. Isolated cloud denial reconciliation, interrupted work/receipt replay, preview lifecycle edges and alert failure exhaustion passed. No recovery tool approves reopening. See the [recovery runbook](release/recovery-runbook.md).
 
-D43 does not require Barry to check every physical layout. D46's physical/claim/post-claim verification was waived, not performed; the waiver remains respected. All external deployment, listing, media publication and submission actions remain separate approvals.
+D43 does not require Barry to check every physical layout. D46's physical/claim/post-claim verification was waived, not performed; the waiver remains respected. The authorized listing and companion release are complete. Media publication, submission and further external actions require their own authorization.
 
 ## Latest preparation completed
 

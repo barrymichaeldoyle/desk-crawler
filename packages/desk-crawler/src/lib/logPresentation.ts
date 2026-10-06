@@ -44,5 +44,5 @@ export function logPresentation(entry: { readonly summary: string; readonly kind
     deltas.potionsFound ? signed(deltas.potionsFound, deltas.potionsFound === 1 ? 'healing potion' : 'healing potions') : null,
     deltas.hp ? signed(deltas.hp, 'HP') : null,
   ].filter((part): part is string => part !== null)
-  return { narrative, changes }
+  return { narrative, changes: changes.length > 0 ? changes : ['No effect'] }
 }

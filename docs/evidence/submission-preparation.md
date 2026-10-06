@@ -36,3 +36,7 @@ The viewport was reset and the review tab closed afterward. Temporary local serv
 ## Remaining
 
 See [release preparation](release.md) for submission and launch gates. D43 preview-based layout coverage and D46 waived live keepsake checks remain respected. No review status, marketplace approval, live restore, final video or featured-image publication is claimed by these local results.
+
+## Subsequent authorized release
+
+Barry subsequently authorized the listing update and companion deployment, then requested D52's potion-find acquisition label. Those actions completed on 2026-10-05 from `392829c` ([deployment evidence](listing-polish-deploy.md)); the final release passes 181 tests. The actual listing image was regenerated from the connected installation and verified on its install page. The fictional candidate remains the deployed landing sample. The earlier local-only observations above describe the preparation stage, not the current deployment state.

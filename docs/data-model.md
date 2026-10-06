@@ -70,6 +70,8 @@ Indexes: `by_tick[tick]`, `by_state_started[state,startedAt]`, `by_started[start
 
 The run carries the continuation and progress counters so a duplicate worker or watchdog can resume safely. The active-run guard spans simulation **and ranking**, until publication or an explicit blocked state.
 
+Additive field: `paginationVersion?: 1`. New runs pin version 1 and use portable index-key cursors from `convex-helpers` pagination. Missing version preserves the native paginator for an existing run until it drains on its original deployment. Native cursors cannot resume on another deployment; see the [recovery limitation](release/recovery-runbook.md). Cursor fields remain internal.
+
 ### `simulationFailures`
 
 Fields: `runId`, `heroId`, `reasonCode`, `simulationVersion`, `contentVersion`, `seedReference`, `inputSnapshot` (bounded validated domain state + inventory, no identity/token fields), `createdAt`, `resolvedAt?`.
@@ -109,6 +111,8 @@ Written only by publication runs (D31): one immutable projection per eligible he
 Fields: `runId`, `state: building | ready | published | obsolete`, `previousPublicationId?`, `asOfTick`, `scoreAt`, `totalPlayers`, `currentBoard: overall | recent_24h | recent_7d`, `currentCohort?`, `cursor?`, `batchSequence`, `nextScheduledFunctionId?`, `rankRowsBuilt`, `generationsBuilt`, `lastProgressAt`, `builtAt?`, `publishedAt?`.
 
 Indexes: `by_run[runId]`, `by_state[state]`, `by_published[publishedAt]`. No unbounded group map. Guarded builder validates one lifetime rank row per eligible hero, one recent row per board for each included hero, and complete board/cohort coverage, then promotes this pointer atomically with run completion.
+
+Additive field: `paginationVersion?: 1`. Each new publication pins portable pagination independently of its simulation run; an already-building legacy publication keeps its native paginator. Generations persist rank counters and Top 100 entries once per page/cohort, rather than rereading and patching them for every hero.
 
 ### `leaderboardGenerations`
 

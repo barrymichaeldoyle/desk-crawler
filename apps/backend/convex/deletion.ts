@@ -244,8 +244,13 @@ export const deleteProviderUser = internalAction({
     const secret = process.env.CLERK_SECRET_KEY
     let ok = false
     if (job.clerkUserId && secret) {
-      const response = await fetch(`https://api.clerk.com/v1/users/${encodeURIComponent(job.clerkUserId)}`, { method: 'DELETE', headers: { Authorization: `Bearer ${secret}` } })
-      ok = response.ok || response.status === 404
+      try {
+        const response = await fetch(`https://api.clerk.com/v1/users/${encodeURIComponent(job.clerkUserId)}`, { method: 'DELETE', headers: { Authorization: `Bearer ${secret}` } })
+        ok = response.ok || response.status === 404
+      } catch {
+        // Network failures consume the same bounded retry budget as HTTP failures.
+        ok = false
+      }
     }
     await ctx.runMutation(internal.deletion.providerResult, { jobId, ok })
     return null
@@ -266,7 +271,7 @@ export const providerResult = internalMutation({
   returns: v.null(),
   handler: async (ctx, { jobId, ok }) => {
     const job = await ctx.db.get(jobId)
-    if (job === null || job.phase !== 'provider') return null
+    if (job === null || job.state !== 'running' || job.phase !== 'provider') return null
     const now = Date.now()
     if (ok) {
       await ctx.db.patch(jobId, { phase: 'finalize', lastProgressAt: now })

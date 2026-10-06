@@ -49,7 +49,7 @@ export const sendNotice = internalAction({
     const data = await ctx.runQuery(internal.incidents.getIncident, { incidentId })
     if (data === null) return null
     const record = notice === 'alert' ? data.incident.alert : data.incident.recovery
-    if (!record || record.state === 'sent' || record.state === 'disabled') return null
+    if (!record || record.state !== 'pending' || record.attempts >= MAX_ATTEMPTS) return null
     const key = process.env.RESEND_API_KEY
     if (!key) {
       await ctx.runMutation(internal.incidents.recordDelivery, { incidentId, notice, outcome: 'disabled' })
@@ -120,7 +120,9 @@ export const recordDelivery = internalMutation({
     const incident = await ctx.db.get(incidentId)
     if (incident === null) return null
     const field = notice as Notice
-    const current = incident[field] ?? { state: 'pending' as const, attempts: 0 }
+    const current = incident[field]
+    // A late action result cannot reopen a terminal notice or add retries.
+    if (!current || current.state !== 'pending' || current.attempts >= MAX_ATTEMPTS) return null
     const attempts = current.attempts + (outcome === 'disabled' ? 0 : 1)
     const now = Date.now()
     const state = outcome === 'failed' && attempts < MAX_ATTEMPTS ? 'pending' : outcome

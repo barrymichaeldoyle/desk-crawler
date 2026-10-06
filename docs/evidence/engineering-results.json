@@ -1,0 +1,161 @@
+{
+  "date": "2026-10-05T21:38:01.822Z",
+  "production": {
+    "deployment": "exciting-cormorant-948",
+    "samples": 101,
+    "from": "2026-10-05T21:00:06.151Z",
+    "to": "2026-10-05T21:36:12.830Z",
+    "errors": 0,
+    "conflictRetries": 0,
+    "backup": {
+      "snapshotAt": "2026-10-05T09:03:00Z",
+      "completed": true,
+      "durationSeconds": 1,
+      "tablesOnly": true,
+      "cadence": "daily",
+      "retentionDays": 7,
+      "nextSnapshotAt": "2026-10-06T09:03:00Z"
+    }
+  },
+  "capacity": {
+    "deployment": "precious-pheasant-866",
+    "contentVersion": "v4",
+    "populationRows": 1000,
+    "eligible": 997,
+    "quarantined": 0,
+    "operatorParked": true,
+    "simulation": {
+      "calls": 41,
+      "readBytes": 27672195,
+      "writeBytes": 7356217,
+      "readDocuments": 42241,
+      "writeDocuments": 3523,
+      "userExecutionMs": 2968,
+      "conflictRetries": 0,
+      "errors": 0
+    },
+    "ranking": {
+      "calls": 26,
+      "readBytes": 3858311,
+      "writeBytes": 2002266,
+      "readDocuments": 5310,
+      "writeDocuments": 2640,
+      "userExecutionMs": 985,
+      "conflictRetries": 0,
+      "errors": 0
+    }
+  },
+  "portableRestore": {
+    "date": "2026-10-05T21:09:54.565Z",
+    "source": "precious-pheasant-866",
+    "target": "usable-snail-909",
+    "importMs": 31913,
+    "simulationRestoredFromProcessed": 25,
+    "processed": 1000,
+    "eligible": 997,
+    "quarantined": 0,
+    "tick": 6,
+    "recoveryAttempts": 2,
+    "rankingRestoredFromSequence": 1,
+    "previousPublicationStayedVisible": true,
+    "duplicateWorkersNoop": true,
+    "boards": [
+      {
+        "board": "overall",
+        "state": "ready",
+        "total": 997
+      },
+      {
+        "board": "recent_24h",
+        "state": "ready",
+        "total": 591
+      },
+      {
+        "board": "recent_7d",
+        "state": "ready",
+        "total": 997
+      }
+    ],
+    "paused": true,
+    "maintenance": true,
+    "validationMs": 129452
+  },
+  "denialRestore": {
+    "date": "2026-10-05T20:56:37.413Z",
+    "source": "precious-pheasant-866",
+    "target": "usable-snail-909",
+    "snapshotBytes": 2622012,
+    "snapshotSha256": "2735ecbbbae5f9b337bf9f7ff79bef336ad6150d6eb38f83c747a624c690e73b",
+    "importMs": 28461,
+    "uncoveredWindowMs": 60000,
+    "servingMayResume": false,
+    "sourceAccessDuringRestore": false,
+    "statuses": {
+      "account": 404,
+      "game": 404,
+      "disconnected": 404,
+      "second": 200,
+      "unaffected": 200
+    },
+    "ownerDenial": true,
+    "receiptReplayNoop": true,
+    "interruptedDeletionRecovered": true,
+    "syntheticProviderAcknowledgement": true,
+    "startingSequence": 1,
+    "processedBeforeResume": 25
+  },
+  "lifecycle": {
+    "date": "2026-10-05T21:36:37.295Z",
+    "target": "usable-snail-909",
+    "alertAndRecoveryAttempts": 3,
+    "lateTerminalDeliveryNoop": true,
+    "expiredCallbackAcknowledged": true,
+    "expiredScreenDenied": true,
+    "pendingHeroNotActivated": true,
+    "lostCallbackFirstScreenActivated": true,
+    "allFourEnvelopeLayouts": true,
+    "oldUuidRemainsTombstoned": true,
+    "freshUuidReinstallPreservesHeroAndInventory": true,
+    "crossOwnerScreenAndCallbackDenied": true,
+    "providerOAuthAndClerkJwtVerified": false
+  },
+  "previewClosure": [
+    {
+      "deployment": "precious-pheasant-866",
+      "paused": true,
+      "maintenance": true,
+      "activeRun": false,
+      "tick": 6,
+      "completed": 6
+    },
+    {
+      "deployment": "usable-snail-909",
+      "paused": true,
+      "maintenance": true,
+      "activeRun": false,
+      "tick": 6,
+      "completed": 6
+    }
+  ],
+  "checkpointCapture": {
+    "source": "precious-pheasant-866",
+    "snapshotAt": "2026-10-05T21:39:29.739Z",
+    "bytes": 700,
+    "sha256": "9da73ed915e517c8ea6b88fb45c88724c79a00a068aa30e3a64d5a63575a7c9c",
+    "mode": "0600",
+    "authenticatedDecryption": true,
+    "identityHashes": 2,
+    "tokenHashes": 3,
+    "instanceHashes": 1,
+    "gameCutoffs": 1,
+    "repositoryOutputRefused": true,
+    "wrongDeploymentKeyRefused": true
+  },
+  "cleanup": {
+    "syntheticLifecycleAccountPurged": true,
+    "previewFailureEmailConfigRemoved": true,
+    "targetPaused": true,
+    "targetMaintenance": true,
+    "noActiveRun": true
+  }
+}

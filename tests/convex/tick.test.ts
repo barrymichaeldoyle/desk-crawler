@@ -163,6 +163,23 @@ describe('tick scheduler', () => {
     expect(after).toEqual(before)
   })
 
+  it.each([false, true])('drains a cohort with identical createdAt values with legacy pagination=%s', async (legacy) => {
+    const heroes = []
+    for (let i = 0; i < 51; i++) heroes.push(await seedHero(t))
+    const runId = (await t.mutation(internal.sim.runs.tick.startTick, {}))!
+    if (legacy) await t.run(async ctx => { await ctx.db.patch(runId, { paginationVersion: undefined }) })
+    await t.mutation(internal.sim.runs.tick.simulateBatch, { runId, expectedSequence: 0 })
+    const first = (await t.run(async ctx => ctx.db.get(runId)))!
+    expect(first.processed).toBe(25)
+    if (!legacy) expect(JSON.parse(first.cursor!)).toBeInstanceOf(Array)
+    await t.finishAllScheduledFunctions(vi.runAllTimers)
+    const completed = await t.run(async ctx => ctx.db.get(runId))
+    expect(completed).toMatchObject({ state: 'completed', processed: 51, eligible: 51 })
+    for (const id of heroes) expect((await t.run(async ctx => ctx.db.get(id)))?.lastTick).toBe(1)
+    await t.mutation(internal.sim.runs.tick.simulateBatch, { runId, expectedSequence: 1 })
+    expect(await t.run(async ctx => ctx.db.get(runId))).toEqual(completed)
+  })
+
   it('skips dormant heroes between publications without writes', async () => {
     await t.run(async (ctx) => {
       await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v2', activeSimulationVersion: 1, worldSeed: 'seed', ticksPaused: false, maintenanceMode: false, createdAt: Date.now(), lastPublishedAt: Date.UTC(2026, 9, 3, 9, 45), schemaVersion: 1 })

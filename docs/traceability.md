@@ -33,7 +33,7 @@ Use this table when assigning/reviewing agents. A package is incomplete if it im
 | Browser-local companion times and bounded retries (D39) | [API](api.md) | A04/A09 | No timezone control/collection; legacy compatibility and expiry checks |
 | Safe deletion after credential-history purge | [Data model](data-model.md), [decisions](decisions.md) | A07/A11 | V09 token/code replay proof and D22 boundary |
 | Bounded connection history and public-name response | [API](api.md), [companion](companion.md) | A07/A09/A11 | Pagination; D23 policy and admin/support procedure |
-| Later coherent monthly themes | [Roadmap](roadmap.md), [source brief](source-brief.md) | Future RFCs | New feature-specific contracts before assignment |
+| Later coherent releases (v1.1+) | [Roadmap](roadmap.md), [source brief](source-brief.md) | Future RFCs | New feature-specific contracts before assignment |
 | Pacing/content floor (D24/D26) | [Build refinements](build-readiness.md), [gameplay](gameplay.md) | A03/A09/A10 | Distinct occasional-management cohorts, unlock distributions, 12 monsters/48 variants, 30/90-day goals |
 | Bounded return recap (D25) | [Build refinements](build-readiness.md), [API](api.md), [data model](data-model.md) | A04/A09 | Seven-day/no-log recap, single checkpoint, guarded visible-page acknowledgement/tab/retry invariants |
 | Owner alerts and safe backup recovery (D27) | [Build refinements](build-readiness.md), [operations](operations.md) | A11 | Deduped notice delivery, entitlement, isolated restore and post-backup deletion/revocation reconciliation |

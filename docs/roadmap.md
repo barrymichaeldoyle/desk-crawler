@@ -1,50 +1,74 @@
-# Continuous delivery and monthly feature themes
+# Release roadmap
 
-Months are relative to implementation kickoff, not calendar promises. Every passing change may ship; a monthly theme groups a larger coherent improvement and release note. No separate beta program or multi-week beta gate.
+Updated 2026-10-06 (D64). Work is planned as named releases rather than calendar months. Every passing change may still ship continuously; a release groups a coherent block of work, its release note and its gate. The earlier "Month 1–6" themes map onto the versions below and keep their feature boundaries and gates; nothing from them was dropped.
 
-“Month 1” means the minimum public product, including the selected Third Party installation experience. Its estimate remains provisional until the platform spikes resolve. If a dependency takes longer, preserve MVP quality/scope or explicitly renegotiate with Barry rather than calling incomplete installation a completed launch.
+Version meaning:
 
-## Month 1 — It lives
+- **Patch (v1.0.x)**: fixes, layout polish, help/listing copy, balance passes under a new content/simulation version. No new player-facing system, no schema change beyond additive fields.
+- **Minor (v1.x)**: a new optional system on the existing hero (stances, merchant, salvage, meetings). Additive schema and content, old payloads and templates keep their meaning.
+- **Major (v2, v3)**: a change to progression ceilings or the hero lifecycle (bigger bags past 20, elite fights, prestige, seasons). Needs its own design amendment, migration plan and progress-preservation proof before it starts.
 
-Goal: a TRMNL user can install the public plugin, prepare a Warrior through its web companion and activate it on authenticated Save confirmation; passive adventures and a coherent rank then keep updating independently of device connectivity.
+Release order is a commitment; the dates are not. A release ends when its gate passes, and work on the next release starts after the current one is submitted or deployed, not in parallel with its final checks.
 
-| Sequence / suggested week | Work | Visible result |
+## Current focus: v1.0 — Submission
+
+Goal (unchanged from Month 1): a TRMNL user installs the public plugin, prepares a Warrior in the web companion, activates it on authenticated Save, and passive adventures plus a coherent rank keep updating independently of device connectivity.
+
+State: built and verified in production except the local candidate below. See [status](status.md) and the [release checklist](evidence/release.md).
+
+Scope still to deploy (all local, approved):
+
+| Item | Decision | Why it belongs in v1.0 |
 | --- | --- | --- |
-| 1 / week 1 | Runtime/auth/TRMNL/index spikes, finalized contracts, schema, starter content | Verified platform paths and a hero-domain foundation |
-| 2 / weeks 1–2 | Pure encounters, death/travel/sustain, transactions, scheduler and recovery | Hero advances without browser/device activity |
-| 3 / weeks 2–3 | Immutable ranks, canonical payload, companion controls, four templates | Readable web and e-ink state with exact snapshot rank |
-| 4 / weeks 3–4 | OAuth lifecycle, runtime integration, balance/capacity, CI/CD, review package | Public landing/companion release and marketplace submission/approval |
+| One release catalog `v1` and the pre-launch game reset | D63 | Drops pre-launch compatibility while there are no public players (D41). Not possible after launch |
+| 6 → 20 bag ladder | D61 | Changes the first-day loop and the inventory cadence promised in help; must be in the reviewed build |
+| Portrait arrangement for every device view | D62 | Reviewers may install in portrait |
+| Template v29 QR coverage and compact OG/X spacing | D58 | Layout polish for the reviewed build |
+| Platformer HUD companion | D60 | The reviewed companion |
 
-Work overlaps only after shared contracts/schema are agreed. OAuth protocol spike happens early even if final UI lands later. Four layouts are mandatory; keep smaller ones minimal.
+Then: reset-first deployment ([runbook](release/pre-launch-reset.md)), fresh install → Save → first adventure recording, review package and email, Submit for Review. Each external action needs its own authorization.
 
-First integration milestone (D28), ahead of bulk content and broad UI polish: real install/Save → one activated hero → scheduled encounter → coherent three-view rank publication → authorized payload → physical display, with all four minimal layouts. Build this staging path after required spikes and foundational contracts; record `first-path.md`. Sequence numbers above are estimates, not permission to defer real lifecycle/display proof until the final week. Full release acceptance remains required. See [approved build refinements](build-readiness.md).
+**Scope freeze.** From the D63 reset deployment until marketplace approval, v1.0 takes fixes and copy only. New systems (salvage, merchant, stances, affixes, colour device templates) wait for v1.1 even if they are small. The reason is the reset: it is the last chance to change stored meaning without a migration, and anything added after it ships under the post-launch preservation rule.
 
-Release gate: [product acceptance](product.md), implemented [quality checks](quality.md), recorded deployment/cost evidence, and TRMNL marketplace approval. Public landing/sample preview/help can exist before marketplace approval, but persistent play stays gated to verified installations. Do not claim universal plugin installability or open standalone web play while approval is pending.
+Content floor (unchanged): 3 biomes, 12 authored monsters, gear across 3 tiers / 2 slots / 3 rarities, 48 encounter variants plus lifecycle and lucky-moment summaries, two Warrior sprite states, D24 pacing, bounded return recap, D54 device recap, D46 keepsakes.
 
-Content floor: 3 biomes, 12 authored monsters, gear names across 3 tiers/2 slots/3 rarities, 48 encounter variants (four per type per biome) plus lifecycle and lucky-moment summaries, two Warrior sprite states. Initial ongoing goals are gear improvement and recent competition. D24 pacing targets and the bounded companion return recap are included; do not rely on future monthly releases to make the first 30/90 days work.
+Gate: [product acceptance](product.md), [quality checks](quality.md), recorded deployment/cost evidence and TRMNL marketplace approval. Persistent play stays gated to verified installations until approval.
 
-## Month 2 — Decisions
+## Next: v1.0.x — Live polish
+
+Runs from submission through the first weeks of public play. Patch releases only.
+
+- Live monitoring and protected capture (the inactive [hourly capture template](../tools/recovery/checkpoint-workflow.yml.txt)), real-provider deletion/expiry/reinstall proof, funding decision O11 from measured costs.
+- Measured balance passes under a new content version. D61 numbers are measurement starting points: watch three-day/seven-day sleep share and the level-8 date for weekly managers (harness: day 17).
+- Physical checks that were waived or unverified: portrait display, keepsake claim path.
+- Listing, help and companion copy from reviewer and first-player feedback.
+- Colour (BWRY) device templates are a candidate here only if they are a pure template change; previews already exist (D62). Anything that changes payload meaning waits.
+
+Gate: no production reset, every player's progress preserved across each deploy, old templates keep valid payload meanings.
+
+## v1.1 — Decisions (was Month 2)
 
 Goal: optional meaningful choices without a daily obligation.
 
-Core batch: stances, configurable rest/potion thresholds, a small set of event choices with an automatic default, a wandering merchant, prioritized device attention text. Continue gear/balance improvements.
+Core batch: stances, configurable rest/potion thresholds, a small set of event choices with an automatic default, a wandering merchant, prioritized device attention text, salvage. Continue gear/balance improvements.
 
 | Feature | Dependencies and boundaries |
 | --- | --- |
 | Stances/policies | Versioned resolver modifiers; validate thresholds and avoid infinite rest/potion loops |
 | Narrative choices | Pending-choice table, expiry/default resolution, transactionally idempotent selection; passive players continue |
-| Merchant | Bounded offers/price validation, four-tick expiry, purchase receipts; no push spam |
+| Merchant | Bounded offers/price validation, four-tick expiry, purchase receipts; no push spam. Prices sit beside the D61 bag prices (40/150/600/2,000), the first gold sink |
 | Effects | Typed duration/modifier rules; death ordering and rest cleansing explicitly designed |
 | Affixes/Epic | Versioned generation and owned-item compatibility; extend inventory UI |
+| Salvage (P26) | Third choice beside Sell: materials as stack rows outside the bag (new `itemKind`, like potions), explicit, never automatic, same bounds and receipt shape as `sellMany`. Settle O13 (one material per rarity) first |
 | Daily quests | Stretch, not required; timezone/DST and timezone-change abuse design first |
-| Lost-and-found | Stretch; extend the approved single held-find/inventory-sleep system only with a clear bounded migration; never reintroduce silent disposal |
+| Lost-and-found | Stretch; extend the single held-find/inventory-sleep system only with a bounded migration; never reintroduce silent disposal |
 | Web push/email alerts | Deferred by default; user opt-in, delivery cost and calmness review |
 
-The earlier month's long list is too large to treat as guaranteed. Prefer choices/merchant/stances as one coherent release and schedule quest/push scope separately.
+Prefer choices/merchant/stances as one coherent release and schedule quest/push scope separately. Salvage may ship alone as v1.1.x if the rest slips.
 
 Gate: no manual intervention required to resolve expiry; choose/default cannot both award; attention remains one unobtrusive message; more app engagement is a hypothesis, not a login target.
 
-## Month 3 — Other people exist
+## v1.2 — Other people exist (was Month 3)
 
 Goal: charming asynchronous social evidence.
 
@@ -61,29 +85,25 @@ Core batch: player meetings, friends/rivals, world-event banner, shareable publi
 
 Gate: meeting side effects commit at most once for both parties; social data does not add unbounded per-hero simulation reads; public-profile exposure is intentional. Measure follow adoption without imposing it as a launch blocker.
 
-## Month 4 — Depth
+## v2.0 — Depth (was Month 4)
 
-Goal: sustained progression for older heroes.
+Goal: sustained progression for older heroes. Major because it raises ceilings.
 
-Core batch: Archive and Parking Garage first, persistent elite encounters with explicit intervention/retreat rules, simple gold sink/gear upgrades. Rooftop/Sub-Basement/dungeons follow as capacity permits.
+Core batch: Archive and Parking Garage first, persistent elite encounters with explicit intervention/retreat rules, owned-gear upgrades (P27) and bigger bags. Rooftop/Sub-Basement/dungeons follow as capacity permits.
 
 Persistent fight design must define saved monster state, damage/reward idempotency, abandonment, pause/travel restrictions, policy ordering, max fight duration, defeat/revival and inventory concurrency. Dungeons require keys/reward tables and bounded run histories.
 
-Legendary gear, salvage/crafting, lore and hardcore are separate slices; salvage and crafting have a proposed shape below. Hardcore requires a new hero lifecycle, separate eligibility/ranking, permanent-death confirmation, retirement/Hall of Heroes model and recovery behavior. It is not a boolean toggle on a live normal hero.
+| Slice | Shape |
+| --- | --- |
+| Gear upgrades (P27) | Spend salvage materials plus gold to raise an owned item one tier within its slot (later, reroll an affix). Replaces the item's copied stats in place under a new catalog version and a receipt; retained logs and ranks untouched. No recipe tree. Keeps finds useful after best-in-slot |
+| Bigger bags | New tiers appended to the content bag ladder above the Rolling Suitcase (20), earned through crafting, raids or new areas. Capacity stays "a ladder tier's capacity" (invariant `BAG_CAPACITY`); the bounded inventory read and `sellMany` bound grow with the new top tier |
+| Legendary gear, lore, hardcore | Separate slices. Hardcore needs a new hero lifecycle, separate eligibility/ranking, permanent-death confirmation, retirement/Hall of Heroes model and recovery behaviour. It is not a boolean toggle on a live normal hero |
+
+Re-measure pacing before this release: D61 moves the level-8 date for weekly managers from day 11 to day 17, so the "best-in-slot at days 35–45" assumption behind P27 needs a fresh harness run.
 
 Gate: no repeatable boss rewards, no blocked fights after deployments, progression remains viable for existing high-level heroes, content compatible with retained items/logs. Compare retention by account age/level as a diagnostic rather than assert a predetermined percentage.
 
-### Inventory progression — bag ladder confirmed (D61), salvage and crafting proposed (P26–P27)
-
-Not approved; see [decisions](decisions.md) P25–P27 and O12/O13. Three small slices, each shippable alone, in this order:
-
-1. **Bag ladder (MVP, D61; supersedes P25/P28).** Start at 6 slots and grow to 20 through milestones, rare finds and gold. Crafting, raids and later content raise the ceiling past 20; the bounded inventory read (32 rows) must grow with it.
-2. **Salvage (Month 2–4).** A third choice beside Sell for unwanted bag gear: materials stored as stack rows outside the bag, chosen explicitly, never automatic.
-3. **Owned-gear upgrades (Month 4).** Spend materials and gold to raise an item's tier (later, reroll an affix). No recipe tree. Keeps finds useful after best-in-slot at days 35–45.
-
-Gate: no change to bag sleep rules (D18/D19) beyond capacity; every purchase, salvage and upgrade is one idempotent receipt; bounded reads updated together with capacity; existing gold, items and logs keep their meaning.
-
-## Month 5 — Guilds
+## v2.1 — Guilds (was Month 5)
 
 Goal: optional shared progress without mandatory chat or synchronization.
 
@@ -95,9 +115,9 @@ Gold tithes are player-consented and clamped. Changing tithes mid-tick cannot do
 
 Gate: repeat contributions cannot duplicate damage/rewards, quitting/rejoining cannot farm membership rewards, shared writes meet measured scale, guilds remain optional for individual progression.
 
-## Month 6 — Seasons and prestige
+## v3.0 — Seasons and prestige (was Month 6)
 
-Goal: a long-term progression loop that preserves attachment to the hero.
+Goal: a long-term progression loop that preserves attachment to the hero. Major because it touches the hero lifecycle.
 
 Core batch: prestige at a designed level threshold, permanent trait choices, an explicit prestige leaderboard, eight-week seasons with archived immutable results and cosmetic titles. Monthly world boss and bounties are stretch projects; they add transfer/shared-write complexity.
 
@@ -107,17 +127,31 @@ Season start/end is one audited transition with immutable scoring boundaries, re
 
 Gate: resets/currency transfers cannot duplicate assets, pre-season progress survives as promised, season results cannot change after archival, old templates retain valid payload meanings.
 
-## Every month
+## Guardrails: what v1.0 must not foreclose
+
+Checked against the local v1.0 candidate on 2026-10-06. Keep these true in any v1.0 change.
+
+| Later need | What v1.0 does today | Rule |
+| --- | --- | --- |
+| Bags above 20 (v2.0) | `bagCapacity` is a number on the hero; the invariant requires it to equal a tier in the content ladder | Bigger bags are appended ladder tiers in a new content version, never ad-hoc numbers. Do not hard-code 20 anywhere except the ladder |
+| Bounded inventory reads | Read bound is fixed at 32 rows; `sellMany` accepts up to 30 | Derive both from the ladder's top capacity plus stack kinds before the first bigger bag ships |
+| Salvage materials (v1.1) | Potions are item rows (`itemKind: 'potion'`) counted outside gear capacity | Materials follow the same stack-row pattern with a new `itemKind` literal. Do not add material counters to the hero document |
+| Gear upgrades (v2.0) | Items copy catalog stats at creation under a `contentVersion` | Keep copied stats and version on items; upgrades rewrite them under a receipt. Do not move item stats to catalog lookups |
+| Gold economy (v1.1 merchant) | Bag prices 40/150/600/2,000 are the only gold sink | Merchant prices are tuned against bag prices and D30 income; never remove the bag purchase path |
+| Five gear slots (later) | Capacity counts unequipped gear only | Keep that rule, so new slots never shrink a bag |
+| Balance after launch | D63 keeps the content-version mechanism; the pre-launch reset is the last reset | Every post-launch balance change is a new content version; the D41 exception ends at launch |
+| Colour devices | Device templates and scene art are 1-bit/greyscale; BWRY previews exist | Colour variants are template work, not payload changes |
+| Hardcore, prestige, seasons (v3.0) | One hero per owner, no lifecycle beyond death/revival | Do not add hero-mode flags to v1.0; these need their own lifecycle tables |
+
+## Every release
 
 - One measured balance pass with a content/simulation version and release notes.
 - Small content additions only after the versioned catalog is stable.
 - Review cron/recovery, leaderboard/read cost, retention, subscription headroom, current Creator Fund rules and realized payouts versus operating costs.
-- Regression checks on all four layouts for visible changes.
+- Regression checks on all four layouts, landscape and portrait, for visible changes.
 - Preserve existing players' progress and old API compatibility.
-- Record actual outcomes; cut speculative scope rather than carry hidden unfinished work into the next theme.
+- Record actual outcomes; cut speculative scope rather than carry hidden unfinished work into the next release.
 
-Monthly themes are a prioritization tool. Bugs, reliability/security repairs and small quality improvements ship as soon as their checks pass.
+Releases are a prioritization tool. Bugs, reliability/security repairs and small quality improvements ship as soon as their checks pass.
 
-Month 1 refinement: entitlement/protocol checks precede full implementation; A09/A10 include Save-to-playlist-to-hardware, snapshots without device date/time labels (D39), and missed-refresh states. Use the [evidence checklist](evidence/README.md).
-
-The later themes retain the TRMNL audience and companion role. Wider platform support requires a separate scope/financial decision, rather than appearing implicitly through a web feature.
+The later releases retain the TRMNL audience and companion role. Wider platform support requires a separate scope/financial decision, rather than appearing implicitly through a web feature. Use the [evidence checklist](evidence/README.md) for each release gate.

@@ -7,7 +7,7 @@
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { Liquid } from 'liquidjs'
-import { contentV4 } from '@trmnl-games/desk-crawler/content/v4'
+import { contentV1 } from '@trmnl-games/desk-crawler/content/v1'
 import { buildPayload, MAX_RECAP_EVENTS, type ActivityEntry, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
 import type { OutcomeDetail } from '@trmnl-games/desk-crawler/sim/core/types'
 import { displayLogDeltas } from '@trmnl-games/desk-crawler/log'
@@ -34,7 +34,7 @@ const base: PayloadInput = {
   armorName: 'Insulated Cardigan',
   potions: 4,
   bagUsed: 17,
-  bagCapacity: 30,
+  bagCapacity: 20,
   heldItemName: null,
   logs: [
     { at: NOW - 7 * 60_000, kind: 'combat', summary: 'Untangled a [[Cable Serpent]] and zip-tied it. +14 XP, +5 gold.', deltas: { xpEarned: 14, gold: 5, hp: -12 } },
@@ -45,7 +45,7 @@ const base: PayloadInput = {
     { at: NOW - 82 * 60_000, kind: 'combat', summary: 'Unplugged a [[Cable Serpent]]. +9 XP, +3 gold.', deltas: { xpEarned: 9, gold: 3, hp: -15 } },
   ],
   instanceName: 'Desk Crawler',
-  content: contentV4,
+  content: contentV1,
   spriteBaseUrl: null,
   artBaseUrl,
   latestEvent: { kind: 'combat', outcome: { variant: 'combat', monsterId: 'cable_serpent', elite: false } },
@@ -83,7 +83,7 @@ const states: Record<string, PayloadInput> = {
   levelUp: { ...base, hero: hero({ level: 6, xp: 12 }), latestEvent: { kind: 'levelup', outcome: { variant: 'combat', monsterId: 'cable_serpent', elite: false, outcome: 'victory' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'levelup', summary: 'Unplugged a [[Cable Serpent]]. +15 XP, +5 gold. Reached level 6!', deltas: { xpEarned: 15, gold: 5, hp: 8 } }, ...base.logs] },
   dead: { ...base, hero: hero({ status: 'dead', hp: 0, reviveAtTick: 125 }), latestEvent: { kind: 'death', outcome: { variant: 'combat', monsterId: 'firewall_gremlin', elite: false } }, logs: [{ at: NOW - 7 * 60_000, kind: 'death', summary: 'Flattened by a [[Firewall Gremlin]]. Lost 64 gold.', deltas: { xpEarned: 0, gold: -64, hp: -118 } }, ...base.logs] },
   travelling: { ...base, hero: hero({ status: 'travelling', targetBiomeId: 'cafeteria_depths', arriveAtTick: 121 }), latestEvent: { kind: 'system' } },
-  sleeping: { ...base, hero: hero({ status: 'sleeping' }), heldItemName: 'Rare Spork Halberd', bagUsed: 30, latestEvent: { kind: 'loot', outcome: { variant: 'loot', found: 'gear' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'loot', summary: 'Found a [[Rare Spork Halberd]]. Bag full. Holding it until you make room.' }, ...base.logs] },
+  sleeping: { ...base, hero: hero({ status: 'sleeping' }), heldItemName: 'Rare Spork Halberd', bagUsed: 20, latestEvent: { kind: 'loot', outcome: { variant: 'loot', found: 'gear' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'loot', summary: 'Found a [[Rare Spork Halberd]]. Bag full. Holding it until you make room.' }, ...base.logs] },
   paused: { ...base, hero: hero({ status: 'paused' }), ranking: { ...base.ranking!, rank: null, rankDelta: null, status: 'dormant', score: null } },
   quarantined: { ...base, hero: hero({ quarantined: true }) },
   stale: { ...base, world: { ...base.world!, lastCompletedAt: NOW - 3 * 3_600_000 } },

@@ -22,6 +22,8 @@ export type ErrorCode =
   | 'ITEM_EQUIPPED'
   | 'ITEM_HELD'
   | 'BAG_FULL'
+  | 'BAG_UNAVAILABLE'
+  | 'NOT_ENOUGH_GOLD'
   | 'HELD_ITEM_PENDING'
   | 'LEVEL_REQUIREMENT'
   | 'NO_POTION'

@@ -46,6 +46,7 @@ export const seedTestHero = internalMutation({
       status: 'paused',
       pausedFromStatus: 'exploring',
       biomeId: base.biomeId,
+      bagCapacity: base.bagCapacity,
       eligibleFromTick: world.currentTick + 1,
       lastTick: world.currentTick,
       lastProgressTick: world.currentTick,

@@ -17,17 +17,6 @@ async function linkGrant(t: T, alias: string, tokenHash: string) {
   })
 }
 
-async function backfill(t: T, table: 'users' | 'trmnlGrants' | 'trmnlInstances' | 'trmnlInstallAttempts' | 'operationReceipts') {
-  let cursor: string | null = null
-  let migrated = 0
-  for (;;) {
-    const page: { migrated: number; cursor: string; isDone: boolean } = await t.mutation(internal.platformMigration.backfill, { table, cursor })
-    migrated += page.migrated
-    if (page.isDone) return migrated
-    cursor = page.cursor
-  }
-}
-
 const screen = (t: T, tokenHash: string) => t.query(internal.trmnlPayload.forInstance, { tokenHash, uuid: UUID, now: Date.now(), instanceName: null })
 
 describe('Desk Crawler progress deletion', () => {
@@ -131,57 +120,5 @@ describe('Desk Crawler progress deletion', () => {
       profiles: (await ctx.db.query('deskCrawlerProfiles').collect()).length,
       gameJobs: (await ctx.db.query('gameDeletionJobs').collect()).length,
     }))).toEqual({ users: 0, profiles: 0, gameJobs: 0 })
-  })
-})
-
-describe('platform migration', () => {
-  let t: T
-  beforeEach(async () => {
-    t = convexTest(schema, modules)
-    await seedWorld(t)
-  })
-  afterEach(() => vi.unstubAllEnvs())
-
-  it('moves legacy owner pointers into game profiles and scopes credentials to Desk Crawler, once', async () => {
-    const heroId = await seedHero(t, {}, 'Ana')
-    await linkGrant(t, 'Ana', sha256Hex('installation-token-ana'))
-    const ana = t.withIdentity({ issuer: 'issuer', subject: 'Ana' })
-    const before = await ana.query(api.users.me, {})
-
-    expect(await backfill(t, 'users')).toBe(1)
-    expect(await backfill(t, 'trmnlGrants')).toBe(1)
-    expect(await backfill(t, 'trmnlInstances')).toBe(1)
-    expect(await backfill(t, 'users')).toBe(0)
-    expect(await backfill(t, 'trmnlGrants')).toBe(0)
-
-    const state = await t.run(async (ctx) => ({
-      user: await ctx.db.query('users').first(),
-      profile: await ctx.db.query('deskCrawlerProfiles').first(),
-      grant: await ctx.db.query('trmnlGrants').first(),
-      instance: await ctx.db.query('trmnlInstances').first(),
-    }))
-    expect(state.user?.activeHeroId).toBeUndefined()
-    expect(state.profile).toMatchObject({ userId: state.user?._id, state: 'active', activeHeroId: heroId })
-    expect(state.grant?.gameSlug).toBe('desk-crawler')
-    expect(state.instance?.gameSlug).toBe('desk-crawler')
-    expect(await ana.query(api.users.me, {})).toEqual(before)
-  })
-
-  it('rebinds only the allowlisted owner to the new Clerk issuer and revokes the old identity', async () => {
-    const oldIssuer = 'https://clerk.old.example'
-    const newIssuer = 'https://clerk.trmnlgames.com'
-    await t.run(async (ctx) => {
-      await ctx.db.insert('users', { tokenIdentifier: `${oldIssuer}|user_Owner1234`, publicAlias: 'Owner', normalizedAlias: 'owner', timezone: 'UTC', state: 'active', createdAt: Date.now(), publicNameVersion: 1 })
-      await ctx.db.insert('users', { tokenIdentifier: `${oldIssuer}|user_Other1234`, publicAlias: 'Other', normalizedAlias: 'other', timezone: 'UTC', state: 'active', createdAt: Date.now(), publicNameVersion: 1 })
-    })
-    vi.stubEnv('ADMIN_TOKEN_IDENTIFIERS', `${newIssuer}|user_Owner1234`)
-
-    await expect(t.mutation(internal.platformMigration.rebindOwner, { clerkUserId: 'user_Other1234', oldIssuer, newIssuer })).rejects.toThrow()
-    expect(await t.mutation(internal.platformMigration.rebindOwner, { clerkUserId: 'user_Owner1234', oldIssuer, newIssuer })).toEqual({ changed: true })
-    expect(await t.mutation(internal.platformMigration.rebindOwner, { clerkUserId: 'user_Owner1234', oldIssuer, newIssuer })).toEqual({ changed: false })
-
-    expect(await t.withIdentity({ issuer: newIssuer, subject: 'user_Owner1234' }).query(api.users.me, {})).toMatchObject({ user: { publicAlias: 'Owner' } })
-    expect(await t.withIdentity({ issuer: oldIssuer, subject: 'user_Owner1234' }).query(api.users.me, {})).toMatchObject({ user: null })
-    await expect(t.withIdentity({ issuer: oldIssuer, subject: 'user_Owner1234' }).mutation(api.deletion.requestDeletion, { operationId: 'delete-old-0001', confirm: 'DELETE' })).rejects.toThrow()
   })
 })

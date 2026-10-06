@@ -56,19 +56,11 @@ describe('story and stat changes', () => {
       .toEqual({ narrative: 'Beat a Paper Imp. +8 XP, +3 gold.', changes: [] })
   })
 
-  it('recovers only known legacy commands with zero stored deltas', () => {
-    const zero = { xpEarned: 0, gold: 0, hp: 0 }
-    expect(present('Drank a potion. +20 HP.', zero, 'system')).toEqual({ narrative: 'Drank a potion.', changes: ['+20 HP'] })
-    expect(present('Sold the [[Rare Mace]] for 12 gold.', zero, 'system')).toEqual({ narrative: 'Sold the [[Rare Mace]].', changes: ['+12 gold'] })
-    expect(present('Sold 3 items for 20 gold.', zero, 'system')).toEqual({ narrative: 'Sold 3 items.', changes: ['+20 gold'] })
-    expect(present('Drank a potion. +20 HP.', { ...zero, hp: 15 }, 'system').changes).toEqual(['+15 HP'])
-  })
-
-  it('covers every authored stat-bearing narrative in every immutable catalog', () => {
+  it('covers every authored stat-bearing narrative in every catalog', () => {
     const strings = (value: unknown): string[] => typeof value === 'string' ? [value] : value && typeof value === 'object' ? Object.values(value).flatMap(strings) : []
     for (const catalog of Object.values(catalogs)) {
       for (const template of strings(catalog.narrative)) {
-        const summary = fill(template, { gold: 5, xp: 14, damage: 12, heal: 20, monster: 'Cable Serpent', item: 'Rare Mace', destination: 'Office Cubicles', ticks: 8 })
+        const summary = fill(template, { gold: 5, xp: 14, damage: 12, heal: 20, monster: 'Cable Serpent', item: 'Rare Mace', destination: 'Office Cubicles', ticks: 8, capacity: 16 })
         const { narrative } = present(summary)
         expect(narrative, `${catalog.contentVersion}: ${template}`).not.toMatch(/\d+ (?:gold|HP|XP)/)
         expect(narrative).not.toMatch(/:\s*\.|for\s*\.|with\s*\./)

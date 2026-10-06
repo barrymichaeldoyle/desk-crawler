@@ -58,7 +58,7 @@ export function variant(
     if (repeats(recent[1])) return []
     return callback === undefined ? [] : [callback]
   })
-  // Single-line legacy/custom pools remain usable. Every v4 pool has alternatives.
+  // Every authored pool has alternatives; a single-line pool repeats rather than failing.
   return pickOne(rng, candidates.length > 0 ? candidates : templates.map((template) => fill(template, vars)))
 }
 

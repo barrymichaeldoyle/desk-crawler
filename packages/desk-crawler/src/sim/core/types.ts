@@ -75,23 +75,23 @@ export interface BiomeTemplate {
   readonly trapDamage: Range
 }
 
-/** Placeholders: {monster} {xp} {gold} {damage} {heal} {item} {destination} {ticks} */
+/** Placeholders: {monster} {xp} {gold} {damage} {heal} {item} {destination} {ticks} {capacity} */
 export interface BiomeNarrative {
   readonly victory: readonly string[]
   readonly lootGold: readonly string[]
   readonly trapHit: readonly string[]
-  /** v4+: a deliberate callback when this mishap occurs twice consecutively. */
+  /** A deliberate callback when this mishap occurs twice consecutively. */
   readonly trapHitCallbacks?: Readonly<Record<string, string>>
   readonly rest: readonly string[]
   readonly eliteVictory: readonly string[]
   readonly jackpot: readonly string[]
-  /** v3+: where gear turns up in this biome ({item}), pooled with the shared lines. */
-  readonly lootGear?: readonly string[]
-  /** v3+: arriving in this biome ({destination}), pooled with the shared lines. */
-  readonly arrive?: readonly string[]
+  /** Where gear turns up in this biome ({item}), pooled with the shared lines. */
+  readonly lootGear: readonly string[]
+  /** Arriving in this biome ({destination}), pooled with the shared lines. */
+  readonly arrive: readonly string[]
 }
 
-/** v3+: signature lines for one monster ({monster}, {xp}, {gold}), pooled with its biome's victories. */
+/** Signature lines for one monster ({monster}, {xp}, {gold}), pooled with its biome's victories. */
 export interface MonsterNarrative {
   readonly victory: readonly string[]
 }
@@ -111,12 +111,13 @@ export interface SharedNarrative {
   readonly revive: readonly string[]
   readonly arrive: readonly string[]
   readonly depart: readonly string[]
-  /** v3+: a level-up that opens a new area ({destination}). */
-  readonly unlock?: readonly string[]
+  /** A level-up that opens a new area ({destination}). */
+  readonly unlock: readonly string[]
+  /** Finding a bigger bag ({item}, {capacity}). */
+  readonly bagFind: readonly string[]
 }
 
 export interface SimulationConstants {
-  readonly bagCapacity: number
   readonly potionStackCap: number
   readonly potionHealPct: number
   readonly autoPotionBelowPct: number
@@ -138,6 +139,25 @@ export interface SimulationConstants {
   readonly summaryMaxCodePoints: number
 }
 
+/** One rung of the bag ladder (D61). Capacity counts unequipped bag gear only. */
+export interface BagTier {
+  readonly id: string
+  readonly name: string
+  readonly capacity: number
+  /** Guaranteed once either condition is met; the first tier has none. */
+  readonly milestone?: Readonly<{ ticksExplored?: number; level?: number }>
+  /** Gold to buy this tier in the companion; absent for the starting tier. */
+  readonly price?: number
+}
+
+/** Per-hero bag capacity that grows (D61). */
+export interface BagLadder {
+  /** Ordered by strictly increasing capacity; tiers[0] is a new hero's bag. */
+  readonly tiers: readonly BagTier[]
+  /** Chance per loot encounter, in permille, that an eligible hero finds the next bag. */
+  readonly findPermille: number
+}
+
 export interface ContentCatalog {
   readonly contentVersion: string
   readonly constants: SimulationConstants
@@ -149,7 +169,8 @@ export interface ContentCatalog {
   readonly gearTiers: Readonly<Record<number, GearTierStats>>
   readonly rarities: readonly RarityRule[]
   readonly potion: Readonly<{ templateId: string; name: string }>
-  readonly narrative: Readonly<{ biomes: Readonly<Record<string, BiomeNarrative>>; shared: SharedNarrative; monsters?: Readonly<Record<string, MonsterNarrative>>; avoidConsecutiveRepeats?: boolean }>
+  readonly bagLadder: BagLadder
+  readonly narrative: Readonly<{ biomes: Readonly<Record<string, BiomeNarrative>>; shared: SharedNarrative; monsters: Readonly<Record<string, MonsterNarrative>> }>
 }
 
 // ---------------------------------------------------------------- hero and items
@@ -183,6 +204,8 @@ export interface HeroState {
   readonly weaponId?: string
   readonly armorId?: string
   readonly heldItemId?: string
+  /** Unequipped gear the bag holds; always a ladder tier's capacity (D61). */
+  readonly bagCapacity: number
   readonly lastLevelUpTick: number
   readonly counters: HeroCounters
 }
@@ -254,12 +277,12 @@ export type OutcomeDetail =
       readonly xpGranted: number
       readonly goldGranted: number
       readonly gearDropped: boolean
-      /** Optional adapter annotation from the awarded item; older combat logs omit it. */
+      /** Adapter annotation from the awarded item; present only when gear dropped. */
       readonly gearRarity?: Rarity
     }
   | {
       readonly variant: 'loot'
-      readonly found: 'gear' | 'potion' | 'gold'
+      readonly found: 'gear' | 'potion' | 'gold' | 'bag'
       readonly templateId?: string
       readonly rarity?: Rarity
       readonly destination?: 'bag' | 'held'
@@ -287,7 +310,16 @@ export interface LogDetail {
   readonly levelsGained: number
   readonly goldPenalty: number
   readonly heldFind: boolean
+  /** The bag grew this tick (D61). */
+  readonly bagUpgrade?: BagUpgrade
   readonly outcome: OutcomeDetail
+}
+
+export interface BagUpgrade {
+  readonly from: number
+  readonly to: number
+  readonly tierId: string
+  readonly source: 'milestone' | 'find'
 }
 
 export interface TickEvent {
@@ -306,6 +338,7 @@ export interface TickMetrics {
   readonly levelUps: number
   readonly potionsUsed: number
   readonly heldFinds: number
+  readonly bagUpgrades: number
   readonly sleepStarts: number
   readonly wakes: number
   readonly elites: number

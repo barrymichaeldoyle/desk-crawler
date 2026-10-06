@@ -1,3 +1,4 @@
+import { bagUsed } from './bag'
 import { maxHp, xpToLeave } from './stats'
 import type { ContentCatalog, HeroState, ItemSnapshot } from './types'
 
@@ -19,11 +20,6 @@ const fail = (code: string, message: string): never => {
 const isCount = (value: number): boolean => Number.isSafeInteger(value) && value >= 0
 
 export const MAX_INVENTORY_ROWS = 32
-
-export function bagGearCount(hero: Pick<HeroState, 'heldItemId'>, inventory: readonly ItemSnapshot[]): number {
-  const gear = inventory.filter((item) => item.kind !== 'potion').length
-  return hero.heldItemId === undefined ? gear : gear - 1
-}
 
 /** Cross-field hero/inventory invariants shared by input and output validation. */
 export function assertHeroInvariants(hero: HeroState, inventory: readonly ItemSnapshot[], content: ContentCatalog): void {
@@ -102,5 +98,6 @@ export function assertHeroInvariants(hero: HeroState, inventory: readonly ItemSn
   if (hero.heldItemId !== undefined && (hero.heldItemId === hero.weaponId || hero.heldItemId === hero.armorId)) {
     fail('HELD_EQUIPPED', 'held gear cannot be equipped')
   }
-  if (bagGearCount(hero, inventory) > constants.bagCapacity) fail('BAG_FULL', 'bag gear above capacity')
+  if (!content.bagLadder.tiers.some((tier) => tier.capacity === hero.bagCapacity)) fail('BAG_CAPACITY', `capacity ${hero.bagCapacity} is not a bag tier`)
+  if (bagUsed(hero, inventory) > hero.bagCapacity) fail('BAG_FULL', 'bag gear above capacity')
 }

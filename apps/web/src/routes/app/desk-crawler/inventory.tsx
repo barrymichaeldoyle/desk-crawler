@@ -44,6 +44,7 @@ function Inventory() {
   const sellMany = useIntent(api.inventory.sellMany)
   const claim = useIntent(api.inventory.claimHeld)
   const resume = useIntent(api.inventory.resumeAdventures)
+  const buyBag = useIntent(api.inventory.buyBag)
   const [gearAction, setGearAction] = useState<'equip' | 'unequip' | null>(null)
   const [sleepAction, setSleepAction] = useState<'claim' | 'resume' | null>(null)
   useEffect(() => {
@@ -64,7 +65,9 @@ function Inventory() {
   const gearFeedback = gearAction ? { equip, unequip }[gearAction] : null
   const sleepFeedback = sleepAction ? { claim, resume }[sleepAction] : null
   const equippedOf = (kind: Gear['kind']) => gear.find((item) => item.equipped && item.kind === kind)
-  const busy = equip.pending || unequip.pending || sellMany.pending || claim.pending || resume.pending
+  const busy = equip.pending || unequip.pending || sellMany.pending || claim.pending || resume.pending || buyBag.pending
+  // Quiet warning at 80% of the current bag (D61).
+  const filling = bag.used >= Math.ceil(bag.capacity * 0.8)
   const locked = busy || sale !== null
   const toggle = (id: string) => setSelected((current) => {
     const next = new Set(retainSellableSelection(current, gear))
@@ -87,7 +90,7 @@ function Inventory() {
     <div className="flex min-w-0 flex-col gap-8">
       <header className="flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="font-display text-3xl font-bold">Your bag</h1>
-        <p className="text-sm tabular-nums text-muted">{bag.used} / {bag.capacity} slots · {bag.capacity - bag.used} free</p>
+        <p className="text-sm tabular-nums text-muted">{bag.ladder.name} · {bag.used} / {bag.capacity} slots · {bag.capacity - bag.used} free</p>
       </header>
       {hero.status === 'sleeping' ? (
         <Card title={hero.wakeAtTick !== null ? 'Ready for the next adventure' : held ? 'A find is waiting safely' : 'Ready to head out?'}>
@@ -95,7 +98,7 @@ function Inventory() {
             <p><strong>{held.label}</strong> didn’t fit, so adventures stopped to keep it safe. Sell gear to free a slot, claim your find, then leave one slot free to resume.</p>
             <p className="mt-2 text-sm text-muted">+{statOf(held)} {statLabel(held)} · {held.rarity} · requires level {held.requiredLevel}</p>
             <Button className="mt-3" pending={claim.pending} busyLabel="Claiming…" disabled={!manageable || locked || bag.used >= bag.capacity} onClick={() => { setSleepAction('claim'); return claim.run({}, `${held.label} is now in your bag. Leave one free slot, then resume adventures.`) }}>Claim find</Button>
-            {bag.used >= bag.capacity ? <p className="mt-2 text-sm">Sell an item below first. Equipping gear doesn’t free a slot.</p> : null}
+            {bag.used >= bag.capacity ? <p className="mt-2 text-sm">Sell an item below or get a bigger bag first.</p> : null}
           </> : hero.wakeAtTick !== null ? <ResumeAt /> : <>
             <p>{bag.canResume ? 'Your find is claimed and there’s room for more. Resume here or head to another unlocked area.' : 'Your find is claimed. Sell one more item to leave a free slot, then resume.'}</p>
             <label className="mt-4 flex flex-col gap-2 text-sm">
@@ -112,6 +115,7 @@ function Inventory() {
         </Card>
       ) : null}
       {!manageable ? <p className="text-sm">{hero.simulationState === 'quarantined' ? 'Gear changes are paused during a service check. Your items are safe.' : hero.status === 'paused' ? <>Adventures are paused. <Link to="/app/desk-crawler" className="underline underline-offset-4">Resume from Hero</Link> to change or sell gear.</> : 'You can change and sell gear once your hero is back from travelling or recovering.'}</p> : null}
+      <BagLadder ladder={bag.ladder} capacity={bag.capacity} gold={hero.gold} disabled={!manageable || locked} intent={buyBag} />
       <Card title="Equipped">
         <div className="grid grid-cols-2 gap-5">
           {(['weapon', 'armor'] as const).map((kind) => {
@@ -131,7 +135,7 @@ function Inventory() {
           <h2 id="bag-gear-title" ref={selectionHeading} tabIndex={-1} className="font-display text-2xl font-bold">Gear to review</h2>
           <p className="text-sm">{sellable.length} {sellable.length === 1 ? 'item' : 'items'}</p>
         </div>
-        {bag.used >= 24 && hero.status !== 'sleeping' ? <p className="mt-3 text-sm">{bag.used >= bag.capacity ? 'Your bag is full. Adventures continue until the next gear find, which will be held safely.' : 'Your bag is filling up. Sell gear you no longer need to make room for new finds.'}</p> : null}
+        {filling && hero.status !== 'sleeping' ? <p className="mt-3 text-sm">{bag.used >= bag.capacity ? 'Your bag is full. Adventures continue until the next gear find, which will be held safely.' : 'Your bag is filling up. Sell gear you no longer need to make room for new finds.'}</p> : null}
         <p className="mt-2 text-sm text-muted">Compare with your equipped gear. Select items to sell; you’ll review the sale before it happens.</p>
         {chosen.length > 0 && sale === null ? <Button allowOffline variant="quiet" className="-ml-4" disabled={busy} onClick={() => setSelected(new Set())}>Clear selection</Button> : null}
         {sellable.length === 0 ? <p className="mt-4">No spare gear yet. New finds will appear here as your hero explores.</p> : <ul className="mt-3 border-t-2 border-edge">
@@ -179,6 +183,29 @@ function Inventory() {
       </section> : null}
     </div>
   )
+}
+
+type Ladder = {
+  name: string
+  next: { id: string; name: string; capacity: number; price: number | null; milestoneLevel: number | null; milestoneAdventures: number | null; buyable: boolean; lockedUntilLevel: number | null } | null
+}
+
+/** D61: the current bag, the next one and the three ways to get it. */
+function BagLadder({ ladder, capacity, gold, disabled, intent }: { ladder: Ladder; capacity: number; gold: number; disabled: boolean; intent: { pending: boolean; error: string | null; message: string | null; run: (args: { tierId: string }, message?: string) => Promise<boolean> } }) {
+  const next = ladder.next
+  const affordable = next?.price != null && gold >= next.price
+  return <Card title={ladder.name}>
+    <p className="tabular-nums">Holds <strong>{capacity}</strong> pieces of gear. Equipped gear and potions don’t take up space.</p>
+    {next ? <>
+      <p className="mt-3"><strong>Next: {next.name}</strong> · {next.capacity} slots (+{next.capacity - capacity})</p>
+      <p className="mt-1 text-sm text-muted">{next.milestoneAdventures !== null ? `Guaranteed after ${next.milestoneAdventures} adventures` : `Guaranteed at level ${next.milestoneLevel}`}. Your hero might also find one while exploring.</p>
+      {next.price !== null ? next.buyable ? <>
+        <Button className="mt-3" variant={affordable ? 'primary' : 'secondary'} disabled={disabled || !affordable} pending={intent.pending} busyLabel="Buying…" onClick={() => intent.run({ tierId: next.id }, `Your new ${next.name} holds ${next.capacity}.`)}>Buy for {next.price} gold</Button>
+        {!affordable ? <p className="mt-2 text-sm tabular-nums">You have <span className="text-gold-ink">{gold} gold</span>.</p> : null}
+      </> : <p className="mt-2 text-sm">{next.lockedUntilLevel !== null ? `You can buy it from level ${next.lockedUntilLevel}.` : 'You can buy it after your next bag milestone.'}</p> : null}
+    </> : <p className="mt-3 text-sm text-muted">This is the biggest bag for now.</p>}
+    <ActionFeedback error={intent.error} message={intent.message} />
+  </Card>
 }
 
 /** A rarity gem: one facet for common, two for uncommon, three for rare, so rarity never rests on colour alone. */

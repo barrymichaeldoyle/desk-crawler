@@ -40,7 +40,7 @@ const outcome = v.union(
   }),
   v.object({
     variant: v.literal('loot'),
-    found: v.union(v.literal('gear'), v.literal('potion'), v.literal('gold')),
+    found: v.union(v.literal('gear'), v.literal('potion'), v.literal('gold'), v.literal('bag')),
     templateId: v.optional(v.string()),
     rarity: v.optional(rarity),
     destination: v.optional(v.union(v.literal('bag'), v.literal('held'))),
@@ -81,6 +81,7 @@ export const simulationDetail = v.object({
   levelsGained: v.number(),
   goldPenalty: v.number(),
   heldFind: v.boolean(),
+  bagUpgrade: v.optional(v.object({ from: v.number(), to: v.number(), tierId: v.string(), source: v.union(v.literal('milestone'), v.literal('find')) })),
   outcome,
 })
 
@@ -88,6 +89,8 @@ export const commandDetail = v.object({
   v: v.literal(1),
   operation: v.string(),
   result: v.optional(v.string()),
+  /** Bag slots a purchase added (D61). */
+  bagSlots: v.optional(v.number()),
 })
 
 export const logDetail = v.union(simulationDetail, commandDetail)

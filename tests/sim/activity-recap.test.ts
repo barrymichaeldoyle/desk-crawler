@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { contentV4 } from '@trmnl-games/desk-crawler/content/v4'
+import { contentV1 } from '@trmnl-games/desk-crawler/content/v1'
 import { activityRecap, MAX_RECAP_EVENTS, RECAP_WINDOW_MS, type ActivityEntry } from '@trmnl-games/desk-crawler/payload'
 import type { OutcomeDetail } from '@trmnl-games/desk-crawler/sim/core/types'
 
@@ -16,7 +16,7 @@ describe('12-hour device recap', () => {
       entry(loot({ found: 'gold', goldGranted: 5, potionFullFallback: true })),
       entry(loot({ found: 'gear', rarity: 'rare', goldGranted: 0 })),
       entry({ variant: 'rest', healing: 0, automatic: false, resultingStatus: 'exploring' }),
-    ], NOW, contentV4)
+    ], NOW, contentV1)
     expect(recap.totals).toMatchObject({ xp: 9, gold: 8, wins: 1, gear: 2, potions: 1, breaks: 1, rareFinds: 1, elites: 1 })
     expect(recap.activity).toBe('1 fight won · 2 gear finds · 1 potion found · 1 break')
     expect(recap.gains).toBe('+9 XP · 8 gold earned')
@@ -29,12 +29,12 @@ describe('12-hour device recap', () => {
       entry(fight, { at: NOW - 8 * 3_600_000, detail: { outcome: fight, levelsGained: 2, heldFind: false } }),
       entry(loot({ found: 'gear', rarity: 'rare', goldGranted: 0 }), { at: NOW - 10 * 3_600_000 }),
     ]
-    expect(activityRecap(logs, NOW, contentV4).highlights).toBe('Gained 2 levels · 1 rare find')
-    expect(activityRecap(logs, NOW + 60_000, contentV4).totals).toEqual(activityRecap(logs, NOW, contentV4).totals)
+    expect(activityRecap(logs, NOW, contentV1).highlights).toBe('Gained 2 levels · 1 rare find')
+    expect(activityRecap(logs, NOW + 60_000, contentV1).totals).toEqual(activityRecap(logs, NOW, contentV1).totals)
   })
 
   it('includes annotated rare combat drops and keeps older unannotated drops unknown', () => {
-    const recap = activityRecap([entry(fight), entry({ ...fight, gearRarity: 'rare' })], NOW, contentV4)
+    const recap = activityRecap([entry(fight), entry({ ...fight, gearRarity: 'rare' })], NOW, contentV1)
     expect(recap.totals).toMatchObject({ gear: 2, rareFinds: 1 })
   })
 
@@ -45,7 +45,7 @@ describe('12-hour device recap', () => {
       entry(loot(), { at: NOW }),
       entry(loot(), { at: NOW + 1 }),
       entry(loot(), { detail: { operation: 'inventory.sellMany' }, deltas: { xpEarned: 0, gold: 999, hp: 0 } }),
-    ], NOW, contentV4)
+    ], NOW, contentV1)
     expect(recap.events).toBe(2)
     expect(recap.totals.gold).toBe(24)
     expect(recap.label).toBe('Last 12 hours')
@@ -57,24 +57,24 @@ describe('12-hour device recap', () => {
       entry({ ...fight, outcome: 'death', goldGranted: 0, gearDropped: false }),
       entry({ variant: 'revival', previousBiomeId: 'server_room', safeBiomeId: 'office_cubicles', hpGranted: 30, reviveAtTick: 8 }),
       entry(loot({ found: 'gear', rarity: 'rare', goldGranted: 0 }), { detail: { outcome: loot({ found: 'gear', rarity: 'rare', goldGranted: 0 }), levelsGained: 1, heldFind: true } }),
-    ], NOW, contentV4)
+    ], NOW, contentV1)
     expect(recap.totals).toMatchObject({ wins: 0, knockouts: 1, revivals: 1, levels: 1 })
     expect(recap.highlights).toBe('Bag filled up · 1 knockout · 1 revival')
   })
 
   it('names arrivals from the catalog, and does not turn departures into arrivals', () => {
     const travel: OutcomeDetail = { variant: 'travel', phase: 'depart', fromBiomeId: 'office_cubicles', toBiomeId: 'server_room', arrivalTick: 3 }
-    expect(activityRecap([entry(travel)], NOW, contentV4).highlights).toBe('')
-    expect(activityRecap([entry({ ...travel, phase: 'arrive' })], NOW, contentV4).highlights).toBe('Reached Server Room')
+    expect(activityRecap([entry(travel)], NOW, contentV1).highlights).toBe('')
+    expect(activityRecap([entry({ ...travel, phase: 'arrive' })], NOW, contentV1).highlights).toBe('Reached Server Room')
   })
 
   it('labels capped results as partial and distinguishes an empty window from zero-reward adventures', () => {
-    expect(activityRecap([], NOW, contentV4)).toMatchObject({ label: 'Last 12 hours', activity: 'No new adventures', compact: 'No new adventures', events: 0 })
-    const cap = activityRecap(Array.from({ length: MAX_RECAP_EVENTS + 1 }, () => entry(loot())), NOW, contentV4)
+    expect(activityRecap([], NOW, contentV1)).toMatchObject({ label: 'Last 12 hours', activity: 'No new adventures', compact: 'No new adventures', events: 0 })
+    const cap = activityRecap(Array.from({ length: MAX_RECAP_EVENTS + 1 }, () => entry(loot())), NOW, contentV1)
     expect(cap.partial).toBe(true)
     expect(cap.label).toContain('partial')
     expect(cap.events).toBe(MAX_RECAP_EVENTS)
-    expect(activityRecap([entry(loot())], NOW, contentV4, true).partial).toBe(true)
-    expect(activityRecap([entry({ variant: 'trap', avoided: true, damage: 0, outcome: 'survived' })], NOW, contentV4).activity).toBe('Adventures continued')
+    expect(activityRecap([entry(loot())], NOW, contentV1, true).partial).toBe(true)
+    expect(activityRecap([entry({ variant: 'trap', avoided: true, damage: 0, outcome: 'survived' })], NOW, contentV1).activity).toBe('Adventures continued')
   })
 })

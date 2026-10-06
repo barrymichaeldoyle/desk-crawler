@@ -1,9 +1,12 @@
 import { applyItemChanges } from './apply'
-import { assertHeroInvariants, bagGearCount, SimulationInvariantError } from './invariants'
+import { isBagFull, milestoneUpgrade, nextEarlyTier } from './bag'
+import { assertHeroInvariants, SimulationInvariantError } from './invariants'
 import { codePoints, composeSummary, fill, rarityLabel, variant, withArticle, type NarrativeVars } from './narrative'
 import { createRng, pickOne, pickWeighted, type Rng } from './rng'
 import { applyXp, deriveStats, maxHp, pctOf } from './stats'
 import type {
+  BagTier,
+  BagUpgrade,
   BiomeTemplate,
   CombatRound,
   ContentCatalog,
@@ -36,6 +39,7 @@ const ZERO_METRICS: TickMetrics = {
   levelUps: 0,
   potionsUsed: 0,
   heldFinds: 0,
+  bagUpgrades: 0,
   sleepStarts: 0,
   wakes: 0,
   elites: 0,
@@ -80,7 +84,7 @@ class TickRun {
   }
 
   private narrate(templates: readonly string[], vars: NarrativeVars, callbacks?: Readonly<Record<string, string>>): string {
-    return variant(this.rng.narrative, templates, vars, this.content.narrative.avoidConsecutiveRepeats ? this.input.recentSummaries : undefined, callbacks)
+    return variant(this.rng.narrative, templates, vars, this.input.recentSummaries, callbacks)
   }
 
   run(): SimulationResult {
@@ -90,7 +94,7 @@ class TickRun {
         return this.finish('paused')
       case 'sleeping': {
         if (h.wakeAtTick === undefined || input.tick < h.wakeAtTick) return this.finish('sleeping')
-        if (h.heldItemId !== undefined || bagGearCount(h, input.inventory) >= this.content.constants.bagCapacity) {
+        if (h.heldItemId !== undefined || isBagFull(h, input.inventory)) {
           throw new SimulationInvariantError('WAKE_PRECONDITION', 'wake is due but the held slot or bag is not clear')
         }
         delete h.wakeAtTick
@@ -135,7 +139,7 @@ class TickRun {
     delete h.targetBiomeId
     delete h.arriveAtTick
     h.status = 'exploring'
-    const arrivals = [...this.content.narrative.shared.arrive, ...(this.content.narrative.biomes[to]?.arrive ?? [])]
+    const arrivals = [...this.content.narrative.shared.arrive, ...this.content.narrative.biomes[to]!.arrive]
     const text = this.narrate(arrivals, { destination: this.biome(to).name })
     return this.finish('arrived', {
       kind: 'travel',
@@ -223,6 +227,7 @@ class TickRun {
     let goldPenalty = 0
     let gear: NewItem | undefined
     let lethal = false
+    let upgrade: BagUpgrade | undefined
     let outcome: OutcomeDetail
     let primary: string
     let compact: string
@@ -266,7 +271,7 @@ class TickRun {
           this.metrics.victories = 1
           if (elite) this.metrics.elites = 1
           Object.assign(vars, { xp: xpGranted, gold: goldGranted })
-          const victories = [...narrative.victory, ...(content.narrative.monsters?.[monster.id]?.victory ?? [])]
+          const victories = [...narrative.victory, ...(content.narrative.monsters[monster.id]?.victory ?? [])]
           primary = this.narrate(elite ? narrative.eliteVictory : victories, vars)
           compact = fill('Beat {monster}. +{xp} XP, +{gold} gold.', vars)
         } else if (result === 'retreat') {
@@ -296,6 +301,20 @@ class TickRun {
         break
       }
       case 'loot': {
+        // One reward draw per loot encounter, used or not, so eligibility never shifts later draws.
+        const bagRoll = this.rng.reward.int(1, 1000)
+        const bag = bagRoll <= content.bagLadder.findPermille ? nextEarlyTier(content, h) : undefined
+        if (bag !== undefined) {
+          const from = h.bagCapacity
+          h.bagCapacity = bag.capacity
+          upgrade = { from, to: bag.capacity, tierId: bag.id, source: 'find' }
+          vars.item = bag.name
+          vars.capacity = bag.capacity
+          primary = this.narrate(shared.bagFind, vars)
+          compact = fill('Found a {item}. Bag holds {capacity}.', vars)
+          outcome = { variant: 'loot', found: 'bag', goldGranted: 0, jackpot: false, potionFullFallback: false }
+          break
+        }
         const found = pickWeighted<'gear' | 'potion' | 'gold'>(this.rng.encounter, [
           ['gear', c.lootWeights.gear],
           ['potion', c.lootWeights.potion],
@@ -408,9 +427,9 @@ class TickRun {
         this.metrics.levelUps = levelsGained
         if (logKind !== 'death') logKind = 'levelup'
         consequences.push(`Reached level ${h.level}!`)
-        // A level that opens a new area says so (v3+ content).
+        // A level that opens a new area says so.
         const opened = content.biomes.find((b) => !b.safe && b.unlockLevel > h.level - levelsGained && b.unlockLevel <= h.level)
-        if (opened && shared.unlock) consequences.push(this.narrate(shared.unlock, { destination: opened.name }))
+        if (opened) consequences.push(this.narrate(shared.unlock, { destination: opened.name }))
       }
     }
     if (goldGranted > 0) {
@@ -418,12 +437,21 @@ class TickRun {
       h.counters.goldEarned += goldGranted
     }
 
+    // Guaranteed bag milestones land before any gear is placed, so the new space is usable at once.
+    const milestone: BagTier | undefined = milestoneUpgrade(content, h)
+    if (milestone !== undefined) {
+      upgrade = { from: upgrade?.from ?? h.bagCapacity, to: milestone.capacity, tierId: milestone.id, source: 'milestone' }
+      h.bagCapacity = milestone.capacity
+      consequences.push(`Found ${withArticle(milestone.name)}! Bag holds ${milestone.capacity}.`)
+    }
+    if (upgrade !== undefined) this.metrics.bagUpgrades = 1
+
     let heldFind = false
     let disposition: Disposition = 'advanced'
     if (gear !== undefined) {
       h.counters.itemsFound += 1
       const item = `${rarityLabel(gear.rarity)} ${gear.name}`
-      heldFind = bagGearCount(h, input.inventory) >= c.bagCapacity
+      heldFind = isBagFull(h, input.inventory)
       this.changes.push({ type: 'create', destination: heldFind ? 'held' : 'bag', item: gear })
       if (heldFind) {
         h.status = 'sleeping'
@@ -433,7 +461,7 @@ class TickRun {
         consequences.unshift('Bag full. Holding it until you make room.')
       }
       if (outcome.variant === 'loot') {
-        primary = this.narrate([...shared.lootGear, ...(narrative.lootGear ?? [])], { item })
+        primary = this.narrate([...shared.lootGear, ...narrative.lootGear], { item })
         compact = `Found ${withArticle(item)}.`
         outcome = { ...outcome, templateId: gear.templateId, rarity: gear.rarity, destination: heldFind ? 'held' : 'bag' }
       } else {
@@ -445,7 +473,7 @@ class TickRun {
     return this.finish(
       disposition,
       { kind: logKind, summary: composeSummary(primary, compact, consequences, c.summaryMaxCodePoints), outcome, encounterKind: kind },
-      { potionsUsed, levelsGained, goldPenalty, heldFind, xpGranted },
+      { potionsUsed, levelsGained, goldPenalty, heldFind, xpGranted, ...(upgrade === undefined ? {} : { bagUpgrade: upgrade }) },
     )
   }
 
@@ -513,7 +541,7 @@ class TickRun {
   private finish(
     disposition: Disposition,
     event?: { kind: LogKind; summary: string; outcome: OutcomeDetail; encounterKind?: EncounterKind },
-    extra: { potionsUsed?: number; levelsGained?: number; goldPenalty?: number; heldFind?: boolean; xpGranted?: number } = {},
+    extra: { potionsUsed?: number; levelsGained?: number; goldPenalty?: number; heldFind?: boolean; xpGranted?: number; bagUpgrade?: BagUpgrade } = {},
   ): SimulationResult {
     const { h, input } = this
     const nextHero = toHeroState(h)
@@ -529,6 +557,7 @@ class TickRun {
       levelsGained: extra.levelsGained ?? 0,
       goldPenalty: extra.goldPenalty ?? 0,
       heldFind: extra.heldFind ?? false,
+      ...(extra.bagUpgrade === undefined ? {} : { bagUpgrade: extra.bagUpgrade }),
       outcome: event.outcome,
     }
     return {
@@ -565,6 +594,7 @@ function validateOutput(input: SimulationInput, result: SimulationResult): void 
   const xpEarned = result.event?.deltas.xpEarned ?? 0
   if (out.lifetimeXp - hero.lifetimeXp !== xpEarned) fail('XP_CONSERVATION', 'lifetime XP delta differs from granted XP')
   if (out.level < hero.level) fail('LEVEL_DOWN', 'level decreased')
+  if (out.bagCapacity < hero.bagCapacity) fail('BAG_SHRANK', 'bag capacity decreased')
   if (result.event && codePoints(result.event.summary) > input.content.constants.summaryMaxCodePoints) {
     fail('SUMMARY_LENGTH', result.event.summary)
   }

@@ -144,7 +144,7 @@ Pause/resume (confirmed MVP controls): only exploring/resting can pause. Save th
 
 `sleeping` is a sixth gameplay state, not HP rest or service pause. Allow bag equip/unequip/sell during sleep, reject held-item equip/sell until claimed, and reject potion, `changeBiome` and voluntary pause in sleep. Bag gear may also be sold in bulk (`inventory.sellMany`, D29). `claimHeld` requires one free bag slot and preserves the same item. Resume requires no held item and at least one free slot, sets `wakeAtTick = world.currentTick + 1`, optionally records an unlocked destination in `targetBiomeId`, and grants no catch-up. A full bag without a new find keeps exploring. Hardware/website inactivity never initiates sleep.
 
-Gold is secondary and has no MVP spending mechanic. It is retained for later merchant design; do not promise a date/buying power or reset accumulated gold for inflation. Manual authorized bag sales remain available.
+Gold is secondary. Its first use is buying the next bag (D61, [inventory](inventory.md)): fixed prices, at most one tier ahead of the hero's bag milestones. Other gold sinks wait for later merchant design; do not promise a date/buying power or reset accumulated gold for inflation. Manual authorized bag sales remain available.
 
 ## Content contracts
 
@@ -165,7 +165,7 @@ Tick summaries have a 90-code-point backend limit, with render-time clamping for
 
 These targets may conflict with the starting numbers. The balance harness decides; record tuned values and observed confidence intervals before calling the game balanced.
 
-The tables above are the v1 planning baseline. The active catalog is the harness-tuned v2 (`convex/content/v2.ts`): lower monster XP/gold and loot gold, rare gear 2% and uncommon 28%. Results and remaining tuning are in [balance evidence](evidence/balance.md).
+The tables above are the planning baseline. The release catalog v1 (`packages/desk-crawler/src/content/v1.ts`, D63) carries the harness-tuned numbers: lower monster XP/gold and loot gold, rare gear 2% and uncommon 28%, plus the D61 bag ladder. Results and remaining tuning are in [balance evidence](evidence/balance.md) and [bag ladder evidence](evidence/bag-ladder.md).
 
 ## Device narrative acceptance
 

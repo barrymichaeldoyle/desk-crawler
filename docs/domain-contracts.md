@@ -9,16 +9,16 @@ This defines the boundary between simulator, persistence and rendering so future
 | Member | Content |
 | --- | --- |
 | `hero` | ID and current domain values: class, level/current XP/lifetime XP, HP/gold, status/biome/travel/revival/pause/sleep-wake fields, equipment/held references and lifetime counters |
-| `inventory` | At most 32 owned item snapshots (30 bag gear + held gear + potion), sorted lexically by item ID; copied template/version/name/rarity/stat/quantity/requirement/sale fields |
+| `inventory` | At most 32 owned item snapshots (bag gear up to the hero's capacity, at most 20 in v1, + two equipped + held gear + potion), sorted lexically by item ID; copied template/version/name/rarity/stat/quantity/requirement/sale fields |
 | `tick` | Current run's logical tick |
 | `contentVersion` | Exact immutable catalog version |
 | `simulationVersion` | Exact rule/rounding/PRNG version |
 | `streams` | Four independently derived seeded RNG streams specified in [simulation](simulation.md) |
-| `recentSummaries` | Optional two newest story summaries, newest first. Content v4 uses them only for narrative callbacks and repeat avoidance; older catalogs ignore them |
+| `recentSummaries` | Optional two newest story summaries, newest first, used only for narrative callbacks and repeat avoidance |
 
 The input omits user profile/auth, connection/token data, database context and wall clock. Content is supplied as immutable typed data, not queried inside the core. Inventory ID sorting is a reproducibility requirement even if current rules rarely depend on order.
 
-For v4 the adapter reads at most two logs using the existing hero/time/sequence index. A second loose-cable mishap uses “another”; after two consecutive cable-family lines that variant is excluded. Other repeated wording is excluded immediately where alternatives exist. Numeric amounts and bold marks are ignored for matching, and appended consequences do not hide the primary line. The narrative stream still consumes one draw per selection. Complete deterministic inputs now include this cosmetic history; it cannot change encounters, damage, rewards, counters or item directives.
+The adapter reads at most two logs using the existing hero/time/sequence index. A second loose-cable mishap uses “another”; after two consecutive cable-family lines that variant is excluded. Other repeated wording is excluded immediately where alternatives exist. Numeric amounts and bold marks are ignored for matching, and appended consequences do not hide the primary line. The narrative stream still consumes one draw per selection. Complete deterministic inputs now include this cosmetic history; it cannot change encounters, damage, rewards, counters or item directives.
 
 The database adapter has already checked current ownership, persisted TRMNL activation, cohort/tick eligibility, gameplay state and quarantine; the core handles the six gameplay statuses. It validates cross-field invariants before writing anything.
 

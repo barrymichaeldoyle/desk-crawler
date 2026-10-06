@@ -7,6 +7,7 @@ import { writeFileSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
 import { ACTIVE_CONTENT, catalogs, type CatalogId } from '@trmnl-games/desk-crawler/content'
 import { applyItemChanges } from '@trmnl-games/desk-crawler/sim/core/apply'
+import { nextEarlyTier } from '@trmnl-games/desk-crawler/sim/core/bag'
 import { simulateHero, SIMULATION_VERSION } from '@trmnl-games/desk-crawler/sim/core/simulate'
 import { starterHero, starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
 import { cumulativeXpToReach } from '@trmnl-games/desk-crawler/sim/core/stats'
@@ -23,6 +24,8 @@ export interface Policy {
   readonly everyDays: number
   readonly equipGear?: boolean
   readonly staySafe?: boolean
+  /** D61: buy the next bag whenever affordable (default true for visiting cohorts). */
+  readonly buyBags?: boolean
 }
 
 const POLICIES: readonly Policy[] = [
@@ -61,6 +64,12 @@ export interface HeroLog {
   finalLevel: number
   finalGold: number
   goldDay30?: number
+  /** D61: first tick at each bag capacity, plus how each upgrade arrived. */
+  bagTick: Map<number, number>
+  bagFinds: number
+  bagMilestones: number
+  bagPurchases: number
+  bagGoldSpent: number
 }
 
 function args() {
@@ -93,8 +102,9 @@ function bestInSlot(content: ContentCatalog): { attack: number; defense: number 
 }
 
 /** One visit: equip best eligible gear, claim and sell everything else, resume/travel to the hardest unlocked biome (D29). */
-function visit(hero: HeroState, inventory: ItemSnapshot[], tick: number, content: ContentCatalog, policy: Policy): { hero: HeroState; inventory: ItemSnapshot[] } {
-  if (!['exploring', 'resting', 'sleeping'].includes(hero.status)) return { hero, inventory }
+function visit(hero: HeroState, inventory: ItemSnapshot[], tick: number, content: ContentCatalog, policy: Policy): { hero: HeroState; inventory: ItemSnapshot[]; bought: number } {
+  let bought = 0
+  if (!['exploring', 'resting', 'sleeping'].includes(hero.status)) return { hero, inventory, bought }
   const h: Mutable<HeroState> = { ...hero }
   const gear = inventory.filter((item) => item.kind !== 'potion')
   const best = (kind: 'weapon' | 'armor') =>
@@ -116,6 +126,13 @@ function visit(hero: HeroState, inventory: ItemSnapshot[], tick: number, content
     return false
   })
   h.gold = gold
+  // D61: buy at most the next bag (purchases never run more than one ahead of milestones).
+  const bag = policy.buyBags === false ? undefined : nextEarlyTier(content, h)
+  if (bag?.price !== undefined && h.gold >= bag.price) {
+    h.gold -= bag.price
+    h.bagCapacity = bag.capacity
+    bought = bag.price
+  }
   const hardest = policy.staySafe ? content.biomes.find(b => b.safe)! : content.biomes.filter((b) => b.unlockLevel <= h.level).at(-1)!
   if (h.status === 'sleeping') {
     h.wakeAtTick = tick + 1
@@ -125,7 +142,7 @@ function visit(hero: HeroState, inventory: ItemSnapshot[], tick: number, content
     h.targetBiomeId = hardest.id
     h.arriveAtTick = tick + 1
   }
-  return { hero: h, inventory: kept }
+  return { hero: h, inventory: kept, bought }
 }
 
 export function simulateCohort(policy: Policy, heroes: number, days: number, content: ContentCatalog, ticks = days * TICKS_PER_DAY): HeroLog[] {
@@ -162,6 +179,11 @@ export function simulateCohort(policy: Policy, heroes: number, days: number, con
       dailyXp: [],
       finalLevel: 1,
       finalGold: 0,
+      bagTick: new Map([[hero.bagCapacity, 0]]),
+      bagFinds: 0,
+      bagMilestones: 0,
+      bagPurchases: 0,
+      bagGoldSpent: 0,
     }
     let dayXp = 0
     let recentSummaries: string[] = []
@@ -173,7 +195,13 @@ export function simulateCohort(policy: Policy, heroes: number, days: number, con
     for (let tick = 1; tick <= ticks; tick += 1) {
       if (policy.everyDays > 0 && (tick - offset) % (policy.everyDays * TICKS_PER_DAY) === 0) {
         const before = hero
-        ;({ hero, inventory } = visit(hero, inventory, tick, content, policy))
+        let bought: number
+        ;({ hero, inventory, bought } = visit(hero, inventory, tick, content, policy))
+        if (bought > 0) {
+          log.bagPurchases += 1
+          log.bagGoldSpent += bought
+          if (!log.bagTick.has(hero.bagCapacity)) log.bagTick.set(hero.bagCapacity, tick)
+        }
         log.equippedUpgrades += Number(before.weaponId !== hero.weaponId) + Number(before.armorId !== hero.armorId)
       }
       log.stateTicks.set(hero.status, (log.stateTicks.get(hero.status) ?? 0) + 1)
@@ -206,6 +234,12 @@ export function simulateCohort(policy: Policy, heroes: number, days: number, con
         if (change.item.requiredLevel <= result.nextHero.level && score > equippedScore) log.usefulGearFound += 1
       }
       if (result.metrics.heldFinds && log.firstSleepTick === undefined) log.firstSleepTick = tick
+      const upgrade = result.event?.detail.bagUpgrade
+      if (upgrade) {
+        if (upgrade.source === 'find') log.bagFinds += 1
+        else log.bagMilestones += 1
+        if (!log.bagTick.has(upgrade.to)) log.bagTick.set(upgrade.to, tick)
+      }
       log.elites += result.metrics.elites
       if (result.metrics.jackpots) {
         log.jackpots += 1
@@ -297,6 +331,12 @@ export function summarize(policy: Policy, logs: HeroLog[], totalDays: number, co
     goldDay30: totalDays >= 30 ? pct(logs.map((l) => l.goldDay30 ?? 0), 0.5) : null,
     jackpotGoldShare: Math.round((sum((l) => l.jackpotGold) / Math.max(1, sum((l) => l.goldEarned))) * 1000) / 10,
     elitesPerHeroDay: Math.round((sum((l) => l.elites) / logs.length / totalDays) * 100) / 100,
+    bag: {
+      reach: content.bagLadder.tiers.slice(1).map((tier) => ({ capacity: tier.capacity, ...censored(logs.map((l) => l.bagTick.get(tier.capacity))) })),
+      findsPerHero: Math.round(sum((l) => l.bagFinds) / logs.length * 100) / 100,
+      purchasesPerHero: Math.round(sum((l) => l.bagPurchases) / logs.length * 100) / 100,
+      goldSpentMedian: pct(logs.map((l) => l.bagGoldSpent), 0.5),
+    },
     xpLastDay: spread(lastDay),
     xpLast7Days: spread(last7),
   }
@@ -324,6 +364,7 @@ function main() {
     console.log(`  gear/day ${r.gearPerDay}; best-in-slot ${JSON.stringify(r.bestInSlot)}; gold end ${JSON.stringify(r.goldDayEnd)}; gold day 30 median ${r.goldDay30}`)
     console.log(`  jackpot gold share ${r.jackpotGoldShare}%; elites/hero-day ${r.elitesPerHeroDay}`)
     console.log(`  potions ${JSON.stringify(r.potions)}; useful gear/day ${r.usefulGearPerDay}; equipped upgrades/hero ${r.equippedUpgradesPerHero}`)
+    console.log(`  bag ${r.bag.reach.map((b) => `${b.capacity}: ${b.median}d (p10 ${b.p10}, p90 ${b.p90})`).join('; ')}; finds/hero ${r.bag.findsPerHero}; buys/hero ${r.bag.purchasesPerHero}; gold spent median ${r.bag.goldSpentMedian}`)
     console.log(`  XP last day ${JSON.stringify(r.xpLastDay)}; last 7 days ${JSON.stringify(r.xpLast7Days)}`)
   }
 }

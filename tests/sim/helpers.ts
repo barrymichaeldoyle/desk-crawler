@@ -23,7 +23,7 @@ export function baseState(overrides: Partial<HeroState> = {}, potions = 3): { he
   return { hero, inventory }
 }
 
-/** Fill the bag with extra common gear until it holds `count` gear rows (including equipped). */
+/** Add common gear until the hero owns `count` gear rows (including the two equipped). */
 export function fillBag(inventory: ItemSnapshot[], count: number): ItemSnapshot[] {
   const kit = starterKit(content)
   const gear = inventory.filter((item) => item.kind !== 'potion').length

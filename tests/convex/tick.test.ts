@@ -5,8 +5,7 @@ import { internal } from '@trmnl-games/backend/api'
 import type { Id } from '@trmnl-games/backend/data-model'
 import schema from '../../apps/backend/convex/schema'
 import { starterHero, starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
-import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
-import { contentV4 } from '@trmnl-games/desk-crawler/content/v4'
+import { contentV1 } from '@trmnl-games/desk-crawler/content/v1'
 import { simulateHero } from '@trmnl-games/desk-crawler/sim/core/simulate'
 import { deriveStreamSeeds } from '@trmnl-games/desk-crawler/sim/seed'
 import { toHeroState, toInventory } from '../../apps/backend/convex/sim/runs/adapter'
@@ -30,7 +29,7 @@ async function seedHero(t: T, overrides: Record<string, unknown> = {}): Promise<
       createdAt: now,
       publicNameVersion: 1,
     })
-    const base = starterHero('x', contentV2, 0)
+    const base = starterHero('x', contentV1, 0)
     const heroId = await ctx.db.insert('heroes', {
       userId,
       name: 'Baz',
@@ -48,6 +47,7 @@ async function seedHero(t: T, overrides: Record<string, unknown> = {}): Promise<
       lastLevelUpTick: 0,
       status: 'exploring',
       biomeId: base.biomeId,
+      bagCapacity: base.bagCapacity,
       eligibleFromTick: 1,
       lastTick: 0,
       lastProgressTick: 0,
@@ -57,7 +57,7 @@ async function seedHero(t: T, overrides: Record<string, unknown> = {}): Promise<
       scoreHourXp: 0,
       ...overrides,
     })
-    const kit = starterKit(contentV2)
+    const kit = starterKit(contentV1)
     const weaponId = await ctx.db.insert('items', { ...kit.weapon, heroId, createdAt: now })
     const armorId = await ctx.db.insert('items', { ...kit.armor, heroId, createdAt: now })
     await ctx.db.insert('items', { ...kit.potions, heroId, createdAt: now })
@@ -95,9 +95,9 @@ describe('tick scheduler', () => {
       const items = await ctx.db.query('items').withIndex('by_heroId', q => q.eq('heroId', heroId)).take(40)
       for (let n = 0; n < 3000; n++) {
         const worldSeed = `rare-combat-${n}`
-        const result = simulateHero({ hero: toHeroState(hero), inventory: toInventory(items), tick: 1, content: contentV4, simulationVersion: 1, streams: deriveStreamSeeds(worldSeed, heroId, 1, 1) })
+        const result = simulateHero({ hero: toHeroState(hero), inventory: toInventory(items), tick: 1, content: contentV1, simulationVersion: 1, streams: deriveStreamSeeds(worldSeed, heroId, 1, 1) })
         if (result.event?.detail.outcome.variant !== 'combat' || !result.itemChanges.some(change => change.type === 'create' && change.item.kind !== 'potion')) continue
-        await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v4', activeSimulationVersion: 1, worldSeed, ticksPaused: false, maintenanceMode: false, createdAt: Date.now() - 3_600_000, schemaVersion: 1 })
+        await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v1', activeSimulationVersion: 1, worldSeed, ticksPaused: false, maintenanceMode: false, createdAt: Date.now() - 3_600_000, schemaVersion: 1 })
         return result
       }
       throw new Error('No seeded combat drop found')
@@ -112,17 +112,17 @@ describe('tick scheduler', () => {
     expect(expected.event!.detail.outcome).not.toHaveProperty('gearRarity')
   })
 
-  it('feeds the last two stories into v4 so a third cable trip becomes a different mishap', async () => {
+  it('feeds the last two stories into the simulator so a third cable trip becomes a different mishap', async () => {
     const heroId = await seedHero(t)
     const expected = await t.run(async (ctx) => {
       const hero = (await ctx.db.get(heroId))!
       const items = await ctx.db.query('items').withIndex('by_heroId', (q) => q.eq('heroId', heroId)).take(40)
       for (let n = 0; n < 3000; n += 1) {
         const worldSeed = `callback-${n}`
-        const input = { hero: toHeroState(hero), inventory: toInventory(items), tick: 1, content: contentV4, simulationVersion: 1, streams: deriveStreamSeeds(worldSeed, heroId, 1, 1) }
+        const input = { hero: toHeroState(hero), inventory: toInventory(items), tick: 1, content: contentV1, simulationVersion: 1, streams: deriveStreamSeeds(worldSeed, heroId, 1, 1) }
         const result = simulateHero(input)
         if (!result.event?.summary.startsWith('Tripped over a loose cable.')) continue
-        await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v4', activeSimulationVersion: 1, worldSeed, ticksPaused: false, maintenanceMode: false, createdAt: Date.now() - 3_600_000, schemaVersion: 1 })
+        await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v1', activeSimulationVersion: 1, worldSeed, ticksPaused: false, maintenanceMode: false, createdAt: Date.now() - 3_600_000, schemaVersion: 1 })
         for (const [sequence, summary] of [[1, 'Tripped over a loose cable. -3 HP.'], [2, 'Tripped over another loose cable. -9 HP.']] as const) {
           await ctx.db.insert('tickLogs', { heroId, source: 'tick', tick: 0, sequence, at: Date.now() - 30_000, kind: 'trap', summary, detail: result.event.detail, deltas: result.event.deltas })
         }
@@ -141,7 +141,7 @@ describe('tick scheduler', () => {
   it('creates one logical tick per wall slot and completes the chain', async () => {
     await t.run(async (ctx) => {
       // World singleton as created at install time, on the tuned catalog.
-      await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v2', activeSimulationVersion: 1, worldSeed: 'seed', ticksPaused: false, maintenanceMode: false, createdAt: Date.now() - 3_600_000, schemaVersion: 1 })
+      await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v1', activeSimulationVersion: 1, worldSeed: 'seed', ticksPaused: false, maintenanceMode: false, createdAt: Date.now() - 3_600_000, schemaVersion: 1 })
     })
     const heroId = await seedHero(t)
     const runId = await runTick(t)
@@ -187,15 +187,14 @@ describe('tick scheduler', () => {
     expect(after).toEqual(before)
   })
 
-  it.each([false, true])('drains a cohort with identical createdAt values with legacy pagination=%s', async (legacy) => {
+  it('drains a cohort with identical createdAt values', async () => {
     const heroes = []
     for (let i = 0; i < 51; i++) heroes.push(await seedHero(t))
     const runId = (await t.mutation(internal.sim.runs.tick.startTick, {}))!
-    if (legacy) await t.run(async ctx => { await ctx.db.patch(runId, { paginationVersion: undefined }) })
     await t.mutation(internal.sim.runs.tick.simulateBatch, { runId, expectedSequence: 0 })
     const first = (await t.run(async ctx => ctx.db.get(runId)))!
     expect(first.processed).toBe(25)
-    if (!legacy) expect(JSON.parse(first.cursor!)).toBeInstanceOf(Array)
+    expect(JSON.parse(first.cursor!)).toBeInstanceOf(Array)
     await t.finishAllScheduledFunctions(vi.runAllTimers)
     const completed = await t.run(async ctx => ctx.db.get(runId))
     expect(completed).toMatchObject({ state: 'completed', processed: 51, eligible: 51 })
@@ -206,7 +205,7 @@ describe('tick scheduler', () => {
 
   it('skips dormant heroes between publications without writes', async () => {
     await t.run(async (ctx) => {
-      await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v2', activeSimulationVersion: 1, worldSeed: 'seed', ticksPaused: false, maintenanceMode: false, createdAt: Date.now(), lastPublishedAt: Date.UTC(2026, 9, 3, 9, 45), schemaVersion: 1 })
+      await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v1', activeSimulationVersion: 1, worldSeed: 'seed', ticksPaused: false, maintenanceMode: false, createdAt: Date.now(), lastPublishedAt: Date.UTC(2026, 9, 3, 9, 45), schemaVersion: 1 })
     })
     const sleeper = await seedHero(t, { status: 'sleeping' })
     await runTick(t)
@@ -219,7 +218,7 @@ describe('tick scheduler', () => {
   it('folds hourly score on publication runs', async () => {
     vi.setSystemTime(Date.UTC(2026, 9, 3, 10, 45, 1))
     await t.run(async (ctx) => {
-      await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v2', activeSimulationVersion: 1, worldSeed: 'seed', ticksPaused: false, maintenanceMode: false, createdAt: Date.now(), lastPublishedAt: Date.UTC(2026, 9, 3, 9, 45), schemaVersion: 1 })
+      await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v1', activeSimulationVersion: 1, worldSeed: 'seed', ticksPaused: false, maintenanceMode: false, createdAt: Date.now(), lastPublishedAt: Date.UTC(2026, 9, 3, 9, 45), schemaVersion: 1 })
     })
     const heroId = await seedHero(t)
     await runTick(t)

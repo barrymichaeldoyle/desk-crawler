@@ -29,8 +29,6 @@ import type * as lib_names from "../lib/names.js";
 import type * as lib_rankingRead from "../lib/rankingRead.js";
 import type * as lib_svix from "../lib/svix.js";
 import type * as maintenance from "../maintenance.js";
-import type * as platformMigration from "../platformMigration.js";
-import type * as resetGame from "../resetGame.js";
 import type * as sim_runs_adapter from "../sim/runs/adapter.js";
 import type * as sim_runs_tick from "../sim/runs/tick.js";
 import type * as trmnl from "../trmnl.js";
@@ -66,8 +64,6 @@ declare const fullApi: ApiFromModules<{
   "lib/rankingRead": typeof lib_rankingRead;
   "lib/svix": typeof lib_svix;
   maintenance: typeof maintenance;
-  platformMigration: typeof platformMigration;
-  resetGame: typeof resetGame;
   "sim/runs/adapter": typeof sim_runs_adapter;
   "sim/runs/tick": typeof sim_runs_tick;
   trmnl: typeof trmnl;

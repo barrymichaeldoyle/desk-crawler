@@ -72,7 +72,7 @@ Production deployment authorization and continuous automation rules will be esta
 
 ### Content releases
 
-A catalog change ships as a new content version (e.g. v3) next to the old ones, so runs that pinned the old version can still finish. After the deploy, switch the live world between runs with `npx convex run world:setActiveContentVersion '{"contentVersion":"v3"}' --prod`. It refuses while a run is active (retry after it completes) and returns the previous version; switching back the same way is the rollback. `ACTIVE_CONTENT` only seeds new worlds. Switching is a production data change and needs explicit approval.
+The first public release has one catalog, v1 (D63). After launch, a catalog change ships as a new content version (e.g. v2) next to v1, so runs that pinned v1 can still finish and owned items keep their meaning. After the deploy, switch the live world between runs with `npx convex run world:setActiveContentVersion '{"contentVersion":"v2"}' --prod`. It refuses while a run is active (retry after it completes) and returns the previous version; switching back the same way is the rollback. `ACTIVE_CONTENT` only seeds new worlds. Switching is a production data change and needs explicit approval.
 
 Never “fix” an incident by resetting all player state, dropping active rank generations or blindly replaying a tick. Restore/compensation is an explicit audited operation with a separate decision.
 

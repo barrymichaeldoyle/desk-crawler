@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
+import { contentV1 } from '@trmnl-games/desk-crawler/content/v1'
 import { aboutDuration, buildPayload, celebrationFor, MAX_LOGS, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
 
 const NOW = Date.UTC(2026, 9, 4, 8, 20)
@@ -17,7 +17,7 @@ const input: PayloadInput = {
   heldItemName: null,
   logs: [],
   instanceName: 'Desk Crawler',
-  content: contentV2,
+  content: contentV1,
   spriteBaseUrl: null,
   artBaseUrl: 'https://art.test',
   latestEvent: null,

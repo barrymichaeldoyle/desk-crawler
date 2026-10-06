@@ -27,7 +27,7 @@ Index order: lifetime `[runId,eligible,negativeLevel,negativeXp,lastLevelUpTick,
 
 Persist current board/group/cursor/sequence and scheduled job ID; duplicates cannot increase totals/ranks or schedule extra continuations. Do not store an unbounded group-to-generation map on the world/publication document: fixed indexed lookup by publication/board/cohort supplies any generation.
 
-New publications pin `paginationVersion: 1` for portable index-key cursors; existing publications without the field drain with native pagination on the same deployment. Keep `nextRank` and Top 100 additions in memory during each page and persist once per cohort/page. The October 5 [engineering rehearsal](evidence/engineering-readiness.md) verifies cohort boundaries, restore continuation and atomic publication.
+Publications pin `paginationVersion: 1` for portable index-key cursors. Keep `nextRank` and Top 100 additions in memory during each page and persist once per cohort/page. The October 5 [engineering rehearsal](evidence/engineering-readiness.md) verifies cohort boundaries, restore continuation and atomic publication.
 
 ## Read contracts
 

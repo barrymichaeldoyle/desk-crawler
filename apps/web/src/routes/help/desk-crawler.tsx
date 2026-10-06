@@ -22,7 +22,9 @@ export const Route = createFileRoute('/help/desk-crawler')({
       <p>Keep Desk Crawler in your playlist and look for “Keepsake” followed by a code in the screen’s title bar. Enter that code in the companion’s Settings to collect a permanent office souvenir. Full-screen and mashup layouts both show it; the companion preview hides it.</p>
       <p>You can collect one keepsake each week, with a new code from Monday at 00:00 UTC. Last week’s code works too if your screen refreshes slowly. Missing weeks loses nothing: the next design waits for you. After collecting the full set, you can collect more of each. Keepsakes do not change XP, gear or rankings, and extra devices or faster refresh earn no extras.</p>
       <h2>When your bag fills up</h2>
-      <p>Your bag holds 30 pieces of gear. A full bag alone does not stop adventures: the next piece you find is held safely, then your hero sleeps until you make room. The held find is never automatically sold or discarded.</p>
+      <p>A new hero starts with a small paper bag that holds 6 pieces of gear. Equipped gear and potions don’t take up space. A full bag alone does not stop adventures: the next piece you find is held safely, then your hero sleeps until you make room. The held find is never automatically sold or discarded.</p>
+      <h2>Bigger bags</h2>
+      <p>Your bag grows as you play. Your hero finds a Tote Bag within the first couple of hours, then a bigger bag at levels 4, 8 and 12, up to 20 slots. Your hero might find the next bag early while exploring, or you can buy it with gold on the Bag page, up to one bag ahead of those levels.</p>
       <ol className="[&_li]:list-decimal">
         <li>Open Bag in the companion. Equip any upgrades and sell spare gear to free space.</li>
         <li>If a find is being held, choose Claim find. Leave at least one free slot after claiming it so adventures can resume.</li>

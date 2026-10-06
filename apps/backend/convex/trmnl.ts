@@ -3,12 +3,12 @@ import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import type { Doc, Id } from './_generated/dataModel'
 import { action, internalMutation, type MutationCtx } from './_generated/server'
-import { ACTIVE_CONTENT, catalogs } from '@trmnl-games/desk-crawler/content'
+
 import { starterHero, starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
 import { appError } from './lib/errors'
 import { sha256Hex } from './lib/hash'
 import { ALIAS_RULE, HERO_NAME_RULE, normalizeAlias, validateName, validateTimezone } from './lib/names'
-import { getOrCreateWorld } from './world'
+import { getOrCreateWorld, worldContent } from './world'
 import { assertNotRevoked, identityHash } from './deletion'
 
 /** Install attempts stay valid for 20 minutes (data-model.md). */
@@ -147,7 +147,8 @@ export const linkInstall = internalMutation({
 /** Pending Warrior + starter kit + welcome log. Initialization, not an earned reward; no rank or simulation until activation. */
 async function prepareHero(ctx: MutationCtx, user: Doc<'users'>, name: string, now: number): Promise<Id<'heroes'>> {
   const world = await getOrCreateWorld(ctx)
-  const content = catalogs[ACTIVE_CONTENT]
+  // The world's pinned catalog decides the starting bag, so a hero never starts on rules its ticks do not use.
+  const content = worldContent(world)
   const base = starterHero('pending', content, world.currentTick)
   const heroId = await ctx.db.insert('heroes', {
     userId: user._id,
@@ -165,6 +166,7 @@ async function prepareHero(ctx: MutationCtx, user: Doc<'users'>, name: string, n
     lastLevelUpTick: world.currentTick,
     status: base.status,
     biomeId: base.biomeId,
+    bagCapacity: base.bagCapacity,
     eligibleFromTick: world.currentTick + 1,
     lastTick: world.currentTick,
     lastProgressTick: world.currentTick,

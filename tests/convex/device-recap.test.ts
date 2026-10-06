@@ -23,7 +23,7 @@ async function setup() {
 async function insert(t: T, heroId: Id<'heroes'>, count: number, source: 'tick' | 'command' = 'tick') {
   await t.run(async ctx => {
     for (let i = 0; i < count; i++) {
-      const detail: Doc<'tickLogs'>['detail'] = source === 'command' ? { v: 1, operation: 'heroes.pause' } : { v: 1, simulationVersion: 1, contentVersion: 'v4', disposition: 'advanced', encounterKind: 'loot', potionsUsed: 1, levelsGained: 0, goldPenalty: 0, heldFind: false, outcome: { variant: 'loot', found: 'potion', goldGranted: 0, jackpot: false, potionFullFallback: false } }
+      const detail: Doc<'tickLogs'>['detail'] = source === 'command' ? { v: 1, operation: 'heroes.pause' } : { v: 1, simulationVersion: 1, contentVersion: 'v1', disposition: 'advanced', encounterKind: 'loot', potionsUsed: 1, levelsGained: 0, goldPenalty: 0, heldFind: false, outcome: { variant: 'loot', found: 'potion', goldGranted: 0, jackpot: false, potionFullFallback: false } }
       await ctx.db.insert('tickLogs', { heroId, source, sequence: i + 1, at: NOW - i * 900_000, kind: source === 'command' ? 'system' : 'loot', summary: source === 'command' ? 'Paused adventures.' : 'Found a healing potion. Drank a potion.', deltas: { xpEarned: 0, gold: 0, hp: source === 'command' ? 0 : 20 }, detail })
     }
   })

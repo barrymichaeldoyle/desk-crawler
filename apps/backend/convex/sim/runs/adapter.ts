@@ -22,6 +22,7 @@ export function toHeroState(hero: Doc<'heroes'>): HeroState {
     ...(hero.weaponId === undefined ? {} : { weaponId: hero.weaponId }),
     ...(hero.armorId === undefined ? {} : { armorId: hero.armorId }),
     ...(hero.heldItemId === undefined ? {} : { heldItemId: hero.heldItemId }),
+    bagCapacity: hero.bagCapacity,
     lastLevelUpTick: hero.lastLevelUpTick,
     counters: hero.counters,
   }
@@ -72,6 +73,7 @@ export async function applyResult(
     reviveAtTick: next.reviveAtTick,
     pausedFromStatus: next.pausedFromStatus,
     wakeAtTick: next.wakeAtTick,
+    bagCapacity: next.bagCapacity,
     lastLevelUpTick: next.lastLevelUpTick,
     counters: next.counters,
   }

@@ -168,8 +168,7 @@ export const returnSummary = query({
       xpGained: baseline ? Math.max(0, hero.lifetimeXp - baseline.lifetimeXp) : null,
       levelsGained: baseline ? Math.max(0, hero.level - baseline.level) : null,
       newEvents: baseline ? Math.max(0, hero.logSequence - baseline.logSequence) : null,
-      // Baselines recorded before counters were captured only support the XP/level recap.
-      counters: baseline?.counters
+      counters: baseline
         ? {
             combatWins: Math.max(0, hero.counters.combatWins - baseline.counters.combatWins),
             goldEarned: Math.max(0, hero.counters.goldEarned - baseline.counters.goldEarned),

@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { api } from '@trmnl-games/backend/api'
 import type { Id } from '@trmnl-games/backend/data-model'
 import schema from '../../apps/backend/convex/schema'
-import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
+import { contentV1 } from '@trmnl-games/desk-crawler/content/v1'
 import { starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
 import { runTick, seedHero, seedWorld, type T } from './helpers'
 
@@ -26,7 +26,7 @@ async function errorCode(promise: Promise<unknown>): Promise<string | undefined>
 async function addGear(t: T, heroId: Id<'heroes'>, count: number): Promise<Id<'items'>[]> {
   return await t.run(async (ctx) => {
     const ids: Id<'items'>[] = []
-    for (let i = 0; i < count; i += 1) ids.push(await ctx.db.insert('items', { ...starterKit(contentV2).weapon, heroId, createdAt: Date.now() }))
+    for (let i = 0; i < count; i += 1) ids.push(await ctx.db.insert('items', { ...starterKit(contentV1).weapon, heroId, createdAt: Date.now() }))
     return ids
   })
 }
@@ -104,7 +104,7 @@ describe('player intents', () => {
 
   it('runs the inventory-sleep return in one visit: sell, claim, resume with destination, depart next tick', async () => {
     const heroId = await seedHero(t, { level: 4, hp: 136, status: 'sleeping' }, 'Ana')
-    const extra = await addGear(t, heroId, 28)
+    const extra = await addGear(t, heroId, 6)
     const [held] = await addGear(t, heroId, 1)
     await t.run(async (ctx) => await ctx.db.patch(heroId, { heldItemId: held }))
     const user = as(t, 'Ana')

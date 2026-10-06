@@ -134,7 +134,9 @@ describe('encounters and outcomes', () => {
     const { result } = findSeed(hero, inventory, (r) => r.metrics.deaths === 1, 40)
     expect(result.nextHero).toMatchObject({ status: 'dead', hp: 0, gold: 95, reviveAtTick: 48 })
     expect(result.event?.kind).toBe('death')
-    expect(result.event?.summary).toMatch(/Revives/)
+    // The story leaves the revive time to the status line (D45).
+    expect(result.event?.summary).toMatch(/Lost 10 gold\./)
+    expect(result.event?.summary).not.toMatch(/\bticks?\b/)
     expect(result.itemChanges).toEqual([])
   })
 
@@ -168,14 +170,14 @@ describe('encounters and outcomes', () => {
 
   it('keeps exploring with a full bag until an actual gear find', () => {
     const { hero, inventory } = baseState()
-    const full = fillBag(inventory, c.bagCapacity)
+    const full = fillBag(inventory, hero.bagCapacity + 2)
     const quiet = findSeed(hero, full, (r) => r.metrics.encounter === 'rest').result
     expect(quiet.nextHero.status).toBe('exploring')
   })
 
   it('holds the first overflow find, finishes earned effects, then sleeps', () => {
     const { hero, inventory } = baseState()
-    const full = fillBag(inventory, c.bagCapacity)
+    const full = fillBag(inventory, hero.bagCapacity + 2)
     const { result } = findSeed(hero, full, (r) => r.metrics.heldFinds === 1)
     expect(result.disposition).toBe('inventory_sleep_started')
     expect(result.nextHero.status).toBe('sleeping')

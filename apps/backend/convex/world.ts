@@ -1,4 +1,5 @@
-import { ACTIVE_CONTENT, catalogs } from '@trmnl-games/desk-crawler/content'
+import { ACTIVE_CONTENT, catalogs, type CatalogId } from '@trmnl-games/desk-crawler/content'
+import type { ContentCatalog } from '@trmnl-games/desk-crawler/sim/core/types'
 import { v } from 'convex/values'
 import type { Doc } from './_generated/dataModel'
 import { internalMutation, type MutationCtx, type QueryCtx } from './_generated/server'
@@ -9,6 +10,14 @@ export async function readWorld(ctx: QueryCtx): Promise<Doc<'worldState'> | null
     .query('worldState')
     .withIndex('by_key', (q) => q.eq('key', 'world'))
     .unique()
+}
+
+/**
+ * The catalog the next run pins. Intents and displays follow it, so bag rules
+ * never differ between a companion command and the tick that follows.
+ */
+export function worldContent(world: Pick<Doc<'worldState'>, 'activeContentVersion'> | null): ContentCatalog {
+  return (world && catalogs[world.activeContentVersion as CatalogId]) ?? catalogs[ACTIVE_CONTENT]
 }
 
 /** Idempotently create the world singleton. The seed is server-only and never returned by public functions. */

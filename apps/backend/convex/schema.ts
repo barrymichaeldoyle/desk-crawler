@@ -107,6 +107,8 @@ export default defineSchema({
     weaponId: v.optional(v.id('items')),
     armorId: v.optional(v.id('items')),
     heldItemId: v.optional(v.id('items')),
+    /** D61: unequipped gear the bag holds, always a ladder tier's capacity. */
+    bagCapacity: v.number(),
     eligibleFromTick: v.number(),
     lastTick: v.number(),
     lastProgressTick: v.number(),
@@ -117,7 +119,7 @@ export default defineSchema({
     counters: heroCounters,
     scoreHour: v.optional(v.number()),
     scoreHourXp: v.number(),
-    companionVisitBaseline: v.optional(v.object({ at: v.number(), level: v.number(), lifetimeXp: v.number(), logSequence: v.number(), counters: v.optional(heroCounters) })),
+    companionVisitBaseline: v.optional(v.object({ at: v.number(), level: v.number(), lifetimeXp: v.number(), logSequence: v.number(), counters: heroCounters })),
   })
     .index('by_userId_and_isActive', ['userId', 'isActive'])
     .index('by_createdAt', ['createdAt'])
@@ -170,7 +172,7 @@ export default defineSchema({
     seedVersion: v.number(),
     state: v.union(v.literal('simulating'), v.literal('ranking'), v.literal('completed'), v.literal('blocked')),
     cursor: v.optional(v.string()),
-    paginationVersion: v.optional(v.literal(1)),
+    paginationVersion: v.literal(1),
     batchSequence: v.number(),
     nextScheduledFunctionId: v.optional(v.id('_scheduled_functions')),
     lastProgressAt: v.number(),
@@ -248,7 +250,7 @@ export default defineSchema({
     currentBoard: v.union(v.literal('overall'), v.literal('recent_24h'), v.literal('recent_7d')),
     currentGenerationId: v.optional(v.id('leaderboardGenerations')),
     cursor: v.optional(v.string()),
-    paginationVersion: v.optional(v.literal(1)),
+    paginationVersion: v.literal(1),
     batchSequence: v.number(),
     nextScheduledFunctionId: v.optional(v.id('_scheduled_functions')),
     lastProgressAt: v.number(),

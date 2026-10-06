@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { Liquid } from 'liquidjs'
-import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
+import { contentV1 } from '@trmnl-games/desk-crawler/content/v1'
 import { buildPayload } from '@trmnl-games/desk-crawler/payload'
 import { parseUtcOffset, screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
 
@@ -21,7 +21,7 @@ const payload = () =>
     heldItemName: null,
     logs: [{ at: NOW - 60_000, kind: 'combat', summary: 'Unplugged a Cable Serpent. +14 XP, +5 gold.', deltas: { xpEarned: 14, gold: 5, hp: -12 } }],
     instanceName: 'Desk Crawler',
-    content: contentV2,
+    content: contentV1,
     spriteBaseUrl: null,
     artBaseUrl: null,
     latestEvent: null,

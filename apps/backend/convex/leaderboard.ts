@@ -80,7 +80,7 @@ export async function beginBuild(ctx: MutationCtx, run: Doc<'simulationRuns'>, w
 }
 
 function pageQuery(ctx: MutationCtx, publication: Doc<'leaderboardPublications'>, board: Board) {
-  const db = publication.paginationVersion === 1 ? paginator(ctx.db, schema) : ctx.db
+  const db = paginator(ctx.db, schema)
   if (board === 'overall') return db.query('rankInputs').withIndex('by_run_order', (q) => q.eq('runId', publication.runId))
   if (board === 'recent_24h') return db.query('rankInputs').withIndex('by_run_recent24', (q) => q.eq('runId', publication.runId).eq('ranked24h', true))
   return db.query('rankInputs').withIndex('by_run_recent7', (q) => q.eq('runId', publication.runId).eq('ranked7d', true))

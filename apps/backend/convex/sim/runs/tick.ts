@@ -100,9 +100,8 @@ export const simulateBatch = internalMutation({
     }
 
     const now = Date.now()
-    // Exported index-key cursors survive an isolated restore. Existing runs
-    // retain their original paginator until they drain on this deployment.
-    const db = run.paginationVersion === 1 ? paginator(ctx.db, schema) : ctx.db
+    // Exported index-key cursors survive an isolated restore.
+    const db = paginator(ctx.db, schema)
     const page = await db
       .query('heroes')
       .withIndex('by_createdAt', (q) => q.lt('createdAt', run.cohortCutoff))
@@ -137,9 +136,7 @@ export const simulateBatch = internalMutation({
         .withIndex('by_heroId', (q) => q.eq('heroId', hero._id))
         .take(40)
       let result
-      const recentLogs = content.narrative.avoidConsecutiveRepeats
-        ? await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id)).order('desc').take(2)
-        : []
+      const recentLogs = await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id)).order('desc').take(2)
       try {
         result = simulateHero({
           hero: toHeroState(hero),

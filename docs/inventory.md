@@ -1,10 +1,20 @@
 # Inventory cadence, retained finds and sleep
 
-Approved policy: D18/D19/D29. This supersedes full-bag auto-sale and the suggested 24-hour-inactivity trigger. Numerical capacity/acquisition values are approved tuning starting points, not measured outcomes.
+Approved policy: D18/D19/D29, with capacity and cadence amended by D61 (bag ladder). This supersedes full-bag auto-sale and the suggested 24-hour-inactivity trigger. Numerical capacity/acquisition values are approved tuning starting points, not measured outcomes.
 
 ## Cadence and capacity
 
-Target management every three to seven days. Initial bag capacity is 30 gear, including equipped gear; warn quietly at 24. Two starters leave 28 slots. A target around five gear/day gives an expected 5.6 days before full without selling; measure distributions, useful upgrades and harder-biome survival. Manual equip/sell/biome choices remain intentional.
+D61: bag capacity grows per hero. A new hero starts with a 6-slot Paper Bag; capacity counts only unequipped, non-held gear, so equipped gear and potions take no space. The ladder is Paper Bag 6 → Tote Bag 10 → Laptop Backpack 13 → Messenger Bag 16 → Rolling Suitcase 20. Three sources each advance one tier:
+
+1. Milestones guarantee a minimum tier: the Tote Bag on the hero's sixth adventure (about 1.5–2 hours, a deliberate early win), then levels 4, 8 and 12. A milestone lands before that tick's gear is placed.
+2. A rare find: each loot encounter draws once (8‰); an eligible hero finds the next bag instead of other loot.
+3. Gold: `inventory.buyBag` buys the next tier at a fixed price (40 / 150 / 600 / 2,000), gold's first use.
+
+Finds and purchases may lead the guaranteed tier by at most one tier, so luck and saved gold speed a hero up without breaking the curve. Capacity never shrinks. The MVP ceiling is 20 slots, deliberately below the old 30 so crafting, raids and later content can offer bigger bags. Warn quietly at 80% of current capacity.
+
+Cadence: frequent visits in the first days, settling to about every three to four days at 20 slots (~4.7 gear/day). Seven-day management now sleeps for much of each week; this is an accepted consequence of D61 (see [balance evidence](evidence/bag-ladder.md)). Manual equip/sell/biome choices remain intentional.
+
+Under the ladder, unequipping needs a free bag slot; swapping is always possible, and equipping into an empty slot frees one. Rows stay bounded: 20 bag + 2 equipped + 1 held + 1 potion = 24, within the 32-row read.
 
 Separate potion stack: quantity 1–20, with no empty stack row. Loot selects a documented gold outcome before generation when the stack is full; it never creates and discards/sells an excess potion. Do not force inventory sleep for potion capacity.
 

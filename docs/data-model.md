@@ -27,6 +27,7 @@ Fields:
 - Progress: `level`, `xp`, `lifetimeXp`, `hp`, `gold`, `lastLevelUpTick`.
 - State: `status: exploring | resting | travelling | dead | paused | sleeping`, `biomeId`, `targetBiomeId?`, `arriveAtTick?`, `reviveAtTick?`, `pausedFromStatus?`, `wakeAtTick?` (sleep-only, explicit resume deadline). While sleeping with a pending wake, `targetBiomeId` may hold the D29 Resume destination without `arriveAtTick`; the wake evaluation converts it to ordinary travel.
 - Equipment: `weaponId?`, `armorId?`, `heldItemId?`; equipment/held references alone determine those roles. Held gear is owned but excluded from bag capacity and cannot be equipped until claimed.
+- Bag (D61): `bagCapacity`, a capacity from the content ladder, set at creation from the world's pinned catalog and raised only by simulator milestones/finds or `inventory.buyBag`. Simulation logs record `detail.bagUpgrade { from, to, tierId, source }`, loot outcomes may be `found: 'bag'`, and purchase command logs record `detail.bagSlots`.
 - Score accumulator (D31): `scoreHour?` (UTC hour start) and `scoreHourXp` (granted XP credited in that hour, not yet folded into `heroScoreWindows`).
 - Inventory count (P23 candidate): `bagGearCount`, maintained transactionally with every gear insert/delete/claim, if V05 shows the narrow tick read is worthwhile.
 - Tick markers: `eligibleFromTick`, `lastTick` (last evaluated tick; dormant heroes skipped between publications do not advance it), `lastProgressTick` (last successful gameplay evaluation), `lastAdvancedAt?`, `logSequence` (transactionally incremented for each new log).
@@ -70,7 +71,7 @@ Indexes: `by_tick[tick]`, `by_state_started[state,startedAt]`, `by_started[start
 
 The run carries the continuation and progress counters so a duplicate worker or watchdog can resume safely. The active-run guard spans simulation **and ranking**, until publication or an explicit blocked state.
 
-Additive field: `paginationVersion?: 1`. New runs pin version 1 and use portable index-key cursors from `convex-helpers` pagination. Missing version preserves the native paginator for an existing run until it drains on its original deployment. Native cursors cannot resume on another deployment; see the [recovery limitation](release/recovery-runbook.md). Cursor fields remain internal.
+`paginationVersion: 1`: runs use portable index-key cursors from `convex-helpers` pagination, which can resume on a restored deployment. Cursor fields remain internal.
 
 ### `simulationFailures`
 
@@ -112,7 +113,7 @@ Fields: `runId`, `state: building | ready | published | obsolete`, `previousPubl
 
 Indexes: `by_run[runId]`, `by_state[state]`, `by_published[publishedAt]`. No unbounded group map. Guarded builder validates one lifetime rank row per eligible hero, one recent row per board for each included hero, and complete board/cohort coverage, then promotes this pointer atomically with run completion.
 
-Additive field: `paginationVersion?: 1`. Each new publication pins portable pagination independently of its simulation run; an already-building legacy publication keeps its native paginator. Generations persist rank counters and Top 100 entries once per page/cohort, rather than rereading and patching them for every hero.
+`paginationVersion: 1`: each publication pins portable pagination independently of its simulation run. Generations persist rank counters and Top 100 entries once per page/cohort, rather than rereading and patching them for every hero.
 
 ### `leaderboardGenerations`
 

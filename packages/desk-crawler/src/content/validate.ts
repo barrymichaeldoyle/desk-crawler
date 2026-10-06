@@ -67,7 +67,22 @@ export function validateCatalog(content: ContentCatalog): string[] {
   for (const [key, list] of Object.entries(content.narrative.shared)) {
     if ((list as readonly string[]).length < 1) problems.push(`shared narrative ${key} is empty`)
   }
-  for (const [id, lines] of Object.entries(content.narrative.monsters ?? {})) {
+  const tiers = content.bagLadder.tiers
+  if (tiers.length < 2) problems.push('bag ladder needs at least two tiers')
+  if (tiers[0]?.milestone !== undefined || tiers[0]?.price !== undefined) problems.push('the starting bag has no milestone or price')
+  tiers.forEach((tier, i) => {
+    if ([...tier.name].length > CONTENT_LIMITS.itemName) problems.push(`bag name too long: ${tier.name}`)
+    if (!Number.isSafeInteger(tier.capacity) || tier.capacity < 1) problems.push(`bag ${tier.id} capacity must be a positive integer`)
+    if (i > 0) {
+      if (tier.capacity <= tiers[i - 1]!.capacity) problems.push(`bag ${tier.id} must be larger than the previous tier`)
+      if (tier.milestone === undefined || tier.price === undefined || tier.price < 1) problems.push(`bag ${tier.id} needs a milestone and price`)
+    }
+  })
+  // Bounded reads (MAX_INVENTORY_ROWS): bag + two equipped + held + potion.
+  if (Math.max(...tiers.map((tier) => tier.capacity)) + 4 > 32) problems.push('bag capacity exceeds the 32-row inventory read')
+  const permille = content.bagLadder.findPermille
+  if (!Number.isSafeInteger(permille) || permille < 0 || permille > 1000) problems.push('bag find chance must be 0–1000 permille')
+  for (const [id, lines] of Object.entries(content.narrative.monsters)) {
     if (!monsterIds.has(id)) problems.push(`monster narrative for unknown monster ${id}`)
     for (const line of lines.victory) {
       if (!line.includes('{monster}') || !line.includes('{xp}')) problems.push(`monster ${id} victory line misses {monster} or {xp}: ${line}`)

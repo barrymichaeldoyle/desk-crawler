@@ -18,7 +18,7 @@ Deployed on 2026-10-05 following Barry’s approval: D46 weekly permanent Desk k
 
 | Package | State | Evidence |
 | --- | --- | --- |
-| A03 pure simulator + content | Done. v2 gameplay tuning, v4 narrative active, luck (D35), D29 Resume destination | Current simulator tests and extended [balance](evidence/balance.md) |
+| A03 pure simulator + content | Done. One release catalog v1 (D63) with harness tuning, the D45/D47 narrative, D61 bag ladder, luck (D35), D29 Resume destination. Local, pending the reset-first deployment | Current simulator tests and extended [balance](evidence/balance.md) |
 | A01 platform | V01 build/SSR/auth proven locally; protocol facts from the live install | [platform spikes](evidence/platform-spikes.md), [lifecycle](evidence/trmnl-lifecycle.md) |
 | A02 foundation | Schema for every current table, Clerk auth config, users | Typecheck across app/core/Convex |
 | A05 scheduler | Live since 20:58 UTC: guarded ticks, page chain, quarantine, dormant skip, watchdog incl. ranking stalls | convex-test tick matrix |

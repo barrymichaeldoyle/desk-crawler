@@ -4,7 +4,7 @@ import { composeScene, FULL_SCALE, LARGE_SCALE, MEDIUM_SCALE, SCENE_VERSION, SMA
 import { sceneFor, scenePath } from '@trmnl-games/desk-crawler/art/sceneKey'
 import { sceneTimeAt, sceneUrlAt, sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
 import { monsterArt } from '@trmnl-games/desk-crawler/art/monsters'
-import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
+import { contentV1 } from '@trmnl-games/desk-crawler/content/v1'
 
 describe('scene art', () => {
   it('maps hero state and the latest event to a pose and subject', () => {
@@ -17,7 +17,7 @@ describe('scene art', () => {
   })
 
   it('has art for every monster in the catalog', () => {
-    for (const monster of contentV2.monsters) expect(monster.id in monsterArt).toBe(true)
+    for (const monster of contentV1.monsters) expect(monster.id in monsterArt).toBe(true)
   })
 
   it('serves allowlisted day/night paths and preserves v3 night URLs', () => {
@@ -32,7 +32,7 @@ describe('scene art', () => {
       good.replace('fight', '../etc'),
       good.replace('/day/', '/dusk/'),
       good.replace('/day/', '/'),
-      good.replace(`v${SCENE_VERSION}`, 'v3'),
+      good.replace(`v${SCENE_VERSION}`, 'v1'),
     ]) {
       expect(parseScenePath(bad)).toBeNull()
     }

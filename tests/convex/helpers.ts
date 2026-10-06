@@ -2,7 +2,7 @@ import type { convexTest } from 'convex-test'
 import { vi } from 'vitest'
 import { internal } from '@trmnl-games/backend/api'
 import type { Id } from '@trmnl-games/backend/data-model'
-import { contentV2 } from '@trmnl-games/desk-crawler/content/v2'
+import { contentV1 } from '@trmnl-games/desk-crawler/content/v1'
 import { starterHero, starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
 
 export type T = ReturnType<typeof convexTest>
@@ -14,7 +14,7 @@ export async function seedWorld(t: T, overrides: Record<string, unknown> = {}): 
     await ctx.db.insert('worldState', {
       key: 'world',
       currentTick: 0,
-      activeContentVersion: 'v2',
+      activeContentVersion: 'v1',
       activeSimulationVersion: 1,
       worldSeed: 'seed',
       ticksPaused: false,
@@ -38,7 +38,7 @@ export async function seedHero(t: T, overrides: Record<string, unknown> = {}, al
       createdAt: now,
       publicNameVersion: 1,
     })
-    const base = starterHero('x', contentV2, 0)
+    const base = starterHero('x', contentV1, 0)
     const heroId = await ctx.db.insert('heroes', {
       userId,
       name: 'Baz',
@@ -56,6 +56,7 @@ export async function seedHero(t: T, overrides: Record<string, unknown> = {}, al
       lastLevelUpTick: 0,
       status: 'exploring',
       biomeId: base.biomeId,
+      bagCapacity: base.bagCapacity,
       eligibleFromTick: 1,
       lastTick: 0,
       lastProgressTick: 0,
@@ -65,7 +66,7 @@ export async function seedHero(t: T, overrides: Record<string, unknown> = {}, al
       scoreHourXp: 0,
       ...overrides,
     })
-    const kit = starterKit(contentV2)
+    const kit = starterKit(contentV1)
     const weaponId = await ctx.db.insert('items', { ...kit.weapon, heroId, createdAt: now })
     const armorId = await ctx.db.insert('items', { ...kit.armor, heroId, createdAt: now })
     await ctx.db.insert('items', { ...kit.potions, heroId, createdAt: now })

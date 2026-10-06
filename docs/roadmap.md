@@ -36,7 +36,6 @@ Core batch: stances, configurable rest/potion thresholds, a small set of event c
 | Merchant | Bounded offers/price validation, four-tick expiry, purchase receipts; no push spam |
 | Effects | Typed duration/modifier rules; death ordering and rest cleansing explicitly designed |
 | Affixes/Epic | Versioned generation and owned-item compatibility; extend inventory UI |
-| Bag expansion | Proposed (P25): capped merchant purchase, 30 → 40 in +5 steps; harness-measured sleep share and rank spread first. See [inventory progression](#inventory-progression--proposed-p25p27) |
 | Daily quests | Stretch, not required; timezone/DST and timezone-change abuse design first |
 | Lost-and-found | Stretch; extend the approved single held-find/inventory-sleep system only with a clear bounded migration; never reintroduce silent disposal |
 | Web push/email alerts | Deferred by default; user opt-in, delivery cost and calmness review |
@@ -74,11 +73,11 @@ Legendary gear, salvage/crafting, lore and hardcore are separate slices; salvage
 
 Gate: no repeatable boss rewards, no blocked fights after deployments, progression remains viable for existing high-level heroes, content compatible with retained items/logs. Compare retention by account age/level as a diagnostic rather than assert a predetermined percentage.
 
-### Inventory progression — proposed (P25–P27)
+### Inventory progression — bag ladder confirmed (D61), salvage and crafting proposed (P26–P27)
 
 Not approved; see [decisions](decisions.md) P25–P27 and O12/O13. Three small slices, each shippable alone, in this order:
 
-1. **Bag expansion (Month 2, with the merchant).** A capped permanent upgrade bought with gold: the first gold sink and a direct quality-of-life reward. Bigger bags mean less inventory sleep, which changes recent-rank spread, so the harness sets the cap before it ships.
+1. **Bag ladder (MVP, D61; supersedes P25/P28).** Start at 6 slots and grow to 20 through milestones, rare finds and gold. Crafting, raids and later content raise the ceiling past 20; the bounded inventory read (32 rows) must grow with it.
 2. **Salvage (Month 2–4).** A third choice beside Sell for unwanted bag gear: materials stored as stack rows outside the bag, chosen explicitly, never automatic.
 3. **Owned-gear upgrades (Month 4).** Spend materials and gold to raise an item's tier (later, reroll an affix). No recipe tree. Keeps finds useful after best-in-slot at days 35–45.
 

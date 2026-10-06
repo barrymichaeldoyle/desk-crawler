@@ -3,10 +3,10 @@ import { v } from 'convex/values'
 import { internalQuery, query, type QueryCtx } from './_generated/server'
 import type { Doc } from './_generated/dataModel'
 import { currentUser } from './lib/intent'
-import { ACTIVE_CONTENT, catalogs } from '@trmnl-games/desk-crawler/content'
-import { bagGearCount } from '@trmnl-games/desk-crawler/sim/core/invariants'
+
+import { bagUsed as countBag } from '@trmnl-games/desk-crawler/sim/core/bag'
 import { buildPayload, MAX_LOGS, MAX_RECAP_EVENTS, RECAP_WINDOW_MS, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
-import { readWorld } from './world'
+import { readWorld, worldContent } from './world'
 import { readDeviceRanking } from './lib/rankingRead'
 import { keepsakeCode, keepsakeGrant } from './lib/keepsakes'
 import { keepsakeWeek } from '@trmnl-games/desk-crawler/content/keepsakes'
@@ -50,8 +50,8 @@ export const forInstance = internalQuery({
 
 /** The canonical device payload for a user's current hero. Shared by the device endpoint and the owner preview. */
 async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instanceName: string | null) {
-  const content = catalogs[ACTIVE_CONTENT]
   const world = await readWorld(ctx)
+  const content = worldContent(world)
   const heroDoc = await currentHero(ctx, user)
   const hero = heroDoc && heroDoc.activationState === 'active' ? heroDoc : null
 
@@ -75,7 +75,11 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
     armorName = label(named(hero.armorId))
     heldItemName = label(named(hero.heldItemId))
     potions = items.find((item) => item.kind === 'potion')?.quantity ?? 0
-    bagUsed = bagGearCount(hero.heldItemId === undefined ? {} : { heldItemId: hero.heldItemId }, items.map((item) => ({ ...item, id: item._id })))
+    bagUsed = countBag({
+      ...(hero.heldItemId === undefined ? {} : { heldItemId: hero.heldItemId }),
+      ...(hero.weaponId === undefined ? {} : { weaponId: hero.weaponId }),
+      ...(hero.armorId === undefined ? {} : { armorId: hero.armorId }),
+    }, items.map((item) => ({ id: item._id as string, kind: item.kind })))
     const recent = await ctx.db
       .query('tickLogs')
       .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id))
@@ -128,7 +132,7 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
     armorName,
     potions,
     bagUsed,
-    bagCapacity: content.constants.bagCapacity,
+    bagCapacity: hero?.bagCapacity ?? 0,
     heldItemName,
     logs,
     ...(activity ? { activity } : {}),

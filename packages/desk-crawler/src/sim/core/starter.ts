@@ -16,6 +16,7 @@ export function starterHero(id: string, content: ContentCatalog, tick: number): 
     gold: 0,
     status: 'exploring',
     biomeId: content.safeBiomeId,
+    bagCapacity: content.bagLadder.tiers[0]!.capacity,
     lastLevelUpTick: tick,
     counters: { combatWins: 0, retreats: 0, deaths: 0, rescues: 0, goldEarned: 0, itemsFound: 0, ticksExplored: 0 },
   }

@@ -7,7 +7,7 @@
  */
 import { GLYPHS, glyphRows } from '../art/glyphs'
 
-export const TEMPLATE_VERSION = 24
+export const TEMPLATE_VERSION = 25
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -151,6 +151,18 @@ const celebrationBadge = (classes: string) => `
 const olderStories = (count: number) => `
       {% for entry in log offset: 1 limit: ${count} %}${logLine('entry', 'label lg:title--small', 1, 16, 28, 'hidden lg:flex')}{% endfor %}`
 
+/** Device recap is read-only and uses its own window, independent of the recent-story list. */
+const recapBlock = (compact = false) => `
+  {% if recap %}<div class="flex flex--col flex--left flex--stretch-x gap--xsmall stretch-x">
+    <span class="label lg:title--small text--bold">{{ recap.label | escape }}</span>
+    ${compact ? `<span class="label lg:title--small" data-clamp="2">{{ recap.compact | escape }}</span>` : `
+    <span class="label lg:hidden" data-clamp="1">{{ recap.compact | escape }}</span>
+    {% if recap.gains != "" %}<span class="hidden lg:block label lg:title--small">{{ recap.gains | escape }}</span>{% endif %}
+    <span class="hidden lg:block label lg:title--small">{{ recap.activity | escape }}</span>
+    {% if recap.highlights != "" %}<span class="hidden lg:block label lg:title--small text--bold">{{ recap.highlights | escape }}</span>{% endif %}`}
+    <div class="border--h-30 stretch-x"></div>
+  </div>{% endif %}`
+
 const rankLine = `
       {% if rank %}<span class="label">Rank {{ rank }} of {{ total_players }}, {{ leaderboard_cohort_label | escape }}</span>{% elsif rank_status == "dormant" %}<span class="label">Not ranked while paused</span>{% else %}<span class="label">Ranking within the hour</span>{% endif %}`
 
@@ -239,25 +251,30 @@ export const markupFull = `${glyphAssigns([16, 24])}
   {% if status == "unlinked" or first_run %}${welcome('full')}
   {% else %}
   <div class="grid stretch-x gap--medium">
-    <div class="col--span-5 lg:col--span-4 flex flex--col flex--left gap--xsmall">
-      <span class="title lg:title--large" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
+    <div class="col--span-5 flex flex--col flex--left gap--xsmall">
+      <span class="title lg:title--large" data-clamp="1" data-clamp-lg="2">{{ hero_name | escape }}, level {{ level }}</span>
       ${statusLine(2, 56)}${nextTick('hidden lg:block label lg:title--small')}
       <span class="hidden lg:block label lg:title--small">{{ gold }} gold · {{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}</span>
     </div>
-    <div class="col--span-7 lg:col--span-8">
-      <div class="grid grid--cols-2 gap--medium lg:gap--large">
-        <div>${hpBar(' lg:progress-bar--large')}
+    <div class="col--span-7">
+      <div class="grid grid--cols-1 gap--small">
+        <div class="grid grid--cols-2 gap--medium lg:gap--large">
+          <div>${hpBar(' lg:progress-bar--large')}</div>
+          <div>${xpBar(' lg:progress-bar--large')}</div>
         </div>
-        <div>${xpBar(' lg:progress-bar--large')}
-        </div>${gearSlot('Weapon', 'weapon')}${gearSlot('Armor', 'armor')}
+        <div class="hidden lg:block">
+          <div class="grid grid--cols-2 gap--large">${gearSlot('Weapon', 'weapon')}${gearSlot('Armor', 'armor')}</div>
+        </div>
       </div>
     </div>
   </div>
   <div class="flex flex--col gap--small">${scene('scene_url')}${divider}
   </div>
   <div class="grid stretch-x gap--large lg:gap--xlarge">
-    <div class="{% if qr_url == "" and companion_qr_base != "" %}col--span-6{% else %}col--span-7{% endif %} flex flex--col flex--left flex--top gap--small lg:gap--medium">${celebrationBadge('label lg:title--small')}${newestStory(2, 'title lg:title', 24, 46)}
-      ${attention('label lg:title--small', 2)}${olderStories(2)}
+    <div class="{% if qr_url == "" and companion_qr_base != "" %}col--span-6{% else %}col--span-7{% endif %} flex flex--col flex--left flex--top gap--small lg:gap--medium">
+      ${attention('label lg:title--small', 2)}{% unless attention %}${recapBlock()}{% endunless %}
+      {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${newestStory(2, 'title lg:title', 24, 46)}
+      {% unless attention %}${olderStories(1)}{% endunless %}
     </div>
     {% if qr_url != "" %}<div class="col--span-5 flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small">${qr}
     </div>{% else %}<div class="{% if companion_qr_base != "" %}col--span-6{% else %}col--span-5{% endif %} flex flex--row flex--top gap--medium">
@@ -272,15 +289,17 @@ export const markupHalfHorizontal = `${glyphAssigns([16])}
 <div class="layout layout--col layout--stretch-x">
   {% if status == "unlinked" or first_run %}${welcome('halfHorizontal')}
   {% else %}
-  <div class="flex flex--row flex--center-y stretch-x gap--medium">
-    <div class="no-shrink">${scene('scene_url_small')}
-    </div>
-    <div class="grow flex flex--col flex--left flex--stretch-x gap--small">
+  <div class="grid stretch-x gap--medium">
+    <div class="col--span-4 flex flex--col flex--left flex--stretch-x gap--small">
       <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
-      ${statusLine(2, 76)}${nextTick('label lg:title--small')}${hpBar(' progress-bar--small')}
-      <div class="hidden lg:block">${xpBar(' progress-bar--small')}
-      </div>
-      {% if attention %}${attention('label lg:title--small', 1)}${newestStory(1, 'label lg:title--small', 16, 34)}{% else %}${newestStory(2, 'label lg:title--small', 16, 66)}{% endif %}${olderStories(1)}
+      ${statusLine(2, 34)}${nextTick('label lg:title--small')}${hpBar(' progress-bar--small')}
+      <div class="hidden lg:block">${scene('scene_url_small')}</div>
+    </div>
+    <div class="col--span-4 flex flex--col flex--left flex--stretch-x gap--small">
+      {% if attention %}${attention('label lg:title--small', 3)}{% else %}${recapBlock()}{% endif %}
+    </div>
+    <div class="col--span-4 flex flex--col flex--left flex--stretch-x gap--small">
+      ${newestStory(3, 'label lg:title--small', 16, 42)}
     </div>
   </div>
   {% endif %}
@@ -294,7 +313,9 @@ export const markupHalfVertical = `${glyphAssigns([16, 24])}
     <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
     ${statusLine(2, 70)}${nextTick('label lg:title--small')}${attention('label lg:title--small', 2)}${hpBar(' progress-bar--small')}${xpBar(' progress-bar--small')}
   </div>${scene('scene_url_small')}${divider}
-  <div class="flex flex--col flex--left gap--small">${celebrationBadge('label lg:title--small')}${newestStory(2, 'title title--small lg:title', 24, 50)}${olderStories(3)}${rankLine}
+  <div class="flex flex--col flex--left flex--stretch-x gap--small">
+    {% unless attention %}${recapBlock()}{% endunless %}
+    {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${newestStory(2, 'title title--small lg:title', 24, 50)}{% unless attention %}${olderStories(1)}{% endunless %}${rankLine}
   </div>
   {% endif %}
 </div>${titleBar}`
@@ -303,8 +324,11 @@ export const markupQuadrant = `${glyphAssigns([16])}
 <div class="layout layout--col layout--stretch-x gap--xsmall lg:gap--small">
   {% if status == "unlinked" or first_run %}${welcome('quadrant')}
   {% else %}
-    <span class="label lg:title--small" data-clamp="1">{{ hero_name | escape }}, level {{ level }} · HP {{ hp }}/{{ max_hp }}</span>${scene('scene_url_small')}
-    {% if attention %}${attention('label lg:title--small', 2)}{% else %}${newestStory(2, 'label lg:title--small', 16, 60)}{% endif %}
+    <span class="label lg:title--small" data-clamp="1">{{ hero_name | escape }}, level {{ level }} · HP {{ hp }}/{{ max_hp }}</span>
+    {% if attention %}${scene('scene_url_small')}${attention('label lg:title--small', 2)}{% else %}
+      <div class="{% if recap %}hidden lg:block{% endif %}">${scene('scene_url_small')}</div>
+      ${recapBlock(true)}${newestStory(2, 'label lg:title--small', 16, 60)}
+    {% endif %}
   {% endif %}
 </div>${titleBar}`
 

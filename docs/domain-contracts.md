@@ -81,6 +81,8 @@ The companion and device display narrative separately from nonzero earned-XP/net
 
 D52 adds `+1 healing potion` to that change row when the stored loot outcome says `found: potion` and is not a full-stack fallback. Read adapters derive optional display-only `deltas.potionsFound`; the persisted simulator deltas/schema and reward math stay unchanged. This is gross acquisition: finding and using a potion in one tick still reports the find beside net HP. Full-pouch gold fallback reports gold instead. Existing retained logs work without backfill, and narrative text alone is never evidence of a reward. Raw event detail stays private.
 
+D54 adds optional stored combat `gearRarity`, copied by the persistence adapter from the actual awarded gear directive in the same transaction. The simulator output, reward draws, numeric state, run/content versions and retained logs are unchanged. Older combat drops without this annotation retain unknown rarity. The rolling device recap uses recorded outcomes only; it never infers rewards from narrative, scans current inventory for past finds, acknowledges a visit or changes gameplay.
+
 ## Score and held-ID adapter ownership
 
 The core returns held-create intent and sleep status, never a database ID for that find. Adapter allocates the item and writes `heldItemId` atomically. Manual claim clears it; core may not replace an existing held item. Core may clear a due `wakeAtTick` but never wake from a visit/poll alone.

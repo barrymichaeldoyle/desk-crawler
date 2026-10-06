@@ -5,7 +5,7 @@ import type { Doc } from './_generated/dataModel'
 import { currentUser } from './lib/intent'
 import { ACTIVE_CONTENT, catalogs } from '@trmnl-games/desk-crawler/content'
 import { bagGearCount } from '@trmnl-games/desk-crawler/sim/core/invariants'
-import { buildPayload, MAX_LOGS, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
+import { buildPayload, MAX_LOGS, MAX_RECAP_EVENTS, RECAP_WINDOW_MS, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
 import { readWorld } from './world'
 import { readDeviceRanking } from './lib/rankingRead'
 import { keepsakeCode, keepsakeGrant } from './lib/keepsakes'
@@ -61,6 +61,7 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
   let potions = 0
   let bagUsed = 0
   let logs: PayloadInput['logs'] = []
+  let activity: PayloadInput['activity']
   let latestEvent: { kind: string; outcome?: { variant: string; [key: string]: unknown } } | null = null
   if (hero) {
     const items = await ctx.db
@@ -81,6 +82,12 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
       .order('desc')
       .take(MAX_LOGS)
     logs = recent.map((log) => ({ at: log.at, kind: log.kind, summary: log.summary, deltas: displayLogDeltas(log) }))
+    const window = await ctx.db
+      .query('tickLogs')
+      .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id).gt('at', now - RECAP_WINDOW_MS).lte('at', now))
+      .order('desc')
+      .take(MAX_RECAP_EVENTS + 1)
+    activity = { entries: window.slice(0, MAX_RECAP_EVENTS), truncated: window.length > MAX_RECAP_EVENTS }
     const newest = recent[0]
     if (newest) latestEvent = { kind: newest.kind, ...('outcome' in newest.detail ? { outcome: newest.detail.outcome } : {}) }
   }
@@ -124,6 +131,7 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
     bagCapacity: content.constants.bagCapacity,
     heldItemName,
     logs,
+    ...(activity ? { activity } : {}),
     instanceName,
     content,
     spriteBaseUrl: process.env.SPRITE_BASE_URL ?? null,

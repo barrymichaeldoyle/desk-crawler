@@ -5,10 +5,12 @@
  * matrix. This approximates TRMNL's renderer; real-device renders stay the
  * acceptance gate.  Usage: pnpm tsx tools/trmnl/preview.ts [artBaseUrl]
  */
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { Liquid } from 'liquidjs'
 import { contentV4 } from '@trmnl-games/desk-crawler/content/v4'
-import { buildPayload, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
+import { buildPayload, MAX_RECAP_EVENTS, type ActivityEntry, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
+import type { OutcomeDetail } from '@trmnl-games/desk-crawler/sim/core/types'
+import { displayLogDeltas } from '@trmnl-games/desk-crawler/log'
 import { sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
 import { screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
 import { PREVIEW_DEVICES, PREVIEW_LAYOUTS, previewDocument, type PreviewDevice, type PreviewLayout } from '@trmnl-games/desk-crawler/templates/preview'
@@ -107,14 +109,48 @@ const potionStates: Record<string, PayloadInput> = Object.fromEntries([
 const noEffectStates: Record<string, PayloadInput> = {
   coffeeBreak: { ...base, hero: hero({ biomeId: 'office_cubicles', hp: 148 }), latestEvent: { kind: 'rest' }, logs: [{ at: NOW - 7 * 60_000, kind: 'rest', summary: 'Took a coffee break anyway.', deltas: { xpEarned: 0, gold: 0, hp: 0 } }, ...base.logs] },
 }
-const previewStates = process.argv.includes('--no-effect') ? noEffectStates : process.argv.includes('--potion-finds') ? potionStates : process.argv.includes('--marketing') ? {
+// Explicit recorded-outcome fixtures; these are fictional and never written to a deployment.
+const activityEntry = (outcome: OutcomeDetail, index: number, patch: Partial<ActivityEntry> = {}): ActivityEntry => ({ at: NOW - (index + 1) * 900_000, deltas: { xpEarned: 0, gold: 0, hp: 0 }, detail: { outcome, levelsGained: 0, heldFind: false }, ...patch })
+const fixtureFight: OutcomeDetail = { variant: 'combat', monsterId: 'cable_serpent', elite: false, monsterHpStart: 40, monsterHpEnd: 0, rounds: [], outcome: 'victory', xpGranted: 14, goldGranted: 5, gearDropped: false }
+const fixtureGear: OutcomeDetail = { variant: 'loot', found: 'gear', rarity: 'rare', goldGranted: 0, jackpot: false, potionFullFallback: false }
+const fixtureBreak: OutcomeDetail = { variant: 'rest', healing: 0, automatic: false, resultingStatus: 'exploring' }
+const overnightEntries = [
+  ...Array.from({ length: 13 }, (_, i) => activityEntry(fixtureFight, i, { deltas: { xpEarned: 14, gold: 5, hp: -4 } })),
+  ...Array.from({ length: 3 }, (_, i) => activityEntry(fixtureGear, i + 13)),
+  ...Array.from({ length: 4 }, (_, i) => activityEntry({ variant: 'loot', found: 'potion', goldGranted: 0, jackpot: false, potionFullFallback: false }, i + 16)),
+  ...Array.from({ length: 17 }, (_, i) => activityEntry(fixtureBreak, i + 20)),
+]
+const milestoneEntries = [
+  activityEntry(fixtureFight, 1, { deltas: { xpEarned: 188, gold: 57, hp: -48 }, detail: { outcome: { ...fixtureFight, elite: true, goldGranted: 57 }, levelsGained: 2, heldFind: false } }),
+  activityEntry(fixtureGear, 30),
+  ...overnightEntries,
+]
+const recapStates: Record<string, PayloadInput> = {
+  overnight: { ...base, activity: { entries: overnightEntries, truncated: false } },
+  milestones: { ...states.longText!, activity: { entries: milestoneEntries, truncated: false } },
+  quietMorning: { ...noEffectStates.coffeeBreak!, activity: { entries: Array.from({ length: 17 }, (_, i) => activityEntry(fixtureBreak, i)), truncated: false } },
+  emptyWindow: { ...states.paused!, logs: base.logs.map(log => ({ ...log, at: log.at - 13 * 3_600_000 })), activity: { entries: [], truncated: false } },
+  partial: { ...base, activity: { entries: Array.from({ length: MAX_RECAP_EVENTS }, (_, i) => activityEntry(fixtureFight, i, { at: NOW - (i + 1) * 60_000, deltas: { xpEarned: 999, gold: 999, hp: 0 } })), truncated: true } },
+  fullBagRecap: { ...states.sleeping!, activity: { entries: [activityEntry(fixtureGear, 0, { detail: { outcome: fixtureGear, levelsGained: 0, heldFind: true } }), ...overnightEntries], truncated: false } },
+  knockoutRecap: { ...states.dead!, activity: { entries: [activityEntry({ ...fixtureFight, outcome: 'death', goldGranted: 0, gearDropped: false }, 0), ...overnightEntries], truncated: false } },
+  recoveredRecap: { ...base, activity: { entries: [activityEntry({ variant: 'revival', previousBiomeId: 'server_room', safeBiomeId: 'office_cubicles', hpGranted: 30, reviveAtTick: 119 }, 0), activityEntry({ ...fixtureFight, outcome: 'death', goldGranted: 0, gearDropped: false }, 8), ...overnightEntries], truncated: false } },
+  arrivalRecap: { ...base, activity: { entries: [activityEntry({ variant: 'travel', phase: 'arrive', fromBiomeId: 'office_cubicles', toBiomeId: 'server_room', arrivalTick: 120 }, 0), ...overnightEntries], truncated: false } },
+}
+const sourceIndex = process.argv.indexOf('--recap-source')
+if (sourceIndex >= 0) {
+  const source = JSON.parse(readFileSync(process.argv[sourceIndex + 1]!, 'utf8')) as { now: number; entries: Array<ActivityEntry & { kind: string; summary: string }> }
+  recapStates.recordedHistory = { ...base, logs: source.entries.slice(0, 10).map(log => ({ ...log, deltas: displayLogDeltas(log), at: log.at - source.now + NOW })), activity: { entries: source.entries.map(entry => ({ ...entry, at: entry.at - source.now + NOW })), truncated: source.entries.length > MAX_RECAP_EVENTS } }
+}
+const previewStates = process.argv.includes('--recap') ? { ...states, ...recapStates } : process.argv.includes('--no-effect') ? noEffectStates : process.argv.includes('--potion-finds') ? potionStates : process.argv.includes('--marketing') ? {
   sample: { ...base, ownerAlias: 'Steve', hero: hero({ name: 'Pip' }), ranking: { ...base.ranking!, top5: base.ranking!.top5.map(row => row.rank === 3 ? { ...row, name: 'Steve', hero_name: 'Pip' } : row) } },
 } : states
 
 mkdirSync('.previews', { recursive: true })
 let written = 0
 for (const [name, input] of Object.entries(previewStates)) {
-  const payload = sceneUrlsAt(buildPayload(input), input.now, utcOffset)
+  const withRecap = process.argv.includes('--recap') && !input.activity ? { ...input, activity: { entries: overnightEntries.map(entry => ({ ...entry, at: entry.at - NOW + input.now })), truncated: false } } : input
+  const payload = sceneUrlsAt(buildPayload(withRecap), input.now, utcOffset)
+  if (process.argv.includes('--recap')) writeFileSync(`.previews/${name}--payload.json`, JSON.stringify(payload, null, 2))
   for (const layout of Object.keys(PREVIEW_LAYOUTS) as PreviewLayout[]) {
     const inner = await liquid.parseAndRender(screenMarkup[layout], { ...payload, desk_keepsake_code: name === 'unlinked' || name === 'sample' ? null : deskKeepsakeCode, utc_offset: utcOffset })
     for (const device of Object.keys(PREVIEW_DEVICES) as PreviewDevice[]) {

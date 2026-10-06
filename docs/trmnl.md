@@ -141,9 +141,17 @@ Scene art v4 (D50) gives the Office Cubicles window sun/clouds from local 06:00 
 
 Fields keep their meaning within v1. Optional additions are permitted; removing/renaming/changing type needs v2 and overlapping support. Do not reserve dozens of unused future fields with ambiguous placeholder meanings. See the [fixture examples](fixtures/trmnl-normal.json).
 
+## D54 device recap (template v25 candidate)
+
+Additive `recap` is null for unlinked payloads or callers that did not read a separate activity window. Otherwise it contains `label`, `partial`, UTC-second `from`/`to`, `events`, fixed numerical `totals`, and plain escaped `activity`, `gains`, `highlights`, `compact` strings. The window is `(now − 12 hours, now]`; source timestamps are server recorded, and no device/companion visit acknowledgement is made. The most recent ten stories remain a separate `log` array; their truncated history never supplies twelve-hour totals.
+
+Only simulation outcomes contribute to adventure totals: granted XP, gross combat/loot gold, victories, actual gear drops/loot, gross potion acquisition excluding full-pouch fallback, rest events, level gains, deaths/revivals, known rare finds, elite wins and jackpots. Travel arrivals resolve their destination from the content catalog. Companion commands remain visible as stories but are excluded from the adventure aggregate. Combat rarity is optional on older logs; it is never inferred from narrative flavor or current inventory. Current production remains v24 until the candidate is approved and deployed.
+
+Candidate layouts show full recap detail on X full/half/side and compact milestone/progress text on OG and quadrant. X full/side retain two stories; half and quadrant retain one. OG retains one across all sizes. Full-layout X gives the hero five grid columns and a two-line clamp so a permitted long name does not clip the level. Separate bar/gear grids preserve the horizontal spacing while reducing their vertical gap from 36 to 12.6 pixels in the X preview, lifting the scene and logs by 23.4 pixels for the normal header. Half-horizontal uses three columns for hero, recap/attention and newest story. OG quadrant drops decorative scene art to retain the recap, story and changes; X retains its scene. Attention suppresses the recap and older stories. All displayed stories retain their individual time/change rows and D53 `No effect` labels; the companion's detailed history remains available.
+
 ## Query read budget
 
-Fixed lookups: grant/instance, user, hero, bounded equipped/potion items, latest ten logs, world/run summary, published publication pointer, that hero's recent_7d rank row (to resolve captured cohort), selected generation/publication, and five public-user state/name-version checks for privacy masking. It is bounded indexed work, not literally a single O(1) database access. No global scan, no live rank count, no per-poll inventory traversal beyond the bounded bag if the adapter needs it.
+Fixed lookups: grant/instance, user, hero, bounded equipped/potion items, latest ten logs, plus at most 201 logs in the twelve-hour owner/time range for D54, world/run summary, published publication pointer, that hero's recent_7d rank row (to resolve captured cohort), selected generation/publication, and five public-user state/name-version checks for privacy masking. Aggregate the newest 200 range rows; the extra row detects a partial window. This adds bounded per-poll read work and must be included in future capacity/cost measurements. It is bounded indexed work, not literally a single O(1) database access. No global scan, no live rank count, no per-poll inventory traversal beyond the bounded bag if the adapter needs it.
 
 ## Layout plans
 

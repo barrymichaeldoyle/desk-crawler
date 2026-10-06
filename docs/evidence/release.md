@@ -1,18 +1,18 @@
 # Release preparation — 2026-10-05
 
-**Submission preparation is substantially complete, but the application is not ready to send.** Listing updates, companion deployment and author-entitlement verification are complete; the recording/hosted video remains open. Owner/sender is confirmed, and Barry plans to promote TRMNL at launch. [Engineering checks](engineering-readiness.md) now prove synthetic cloud recovery, interrupted work, failed-notice exhaustion and lifecycle edges; four fixes and `No effect` are tested but unshipped. Ongoing production capture, real-provider verification and funding decisions remain launch gates. No review submission, media publication or reviewer contact was performed.
+**Submission preparation is substantially complete, but the application is not ready to send.** Listing updates, companion deployment and author-entitlement verification are complete; the recording/hosted video remains open. Owner/sender is confirmed, and Barry plans to promote TRMNL at launch. [Engineering checks](engineering-readiness.md) now prove synthetic cloud recovery, interrupted work, failed-notice exhaustion and lifecycle edges; four fixes and `No effect` were [deployed on October 6](engineering-deploy.md). Ongoing production capture, real-provider verification and funding decisions remain launch gates. No review submission, media publication or reviewer contact was performed.
 
 ## Release identity
 
 | Artifact | Current deployed state | Local submission candidate |
 | --- | --- | --- |
-| Source | `392829c596206ccefb64a33d2f4ce7cd70ac9bef` | Deployed at 20:18:30 UTC; [release evidence](listing-polish-deploy.md) |
+| Source | `c8daeaa86e63264a812e563e7a7f948c9d6143b1` | Deployed October 6 at 07:37:53 UTC; [release evidence](engineering-deploy.md) |
 | Hero schema / simulator / gameplay numbers | 1 / 1 / v2 tuning | Unchanged |
 | Active narrative/catalog | v4 | Unchanged |
 | TRMNL template / art | v24 / scene v4 | Unchanged; fictional marketing sample generated from these sources |
 | Plugin | 564, `desk_crawler`, Third Party, development | Review package prepared |
 | Companion | https://trmnlgames.com, `/app/desk-crawler` | Updated landing sample, help and potion-find labels live |
-| Backend | `exciting-cormorant-948` | Unshipped candidate adds optional pagination versions, portable cursors, deletion/notice guards and ranking cost fix; D53 shared log polish |
+| Backend | `exciting-cormorant-948` | Deployed candidate adds optional pagination versions, portable cursors, deletion/notice guards and ranking cost fix; D53 shared log polish |
 
 The current deployed version is recorded in [log-spacing](log-spacing.md) and [scene-time](scene-time.md). Older v11/v12 checks are historical, not outstanding candidate work.
 
@@ -46,7 +46,7 @@ TRMNL's [current Going Live instructions](https://docs.trmnl.com/go/plugin-marke
 
 | Gate | Remaining work |
 | --- | --- |
-| Production rollout | Four backend fixes and D53 are local/preview-verified, not live. Authorize deployment and verify continued progress/publication and log presentation |
+| Production rollout | Complete: four backend fixes and D53 deployed with Barry’s approval on October 6 ([evidence](engineering-deploy.md)) |
 | Independent post-snapshot deletion/revocation evidence | Isolated synthetic restore with independent encrypted evidence passed without source queries during planning/restore. Approve/configure ongoing protected production capture and monitoring; reconcile the uncovered interval before reopening |
 | Interrupted work and delivery failure | Synthetic cloud simulation/ranking/deletion continuation, potion receipt replay and live alert/recovery exhaustion passed. Actual Clerk provider failure/deletion is not certified; legacy in-flight native cursors remain a recovery limitation |
 | Lifecycle/deletion edge cases | Actual preview routes passed expired attempts, delayed callback, wrong owner, lost callback, tombstone and fresh-UUID reinstall checks. Signed real-provider OAuth/JWT/deletion delivery remains open |

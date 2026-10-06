@@ -1,6 +1,6 @@
 # Engineering checks — 2026-10-05
 
-Barry requested the separate engineering checks and the `No effect` log polish. Four backend defects were reproduced and fixed locally; the candidate passed 187 tests, workspace typechecks, the production web build and Wrangler dry run. Recovery, lifecycle and failed-delivery checks ran on the two existing disposable previews. **These fixes and the log polish are not deployed to production.** Production remains on `392829c`; pushing `main` would deploy and needs authorization.
+Barry requested the separate engineering checks and the `No effect` log polish. Four backend defects were reproduced and fixed locally; the candidate passed 187 tests, workspace typechecks, the production web build and Wrangler dry run. Recovery, lifecycle and failed-delivery checks ran on the two existing disposable previews. **October 6 follow-up:** Barry authorized production rollout. Commit `c8daeaa86e63264a812e563e7a7f948c9d6143b1` deployed successfully to the existing backend and companion; [deployment evidence](engineering-deploy.md) records live verification. The following October 5 measurements retain their original scope.
 
 Sanitized measurements: [engineering-results.json](engineering-results.json). Production was read-only. Preview source: `precious-pheasant-866`; restore target: `usable-snail-909`. Both have synthetic players, empty crons and closed/paused worlds after the checks. No real player was deleted, reviewer contacted, marketplace entry submitted or email delivered during this pass.
 
@@ -18,7 +18,7 @@ Applied the Convex authz, reviewer, advisor and insights procedures, followed by
 
 The seven low findings are `admin:health`, `admin:findUser`, `heroes:mine`, `heroes:recentLog`, `heroes:returnSummary`, `inventory:mine`, `leaderboard:view`. They are type-contract weaknesses, not evidence of unauthorized disclosure. No other candidates were counted as defects.
 
-Backend defect score, with one portable-pagination root cause counted once: before **53 = 100 − (2×15) − (2×5) − (7×1)**; tested candidate **93 = 100 − (7×1)**. This is a code/preview defect score. It does not certify production rollout, provider delivery, funding or the operational gates below. Production still contains the four unshipped defects.
+Backend defect score, with one portable-pagination root cause counted once: before **53 = 100 − (2×15) − (2×5) − (7×1)**; tested candidate **93 = 100 − (7×1)**. This is a code/preview defect score. It does not certify production rollout, provider delivery, funding or the operational gates below. The October 6 release ships those four fixes; the seven low contract findings remain.
 
 ## Isolated recovery and failure checks
 
@@ -65,7 +65,7 @@ The guarded preview controls are [engineering-functions.ts.txt](../../tools/revi
 
 ## Remaining actions
 
-1. Authorize production rollout of the four fixes and D53, then verify continuing ticks, publication and live log display. Schema additions are optional; existing runs drain with their original pagination. Do not roll back to code that cannot understand new portable cursors while work is active.
+1. Production rollout of the four fixes and D53 was authorized and completed on October 6; see [live deployment evidence](engineering-deploy.md). Schema additions are optional; existing runs drain with their original pagination. Do not roll back to code that cannot understand new portable cursors while work is active.
 2. Approve/configure independent checkpoint storage, key custody, cadence and monitoring. [capture-export.ts](../../tools/recovery/capture-export.ts) passed a real preview capture: 700 encrypted bytes, actual snapshot time 21:39:29.739 UTC, mode 0600 and successful authenticated decryption. The [workflow template](../../tools/recovery/checkpoint-workflow.yml.txt) is inactive. Production setup has not occurred.
 3. Approve a controlled real-provider fixture for provider-originated deletion and expiry/reinstall flow; reconcile the checkpoint's uncovered interval before reopening a disaster restore. Legacy in-flight native-cursor backups require a separately proven recovery procedure.
 4. Decide launch scale, Worker plan and Convex spending thresholds with zero payout assumed; decide the numerical tuning questions from [balance](balance.md). No plan, spend limit or gameplay number was changed.

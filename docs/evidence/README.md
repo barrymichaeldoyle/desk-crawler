@@ -1,6 +1,6 @@
 # Implementation evidence checklist
 
-[Engineering checks](engineering-readiness.md) records the October 5 audit, four reproduced/fixed backend defects, 187 passing tests, isolated checkpoint reconciliation and portable worker restore, real preview lifecycle/failure checks, production log health and measured subscription headroom. The fixes and D53 `No effect` polish await deployment; ongoing capture and real-provider verification remain open.
+[Engineering checks](engineering-readiness.md) records the October 5 audit, four reproduced/fixed backend defects, 187 passing tests, isolated checkpoint reconciliation and portable worker restore, real preview lifecycle/failure checks, production log health and measured subscription headroom. The fixes and D53 `No effect` polish are [deployed](engineering-deploy.md); ongoing capture and real-provider verification remain open.
 
 Live implementation evidence is available, with remaining acceptance checks recorded in [release preparation](release.md). The latest pass adds [capacity measurements](capacity.md), [synthetic recovery](recovery.md), [Creator Fund findings](creator-fund.md) and an [installation walkthrough](install-demo/README.md). The TRMNL Games migration [rehearsal](platform-rehearsal.md) records the M1 gate and the dev-instance run. A successful individual check does not close its entire matrix. Do not create invented success reports.
 
@@ -40,3 +40,5 @@ Artifacts identify date, environment, command/action and observed result. Scrub 
 An editor preview does not replace the Third Party envelope test or physical display evidence. Apply the explicit D43 preview coverage decision and D46 waiver in [decisions](../decisions.md); do not describe waived evidence as passed or reopen it as a prerequisite.
 
 Review submission is prepared first. Account changes, reviewer contact, sending credentials, deployment and publication follow the user's authorization.
+
+The locally verified [D54 twelve-hour recap candidate](activity-recap.md) includes all 200 OG/X layout checks and the separate window/authorization/no-write tests. Production remains v24 until separate approval and live render verification.

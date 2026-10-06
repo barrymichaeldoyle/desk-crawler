@@ -191,7 +191,7 @@ export const simulateBatch = internalMutation({
           at: now,
           kind: result.event.kind,
           summary: result.event.summary,
-          detail: storedDetail(result.event.detail),
+          detail: storedDetail(result.event.detail, result.itemChanges),
           deltas: result.event.deltas,
         })
       }

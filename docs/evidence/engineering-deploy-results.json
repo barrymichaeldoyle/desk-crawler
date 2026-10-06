@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-06",
+  "commit": "c8daeaa86e63264a812e563e7a7f948c9d6143b1",
+  "build": {
+    "id": "87561e6a-9d47-47f1-b042-33abdcc14b13",
+    "state": "success",
+    "completedAt": "2026-10-06T07:37:57Z"
+  },
+  "targets": {
+    "convex": "exciting-cormorant-948",
+    "worker": "trmnl-games",
+    "origin": "https://trmnlgames.com"
+  },
+  "worker": {
+    "deploymentId": "a8c20488-2e45-40a3-9913-f003dcc6b5dd",
+    "versionId": "ac63bd4d-8d79-442c-99f0-e01ac8f96e34",
+    "trafficPercent": 100
+  },
+  "checks": {
+    "tests": 187,
+    "testFiles": 29,
+    "typechecks": "passed",
+    "productionFixtureFunctionsAbsent": true,
+    "heroIdentityAndProgressPreserved": true,
+    "manualGameplayCommands": 0
+  },
+  "naturalTick": {
+    "completedAt": "2026-10-06T07:45:06.217Z",
+    "paginationVersion": 1,
+    "processed": 1,
+    "quarantined": 0,
+    "state": "completed",
+    "tick": 196
+  },
+  "world": {
+    "completed": 196,
+    "content": "v4",
+    "lastCompletedAt": 1791272706217,
+    "maintenance": false,
+    "paused": false,
+    "tick": 196
+  },
+  "boards": [
+    {
+      "board": "overall",
+      "state": "ready",
+      "total": 1
+    },
+    {
+      "board": "recent_24h",
+      "state": "ready",
+      "total": 1
+    },
+    {
+      "board": "recent_7d",
+      "state": "ready",
+      "total": 1
+    }
+  ],
+  "healthSample": {
+    "from": "2026-10-06T07:38:01Z",
+    "to": "2026-10-06T07:41:05Z",
+    "completionRecords": 56,
+    "errors": 0,
+    "conflictRetries": 0
+  },
+  "ui": {
+    "existingNoEffectEntriesVerified": true,
+    "healingAmountsPreserved": true,
+    "potionFindLabelPreserved": true,
+    "xSidePreviewVisuallyInspected": true
+  },
+  "trmnlTimeline": {
+    "timezone": "Africa/Johannesburg",
+    "renderedAt": "2026-10-06T09:42:36+02:00",
+    "reason": "manual refresh",
+    "renderMs": 743,
+    "displayedImageSize": "25.1 KB",
+    "deliveredAt": "2026-10-06T09:44:19+02:00",
+    "physicalScreenVisuallyInspected": false
+  }
+}

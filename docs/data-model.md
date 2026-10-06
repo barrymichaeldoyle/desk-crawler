@@ -251,3 +251,7 @@ Within saved-instance confirmation, an internal activation helper validates acti
 At first activation initialize `eligibleFromTick = world.currentTick + 1`, `lastTick = world.currentTick`, `lastProgressTick = world.currentTick` and `lastLevelUpTick = world.currentTick`; leave `lastAdvancedAt` absent until real gameplay. These are the pre-play baseline, not earned progress. Pending creation may provision those markers, but activation replaces that baseline exactly once. Replays, second installations and repairs never reset it.
 
 Grant linking, claimed client connection flags and a screen query alone cannot activate a hero. Only authenticated success confirmation or the V06-verified first-screen lifecycle recovery can consume the authorized install attempt. Expiry/restart keeps the existing pending hero/kit. Activation is permanent until the existing retirement/deletion lifecycle; disconnect/uninstall does not revert it.
+
+## D54 stored recap source
+
+No recap table, checkpoint, new index or backfill is needed. Device assembly uses `tickLogs.by_heroId_and_at_and_sequence` for the authorized hero over `(now − 12 hours, now]`, taking 201 rows and aggregating the newest 200. Commands can consume the cap; an extra row means a partial digest, never a claimed full total. Additive optional combat-outcome `gearRarity` is recorded from the transaction’s awarded item. Existing combat logs omit it and remain valid; loot already records rarity. History retention/deletion, rewards and hero state are unchanged.

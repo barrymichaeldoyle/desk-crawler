@@ -1,6 +1,6 @@
 import type { Doc, Id } from '../../_generated/dataModel'
 import type { MutationCtx } from '../../_generated/server'
-import type { HeroState, ItemSnapshot, LogDetail, SimulationResult } from '@trmnl-games/desk-crawler/sim/core/types'
+import type { HeroState, ItemChange, ItemSnapshot, LogDetail, SimulationResult } from '@trmnl-games/desk-crawler/sim/core/types'
 
 /** Convex hero document -> pure domain state (domain-contracts.md). */
 export function toHeroState(hero: Doc<'heroes'>): HeroState {
@@ -94,8 +94,13 @@ export async function applyResult(
   await ctx.db.patch(hero._id, patch)
 }
 
-/** Core detail -> stored validator shape (copies the one readonly array). */
-export function storedDetail(detail: LogDetail): Doc<'tickLogs'>['detail'] {
-  const outcome = detail.outcome.variant === 'combat' ? { ...detail.outcome, rounds: [...detail.outcome.rounds] } : detail.outcome
+/** Copy core detail and annotate combat gear from the actual transactional award. No simulator/RNG change. */
+export function storedDetail(detail: LogDetail, changes: readonly ItemChange[] = []): Doc<'tickLogs'>['detail'] {
+  const gear = changes.find(change => change.type === 'create' && change.item.kind !== 'potion')
+  const outcome = detail.outcome.variant === 'combat' ? {
+    ...detail.outcome,
+    rounds: [...detail.outcome.rounds],
+    ...(detail.outcome.gearDropped && gear?.type === 'create' ? { gearRarity: gear.item.rarity } : {}),
+  } : detail.outcome
   return { ...detail, outcome }
 }

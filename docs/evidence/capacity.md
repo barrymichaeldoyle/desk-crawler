@@ -1,6 +1,6 @@
 # Capacity measurement — 2026-10-04
 
-**October 5 update:** [engineering checks](engineering-readiness.md) records the revised builder's actual 1,000-row worker measurements, current shared-plan headroom and updated scenario estimate. The cost fix is unshipped. The measurements below are the original v2 baseline, not current candidate results.
+**October 5 update:** [engineering checks](engineering-readiness.md) records the revised builder's actual 1,000-row worker measurements, current shared-plan headroom and updated scenario estimate. The cost fix was [deployed on October 6](engineering-deploy.md). The measurements below are the original v2 baseline, not current candidate results.
 
 Measured on disposable Convex preview `precious-pheasant-866`; no real players or TRMNL account load. Simulation v1, content v2, template v11. Sanitized measurements: [capacity-results.json](capacity-results.json).
 
@@ -47,3 +47,7 @@ Ranking reads grew faster than population in these two samples. The builder upda
 Prepare an isolated checkout with `node tools/review/prepare-preview.mjs`. The harness source is [preview-functions.ts.txt](../../tools/review/preview-functions.ts.txt), deliberately outside `convex/`. Deploy it only to a disposable preview with `REVIEW_VALIDATION_ENABLED=true`, empty crons and synthetic identities. [capacity.mjs](../../tools/review/capacity.mjs) targets the named preview explicitly; [summarize-capacity.mjs](../../tools/review/summarize-capacity.mjs) deduplicates completion log IDs and selects the measured run intervals. Scripts reference private temporary raw results; those are not release artifacts.
 
 These are single runs with small sequential latency samples, one level group and low-level mixed states, not sustained or clustered load. Maximum inventories and near-maximum history were exercised; simultaneous late-game combat, many cohorts, pending-heavy scans and forced worker failure/recovery under load remain unmeasured. Both preview worlds were paused after testing and automatic crons disabled. V05 has useful live measurements, but its full failure-under-load matrix remains open.
+
+## D54 candidate read-budget change (2026-10-06)
+
+The pending twelve-hour device recap adds one indexed owner/time range read, capped at 201 logs (aggregate 200; partial label on overflow), alongside the existing ten-story read. An ordinary twelve-hour sample contained 48 tick events. No per-tick aggregation writes/table are added. Earlier screen-cost/load measurements predate this extra read and are not a measured cost certification of v25; include it in the next authorized deployed capacity sample and funding forecast. Existing funding decisions remain open.

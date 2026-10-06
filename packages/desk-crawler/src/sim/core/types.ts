@@ -254,6 +254,8 @@ export type OutcomeDetail =
       readonly xpGranted: number
       readonly goldGranted: number
       readonly gearDropped: boolean
+      /** Optional adapter annotation from the awarded item; older combat logs omit it. */
+      readonly gearRarity?: Rarity
     }
   | {
       readonly variant: 'loot'

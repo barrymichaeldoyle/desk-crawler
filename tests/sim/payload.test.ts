@@ -115,3 +115,11 @@ describe('next tick time (D42)', () => {
     expect(next(buildPayload({ ...input, hero: null }))).toBeNull()
   })
 })
+
+describe('device recap privacy and compatibility', () => {
+  it('omits a recap when no separate window was read, and never exposes one for an unlinked hero', () => {
+    expect(buildPayload(input).recap).toBeNull()
+    expect(buildPayload({ ...input, hero: null, activity: { entries: [], truncated: false } }).recap).toBeNull()
+    expect(buildPayload({ ...input, activity: { entries: [], truncated: false } }).recap).toMatchObject({ label: 'Last 12 hours', activity: 'No new adventures' })
+  })
+})

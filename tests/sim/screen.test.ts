@@ -41,6 +41,32 @@ describe('keepsake footer', () => {
   })
 })
 
+describe('device catch-up summary (D54)', () => {
+  const recap = { label: 'Last 12 hours', gains: '+184 XP · 52 gold earned', activity: '9 fights won · 2 gear finds · 4 breaks', highlights: 'Gained 1 level', compact: 'Gained 1 level · +184 XP' }
+
+  it('includes the recap and latest outcome in every size while escaping all recap text', async () => {
+    for (const markup of Object.values(screenMarkup)) {
+      const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...payload(), recap })
+      const text = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ')
+      expect(text).toContain('Last 12 hours')
+      expect(text).toContain('Gained 1 level')
+      expect(text).toContain('Unplugged a Cable Serpent.')
+      expect(text).toContain('+14 XP · +5 gold · −12 HP')
+      const escaped = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...payload(), recap: { ...recap, label: '<script>unsafe</script>' } })
+      expect(escaped).toContain('&lt;script&gt;unsafe&lt;/script&gt;')
+      expect(escaped).not.toContain('<script>unsafe</script>')
+    }
+  })
+
+  it('gives attention messages priority over the recap in all four sizes', async () => {
+    for (const markup of Object.values(screenMarkup)) {
+      const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...payload(), recap, attention: 'Bag full. A find is waiting.' })
+      expect(html).toContain('Bag full. A find is waiting.')
+      expect(html).not.toContain('Last 12 hours')
+    }
+  })
+})
+
 describe('parseUtcOffset', () => {
   it('accepts whole seconds within ±14 hours', () => {
     expect(parseUtcOffset('7200')).toBe(7200)

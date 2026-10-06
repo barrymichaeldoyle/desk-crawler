@@ -51,11 +51,13 @@ Disconnect/deletion prevents future authorized payloads. It cannot retract an im
 
 Each newest outcome stands alone: concrete actor/object, result and the useful effect. Avoid references such as “again” or “it escaped” that require an earlier tick. Death, revival, arrival and level gains remain comprehensible without the preceding screen.
 
-The device log is the newest six events, including commands. It is not a daily digest or proof the player saw those events. Date-aware labels disambiguate midnight and old entries. Smaller layouts choose the newest outcome deterministically; refreshing does not pick a random joke, rotate content, mark events read or grant rewards.
+Following D54, the device shows a rolling **Last 12 hours** adventure recap, then the newest stories. The X full/side layouts retain two stories; OG and compact layouts retain one. The recap reports recorded XP/gold grants, fights won, gear and potion finds, and grouped breaks. Up to two important historical facts take priority: bag overflow, knockouts/revivals, level gains, rare finds, arrivals, elite victories and jackpots. Current hero/status and attention messages remain authoritative; “Bag filled up” describes a historical event, not necessarily the current bag state.
+
+The fixed window is independent of refresh, installations, device sleep and companion visit acknowledgement. A refresh cannot prove the player looked at the screen. Smaller layouts show a compact milestone/progress line and the latest outcome; an attention message takes the recap's space when needed. The latest story can be older than the recap window: an empty window says **No new adventures**, while retained history remains intact. Device story labels continue using HH:MM under D44.
 
 Clamping must preserve the result. Put consequences early, shorten narrative first, and never clip away the “bag full” notice on overflow or “revives” on death. Author compact summaries if 90 characters cannot fit; do not shrink primary text until unreadable. Structured own-history retains full bounded detail.
 
-An absence of hours may skip adventures on the device. The companion retains up to three days of detailed history; beyond that, only persistent hero state/lifetime counters are promised. A daily recap is a later amendment if needed, with bounded aggregation and retention.
+The companion retains up to three days of detailed history; beyond that, only persistent hero state/lifetime counters are promised. The D54 device recap reads the existing hero/time index over `(request time − 12 hours, request time]`, takes at most 201 rows, and aggregates the newest 200. Normal twelve-hour play creates at most 48 tick events; unusually heavy command traffic can exceed the cap, so the recap explicitly says **partial**. Commands remain in recent stories but do not count as adventure rewards or fights. A zero-adventure partial sample says **No adventures in sample**. This is a fixed rolling digest, separate from D25's longer companion return summary.
 
 ## Display rules
 

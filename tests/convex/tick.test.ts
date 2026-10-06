@@ -88,6 +88,30 @@ describe('tick scheduler', () => {
     vi.useRealTimers()
   })
 
+  it('records combat-drop rarity from the awarded item without changing the simulator outcome or rewards', async () => {
+    const heroId = await seedHero(t, { level: 5, hp: 148 })
+    const expected = await t.run(async ctx => {
+      const hero = (await ctx.db.get(heroId))!
+      const items = await ctx.db.query('items').withIndex('by_heroId', q => q.eq('heroId', heroId)).take(40)
+      for (let n = 0; n < 3000; n++) {
+        const worldSeed = `rare-combat-${n}`
+        const result = simulateHero({ hero: toHeroState(hero), inventory: toInventory(items), tick: 1, content: contentV4, simulationVersion: 1, streams: deriveStreamSeeds(worldSeed, heroId, 1, 1) })
+        if (result.event?.detail.outcome.variant !== 'combat' || !result.itemChanges.some(change => change.type === 'create' && change.item.kind !== 'potion')) continue
+        await ctx.db.insert('worldState', { key: 'world', currentTick: 0, activeContentVersion: 'v4', activeSimulationVersion: 1, worldSeed, ticksPaused: false, maintenanceMode: false, createdAt: Date.now() - 3_600_000, schemaVersion: 1 })
+        return result
+      }
+      throw new Error('No seeded combat drop found')
+    })
+    await runTick(t)
+    const latest = await t.run(ctx => ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', q => q.eq('heroId', heroId)).order('desc').first())
+    const awarded = expected.itemChanges.find(change => change.type === 'create' && change.item.kind !== 'potion')!
+    expect(awarded.type).toBe('create')
+    expect(latest?.detail).toMatchObject({ outcome: { variant: 'combat', gearDropped: true, gearRarity: awarded.type === 'create' ? awarded.item.rarity : undefined } })
+    expect(latest?.summary).toBe(expected.event!.summary)
+    expect(latest?.deltas).toEqual(expected.event!.deltas)
+    expect(expected.event!.detail.outcome).not.toHaveProperty('gearRarity')
+  })
+
   it('feeds the last two stories into v4 so a third cable trip becomes a different mishap', async () => {
     const heroId = await seedHero(t)
     const expected = await t.run(async (ctx) => {

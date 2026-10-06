@@ -36,6 +36,7 @@ const outcome = v.union(
     xpGranted: v.number(),
     goldGranted: v.number(),
     gearDropped: v.boolean(),
+    gearRarity: v.optional(rarity),
   }),
   v.object({
     variant: v.literal('loot'),

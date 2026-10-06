@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { api, internal } from '@trmnl-games/backend/api'
 import schema from '../../apps/backend/convex/schema'
 import { sha256Hex } from '../../apps/backend/convex/lib/hash'
-import { seedHero, seedWorld, type T } from './helpers'
+import { seedDeletionConfirmation, seedHero, seedWorld, type T } from './helpers'
 
 const modules = import.meta.glob('../../apps/backend/convex/**/*.ts')
 const UUID = 'ae48d6ac-48f4-4aed-8464-bad68368e97c'
@@ -98,7 +98,7 @@ describe('Desk Crawler progress deletion', () => {
     vi.stubEnv('CLERK_SECRET_KEY', 'sk_test_fake')
     const eve = t.withIdentity({ issuer: 'issuer', subject: 'Eve' })
     expect(await eve.query(api.users.me, {})).toMatchObject({ user: null })
-    await eve.mutation(api.deletion.requestDeletion, { operationId: 'delete-0005', confirm: 'DELETE' })
+    await eve.mutation(api.deletion.requestDeletion, { operationId: 'delete-0005', confirm: 'DELETE', token: await seedDeletionConfirmation(t, 'Eve') })
     await t.finishAllScheduledFunctions(vi.runAllTimers)
     expect(fetchMock).toHaveBeenCalledWith('https://api.clerk.com/v1/users/Eve', expect.objectContaining({ method: 'DELETE' }))
     expect(await t.run(async (ctx) => ({
@@ -113,7 +113,7 @@ describe('Desk Crawler progress deletion', () => {
     const di = t.withIdentity({ issuer: 'issuer', subject: 'Di' })
     await di.mutation(api.deletion.requestGameDeletion, { operationId: 'game-delete-0004', confirm: 'DELETE' })
     await t.finishAllScheduledFunctions(vi.runAllTimers)
-    await di.mutation(api.deletion.requestDeletion, { operationId: 'delete-0004', confirm: 'DELETE' })
+    await di.mutation(api.deletion.requestDeletion, { operationId: 'delete-0004', confirm: 'DELETE', token: await seedDeletionConfirmation(t, 'Di') })
     await t.finishAllScheduledFunctions(vi.runAllTimers)
     expect(await t.run(async (ctx) => ({
       users: (await ctx.db.query('users').collect()).length,

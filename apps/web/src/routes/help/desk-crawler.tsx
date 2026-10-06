@@ -13,6 +13,10 @@ export const Route = createFileRoute('/help/desk-crawler')({
         <li>Back in TRMNL, click Save. Saving starts your hero's adventures from the next world tick.</li>
         <li>Add the plugin to a playlist, or to a mashup if you want your hero beside other plugins. All four layout sizes are supported.</li>
       </ul>
+      <h2>If the QR sends you back to setup</h2>
+      <p>The QR opens the companion for the account you are signed in with. It does not start a new installation. Check the signed-in email shown on the setup page and use Switch account if you originally connected with a different account.</p>
+      <p>If setup says “Reconnect Desk Crawler”, your TRMNL connection exists but the hero is missing. This can happen after the pre-launch game reset. Install a fresh copy of Desk Crawler from TRMNL, sign in with the same account, choose a new hero name, connect, then click Save back in TRMNL. Once the new copy works, remove the old copy from your playlist.</p>
+      <p>If setup says “Save in TRMNL to start”, your hero is already prepared. Return to that installation in TRMNL and click Save.</p>
       <h2>How time works</h2>
       <p>
         The game world advances every 15 minutes whether or not your screen is on. Your TRMNL shows a snapshot and refreshes on its own schedule.

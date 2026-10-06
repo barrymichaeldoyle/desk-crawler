@@ -26,3 +26,17 @@ Clerk test identity `desk-crawler+clerk_test@example.com` with a seeded hero ("T
 - Clerk `user.deleted` webhook reconciliation when deletion starts on Clerk's side.
 - Real TRMNL token reuse after uninstall/reinstall for a returning player (does reinstall issue a new token?).
 - Backup-restore reconciliation of post-backup deletions (D27 drill).
+
+## Production follow-up, 2026-10-06
+
+Barry manually tested deletion of his main account. Read-only verification found the Clerk identity and all account/game/connection rows removed, a completed scrubbed deletion job, and retained credential/auth revocation hashes. Account intent rate buckets and a migration audit target remained; the local D68 implementation now purges those buckets and scrubs audit references, with a guarded historical repair. [Confirmation flow and rollout](../release/account-deletion-confirmation.md) records local checks and production gates. No production repair has run yet.
+
+Barry then reported the revoked-installation error on a fresh installation. Read-only Clerk inspection confirms a newly created identity; the production game `users` table is still empty. The exact error originates from the token-tombstone check in `trmnl.linkInstall`, before game-account creation. This reproduces the outstanding returning-player gap: fresh installation is not sufficient to recover when TRMNL presents an old credential. Keep the revoked identity/token protections and require separately proven reconnection; a working real returning-player rehearsal remains required.
+
+## 2026-10-06 returning-player fix candidate (D69)
+
+Barry confirmed the blocked link came from a fresh TRMNL installation. The local candidate now routes revoked-token code exchanges into a bounded draft, then requires an independently backend-verified fresh Configure JWT and explicit same-account confirmation. Only the signed UUID receives a scoped grant; old token/code replay and old UUID polling stay denied. Deleted progress is never restored. Tests use actual RS256 signing/JWKS verification and cover consecutive deletion/reinstall cycles, account/game deletion, expiry, other-account isolation, HTTP success/screen/uninstall, and explicit own-scope repair without another hero/kit. No production tombstone was removed. The live failure remains unresolved in production until the approved rollout and Barry’s new-install rehearsal complete.
+
+### Approved rollout follow-up, 2026-10-06 20:15 UTC
+
+Backend and website deployed; seven old rate-limit records and one audit reference scrubbed and verified absent. Current Clerk user direct-deletion disabled; Barry subsequently disabled the global default, and both settings are verified false. Initial credential redirects now send private/no-store and no-referrer headers, verified on the live Worker. All 255 isolated tests/typechecks/build pass. Actual TRMNL reconnection and inbox/deletion rehearsal remain open. [Detailed rollout record](../release/account-deletion-confirmation.md#production-rollout--2026-10-06-verified-2015-utc).

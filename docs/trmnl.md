@@ -50,11 +50,21 @@ A missing success callback must not permanently strand a linked hero. Show “wa
 
 Register the management URL without its own query string. Management landing receives UUID and a JWT with a documented two-minute lifetime. Validate RS256 signature against TRMNL JWKS, key ID, expiration and timestamps, audience against the configured plugin Client ID, and subject against the supplied UUID before trusting it. Verify immediately on landing; then create our own 10-minute opaque handoff, which survives a Clerk sign-in redirect. Claiming the handoff checks the linked companion owner. [Management flow](https://docs.trmnl.com/go/plugin-marketplace/plugin-management-flow)
 
-Keep Clerk as the sole authority for gameplay intents. The TRMNL management token only identifies an existing connection. Do not match accounts by imported email, or silently merge Clerk users.
+Keep Clerk as the sole authority for gameplay intents. The TRMNL management token identifies a connection and, for D69 only, independently verifies its UUID before explicit reconnection. Do not match accounts by imported email, or silently merge Clerk users.
 
 Uninstall callback authenticates bearer **and** instance UUID, then tombstones that instance idempotently. Disconnect in the companion UI has the same local read revocation. It preserves the hero and other instances; the user may continue on the web or pause the hero. [Uninstall flow](https://docs.trmnl.com/go/plugin-marketplace/plugin-uninstallation-flow)
 
 Account deletion revokes every connection and starts the game-data purge. Uninstall is not account deletion. Reinstall behavior/token reuse must be captured by the live multi-instance spike before claiming final lifecycle correctness. Duplicate/late success webhooks cannot reactivate tombstones without current targeted repair intent. If the protocol cannot safely identify repair, leave it disconnected and offer a new instance.
+
+## Returning after deletion (D69)
+
+The 2026-10-06 live report exposed token reuse on a fresh installation after deletion. A revoked token still cannot create or serve a connection by itself. Its verified code exchange now reserves one Clerk-owned 20-minute reconnect draft; no account, hero or grant exists yet. The installation page directs the player to **Continue to TRMNL to save**, then **Configure** in that plugin’s settings, while still signed in to the requesting account.
+
+Configure supplies TRMNL’s signed two-minute management JWT. Convex independently verifies RS256/JWKS, key ID, audience, subject, issue time and expiry. It must have been issued after the draft was requested. The resulting proof expires after ten minutes or at the draft deadline, whichever is earlier. Opening Configure only records this proof; **Confirm and connect** is the explicit transactional intent that creates a fresh account/hero if needed and activates the selected installation. An existing hero is preserved. Signed-out players sign in, then reopen Configure for a fresh proof. Expired drafts restart at Install; expired proofs reopen Configure. Reloading the installation page retains its validated cookie so the player can repeat the request.
+
+Grants created by this path are scoped to the verified UUID. Authorization resolves UUID → grant → token hash, scope and owner; callbacks and polling never authorize unknown UUIDs under a revoked token. Revocation hashes remain retained, old Clerk identities remain refused and deleted progress stays deleted. Multiple independently verified UUIDs can safely reuse a provider token without sharing an owner. An already owned UUID cannot be transferred to another live account. A disconnected owned scope may be repaired only through another fresh signed proof and explicit confirmation.
+
+The success endpoint acknowledges Save during a current reconnect draft without activation; screen requests return 404 until confirmation. The local suite exercises real HTTP routes, two consecutive deletion/reinstall cycles, account/game deletion, wrong-account/proof denial, multiple scopes and conservative recovery repair. A live Save → Configure → confirm → render rehearsal remains required after the separately approved deployment. See [TRMNL’s management protocol](https://docs.trmnl.com/go/plugin-marketplace/plugin-management-flow) and [rollout gates](release/account-deletion-confirmation.md).
 
 ## Screen request/response
 

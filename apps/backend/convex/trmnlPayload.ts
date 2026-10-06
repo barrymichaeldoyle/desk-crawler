@@ -25,17 +25,18 @@ export const forInstance = internalQuery({
     v.object({ outcome: v.literal('payload'), payload: v.any(), keepsakeCode: v.union(v.string(), v.null()) }),
   ),
   handler: async (ctx, args) => {
-    const grant = await ctx.db
-      .query('trmnlGrants')
-      .withIndex('by_tokenHash', (q) => q.eq('tokenHash', args.tokenHash))
-      .unique()
-    if (grant === null || !isDeskCrawler(grant) || grant.state !== 'active') return null
     const instance = await ctx.db
       .query('trmnlInstances')
       .withIndex('by_uuid', (q) => q.eq('uuid', args.uuid))
       .unique()
-    if (instance === null) return { outcome: 'recoverable' as const }
-    if (!isDeskCrawler(instance) || instance.grantId !== grant._id || instance.state !== 'active') return null
+    if (!instance) {
+      if (await ctx.db.query('revokedTrmnlCredentials').withIndex('by_tokenHash', q => q.eq('tokenHash', args.tokenHash)).first()) return null
+      const grant = await ctx.db.query('trmnlGrants').withIndex('by_tokenHash', q => q.eq('tokenHash', args.tokenHash)).unique()
+      return grant && isDeskCrawler(grant) && grant.state === 'active' && !grant.authorizedUuid ? { outcome: 'recoverable' as const } : null
+    }
+    const grant = await ctx.db.get(instance.grantId)
+    if (!grant || !isDeskCrawler(grant) || grant.state !== 'active' || grant.tokenHash !== args.tokenHash || (grant.authorizedUuid && grant.authorizedUuid !== args.uuid)) return null
+    if (!isDeskCrawler(instance) || instance.userId !== grant.userId || instance.state !== 'active') return null
     const user = await ctx.db.get(instance.userId)
     if (user === null || user.state !== 'active' || (await gameProfile(ctx, user._id))?.state === 'deleting') return null
 

@@ -13,7 +13,7 @@ export function PlatformHeader() {
         <Link to="/app" className="inline-flex min-h-11 items-center underline underline-offset-4">My games</Link>
         <Link to="/account" className="inline-flex min-h-11 items-center underline underline-offset-4">Account</Link>
         {/* Clerk's avatar button is client-only; its 28px slot is reserved so the links beside it never shift when it appears. */}
-        <span className="inline-flex size-7 shrink-0 items-center justify-center"><Show when="signed-in"><UserButton /></Show></span>
+        <span className="inline-flex size-7 shrink-0 items-center justify-center"><Show when="signed-in"><UserButton userProfileProps={{ appearance: { elements: { profileSection__danger: { display: 'none' } } } }} /></Show></span>
       </nav>
       </div>
     </header>

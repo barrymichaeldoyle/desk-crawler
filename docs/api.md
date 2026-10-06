@@ -24,7 +24,7 @@ Failures are not receipts for successful operations. Transport retries are bound
 
 | Function | Arguments | Result | Bounded reads |
 | --- | --- | --- | --- |
-| `users.me` | none | public alias, legacy timezone (D39), owner state, active hero ID | Identity index + user |
+| `users.me` | none | public alias, legacy timezone (D39), owner/game state, sanitized hero name/status/activation state, analytics consent, `hasActiveInstallation` | Identity index + user/current game profile/hero + first owned active installation + revoked-identity hash lookup when no user row exists |
 | `heroes.mine` | none | sanitized hero state including activation state, derived stats, XP threshold, biome unlocks, server tick/health | User + active hero + bounded equipped items/world/run |
 | `heroes.returnSummary` | none | Nullable visit baseline, observed level/lifetime XP/log sequence, nullable gains, current bag/unequipped counts, held name and status/wake/simulation state | Own user + current hero + <=32 inventory rows; no history scan |
 | `heroes.recentLog` | `paginationOpts` | Own log page with id/time/tick/kind/summary/source and display deltas; continuation. Additive `deltas.potionsFound` is 0 or 1, derived from the stored loot outcome, including same-tick use. No raw simulation detail | Hero-index page |
@@ -37,6 +37,8 @@ Failures are not receipts for successful operations. Transport retries are bound
 No unbounded public hero lists, arbitrary hero-ID reads, or public token lookup function. Public shareable hero profiles are Month 3.
 
 ## Public mutations
+
+`users.setAnalyticsConsent({ allowed: boolean })` is a D67 presentation/support preference, outside the operation-ID receipt contract. It resolves the caller from authentication, updates only an active owner's optional `analyticsConsent`, and returns null. No hero log, reward or advancement. See [analytics](analytics.md) for browser consent and server event semantics.
 
 | Function | Arguments (plus operation ID) | Behavior / result | Preconditions |
 | --- | --- | --- | --- |
@@ -57,7 +59,8 @@ No unbounded public hero lists, arbitrary hero-ID reads, or public token lookup 
 | `heroes.pause` | none | Save exploring/resting status and pause | Already paused is no-op; dead/travelling/sleeping rejected |
 | `heroes.resume` | none | Restore prior status; no catch-up | Exploring/resting already unpaused is no-op; sleeping uses resumeAdventures |
 | `trmnl.disconnect` | `instanceId` | Tombstone that instance, preserve hero | Own instance; repeated disconnect no-op |
-| `users.requestDeletion` | explicit confirmation field | Disable authority/mask public names; start durable game + dedicated-Clerk deletion | Own account; intentional UI confirmation |
+| `deletion.requestDeletionEmail` | None; authenticated action | Reserve a confirmation and email the verified primary Clerk address; no deletion | Own account; one request per 30 minutes |
+| `deletion.requestDeletion` | `operationId`, `confirm: DELETE`, email `token` | Disable authority/mask public names; start durable whole-account deletion | Same signed-in identity, delivered/unexpired email proof and explicit POST |
 
 No manual revival, policy editing, ordinary rename, buy merchant item, spell, prestige or guild mutation in MVP. Unused controls must not appear disabled in the web UI as if they are implemented.
 
@@ -69,7 +72,7 @@ Potion sale and equipment swapping while dead/travelling are deferred. Bag equip
 
 | Function | Authority | Input / output |
 | --- | --- | --- |
-| `trmnl.completeInstall` | Clerk identity + valid TRMNL install code | Code, validated callback URL, optional owned tombstoned `repairInstanceId`; exchange remotely, link hash/attempt internally, return approved destination/status and opaque owned `installAttemptId` |
+| `trmnl.completeInstall` | Clerk identity + valid TRMNL install code | `code`, `gameSlug`, legacy `timezone`, optional `publicAlias`/`heroName` and D67 `analyticsConsent`; exchange remotely, link hash/attempt internally, return `activationState` and `heroCreated`. The web server holds the validated callback URL in its encrypted cookie and returns the approved redirect |
 | `trmnl.prepareManagement` | Valid TRMNL signed management JWT | UUID/JWT; validate against TRMNL JWKS, create short-lived handoff, return opaque handoff token + expiry |
 | `trmnl.claimManagement` | Clerk identity + opaque handoff | Atomically claim only if linked owner matches; return own connection management destination |
 
@@ -138,7 +141,11 @@ Own reads/settings/connections/deletion work during pending setup. Every gamepla
 
 Barry initially owns support/admin; private support email handles account/name reports, public GitHub issues handle non-private bugs, two-business-day response target. Admin repair assigns safe temporary names and repair flags/version; owner replacement is restricted to those flags. Ordinary rename stays deferred. Public reads mask stale name versions until refreshed, even after owner repair completes; all admin decisions are audited.
 
-requestDeletion validates authority/confirmation, persists denial and its durable job in one transaction. Dedicated Clerk deletion is a retryable external step after denial, not a client action; completion does not depend on a logged-in browser. Minimal revoked hashes persist while external tokens remain usable; old code/token alone never authorizes a fresh start. V09 is still required for any returning-player relink exception.
+`deletion.requestDeletionEmail({})` reads the verified primary address from Clerk; no client can supply a recipient. A transactional indexed reservation deduplicates requests across tabs and concurrent actions. The email and its confirmation expire after 30 minutes. Retries use an immutable message and Resend idempotency key, with at most three attempts. Failed delivery does not start deletion or bypass the cooldown. `deletion.deletionEmailStatus({})` returns only the requesting identity's delivery state, recipient and expiry, never the secret or hash.
+
+The `/account/delete` loader seals the email token into an encrypted HttpOnly/Secure/SameSite cookie and redirects to a clean URL. GET and email scanners never delete or consume the proof. The page and server functions use no-store responses; the page is noindex/no-referrer, and its contents are blocked from replay. The final explicit POST requires sign-in to the requesting account and typing DELETE. `deletion.requestDeletion` rejects former immediate calls without email proof. Confirmation consumes the proof and commits authority denial plus the durable job atomically; a consumed-proof retry acknowledges the already-started deletion without another job. The email reservation alone leaves the account active. Clerk direct self-deletion must be disabled during rollout; signed provider/admin `user.deleted` webhooks still reconcile genuine provider deletions.
+
+Shared Clerk deletion is a retryable external step after denial, not a client action; completion does not depend on a logged-in browser. Finalization deletes the account's intent rate buckets and email records and scrubs exact user/hero/Clerk/identity references from administrative audit actors and targets in indexed batches. Minimal revoked hashes persist while external tokens remain usable; old code/token alone never authorizes a fresh start. V09 is still required for any returning-player relink exception. `internal.deletion.scrubDeletedAccountReferences` repairs old completed deletions only when the account is absent and its auth revocation exists.
 
 Clerk user.deleted events use a verified signed webhook to enqueue the same idempotent deletion workflow when provider-side deletion occurs first. Register POST /auth/clerk/webhook in Convex through the integration lead; verify configured signing secret and bounded body before trusted mutation. No unsigned/client claim starts another owner's purge. Revoked-auth hash checks prevent stale JWTs from recreating purged identities. This mechanism is part of V09 proof, not a live integration.
 
@@ -147,3 +154,15 @@ Provider events are asynchronous and can arrive more than once or out of order; 
 ## D54 device activity recap
 
 `trmnlPayload.mine` and the authenticated installation screen share the same nullable additive `recap` projection. It summarizes a separately bounded twelve-hour history read, independent of the ten recent stories and of `heroes.returnSummary`/`recordCompanionVisit`. The device projection never changes the companion checkpoint. No new registered public function or client-supplied authority is added; missing/cross-owner/deleting/pending identities retain their existing denial/null behavior. See [device contract](trmnl.md#d54-device-recap-template-v25-candidate).
+
+## D69 returning-player reconnection
+
+`trmnl.completeInstall` now optionally returns `reconnectionRequired: true` after a revoked-token exchange; it reserves a draft instead of creating a profile. The web page preserves its validated callback/cookie and shows Save → Configure instructions. Normal installation results are unchanged.
+
+| Public function | Inputs | Authority / result |
+| --- | --- | --- |
+| `trmnl.reconnectionStatus` (query) | none | Clerk-owned draft only: ID, names, draft/proof expiry and verified UUID; never hashes or raw JWTs. Reactive query returns expiry fields; mutations enforce deadlines. |
+| `trmnl.verifyReconnection` (action) | `attemptId`, `uuid`, `jwt` | Authenticated Clerk identity plus freshly verified TRMNL RS256 JWT, correct audience/subject/kid/iat/exp; internal mutation rechecks owner, identity revocation, draft deadline and UUID ownership. Opening does not create or activate game data. |
+| `trmnl.completeReconnection` (mutation) | `operationId`, `attemptId`, `confirm: CONNECT` | Same owner and live proof; one atomic UUID-scoped connection and fresh profile/hero if absent, existing progress preserved, activation and receipt deduplicated. Foreign/live-owned UUIDs denied. |
+
+`trmnl.recordReconnectionProof` is internal and accepts identity/timestamp only from the verifying action. Callback/first-screen recovery still cannot authorize revoked tokens for unknown UUIDs. A pending reconnect permits a Save callback acknowledgement without creating state; polling remains 404 until the explicit confirmed scope exists. See [returning flow](trmnl.md#returning-after-deletion-d68).

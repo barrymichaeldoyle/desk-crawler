@@ -17,8 +17,8 @@ export const RETENTION = {
   installAttemptsMs: DAY,
 } as const
 
-type Job = 'tickLogs' | 'receipts' | 'rateLimits' | 'installAttempts' | 'failures' | 'runs'
-const ORDER: readonly Job[] = ['tickLogs', 'receipts', 'rateLimits', 'installAttempts', 'failures', 'runs']
+type Job = 'tickLogs' | 'receipts' | 'rateLimits' | 'deletionConfirmations' | 'reconnectAttempts' | 'installAttempts' | 'failures' | 'runs'
+const ORDER: readonly Job[] = ['tickLogs', 'receipts', 'rateLimits', 'deletionConfirmations', 'reconnectAttempts', 'installAttempts', 'failures', 'runs']
 
 export const cleanup = internalMutation({
   args: { job: v.optional(v.union(...ORDER.map((j) => v.literal(j)))) },
@@ -46,9 +46,21 @@ export const cleanup = internalMutation({
         deleted = rows.length
         break
       }
+      case 'deletionConfirmations': {
+        const rows = await ctx.db.query('accountDeletionConfirmations').withIndex('by_expiresAt', (q) => q.lt('expiresAt', now)).take(BATCH)
+        for (const row of rows) await ctx.db.delete(row._id)
+        deleted = rows.length
+        break
+      }
       case 'installAttempts': {
         // Expired attempts are refused at use time; this only purges them within a day.
         const rows = await ctx.db.query('trmnlInstallAttempts').withIndex('by_expiresAt', (q) => q.lt('expiresAt', now - RETENTION.installAttemptsMs)).take(BATCH)
+        for (const row of rows) await ctx.db.delete(row._id)
+        deleted = rows.length
+        break
+      }
+      case 'reconnectAttempts': {
+        const rows = await ctx.db.query('trmnlReconnectAttempts').withIndex('by_expiresAt', q => q.lt('expiresAt', now)).take(BATCH)
         for (const row of rows) await ctx.db.delete(row._id)
         deleted = rows.length
         break

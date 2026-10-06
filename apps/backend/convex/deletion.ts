@@ -2,10 +2,13 @@ import { gameProfile, DESK_CRAWLER } from './lib/gameProfile'
 import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import type { Doc, Id, TableNames } from './_generated/dataModel'
-import { internalAction, internalMutation, internalQuery, mutation, type MutationCtx } from './_generated/server'
+import { action, internalAction, internalMutation, internalQuery, mutation, query, type MutationCtx } from './_generated/server'
 import { appError } from './lib/errors'
 import { sha256Hex } from './lib/hash'
 import { runIntent } from './lib/intent'
+import { eraseAnalyticsPerson } from './analytics'
+import { DELETION_EMAIL_ATTEMPTS, DELETION_LINK_TTL_MS, deletionToken, validDeletionToken, verifiedPrimaryEmail } from './lib/deletionConfirmation'
+import schema from './schema'
 
 /**
  * Account deletion (D22, data-model.md "Deletion checkpoints"). Authority is
@@ -19,11 +22,22 @@ const MAX_PROVIDER_ATTEMPTS = 5
 export const identityHash = (tokenIdentifier: string) => sha256Hex(`auth:${tokenIdentifier}`)
 
 export const requestDeletion = mutation({
-  args: { operationId: v.string(), confirm: v.literal('DELETE') },
+  // Optional only for a rolling deploy: the former immediate-delete call fails safely.
+  args: { operationId: v.string(), confirm: v.literal('DELETE'), token: v.optional(v.string()) },
   returns: v.object({ operationId: v.string(), changed: v.boolean() }),
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) throw appError('UNAUTHENTICATED', 'Sign in to continue.')
+    if (!args.token || !validDeletionToken(args.token)) throw appError('DELETION_CONFIRMATION_REQUIRED', 'Request a deletion link from Account, then confirm from that email.')
+    const confirmation = await ctx.db.query('accountDeletionConfirmations').withIndex('by_tokenHash', (q) => q.eq('tokenHash', sha256Hex(args.token!))).unique()
+    if (!confirmation || confirmation.tokenIdentifier !== identity.tokenIdentifier) {
+      throw appError('DELETION_LINK_EXPIRED', 'That deletion link is expired or unavailable. Request a new one from Account.')
+    }
+    // A lost response can be retried with the consumed proof. Never enqueue a second purge.
+    if (confirmation.state === 'confirmed') return { operationId: args.operationId, changed: false }
+    if (confirmation.expiresAt <= Date.now() || confirmation.state !== 'sent') {
+      throw appError('DELETION_LINK_EXPIRED', 'That deletion link is expired or unavailable. Request a new one from Account.')
+    }
     assertNotRevoked(await ctx.db.query('revokedAuthIdentities').withIndex('by_identityHash', (q) => q.eq('identityHash', identityHash(identity.tokenIdentifier))).first())
     const existing = await ctx.db.query('users').withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', identity.tokenIdentifier)).unique()
     if (!existing) {
@@ -31,7 +45,8 @@ export const requestDeletion = mutation({
       // durable provider-deletion owner and becomes deleting in this transaction.
       await ctx.db.insert('users', { tokenIdentifier: identity.tokenIdentifier, publicAlias: 'Deleted player', normalizedAlias: `deleted-${identityHash(identity.tokenIdentifier)}`, timezone: 'UTC', state: 'active', createdAt: Date.now(), publicNameVersion: 1 })
     }
-    const result = await runIntent(ctx, args.operationId, 'deletion.requestDeletion', {}, async (user) => {
+    const result = await runIntent(ctx, args.operationId, 'deletion.requestDeletion', { tokenHash: confirmation.tokenHash }, async (user) => {
+      await ctx.db.patch(confirmation._id, { state: 'confirmed' })
       return { changed: await startDeletion(ctx, user, Date.now()) }
     })
     return { operationId: result.operationId, changed: result.changed }
@@ -44,6 +59,8 @@ export const requestGameDeletion = mutation({
   returns: v.object({ operationId: v.string(), changed: v.boolean() }),
   handler: async (ctx, args) => {
     const result = await runIntent(ctx, args.operationId, 'deletion.requestGameDeletion', {}, async (user) => {
+      const reconnect = await ctx.db.query('trmnlReconnectAttempts').withIndex('by_tokenIdentifier', q => q.eq('tokenIdentifier', user.tokenIdentifier)).unique()
+      if (reconnect) await ctx.db.delete(reconnect._id)
       const profile = await gameProfile(ctx, user._id)
       if (profile?.state === 'deleting') return { changed: false }
       if (profile) await ctx.db.patch(profile._id, { state: 'deleting' })
@@ -122,12 +139,15 @@ async function startDeletion(ctx: MutationCtx, user: Doc<'users'>, now: number):
   await ctx.db.patch(user._id, { state: 'deleting', deletionRequestedAt: now })
   await revokeIdentity(ctx, user.tokenIdentifier, now)
   const clerkUserId = user.tokenIdentifier.split('|').at(-1)
+  const heroRef = (await gameProfile(ctx, user._id))?.activeHeroId ?? user.activeHeroId
   const jobId = await ctx.db.insert('accountDeletionJobs', {
     userId: user._id,
     ...(clerkUserId ? { clerkUserId } : {}),
+    ...(heroRef ? { heroRef } : {}),
     state: 'running',
     phase: 'connections',
     providerAttempts: 0,
+    analyticsDeletionRequired: Boolean(process.env.POSTHOG_PROJECT_ID) || user.analyticsConsent === true,
     createdAt: now,
     lastProgressAt: now,
   })
@@ -157,6 +177,12 @@ export const providerDeleted = internalMutation({
     const now = Date.now()
     const user = await ctx.db.query('users').withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', tokenIdentifier)).unique()
     if (user === null) {
+      const revoked = await ctx.db.query('revokedAuthIdentities').withIndex('by_identityHash', (q) => q.eq('identityHash', identityHash(tokenIdentifier))).first()
+      if (!revoked && process.env.POSTHOG_PROJECT_ID) {
+        // A player may have consented and been identified before enrolling in any game.
+        const userId = await ctx.db.insert('users', { tokenIdentifier, publicAlias: 'Deleted player', normalizedAlias: `deleted-${identityHash(tokenIdentifier)}`, timezone: 'UTC', state: 'active', createdAt: now, publicNameVersion: 1 })
+        return { started: await startDeletion(ctx, (await ctx.db.get(userId))!, now) }
+      }
       await revokeIdentity(ctx, tokenIdentifier, now)
       return { started: false }
     }
@@ -222,12 +248,20 @@ export const purgeStep = internalMutation({
         return (await deleteBatch(ctx, receipts)) > 0 ? await again() : await advance('provider')
       }
       case 'finalize': {
+        // Remove diagnostic references while the account identity is still available.
+        if (user && await scrubAccountReferences(ctx, { userId: job.userId, tokenIdentifier: user.tokenIdentifier, ...(job.heroRef ? { heroRef: job.heroRef } : {}) }) > 0) { await again(); return null }
+        if (user) {
+          const reconnect = await ctx.db.query('trmnlReconnectAttempts').withIndex('by_tokenIdentifier', q => q.eq('tokenIdentifier', user.tokenIdentifier)).unique()
+          if (reconnect) await ctx.db.delete(reconnect._id)
+          const confirmations = await ctx.db.query('accountDeletionConfirmations').withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', user.tokenIdentifier)).take(BATCH)
+          if (confirmations.length) { await deleteBatch(ctx, confirmations); await again(); return null }
+        }
         const profile = await gameProfile(ctx, job.userId)
         if (profile) await ctx.db.delete(profile._id)
         const gameJobs = await ctx.db.query('gameDeletionJobs').withIndex('by_userId_and_state', (q) => q.eq('userId', job.userId!)).take(BATCH)
         if (gameJobs.length > 0) { await deleteBatch(ctx, gameJobs); return await again() }
         if (user) await ctx.db.delete(user._id)
-        await ctx.db.patch(jobId, { state: 'completed', phase: 'done', completedAt: now, lastProgressAt: now, userId: undefined, clerkUserId: undefined })
+        await ctx.db.patch(jobId, { state: 'completed', phase: 'done', completedAt: now, lastProgressAt: now, userId: undefined, clerkUserId: undefined, heroRef: undefined })
         return null
       }
       default:
@@ -245,6 +279,7 @@ export const deleteProviderUser = internalAction({
     if (job === null || job.state !== 'running' || job.phase !== 'provider') return null
     const secret = process.env.CLERK_SECRET_KEY
     let ok = false
+    let reasonCode: 'PROVIDER_DELETE_FAILED' | 'ANALYTICS_DELETE_FAILED' = 'PROVIDER_DELETE_FAILED'
     if (job.clerkUserId && secret) {
       try {
         const response = await fetch(`https://api.clerk.com/v1/users/${encodeURIComponent(job.clerkUserId)}`, { method: 'DELETE', headers: { Authorization: `Bearer ${secret}` } })
@@ -254,24 +289,28 @@ export const deleteProviderUser = internalAction({
         ok = false
       }
     }
-    await ctx.runMutation(internal.deletion.providerResult, { jobId, ok })
+    if (ok && job.analyticsDeletionRequired) {
+      ok = await eraseAnalyticsPerson(job.clerkUserId!)
+      reasonCode = 'ANALYTICS_DELETE_FAILED'
+    }
+    await ctx.runMutation(internal.deletion.providerResult, { jobId, ok, reasonCode })
     return null
   },
 })
 
 export const getJob = internalQuery({
   args: { jobId: v.id('accountDeletionJobs') },
-  returns: v.union(v.null(), v.object({ state: v.string(), phase: v.string(), clerkUserId: v.union(v.string(), v.null()) })),
+  returns: v.union(v.null(), v.object({ state: v.string(), phase: v.string(), clerkUserId: v.union(v.string(), v.null()), analyticsDeletionRequired: v.boolean() })),
   handler: async (ctx, { jobId }) => {
     const job = await ctx.db.get(jobId)
-    return job ? { state: job.state, phase: job.phase, clerkUserId: job.clerkUserId ?? null } : null
+    return job ? { state: job.state, phase: job.phase, clerkUserId: job.clerkUserId ?? null, analyticsDeletionRequired: job.analyticsDeletionRequired ?? Boolean(process.env.POSTHOG_PROJECT_ID) } : null
   },
 })
 
 export const providerResult = internalMutation({
-  args: { jobId: v.id('accountDeletionJobs'), ok: v.boolean() },
+  args: { jobId: v.id('accountDeletionJobs'), ok: v.boolean(), reasonCode: v.optional(v.union(v.literal('PROVIDER_DELETE_FAILED'), v.literal('ANALYTICS_DELETE_FAILED'))) },
   returns: v.null(),
-  handler: async (ctx, { jobId, ok }) => {
+  handler: async (ctx, { jobId, ok, reasonCode }) => {
     const job = await ctx.db.get(jobId)
     if (job === null || job.state !== 'running' || job.phase !== 'provider') return null
     const now = Date.now()
@@ -282,7 +321,7 @@ export const providerResult = internalMutation({
     }
     const attempts = job.providerAttempts + 1
     if (attempts >= MAX_PROVIDER_ATTEMPTS) {
-      await ctx.db.patch(jobId, { state: 'blocked', providerAttempts: attempts, reasonCode: 'PROVIDER_DELETE_FAILED', lastProgressAt: now })
+      await ctx.db.patch(jobId, { state: 'blocked', providerAttempts: attempts, reasonCode: reasonCode ?? 'PROVIDER_DELETE_FAILED', lastProgressAt: now })
       return null
     }
     await ctx.db.patch(jobId, { providerAttempts: attempts, lastProgressAt: now })
@@ -294,3 +333,148 @@ export const providerResult = internalMutation({
 export function assertNotRevoked(revoked: unknown): void {
   if (revoked) throw appError('ACCOUNT_UNAVAILABLE', 'This account was deleted. Contact support to start again.')
 }
+
+const confirmationStatus = v.object({ state: v.union(v.literal('pending'), v.literal('sent'), v.literal('failed'), v.literal('confirmed')), email: v.string(), expiresAt: v.number() })
+const statusOf = (row: Doc<'accountDeletionConfirmations'>) => ({ state: row.state, email: row.email, expiresAt: row.expiresAt })
+
+/** The signed-in owner can see delivery status, never the link or its hash. */
+export const deletionEmailStatus = query({
+  args: {}, returns: v.union(v.null(), confirmationStatus),
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) return null
+    const row = await ctx.db.query('accountDeletionConfirmations').withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', identity.tokenIdentifier)).unique()
+    return row ? statusOf(row) : null
+  },
+})
+
+export const getEmailRequest = internalQuery({
+  args: { tokenIdentifier: v.string() }, returns: v.union(v.null(), confirmationStatus),
+  handler: async (ctx, { tokenIdentifier }) => {
+    const row = await ctx.db.query('accountDeletionConfirmations').withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', tokenIdentifier)).unique()
+    return row ? statusOf(row) : null
+  },
+})
+
+/** No caller-supplied recipient; duplicates reuse the current 30-minute request. */
+export const requestDeletionEmail = action({
+  args: {}, returns: confirmationStatus,
+  handler: async (ctx): Promise<{ state: 'pending' | 'sent' | 'failed' | 'confirmed'; email: string; expiresAt: number }> => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw appError('UNAUTHENTICATED', 'Sign in to continue.')
+    const existing = await ctx.runQuery(internal.deletion.getEmailRequest, { tokenIdentifier: identity.tokenIdentifier })
+    if (existing && existing.expiresAt > Date.now()) return existing
+    const key = process.env.ACCOUNT_DELETION_LINK_KEY
+    const clerkSecret = process.env.CLERK_SECRET_KEY
+    if (!key || key.length < 32 || !clerkSecret || !process.env.RESEND_API_KEY) throw appError('EMAIL_UNAVAILABLE', 'Deletion email is unavailable. Please contact support.')
+    let email: { id: string; address: string } | null = null
+    try {
+      const response = await fetch(`https://api.clerk.com/v1/users/${encodeURIComponent(identity.subject)}`, { headers: { Authorization: `Bearer ${clerkSecret}` }, signal: AbortSignal.timeout(10_000) })
+      if (response.ok) email = verifiedPrimaryEmail(await response.json())
+    } catch { /* Fail closed: no guessed or unverified recipient. */ }
+    if (!email) throw appError('EMAIL_UNAVAILABLE', 'Add a verified primary email to your account before requesting deletion.')
+    const origin = new URL(process.env.COMPANION_ORIGIN ?? 'https://trmnlgames.com').origin
+    return await ctx.runMutation(internal.deletion.reserveDeletionEmail, { tokenIdentifier: identity.tokenIdentifier, email: email.address, emailId: email.id, origin, from: process.env.DELETION_EMAIL_FROM ?? 'TRMNL Games <alerts@trmnlgames.com>' })
+  },
+})
+
+export const reserveDeletionEmail = internalMutation({
+  args: { tokenIdentifier: v.string(), email: v.string(), emailId: v.string(), from: v.string(), origin: v.string() }, returns: confirmationStatus,
+  handler: async (ctx, args) => {
+    const now = Date.now()
+    assertNotRevoked(await ctx.db.query('revokedAuthIdentities').withIndex('by_identityHash', (q) => q.eq('identityHash', identityHash(args.tokenIdentifier))).first())
+    const user = await ctx.db.query('users').withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', args.tokenIdentifier)).unique()
+    if (user && user.state !== 'active') throw appError('ACCOUNT_UNAVAILABLE', 'This account is not available.')
+    const existing = await ctx.db.query('accountDeletionConfirmations').withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', args.tokenIdentifier)).unique()
+    if (existing && existing.expiresAt > now) return statusOf(existing)
+    if (existing) await ctx.db.delete(existing._id)
+    const key = process.env.ACCOUNT_DELETION_LINK_KEY
+    if (!key || key.length < 32) throw appError('EMAIL_UNAVAILABLE', 'Deletion email is unavailable. Please contact support.')
+    const expiresAt = now + DELETION_LINK_TTL_MS
+    const requestId = await ctx.db.insert('accountDeletionConfirmations', { ...args, state: 'pending', attempts: 0, tokenHash: '', createdAt: now, expiresAt })
+    const tokenHash = sha256Hex(deletionToken(key, { _id: requestId, tokenIdentifier: args.tokenIdentifier, expiresAt }))
+    await ctx.db.patch(requestId, { tokenHash })
+    await ctx.scheduler.runAfter(0, internal.deletion.sendDeletionEmail, { requestId })
+    return { state: 'pending' as const, email: args.email, expiresAt }
+  },
+})
+
+export const getDeletionEmail = internalQuery({
+  args: { requestId: v.id('accountDeletionConfirmations') },
+  returns: v.union(v.null(), v.object({ _id: v.id('accountDeletionConfirmations'), _creationTime: v.number(), ...schema.tables.accountDeletionConfirmations.validator.fields })),
+  handler: async (ctx, { requestId }) => {
+    const row = await ctx.db.get(requestId)
+    if (!row || row.state !== 'pending') return null
+    if (await ctx.db.query('revokedAuthIdentities').withIndex('by_identityHash', (q) => q.eq('identityHash', identityHash(row.tokenIdentifier))).first()) return null
+    const user = await ctx.db.query('users').withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', row.tokenIdentifier)).unique()
+    return !user || user.state === 'active' ? row : null
+  },
+})
+
+export const sendDeletionEmail = internalAction({
+  args: { requestId: v.id('accountDeletionConfirmations') }, returns: v.null(),
+  handler: async (ctx, { requestId }) => {
+    const row = await ctx.runQuery(internal.deletion.getDeletionEmail, { requestId })
+    if (!row || row.expiresAt <= Date.now() || row.attempts >= DELETION_EMAIL_ATTEMPTS) return null
+    const secret = process.env.ACCOUNT_DELETION_LINK_KEY
+    const key = process.env.RESEND_API_KEY
+    let ok = false
+    if (secret && key) {
+      const token = deletionToken(secret, row)
+      if (sha256Hex(token) !== row.tokenHash) return null // A rotated key invalidates outstanding links.
+      const link = new URL('/account/delete', row.origin)
+      link.searchParams.set('token', token)
+      try {
+        const response = await fetch('https://api.resend.com/emails', {
+          method: 'POST', signal: AbortSignal.timeout(10_000),
+          headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', 'Idempotency-Key': `account-deletion/${requestId}` },
+          body: JSON.stringify({ from: row.from, to: [row.email], subject: 'Confirm deletion of your TRMNL Games account', text: `You requested deletion of your TRMNL Games account. This removes every game's progress, your connections and your sign-in. It cannot be undone.\n\nTo continue, open this link, sign in to the same account, and confirm deletion:\n${link.toString()}\n\nThe link expires 30 minutes after your request. Opening it does not delete anything. If you did not request this, ignore this email; your account stays active.` }),
+        })
+        ok = response.ok
+      } catch { /* Retry exactly the same message and provider idempotency key. */ }
+    }
+    await ctx.runMutation(internal.deletion.recordDeletionEmail, { requestId, ok })
+    return null
+  },
+})
+
+export const recordDeletionEmail = internalMutation({
+  args: { requestId: v.id('accountDeletionConfirmations'), ok: v.boolean() }, returns: v.null(),
+  handler: async (ctx, { requestId, ok }) => {
+    const row = await ctx.db.get(requestId)
+    if (!row || row.state !== 'pending') return null
+    const attempts = row.attempts + 1
+    const state = ok ? 'sent' as const : attempts >= DELETION_EMAIL_ATTEMPTS || row.expiresAt <= Date.now() ? 'failed' as const : 'pending' as const
+    await ctx.db.patch(requestId, { state, attempts })
+    if (state === 'pending') await ctx.scheduler.runAfter(60_000 * 2 ** attempts, internal.deletion.sendDeletionEmail, { requestId })
+    return null
+  },
+})
+
+/** Bounded scrub of all known exact references; repeat until no account references remain. */
+async function scrubAccountReferences(ctx: MutationCtx, args: { userId: Id<'users'>; tokenIdentifier: string; heroRef?: string }): Promise<number> {
+  const buckets = await ctx.db.query('rateLimitBuckets').withIndex('by_key', (q) => q.eq('key', `intent:${args.userId}`)).take(BATCH)
+  let changed = await deleteBatch(ctx, buckets)
+  const refs = [args.userId, args.tokenIdentifier, args.tokenIdentifier.split('|').at(-1), args.heroRef].filter((ref): ref is string => !!ref)
+  for (const ref of new Set(refs)) {
+    const targets = await ctx.db.query('adminAuditEvents').withIndex('by_targetRef', (q) => q.eq('targetRef', ref)).take(BATCH)
+    for (const row of targets) { await ctx.db.patch(row._id, { targetRef: 'deleted-account' }); changed += 1 }
+    const actors = await ctx.db.query('adminAuditEvents').withIndex('by_actorRef', (q) => q.eq('actorRef', ref)).take(BATCH)
+    for (const row of actors) { await ctx.db.patch(row._id, { actorRef: 'deleted-account' }); changed += 1 }
+  }
+  return changed
+}
+
+/** Repair references left by an older completed deletion; never touches a live account. */
+export const scrubDeletedAccountReferences = internalMutation({
+  args: { userId: v.id('users'), tokenIdentifier: v.string(), heroRef: v.optional(v.string()) }, returns: v.object({ changed: v.number() }),
+  handler: async (ctx, args) => {
+    const activeIdentity = await ctx.db.query('users').withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', args.tokenIdentifier)).unique()
+    if (await ctx.db.get(args.userId) || activeIdentity) throw appError('INVALID_STATE', 'Only a deleted account can be scrubbed.')
+    const revoked = await ctx.db.query('revokedAuthIdentities').withIndex('by_identityHash', (q) => q.eq('identityHash', identityHash(args.tokenIdentifier))).first()
+    if (!revoked) throw appError('INVALID_STATE', 'Deletion revocation must exist before scrubbing references.')
+    const changed = await scrubAccountReferences(ctx, args)
+    if (changed) await ctx.scheduler.runAfter(0, internal.deletion.scrubDeletedAccountReferences, args)
+    return { changed }
+  },
+})

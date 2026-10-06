@@ -58,6 +58,7 @@ export const logKind = v.union(
 
 export default defineSchema({
   users: defineTable({
+    analyticsConsent: v.optional(v.boolean()),
     tokenIdentifier: v.string(),
     publicAlias: v.string(),
     normalizedAlias: v.string(),
@@ -367,10 +368,29 @@ export default defineSchema({
     count: v.number(),
     expiresAt: v.number(),
   })
+    .index('by_key', ['key'])
     .index('by_key_and_windowStart', ['key', 'windowStart'])
     .index('by_expiresAt', ['expiresAt']),
 
+  accountDeletionConfirmations: defineTable({
+    tokenIdentifier: v.string(),
+    tokenHash: v.string(),
+    email: v.string(),
+    emailId: v.string(),
+    from: v.string(),
+    origin: v.string(),
+    state: v.union(v.literal('pending'), v.literal('sent'), v.literal('failed'), v.literal('confirmed')),
+    attempts: v.number(),
+    createdAt: v.number(),
+    expiresAt: v.number(),
+  })
+    .index('by_tokenIdentifier', ['tokenIdentifier'])
+    .index('by_tokenHash', ['tokenHash'])
+    .index('by_expiresAt', ['expiresAt']),
+
   accountDeletionJobs: defineTable({
+    heroRef: v.optional(v.string()),
+    analyticsDeletionRequired: v.optional(v.boolean()),
     userId: v.optional(v.id('users')),
     clerkUserId: v.optional(v.string()),
     state: v.union(v.literal('running'), v.literal('blocked'), v.literal('completed')),
@@ -418,6 +438,7 @@ export default defineSchema({
     at: v.number(),
   })
     .index('by_at', ['at'])
+    .index('by_actorRef', ['actorRef'])
     .index('by_targetRef', ['targetRef']),
 
   tickLogs: defineTable({
@@ -439,12 +460,31 @@ export default defineSchema({
     gameSlug: v.optional(v.literal('desk-crawler')),
     userId: v.id('users'),
     tokenHash: v.string(),
+    // Reused revoked credentials authorize only the freshly verified UUID.
+    authorizedUuid: v.optional(v.string()),
     state: v.union(v.literal('active'), v.literal('revoked')),
     createdAt: v.number(),
     lastVerifiedAt: v.optional(v.number()),
   })
     .index('by_tokenHash', ['tokenHash'])
     .index('by_userId', ['userId']),
+
+  trmnlReconnectAttempts: defineTable({
+    tokenIdentifier: v.string(),
+    tokenHash: v.string(),
+    publicAlias: v.string(),
+    heroName: v.string(),
+    timezone: v.string(),
+    analyticsConsent: v.optional(v.boolean()),
+    createdAt: v.number(),
+    expiresAt: v.number(),
+    verifiedUuid: v.optional(v.string()),
+    verifiedAt: v.optional(v.number()),
+    proofExpiresAt: v.optional(v.number()),
+  })
+    .index('by_tokenIdentifier', ['tokenIdentifier'])
+    .index('by_tokenHash_and_expiresAt', ['tokenHash', 'expiresAt'])
+    .index('by_expiresAt', ['expiresAt']),
 
   trmnlInstallAttempts: defineTable({
     gameSlug: v.optional(v.literal('desk-crawler')),
@@ -466,7 +506,7 @@ export default defineSchema({
     uuid: v.string(),
     pluginSettingId: v.optional(v.string()),
     state: v.union(v.literal('active'), v.literal('uninstalled'), v.literal('disconnected')),
-    confirmedBy: v.union(v.literal('success_callback'), v.literal('screen_request')),
+    confirmedBy: v.union(v.literal('success_callback'), v.literal('screen_request'), v.literal('management_confirmation')),
     createdAt: v.number(),
     lastScreenServedAt: v.optional(v.number()),
   })

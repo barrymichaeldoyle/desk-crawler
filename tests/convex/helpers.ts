@@ -1,3 +1,4 @@
+import { sha256Hex } from '../../apps/backend/convex/lib/hash'
 import type { convexTest } from 'convex-test'
 import { vi } from 'vitest'
 import { internal } from '@trmnl-games/backend/api'
@@ -83,3 +84,17 @@ export async function runTick(t: T) {
 }
 
 export const world = async (t: T) => await t.run(async (ctx) => await ctx.db.query('worldState').first())
+
+/** Existing purge fixtures begin after successful email delivery. */
+export async function seedDeletionConfirmation(t: T, subject: string): Promise<string> {
+  const token = sha256Hex(`deletion-confirmation:${subject}`)
+  await t.run(async ctx => {
+    await ctx.db.insert('accountDeletionConfirmations', {
+      tokenIdentifier: `issuer|${subject}`, tokenHash: sha256Hex(token),
+      email: 'owner@example.com', emailId: 'email_fixture',
+      from: 'TRMNL Games <alerts@trmnlgames.com>', origin: 'https://trmnlgames.com',
+      state: 'sent', attempts: 1, createdAt: Date.now(), expiresAt: Date.now() + 30 * 60_000,
+    })
+  })
+  return token
+}

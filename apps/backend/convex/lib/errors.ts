@@ -29,6 +29,9 @@ export type ErrorCode =
   | 'NO_POTION'
   | 'FULL_HP'
   | 'RECAP_CHANGED'
+  | 'DELETION_CONFIRMATION_REQUIRED'
+  | 'DELETION_LINK_EXPIRED'
+  | 'EMAIL_UNAVAILABLE'
 
 const RETRYABLE = new Set<ErrorCode>(['RATE_LIMITED'])
 

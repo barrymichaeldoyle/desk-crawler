@@ -7,7 +7,7 @@ import schema from '../../apps/backend/convex/schema'
 import { sha256Hex } from '../../apps/backend/convex/lib/hash'
 import { keepsakeCode } from '../../apps/backend/convex/lib/keepsakes'
 import { DESK_KEEPSAKES, KEEPSAKE_WEEK_MS, keepsakeShelf, keepsakeWeek, keepsakeWeekStartsAt } from '@trmnl-games/desk-crawler/content/keepsakes'
-import { seedHero, seedWorld, type T } from './helpers'
+import { seedDeletionConfirmation, seedHero, seedWorld, type T } from './helpers'
 
 const modules = import.meta.glob('../../apps/backend/convex/**/*.ts')
 const NOW = Date.UTC(2026, 9, 5, 12)
@@ -139,7 +139,8 @@ describe('weekly TRMNL keepsakes', () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response(null, { status: 200 })))
     const code = (await envelope(t)).merge_variables.desk_keepsake_code!
     await owner().mutation(api.keepsakes.claim, { operationId: 'before-delete', code })
-    await owner().mutation(kind === 'game' ? api.deletion.requestGameDeletion : api.deletion.requestDeletion, { operationId: 'delete-0001', confirm: 'DELETE' })
+    if (kind === 'game') await owner().mutation(api.deletion.requestGameDeletion, { operationId: 'delete-0001', confirm: 'DELETE' })
+    else await owner().mutation(api.deletion.requestDeletion, { operationId: 'delete-0001', confirm: 'DELETE', token: await seedDeletionConfirmation(t, 'Ana') })
     expect(await owner().query(api.keepsakes.mine, {})).toBeNull()
     await expect(owner().mutation(api.keepsakes.claim, { operationId: 'during-delete', code })).rejects.toThrow()
     await t.finishAllScheduledFunctions(vi.runAllTimers)

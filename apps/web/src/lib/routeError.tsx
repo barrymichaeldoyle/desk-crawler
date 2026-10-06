@@ -1,11 +1,13 @@
 import { Link, useRouter, type ErrorComponentProps } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from './ui'
+import { captureAnalyticsException } from './analytics'
 
-export function RouteError({ reset }: ErrorComponentProps) {
+export function RouteError({ reset, error }: ErrorComponentProps) {
   const router = useRouter()
   const [retrying, setRetrying] = useState(false)
   const [retryFailed, setRetryFailed] = useState(false)
+  useEffect(() => { captureAnalyticsException(error, 'route') }, [error])
   return <section aria-labelledby="page-error-title" className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4 py-10">
     <h1 id="page-error-title" className="font-display text-3xl font-bold">We couldn’t load this page</h1>
     <p role="alert">{retryFailed ? 'Still not loading. Try again, or get help below.' : 'Check your connection and try again.'}</p>

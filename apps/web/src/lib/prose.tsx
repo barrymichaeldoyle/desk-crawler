@@ -34,4 +34,4 @@ export const SUPPORT_EMAIL = 'barry@barrymichaeldoyle.com'
 /** One release status line, shared by the public pages and the companion's start card. */
 export const RELEASE_STATUS = 'Free. Awaiting TRMNL marketplace review.'
 /** Shown on the privacy and terms pages; bump whenever either changes. */
-export const POLICY_UPDATED = '4 October 2026'
+export const POLICY_UPDATED = '6 October 2026'

@@ -51,11 +51,11 @@ export const getPendingInstall = createServerFn({ method: 'GET' })
     return { pending: pending !== null, expiresAt: pending?.expiresAt ?? null }
   })
 
-export type FinishInstallResult = { ok: true; callbackUrl: string } | { ok: false; code: string; message: string }
+export type FinishInstallResult = { ok: true; callbackUrl: string; reconnectionRequired?: true } | { ok: false; code: string; message: string }
 
 /** Exchange and link through the Clerk-authenticated Convex action, then hand back the validated TRMNL callback. */
 export const finishInstall = createServerFn({ method: 'POST' })
-  .inputValidator((input: { gameSlug: GameSlug; publicAlias?: string; heroName?: string }) => input)
+  .inputValidator((input: { gameSlug: GameSlug; publicAlias?: string; heroName?: string; analyticsConsent?: boolean }) => input)
   .handler(async ({ data }): Promise<FinishInstallResult> => {
     const pending = isGameSlug(data.gameSlug) ? await openPendingInstall(getCookie(installCookie(data.gameSlug)), flowSecret(), Date.now(), data.gameSlug) : null
     if (!pending) return { ok: false, code: 'INSTALL_EXPIRED', message: 'This installation expired. Start again from TRMNL.' }
@@ -65,15 +65,18 @@ export const finishInstall = createServerFn({ method: 'POST' })
     const convexUrl = process.env.VITE_CONVEX_URL ?? import.meta.env.VITE_CONVEX_URL
     const client = new ConvexHttpClient(convexUrl)
     client.setAuth(token)
+    let reconnectionRequired: true | undefined
     try {
-      await client.action(api.trmnl.completeInstall, {
+      const result = await client.action(api.trmnl.completeInstall, {
         code: pending.code,
         gameSlug: pending.gameSlug,
+        analyticsConsent: data.analyticsConsent === true,
         // Legacy backend argument: no timezone preference is collected by the companion.
         timezone: 'UTC',
         ...(data.publicAlias ? { publicAlias: data.publicAlias } : {}),
         ...(data.heroName ? { heroName: data.heroName } : {}),
       })
+      reconnectionRequired = result.reconnectionRequired
     } catch (error) {
       if (error instanceof ConvexError && typeof error.data === 'object' && error.data !== null) {
         const { code, message } = error.data as { code?: string; message?: string }
@@ -81,6 +84,7 @@ export const finishInstall = createServerFn({ method: 'POST' })
       }
       return { ok: false, code: 'ERROR', message: 'Something went wrong. Please try again.' }
     }
-    deleteCookie(installCookie(pending.gameSlug), { path: cookieOptions.path })
-    return { ok: true, callbackUrl: pending.callbackUrl }
+    // Preserve the validated return destination if the browser reloads before Save.
+    if (!reconnectionRequired) deleteCookie(installCookie(pending.gameSlug), { path: cookieOptions.path })
+    return { ok: true, callbackUrl: pending.callbackUrl, ...(reconnectionRequired ? { reconnectionRequired } : {}) }
   })

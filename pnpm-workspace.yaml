@@ -2,6 +2,7 @@ packages:
   - apps/*
   - packages/*
 allowBuilds:
+  core-js: false
   esbuild: true
   workerd: true
 fetchTimeout: 600000

@@ -16,6 +16,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as AccountDeleteRouteImport } from './routes/account_.delete'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppDeskCrawlerRouteImport } from './routes/app/desk-crawler'
 import { Route as DevDeskCrawlerRouteImport } from './routes/dev/desk-crawler'
@@ -61,6 +62,11 @@ const SupportRoute = SupportRouteImport.update({
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountDeleteRoute = AccountDeleteRouteImport.update({
+  id: '/account_/delete',
+  path: '/account/delete',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
+  '/account/delete': typeof AccountDeleteRoute
   '/app/desk-crawler': typeof AppDeskCrawlerRouteWithChildren
   '/dev/desk-crawler': typeof DevDeskCrawlerRoute
   '/games/desk-crawler': typeof GamesDeskCrawlerRoute
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
+  '/account/delete': typeof AccountDeleteRoute
   '/dev/desk-crawler': typeof DevDeskCrawlerRoute
   '/games/desk-crawler': typeof GamesDeskCrawlerRoute
   '/help/desk-crawler': typeof HelpDeskCrawlerRoute
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
+  '/account_/delete': typeof AccountDeleteRoute
   '/app/desk-crawler': typeof AppDeskCrawlerRouteWithChildren
   '/dev/desk-crawler': typeof DevDeskCrawlerRoute
   '/games/desk-crawler': typeof GamesDeskCrawlerRoute
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/support'
     | '/terms'
+    | '/account/delete'
     | '/app/desk-crawler'
     | '/dev/desk-crawler'
     | '/games/desk-crawler'
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/support'
     | '/terms'
+    | '/account/delete'
     | '/dev/desk-crawler'
     | '/games/desk-crawler'
     | '/help/desk-crawler'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/support'
     | '/terms'
+    | '/account_/delete'
     | '/app/desk-crawler'
     | '/dev/desk-crawler'
     | '/games/desk-crawler'
@@ -250,6 +262,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   SupportRoute: typeof SupportRoute
   TermsRoute: typeof TermsRoute
+  AccountDeleteRoute: typeof AccountDeleteRoute
   DevDeskCrawlerRoute: typeof DevDeskCrawlerRoute
   GamesDeskCrawlerRoute: typeof GamesDeskCrawlerRoute
   HelpDeskCrawlerRoute: typeof HelpDeskCrawlerRoute
@@ -306,6 +319,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account_/delete': {
+      id: '/account_/delete'
+      path: '/account/delete'
+      fullPath: '/account/delete'
+      preLoaderRoute: typeof AccountDeleteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -426,6 +446,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   SupportRoute: SupportRoute,
   TermsRoute: TermsRoute,
+  AccountDeleteRoute: AccountDeleteRoute,
   DevDeskCrawlerRoute: DevDeskCrawlerRoute,
   GamesDeskCrawlerRoute: GamesDeskCrawlerRoute,
   HelpDeskCrawlerRoute: HelpDeskCrawlerRoute,

@@ -19,22 +19,28 @@ export const Route = createFileRoute('/privacy')({
 
       <h2>What we store</h2>
       <ul>
-        <li>Your sign-in identity from Clerk, our sign-in provider. We do not copy your email address, real name or profile picture into the game database.</li>
+        <li>Your sign-in identity from Clerk, our sign-in provider. Your email is copied into short-lived deletion confirmation requests only; we do not copy your real name or profile picture into the game database.</li>
         <li>Your public name, hero, items, adventure log and the recent XP used for rankings. Older accounts may also have a saved time zone from previous versions.</li>
         <li>
           For each TRMNL installation: the plugin instance ID, a hash of its access token and the settings link TRMNL gives us. We do not store your TRMNL
           name or email.
         </li>
         <li>Short-lived operational records such as rate-limit counters and duplicate-request receipts.</li>
+        <li>When you request account deletion: your verified primary email, a hash of the confirmation link, and delivery status. The link expires after 30 minutes; expired requests are removed by daily cleanup.</li>
       </ul>
 
       <h2>What we don't do</h2>
-      <p>No ads, no analytics or tracking scripts, and no selling or sharing of your data for marketing. The game has no purchases, so we hold no payment details.</p>
+      <p>No ads and no selling or sharing of your data for marketing. The game has no purchases, so we hold no payment details.</p>
+
+      <h2>Optional analytics and support</h2>
+      <p>If you allow analytics, PostHog records the pages you visit, setup steps, game-action failures and browser errors. When you sign in, these records link to your Clerk account ID, email address, public name and hero name so we can investigate support requests and fix problems.</p>
+      <p>PostHog also records masked sessions so we can see where a flow gets stuck. Text and form inputs are masked, sign-in and account details are blocked, and we do not record network bodies, headers or console output. Installation codes, access tokens, management JWTs and URL query strings are excluded.</p>
+      <p>You can decline and keep playing. Use Analytics preferences at the bottom of the page to change your choice. Turning analytics off stops new collection in that browser; it does not erase earlier records. Contact us to remove those records, or delete your TRMNL Games account to request removal of its linked PostHog profile, events and recordings.</p>
 
       <h2>Cookies</h2>
       <p>
         Clerk sets cookies that keep you signed in. While you connect or manage a TRMNL installation, we set a short-lived encrypted cookie that expires
-        within minutes. There are no advertising or tracking cookies.
+        within minutes. A deletion confirmation link uses a short-lived encrypted cookie so you can sign in before confirming. If you allow analytics, PostHog uses browser local storage to recognize your visits. We also store your analytics preference locally. There are no advertising cookies.
       </p>
 
       <h2>Services that handle your data</h2>
@@ -51,6 +57,8 @@ export const Route = createFileRoute('/privacy')({
         <li>
           <strong>TRMNL</strong> fetches your hero's screen from us. Your TRMNL account and device are covered by TRMNL's own privacy policy.
         </li>
+        <li><strong>PostHog EU</strong> handles optional usage analytics, error reports and masked session recordings for support and product improvements.</li>
+        <li><strong>Resend</strong> delivers the account deletion confirmation email to your verified primary address. It receives that address and the email contents.</li>
       </ul>
 
       <h2>How long we keep it</h2>
@@ -59,18 +67,20 @@ export const Route = createFileRoute('/privacy')({
         <li>Detailed adventure log: three days. Run summaries: 30 days. Recent XP for rankings: seven days.</li>
         <li>Duplicate-request receipts: 24 hours. TRMNL connection attempts: under a day.</li>
         <li>Backups: about a week, after which deleted data is gone from them too.</li>
+        <li>Masked recordings: 30 days. Analytics events and support profiles: until account deletion or an earlier removal request.</li>
       </ul>
 
       <h2>Deleting your account</h2>
       <p>
-        Go to <Link to="/account">Account</Link> and choose Delete TRMNL Games account. Your account stops working straight away, your public name is hidden from
+        Go to <Link to="/account">Account</Link> and request a deletion link. We email your verified primary address; the link expires after 30 minutes. Sign in with the same account and type DELETE on the confirmation page. Until you confirm, your account stays active. After confirmation, your account stops working straight away, your public name is hidden from
         leaderboards, and your hero, items, history, TRMNL connections and TRMNL Games sign-in are then removed. Leaderboard snapshots that copied your name
         are replaced within about two hours. If you can't sign in, email us and we'll do it for you.
       </p>
       <p>
         We keep only a one-way hash of your sign-in identity and of your old TRMNL tokens, so a deleted account can't be quietly reconnected. Images already
-        sent to a TRMNL device or cached by TRMNL can't be erased by us; remove the plugin from your playlist to replace them.
+        sent to a TRMNL device or cached by TRMNL can't be erased by us; remove the plugin from your playlist to replace them. Rate-limit counters are removed during deletion, and account references in administrative audit entries are scrubbed.
       </p>
+      <p>Removal of linked PostHog profiles, events and recordings is requested as part of account deletion and processed asynchronously by PostHog. Failed requests are retried and remain visible to the operator until resolved.</p>
 
       <h2>Deleting only a game</h2>
       <p>In <Link to="/app/desk-crawler/settings">Desk Crawler settings</Link>, choose Delete Desk Crawler progress to remove that hero, history and connections. Your shared account and sign-in stay available. You can start again by installing the plugin after removal finishes. Other games are unaffected.</p>

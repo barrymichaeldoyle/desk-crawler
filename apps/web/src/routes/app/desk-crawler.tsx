@@ -7,6 +7,9 @@ import { RELEASE_STATUS } from '../../lib/prose'
 import { seo } from '../../lib/seo'
 import { NameRepair } from './desk-crawler/-nameRepair'
 import { preload } from '../../lib/preload'
+import { captureAnalytics } from '../../lib/analytics'
+import { useAnalyticsView } from '../../lib/analyticsProvider'
+import { SwitchAccount } from '../../lib/switchAccount'
 
 /** Companion shell: auth gate, setup states and mobile-first navigation (companion.md). */
 export const Route = createFileRoute('/app/desk-crawler')({
@@ -28,6 +31,8 @@ function AppShell() {
 
 function SignedInApp() {
   const { data: me, isPending } = useQuery(convexQuery(api.users.me, {}))
+  const setupState = !me?.hero ? (me?.hasActiveInstallation ? 'installation_without_hero' : 'not_enrolled') : me.hero.activationState === 'pending_trmnl' ? 'waiting_for_save' : 'active'
+  useAnalyticsView(setupState === 'active' ? 'companion ready' : 'setup screen shown', { setup_state: setupState, has_active_installation: me?.hasActiveInstallation ?? false }, !isPending && me?.user?.state !== 'deleting' && me?.gameState !== 'deleting')
   // The hero page spreads into two columns on wide screens; the other tabs keep a reading width.
   const wide = useLocation({ select: (location) => location.pathname.replace(/\/$/, '') === '/app/desk-crawler' })
   const settings = useLocation({ select: (location) => location.pathname.replace(/\/$/, '').endsWith('/settings') })
@@ -36,10 +41,14 @@ function SignedInApp() {
   if (!me?.hero) {
     return (
       <main id="main" className="mx-auto w-full max-w-3xl px-4 py-8">
-        <Card title="Start on TRMNL">
-          <p>Install the Desk Crawler plugin from the TRMNL marketplace, connect it here, then save it in TRMNL. Your hero sets out from there.</p>
+        <Card title={me?.hasActiveInstallation ? 'Reconnect Desk Crawler' : 'Start on TRMNL'}>
+          {me?.hasActiveInstallation ? <>
+            <p>Your TRMNL installation is connected, but this account has no hero. Start a fresh installation of Desk Crawler in TRMNL, connect it using this account, choose a hero name, then click Save in TRMNL.</p>
+            <p className="mt-3 text-sm text-muted">Scanning this QR opens the companion. Creating a hero starts from the plugin’s Install button in TRMNL.</p>
+          </> : <p>Install the Desk Crawler plugin from the TRMNL marketplace, connect it here, then save it in TRMNL. Your hero sets out from there.</p>}
+          <div className="mt-3"><SwitchAccount returnTo="/app/desk-crawler" /></div>
           <p className="mt-3 text-sm text-muted">{RELEASE_STATUS}</p>
-          <Link to="/help/desk-crawler" className="mt-3 inline-flex min-h-11 items-center font-semibold underline underline-offset-4">How to connect Desk Crawler</Link>
+          <Link to="/help/desk-crawler" onClick={() => captureAnalytics('setup help opened', { setup_state: setupState })} className="mt-3 inline-flex min-h-11 items-center font-semibold underline underline-offset-4">How to connect Desk Crawler</Link>
         </Card>
       </main>
     )
@@ -51,7 +60,7 @@ function SignedInApp() {
           <p>
             <strong>{me.hero.name}</strong> is ready. Back in TRMNL, click <strong>Save</strong> on the Desk Crawler plugin and the first adventure follows.
           </p>
-          <Link to="/help/desk-crawler" className="mt-3 inline-flex min-h-11 items-center font-semibold underline underline-offset-4">Help with setup</Link>
+          <Link to="/help/desk-crawler" onClick={() => captureAnalytics('setup help opened', { setup_state: setupState })} className="mt-3 inline-flex min-h-11 items-center font-semibold underline underline-offset-4">Help with setup</Link>
           <Link to="/app/desk-crawler/settings" className="ml-4 inline-flex min-h-11 items-center underline underline-offset-4">Desk Crawler settings</Link>
         </Card>
       </main>

@@ -5,7 +5,7 @@ import { api, internal } from '@trmnl-games/backend/api'
 import schema from '../../apps/backend/convex/schema'
 import { sha256Hex } from '../../apps/backend/convex/lib/hash'
 import { verifySvix } from '../../apps/backend/convex/lib/svix'
-import { seedHero, seedWorld, type T } from './helpers'
+import { seedDeletionConfirmation, seedHero, seedWorld, type T } from './helpers'
 
 const modules = import.meta.glob('../../apps/backend/convex/**/*.ts')
 
@@ -41,7 +41,7 @@ describe('account deletion (D22)', () => {
     await linkGrant(t, 'Ana', tokenHash)
     const user = t.withIdentity({ issuer: 'issuer', subject: 'Ana' })
 
-    await user.mutation(api.deletion.requestDeletion, { operationId: 'delete-0001', confirm: 'DELETE' })
+    await user.mutation(api.deletion.requestDeletion, { operationId: 'delete-0001', confirm: 'DELETE', token: await seedDeletionConfirmation(t, 'Ana') })
     // Immediate denial: commands fail before the purge runs.
     await expect(user.mutation(api.heroes.pause, { operationId: 'pause-0001' })).rejects.toThrow()
 
@@ -70,7 +70,7 @@ describe('account deletion (D22)', () => {
   it('retries the provider step and blocks visibly after repeated failures', async () => {
     fetchMock.mockImplementation(async () => new Response(null, { status: 500 }))
     await seedHero(t, {}, 'Cy')
-    await t.withIdentity({ issuer: 'issuer', subject: 'Cy' }).mutation(api.deletion.requestDeletion, { operationId: 'delete-0002', confirm: 'DELETE' })
+    await t.withIdentity({ issuer: 'issuer', subject: 'Cy' }).mutation(api.deletion.requestDeletion, { operationId: 'delete-0002', confirm: 'DELETE', token: await seedDeletionConfirmation(t, 'Cy') })
     await t.finishAllScheduledFunctions(vi.runAllTimers)
     const job = await t.run(async (ctx) => await ctx.db.query('accountDeletionJobs').first())
     expect(job).toMatchObject({ state: 'blocked', phase: 'provider', reasonCode: 'PROVIDER_DELETE_FAILED' })
@@ -81,7 +81,7 @@ describe('account deletion (D22)', () => {
   it('retries network failures, then completes once the provider recovers', async () => {
     fetchMock.mockRejectedValueOnce(new TypeError('network unavailable'))
     await seedHero(t, {}, 'NetworkRetry')
-    await t.withIdentity({ issuer: 'issuer', subject: 'NetworkRetry' }).mutation(api.deletion.requestDeletion, { operationId: 'delete-network', confirm: 'DELETE' })
+    await t.withIdentity({ issuer: 'issuer', subject: 'NetworkRetry' }).mutation(api.deletion.requestDeletion, { operationId: 'delete-network', confirm: 'DELETE', token: await seedDeletionConfirmation(t, 'NetworkRetry') })
     await t.finishAllScheduledFunctions(vi.runAllTimers)
     expect(fetchMock).toHaveBeenCalledTimes(2)
     const job = (await t.run(async ctx => await ctx.db.query('accountDeletionJobs').first()))!

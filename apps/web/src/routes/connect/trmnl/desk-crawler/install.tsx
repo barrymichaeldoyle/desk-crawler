@@ -7,7 +7,9 @@ import { api } from '@trmnl-games/backend/api'
 import { seo } from '../../../../lib/seo'
 import { SwitchAccount } from '../../../../lib/switchAccount'
 import { captureInstall, finishInstall, getPendingInstall } from '../../../../server/installFns'
-import { Button, LoadingState } from '../../../../lib/ui'
+import { BUTTON_PRIMARY, LINK_BUTTON, Button, LoadingState } from '../../../../lib/ui'
+import { captureAnalytics, captureAnalyticsException, readAnalyticsConsent } from '../../../../lib/analytics'
+import { useAnalyticsView } from '../../../../lib/analyticsProvider'
 
 type Search = { code?: string; installation_callback_url?: string; invalid?: boolean }
 
@@ -35,6 +37,7 @@ export const Route = createFileRoute('/connect/trmnl/desk-crawler/install')({
 function InstallPage() {
   const { pending } = Route.useLoaderData()
   const { invalid } = Route.useSearch()
+  useAnalyticsView(pending ? 'installation started' : 'setup screen shown', { setup_state: pending ? 'pending_install' : invalid ? 'invalid_install_link' : 'missing_install_link' })
 
   if (!pending) {
     return (
@@ -64,6 +67,7 @@ function ConnectForm() {
   const { data: me } = useQuery(convexQuery(api.users.me, {}))
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [reconnectCallback, setReconnectCallback] = useState<string | null>(null)
   const inFlight = useRef(false)
   if (me === undefined) return <LoadingState label="Loading your account…" />
   const needsProfile = !me?.user
@@ -77,23 +81,37 @@ function ConnectForm() {
     setSubmitting(true)
     setError(null)
     const form = new FormData(event.currentTarget)
+    captureAnalytics('installation submitted', { needs_profile: needsProfile, needs_hero: needsHero })
     try {
       const result = await finishInstall({
       data: {
         gameSlug: 'desk-crawler',
+        analyticsConsent: readAnalyticsConsent() === 'allowed',
         ...(needsProfile ? { publicAlias: String(form.get('publicAlias') ?? '') } : {}),
         ...(needsHero ? { heroName: String(form.get('heroName') ?? '') } : {}),
       },
       })
-      if (result.ok) { window.location.assign(result.callbackUrl); return }
+      if (result.ok) {
+        if (result.reconnectionRequired) { setReconnectCallback(result.callbackUrl); return }
+        window.location.assign(result.callbackUrl); return
+      }
+      captureAnalytics('installation failed', { error_code: result.code })
       setError(result.message)
-    } catch {
+    } catch (caught) {
+      captureAnalytics('installation failed', { error_code: 'NETWORK_OR_SERVER_ERROR' })
+      captureAnalyticsException(caught, 'installation')
       setError('We couldn’t finish connecting. Check your connection and try again.')
     } finally { inFlight.current = false; setSubmitting(false) }
   }
 
+  if (reconnectCallback) return <section className="flex flex-col gap-4" data-analytics-private>
+    <h2 className="font-display text-xl font-bold">One more step to reconnect</h2>
+    <p>Save the plugin in TRMNL, then open its settings and choose Configure. We’ll ask you to confirm the connection here.</p>
+    <p>Your previously deleted progress stays deleted. This check lets you start again with this installation.</p>
+    <a href={reconnectCallback} className={`${LINK_BUTTON} ${BUTTON_PRIMARY}`}>Continue to TRMNL to save</a>
+  </section>
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4">
+    <form onSubmit={onSubmit} data-analytics-private className="flex flex-col gap-4">
       {needsProfile ? (
         <p className="border-y border-edge py-3 text-sm">
           This sign-in has no TRMNL Games account yet, so connecting creates one. If you already play, switch account and sign in the way you did before.

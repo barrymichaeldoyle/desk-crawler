@@ -3,7 +3,10 @@ import { manageCookie, MANAGE_HANDOFF_SECONDS as HANDOFF_SECONDS, INSTANCE_UUID 
 import { createServerFn } from '@tanstack/react-start'
 import { deleteCookie, getCookie, setCookie } from '@tanstack/react-start/server'
 import { createRemoteJWKSet, jwtVerify } from 'jose'
-import { sealJson } from './installFlow'
+import { installCookie, sealJson } from './installFlow'
+import { auth } from '@clerk/tanstack-react-start/server'
+import { ConvexHttpClient } from 'convex/browser'
+import { api } from '@trmnl-games/backend/api'
 
 /**
  * TRMNL management landing (trmnl.md "Management and uninstall"). The two-minute
@@ -26,9 +29,24 @@ export const captureManagement = createServerFn({ method: 'POST' })
     const clientId = process.env[games[data.gameSlug].clientIdEnv]
     if (!clientId || !UUID.test(data.uuid) || data.jwt.length > 4096) return { ok: false as const }
     try {
-      await jwtVerify(data.jwt, JWKS, { algorithms: ['RS256'], audience: clientId, subject: data.uuid, clockTolerance: 30 })
+      await jwtVerify(data.jwt, JWKS, { algorithms: ['RS256'], audience: clientId, subject: data.uuid, clockTolerance: 30, maxTokenAge: '2 minutes', requiredClaims: ['iat', 'exp'] })
     } catch {
       return { ok: false as const }
+    }
+    // Returning players need the same proof checked in Convex before any relink.
+    // Anonymous/ordinary management keeps its existing sealed sign-in handoff.
+    const { userId, getToken } = await auth()
+    const authToken = userId ? await getToken({ template: 'convex' }) : null
+    if (authToken) {
+      const client = new ConvexHttpClient(process.env.VITE_CONVEX_URL ?? import.meta.env.VITE_CONVEX_URL)
+      client.setAuth(authToken)
+      try {
+        const pending = await client.query(api.trmnl.reconnectionStatus, {})
+        if (pending && pending.expiresAt > Date.now()) {
+          await client.action(api.trmnl.verifyReconnection, { attemptId: pending.id, uuid: data.uuid, jwt: data.jwt })
+          deleteCookie(installCookie(data.gameSlug), { path: '/' })
+        }
+      } catch { return { ok: false as const } }
     }
     setCookie(manageCookie(data.gameSlug), await sealJson({ gameSlug: data.gameSlug, uuid: data.uuid, expiresAt: Date.now() + HANDOFF_SECONDS * 1000 }, secret()), {
       httpOnly: true,

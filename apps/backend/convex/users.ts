@@ -2,9 +2,10 @@ import { currentHero, gameProfile } from './lib/gameProfile'
 import { heroStatus } from './schema'
 import { v } from 'convex/values'
 import { mutation, query } from './_generated/server'
-import { runIntent } from './lib/intent'
+import { currentUser, runIntent } from './lib/intent'
 import { ALIAS_RULE, HERO_NAME_RULE, normalizeAlias, validateName, validateTimezone } from './lib/names'
 import { appError } from './lib/errors'
+import { identityHash } from './deletion'
 
 /**
  * The signed-in owner's profile, or null when signed out. `signedIn` with a
@@ -17,9 +18,10 @@ export const me = query({
     v.object({
       signedIn: v.literal(true),
       gameState: v.union(v.literal('active'), v.literal('deleting'), v.null()),
+      hasActiveInstallation: v.boolean(),
       user: v.union(
         v.null(),
-        v.object({ publicAlias: v.string(), timezone: v.string(), state: v.string(), nameRepairRequired: v.boolean() }),
+        v.object({ publicAlias: v.string(), timezone: v.string(), state: v.string(), nameRepairRequired: v.boolean(), analyticsConsent: v.boolean() }),
       ),
       hero: v.union(
         v.null(),
@@ -34,13 +36,27 @@ export const me = query({
       .query('users')
       .withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', identity.tokenIdentifier))
       .unique()
+    if (user === null && await ctx.db.query('revokedAuthIdentities').withIndex('by_identityHash', (q) => q.eq('identityHash', identityHash(identity.tokenIdentifier))).first()) return null
     const hero = await currentHero(ctx, user)
+    const installation = user?.state === 'active' ? await ctx.db.query('trmnlInstances').withIndex('by_userId_and_state', (q) => q.eq('userId', user._id).eq('state', 'active')).first() : null
     return {
       signedIn: true as const,
+      hasActiveInstallation: installation !== null,
       gameState: user ? (await gameProfile(ctx, user._id))?.state ?? (hero ? 'active' as const : null) : null,
-      user: user === null ? null : { publicAlias: user.publicAlias, timezone: user.timezone, state: user.state, nameRepairRequired: user.nameRepairRequired ?? false },
+      user: user === null ? null : { publicAlias: user.publicAlias, timezone: user.timezone, state: user.state, nameRepairRequired: user.nameRepairRequired ?? false, analyticsConsent: user.analyticsConsent ?? false },
       hero: hero === null ? null : { name: hero.name, activationState: hero.activationState, status: hero.status },
     }
+  },
+})
+
+/** Browser preference authorizes server-side activation telemetry for this owner. */
+export const setAnalyticsConsent = mutation({
+  args: { allowed: v.boolean() },
+  returns: v.null(),
+  handler: async (ctx, { allowed }) => {
+    const user = await currentUser(ctx)
+    if (user?.state === 'active' && user.analyticsConsent !== allowed) await ctx.db.patch(user._id, { analyticsConsent: allowed })
+    return null
   },
 })
 

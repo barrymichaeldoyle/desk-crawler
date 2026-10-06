@@ -10,6 +10,7 @@
 
 import type * as achievements from "../achievements.js";
 import type * as admin from "../admin.js";
+import type * as analytics from "../analytics.js";
 import type * as connections from "../connections.js";
 import type * as crons from "../crons.js";
 import type * as deletion from "../deletion.js";
@@ -21,6 +22,7 @@ import type * as inventory from "../inventory.js";
 import type * as keepsakes from "../keepsakes.js";
 import type * as leaderboard from "../leaderboard.js";
 import type * as lib_achievements from "../lib/achievements.js";
+import type * as lib_deletionConfirmation from "../lib/deletionConfirmation.js";
 import type * as lib_errors from "../lib/errors.js";
 import type * as lib_gameProfile from "../lib/gameProfile.js";
 import type * as lib_hash from "../lib/hash.js";
@@ -30,6 +32,7 @@ import type * as lib_logDetail from "../lib/logDetail.js";
 import type * as lib_names from "../lib/names.js";
 import type * as lib_rankingRead from "../lib/rankingRead.js";
 import type * as lib_svix from "../lib/svix.js";
+import type * as lib_trmnlManagement from "../lib/trmnlManagement.js";
 import type * as maintenance from "../maintenance.js";
 import type * as sim_runs_adapter from "../sim/runs/adapter.js";
 import type * as sim_runs_tick from "../sim/runs/tick.js";
@@ -47,6 +50,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   achievements: typeof achievements;
   admin: typeof admin;
+  analytics: typeof analytics;
   connections: typeof connections;
   crons: typeof crons;
   deletion: typeof deletion;
@@ -58,6 +62,7 @@ declare const fullApi: ApiFromModules<{
   keepsakes: typeof keepsakes;
   leaderboard: typeof leaderboard;
   "lib/achievements": typeof lib_achievements;
+  "lib/deletionConfirmation": typeof lib_deletionConfirmation;
   "lib/errors": typeof lib_errors;
   "lib/gameProfile": typeof lib_gameProfile;
   "lib/hash": typeof lib_hash;
@@ -67,6 +72,7 @@ declare const fullApi: ApiFromModules<{
   "lib/names": typeof lib_names;
   "lib/rankingRead": typeof lib_rankingRead;
   "lib/svix": typeof lib_svix;
+  "lib/trmnlManagement": typeof lib_trmnlManagement;
   maintenance: typeof maintenance;
   "sim/runs/adapter": typeof sim_runs_adapter;
   "sim/runs/tick": typeof sim_runs_tick;

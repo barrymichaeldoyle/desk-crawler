@@ -36,6 +36,12 @@ const titleBar = `
   ${keepsakeFooter}
 </div>`
 
+/**
+ * Narrow portrait columns (side, quarter): a 480-pixel-wide panel can't fit the name beside the code, so while a code
+ * is showing it takes the name's place there; the icon still marks the plugin. The X keeps both.
+ */
+const titleBarNarrow = titleBar.replace('<span class="title">', '<span class="title{% if desk_keepsake_code %} hidden lg:inline-block{% endif %}">')
+
 
 type SceneField = 'scene_url' | 'scene_url_small'
 /** Base scene everywhere, swapped for an integer-scaled larger image on screen--lg (TRMNL X). */
@@ -255,7 +261,8 @@ const bagQr = (scale = 3, largeScale = 4, caption = true) => `
 const gearSlot = (slot: string, field: string) => `
       <div class="hidden lg:block text--center"><div><span class="label">${slot}</span></div><div><span class="title--small" data-clamp="2">{% if ${field} != "" %}{{ ${field} | escape }}{% else %}None{% endif %}</span></div></div>`
 
-type WelcomeLayout = 'full' | 'halfVertical' | 'halfHorizontal' | 'quadrant'
+/** `shortColumn` is the side column for the short portrait slots (quarter, half): no scene on the OG and a smaller QR. */
+type WelcomeLayout = 'full' | 'halfVertical' | 'halfHorizontal' | 'quadrant' | 'shortColumn'
 
 /**
  * First-run panel: setup (no active hero) or a brand-new hero before its first
@@ -264,7 +271,8 @@ type WelcomeLayout = 'full' | 'halfVertical' | 'halfHorizontal' | 'quadrant'
 const welcome = (layout: WelcomeLayout) => {
   const compact = layout === 'quadrant'
   const title = compact ? 'title title--small lg:title' : 'title lg:title--large'
-  const line = layout === 'halfVertical' ? 'label lg:title--small text--center' : 'label lg:title--small'
+  const column = layout === 'halfVertical' || layout === 'shortColumn'
+  const line = column ? 'label lg:title--small text--center' : 'label lg:title--small'
   const heading = `{% if status == "unlinked" %}Finish setting up{% else %}{{ hero_name | escape }} is ready{% endif %}`
   const lines = compact
     ? `<span class="${line}" data-clamp="2">{% if status == "unlinked" %}Scan to finish setup{% else %}First adventure within 15 minutes{% endif %}</span>`
@@ -273,15 +281,16 @@ const welcome = (layout: WelcomeLayout) => {
       <span class="${line}" data-clamp="3">Scan to open your companion, where you manage gear and pick where to explore.</span>{% endif %}
       <span class="${line}">trmnlgames.com</span>`
   const text = `
-    <div class="flex flex--col flex--left gap--small${layout === 'halfVertical' ? ' flex--center-x' : ''}">
+    <div class="flex flex--col flex--left gap--small${column ? ' flex--center-x' : ''}">
       <span class="${title}" data-clamp="1">${heading}</span>
       ${lines}
     </div>`
-  const scales: Record<WelcomeLayout, [number, number]> = { full: [4, 7], halfVertical: [4, 5], halfHorizontal: [3, 5], quadrant: [3, 4] }
+  const scales: Record<WelcomeLayout, [number, number]> = { full: [4, 7], halfVertical: [4, 5], halfHorizontal: [3, 5], quadrant: [3, 4], shortColumn: [3, 5] }
   const [scale, largeScale] = scales[layout]
   const code = `{% if qr_base != "" %}<div class="no-shrink">${qrImage(scale, largeScale)}</div>{% endif %}`
-  if (layout === 'halfVertical') {
-    return `${scene('scene_url_small')}
+  if (column) {
+    const art = layout === 'shortColumn' ? `<div class="hidden lg:block">${scene('scene_url_small')}</div>` : scene('scene_url_small')
+    return `${art}
   <div class="flex flex--col flex--center-x gap--small">
     ${code}${text}
   </div>`
@@ -300,11 +309,11 @@ const welcome = (layout: WelcomeLayout) => {
  * stretch-x children all take an equal share of the height. Each arrangement carries its own title bar because the
  * framework sizes a layout only when the title bar is its next sibling (`.layout:has(+.title_bar)`).
  */
-const oriented = (classes: string, landscape: string, portrait: string, bar: string) => `
+const oriented = (classes: string, landscape: string, portrait: string, bar: string, portraitBar = bar) => `
 <div class="${classes} portrait:hidden">${landscape}
 </div>${bar.replace('class="title_bar"', 'class="title_bar portrait:hidden"')}
 <div class="${classes} landscape:hidden">${portrait}
-</div>${bar.replace('class="title_bar"', 'class="title_bar landscape:hidden"')}`
+</div>${portraitBar.replace('class="title_bar"', 'class="title_bar landscape:hidden"')}`
 
 /** A standing companion QR beside its caption, for the narrow portrait columns. */
 const qrFooter = (scale = 3, largeScale = 4) => `
@@ -323,7 +332,7 @@ const fullPortrait = `
   <div class="no-shrink flex flex--col flex--left gap--xsmall stretch-x">
     <span class="title lg:hidden" data-clamp="1">{{ hero_name | truncate: 16 | escape }}, level {{ level }}</span>
     <span class="hidden lg:inline-block title lg:title--large" data-fit-value="true">{{ hero_name | escape }}, level {{ level }}</span>
-    ${statusLine(2, 40)}${nextTick('hidden lg:block label lg:title--small')}
+    ${statusLine(2, 40)}${nextTick('label lg:title--small')}
     <span class="hidden lg:block label lg:title--small">{{ gold }} gold · {{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}</span>
   </div>
   <div class="no-shrink grid grid--cols-2 gap--medium lg:gap--large stretch-x">
@@ -361,7 +370,7 @@ const halfVerticalPortrait = `
 
 /** Quarter, portrait: hero line, the stories, then the companion QR across the bottom. */
 const quadrantPortrait = `
-  {% if status == "unlinked" or first_run %}${welcome('halfVertical')}
+  {% if status == "unlinked" or first_run %}${welcome('shortColumn')}
   {% else %}
   <span class="no-shrink label lg:title--small" data-clamp="2">{{ hero_name | escape }}, level {{ level }} · HP {{ hp }}/{{ max_hp }}</span>
   <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small stretch-x">
@@ -376,7 +385,7 @@ const quadrantPortrait = `
  * but less height, so it uses this arrangement without the scene and with the one-line recap.
  */
 const halfVerticalBody = (withScene: boolean) => `
-  {% if status == "unlinked" or first_run %}${welcome('halfVertical')}
+  {% if status == "unlinked" or first_run %}${welcome(withScene ? 'halfVertical' : 'shortColumn')}
   {% else %}
   <div class="grid no-shrink stretch-x gap--small">
     <div class="col--span-8 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
@@ -435,7 +444,7 @@ export const markupFull = `${glyphAssigns([16, 24])}${oriented('layout layout--c
   </div>
   {% unless attention %}${recapRibbon}{% endunless %}
   {% endif %}
-`, fullPortrait, titleBarFull)}${fitStories}`
+`, fullPortrait, titleBarFull, titleBar)}${fitStories}`
 
 export const markupHalfHorizontal = `${glyphAssigns([16, 24])}${oriented('layout layout--col layout--top layout--stretch-x gap--small', `
   {% if status == "unlinked" or first_run %}${welcome('halfHorizontal')}
@@ -455,7 +464,7 @@ export const markupHalfHorizontal = `${glyphAssigns([16, 24])}${oriented('layout
   {% endif %}
 `, halfHorizontalPortrait, titleBar)}${fitStories}`
 
-export const markupHalfVertical = `${glyphAssigns([16, 24])}${oriented('layout layout--col layout--top layout--stretch-x gap--small lg:gap--medium', halfVerticalLandscape, halfVerticalPortrait, titleBar)}${fitStories}`
+export const markupHalfVertical = `${glyphAssigns([16, 24])}${oriented('layout layout--col layout--top layout--stretch-x gap--small lg:gap--medium', halfVerticalLandscape, halfVerticalPortrait, titleBar, titleBarNarrow)}${fitStories}`
 
 export const markupQuadrant = `${glyphAssigns([16])}${oriented('layout layout--col layout--top layout--stretch-x gap--small', `
   {% if status == "unlinked" or first_run %}${welcome('quadrant')}
@@ -471,7 +480,7 @@ export const markupQuadrant = `${glyphAssigns([16])}${oriented('layout layout--c
       </div>
     </div>
   {% endif %}
-`, quadrantPortrait, titleBar)}${fitStories}`
+`, quadrantPortrait, titleBar, titleBarNarrow)}${fitStories}`
 
 export const screenMarkup = {
   markup: markupFull,

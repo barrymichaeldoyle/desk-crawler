@@ -2,6 +2,8 @@ import { Link, createFileRoute, notFound, useNavigate } from '@tanstack/react-ro
 import { useEffect, useRef, useState } from 'react'
 import { buildPayload, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
 import { sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
+import { renderScenePng } from '@trmnl-games/desk-crawler/art/route'
+import { DEFAULT_COMPANION_ORIGIN, renderQrPng } from '@trmnl-games/desk-crawler/art/qr'
 import { screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
 import { PREVIEW_DEVICES, PREVIEW_LAYOUTS, previewDocument, previewSize, type PreviewDevice, type PreviewLayout } from '@trmnl-games/desk-crawler/templates/preview'
 import {
@@ -30,7 +32,25 @@ type Orientation = (typeof ORIENTATIONS)[number]
 const VIEWS = { screen: 'One screen', layouts: 'Every layout', scenarios: 'Every scenario' } as const
 type View = keyof typeof VIEWS
 
-const { groups, overnightEntries } = previewScenarios(import.meta.env.VITE_CONVEX_SITE_URL || 'https://superb-bobcat-74.convex.site')
+/**
+ * Art is drawn here from the same pure renderers the Convex /art/ route serves, then inlined as data URIs: no network,
+ * nothing for a deployment to drop when dozens of screens load at once, and art edits hot-reload like templates.
+ */
+const LOCAL_ART_ORIGIN = 'https://local-art.invalid'
+const ART_URL = new RegExp(`${LOCAL_ART_ORIGIN.replaceAll('.', '\\.')}(/art/[^"'\\s)]+\\.png)`, 'g')
+const artCache = new Map<string, string>()
+function artDataUri(path: string): string {
+  let uri = artCache.get(path)
+  if (uri === undefined) {
+    const png = path.startsWith('/art/qr/') ? renderQrPng(path, DEFAULT_COMPANION_ORIGIN) : renderScenePng(path)
+    uri = png ? `data:image/png;base64,${btoa(Array.from(png, (byte) => String.fromCharCode(byte)).join(''))}` : `${LOCAL_ART_ORIGIN}${path}`
+    artCache.set(path, uri)
+  }
+  return uri
+}
+const inlineArt = (html: string) => html.replace(ART_URL, (_match, path: string) => artDataUri(path))
+
+const { groups, overnightEntries } = previewScenarios(LOCAL_ART_ORIGIN)
 const SCENARIOS: Array<{ group: PreviewScenarioGroup; name: string; input: PayloadInput }> = (Object.keys(groups) as PreviewScenarioGroup[]).flatMap((group) =>
   Object.entries(groups[group]).map(([name, input]) => ({ group, name, input })),
 )
@@ -93,7 +113,7 @@ async function renderShot(shot: Shot, options: { recap: boolean; keepsake: boole
     utc_offset: NO_OFFSET_SCENARIOS.has(shot.scenario) ? null : PREVIEW_UTC_OFFSET,
   })
   const orientation = shot.portrait ? ' portrait' : ''
-  return previewDocument(inner, shot.device, shot.layout, `${shot.scenario} · ${PREVIEW_DEVICES[shot.device].label}${orientation} · ${PREVIEW_LAYOUTS[shot.layout].label}`, { shadeOtherSlots: true, portrait: shot.portrait })
+  return previewDocument(inlineArt(inner), shot.device, shot.layout, `${shot.scenario} · ${PREVIEW_DEVICES[shot.device].label}${orientation} · ${PREVIEW_LAYOUTS[shot.layout].label}`, { shadeOtherSlots: true, portrait: shot.portrait })
 }
 
 function shotsFor(search: PreviewSearch): Shot[] {

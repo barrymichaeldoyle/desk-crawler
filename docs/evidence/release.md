@@ -53,7 +53,7 @@ TRMNL's [current Going Live instructions](https://docs.trmnl.com/go/plugin-marke
 | Interrupted work and delivery failure | Synthetic cloud simulation/ranking/deletion continuation, potion receipt replay and live alert/recovery exhaustion passed. Actual Clerk provider failure/deletion is not certified; legacy in-flight native cursors remain a recovery limitation |
 | Lifecycle/deletion edge cases | Actual preview routes passed expired attempts, delayed callback, wrong owner, lost callback, tombstone and fresh-UUID reinstall checks. Signed real-provider OAuth/JWT/deletion delivery remains open |
 | Operational costs/health | Actual headroom and post-deploy logs inspected. Choose launch scale/Worker plan and Convex spending threshold with zero assumed payouts; current $5 disable threshold is below the 1,000-installation scenario |
-| Balance interpretation | Decided 2026-10-07 (D71): content v2 raises the potion/rest thresholds to 50%/35%; late upgrade saturation accepted for v1.0. Local only: deploy and switch the live world to v2 between runs ([evidence](balance.md)) |
+| Balance interpretation | Decided 2026-10-07 (D71): content v2 raises the potion/rest thresholds to 50%/35%; late upgrade saturation accepted for v1.0. Deployed (`cf4b76b`) and the live world switched to v2 after tick 259 on 2026-10-06 23:41 UTC ([evidence](balance.md)) |
 | Marketplace approval | External review; submission does not establish approval or Creator Fund qualification |
 
 Keep these gates visible even though the submission form does not request them. Approval can lead to soft launch.

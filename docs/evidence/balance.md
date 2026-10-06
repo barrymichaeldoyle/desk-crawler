@@ -40,7 +40,7 @@ Variants tried and rejected (200 heroes, 30 days, scratch runs): potion 50% alon
 
 **Known and accepted, for v1.0.x to watch (D61 starting points):** weekly managers reach level 8 at day 16.8 against the D24 target of 8–14 and sleep 46% of their first month with the small starting bags. This is the bag ladder trading early pace for a visible first-day loop, not a v2 regression; the live three-day/seven-day sleep share decides whether the ladder's early tiers need loosening.
 
-Deployment: the catalog ships beside v1 and the live world switches between runs with `npx convex run world:setActiveContentVersion '{"contentVersion":"v2"}' --prod` ([operations](../operations.md)). Not deployed or switched at the time of writing.
+Deployment: the catalog ships beside v1 and the live world switches between runs with `npx convex run world:setActiveContentVersion '{"contentVersion":"v2"}' --prod` ([operations](../operations.md)). Done with Barry's approval: `cf4b76b` passed the Workers build and the switch returned `{"from":"v1","to":"v2"}` at 23:41 UTC on 2026-10-06, after tick 259. Natural tick 260 (23:45 UTC) completed on `v2` with the live hero preserved. Rollback is the same command with `v1`.
 
 ## Gear stat split (D66), 2026-10-06
 

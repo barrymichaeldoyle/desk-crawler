@@ -138,7 +138,7 @@ export function DevicePreview({ sceneUrl, heroName }: { sceneUrl: string; heroNa
               type="button"
               aria-pressed={choice.device === key}
               onClick={() => choose({ device: key })}
-              className="menu-cursor inline-flex min-h-11 items-center text-muted hover:text-ink aria-pressed:font-semibold aria-pressed:text-gold-ink"
+              className="menu-cursor inline-flex min-h-11 items-center font-semibold text-muted hover:text-ink aria-pressed:text-gold-ink"
             >
               {PREVIEW_DEVICES[key].label}
             </button>

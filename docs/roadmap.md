@@ -28,7 +28,7 @@ Scope still to deploy (all local, approved):
 
 Then: reset-first deployment ([runbook](release/pre-launch-reset.md)), fresh install → Save → first adventure recording, review package and email, Submit for Review. Each external action needs its own authorization.
 
-**Scope freeze.** From the D63 reset deployment until marketplace approval, v1.0 takes fixes and copy only. New systems (salvage, merchant, stances, affixes, colour device templates) wait for v1.1 even if they are small. The reason is the reset: it is the last chance to change stored meaning without a migration, and anything added after it ships under the post-launch preservation rule.
+**Scope freeze.** From the D63 reset deployment until marketplace approval, v1.0 takes fixes and copy only. New systems (salvage, merchant, stances, affixes, colour device templates) wait for v1.1 even if they are small. The reason is the reset: it is the last chance to change stored meaning without a migration, and anything added after it ships under the post-launch preservation rule. The freeze covers deploys, not design: use the review wait to design v1.1 on a branch.
 
 Content floor (unchanged): 3 biomes, 12 authored monsters, gear across 3 tiers / 2 slots / 3 rarities, 48 encounter variants plus lifecycle and lucky-moment summaries, two Warrior sprite states, D24 pacing, bounded return recap, D54 device recap, D46 keepsakes.
 
@@ -43,6 +43,7 @@ Runs from submission through the first weeks of public play. Patch releases only
 - Physical checks that were waived or unverified: portrait display, keepsake claim path.
 - Listing, help and companion copy from reviewer and first-player feedback.
 - Colour (BWRY) device templates are a candidate here only if they are a pure template change; previews already exist (D62). Anything that changes payload meaning waits.
+- Watch retention by hero level. **Reorder trigger:** if heroes that reached best-in-slot or level 12 drop off faster than younger heroes, pull v2.0 Depth ahead of v1.2 Other people. Decide this once from live data, not from the harness.
 
 Gate: no production reset, every player's progress preserved across each deploy, old templates keep valid payload meanings.
 
@@ -50,7 +51,7 @@ Gate: no production reset, every player's progress preserved across each deploy,
 
 Goal: optional meaningful choices without a daily obligation.
 
-Core batch: stances, configurable rest/potion thresholds, a small set of event choices with an automatic default, a wandering merchant, prioritized device attention text, salvage. Continue gear/balance improvements.
+Core batch: stances, configurable rest/potion thresholds, a small set of event choices with an automatic default, a wandering merchant, prioritized device attention text. Continue gear/balance improvements.
 
 | Feature | Dependencies and boundaries |
 | --- | --- |
@@ -59,12 +60,11 @@ Core batch: stances, configurable rest/potion thresholds, a small set of event c
 | Merchant | Bounded offers/price validation, four-tick expiry, purchase receipts; no push spam. Prices sit beside the D61 bag prices (40/150/600/2,000), the first gold sink |
 | Effects | Typed duration/modifier rules; death ordering and rest cleansing explicitly designed |
 | Affixes/Epic | Versioned generation and owned-item compatibility; extend inventory UI |
-| Salvage (P26) | Third choice beside Sell: materials as stack rows outside the bag (new `itemKind`, like potions), explicit, never automatic, same bounds and receipt shape as `sellMany`. Settle O13 (one material per rarity) first |
 | Daily quests | Stretch, not required; timezone/DST and timezone-change abuse design first |
 | Lost-and-found | Stretch; extend the single held-find/inventory-sleep system only with a bounded migration; never reintroduce silent disposal |
 | Web push/email alerts | Deferred by default; user opt-in, delivery cost and calmness review |
 
-Prefer choices/merchant/stances as one coherent release and schedule quest/push scope separately. Salvage may ship alone as v1.1.x if the rest slips.
+Prefer choices/merchant/stances as one coherent release and schedule quest/push scope separately. Salvage is not in this release: materials without a sink would be a hollow feature, so it ships with gear upgrades in v2.0.
 
 Gate: no manual intervention required to resolve expiry; choose/default cannot both award; attention remains one unobtrusive message; more app engagement is a hypothesis, not a login target.
 
@@ -89,12 +89,13 @@ Gate: meeting side effects commit at most once for both parties; social data doe
 
 Goal: sustained progression for older heroes. Major because it raises ceilings.
 
-Core batch: Archive and Parking Garage first, persistent elite encounters with explicit intervention/retreat rules, owned-gear upgrades (P27) and bigger bags. Rooftop/Sub-Basement/dungeons follow as capacity permits.
+Core batch: Archive and Parking Garage first, persistent elite encounters with explicit intervention/retreat rules, salvage (P26) with owned-gear upgrades (P27), and bigger bags. Rooftop/Sub-Basement/dungeons follow as capacity permits.
 
 Persistent fight design must define saved monster state, damage/reward idempotency, abandonment, pause/travel restrictions, policy ordering, max fight duration, defeat/revival and inventory concurrency. Dungeons require keys/reward tables and bounded run histories.
 
 | Slice | Shape |
 | --- | --- |
+| Salvage (P26) | Third choice beside Sell: materials as stack rows outside the bag (new `itemKind`, like potions), explicit, never automatic, same bounds and receipt shape as `sellMany`. Settle O13 (one material per rarity) first. Ships in the same release as upgrades so materials have a use from day one |
 | Gear upgrades (P27) | Spend salvage materials plus gold to raise an owned item one tier within its slot (later, reroll an affix). Replaces the item's copied stats in place under a new catalog version and a receipt; retained logs and ranks untouched. No recipe tree. Keeps finds useful after best-in-slot |
 | Bigger bags | New tiers appended to the content bag ladder above the Rolling Suitcase (20), earned through crafting, raids or new areas. Capacity stays "a ladder tier's capacity" (invariant `BAG_CAPACITY`); the bounded inventory read and `sellMany` bound grow with the new top tier |
 | Legendary gear, lore, hardcore | Separate slices. Hardcore needs a new hero lifecycle, separate eligibility/ranking, permanent-death confirmation, retirement/Hall of Heroes model and recovery behaviour. It is not a boolean toggle on a live normal hero |
@@ -135,7 +136,7 @@ Checked against the local v1.0 candidate on 2026-10-06. Keep these true in any v
 | --- | --- | --- |
 | Bags above 20 (v2.0) | `bagCapacity` is a number on the hero; the invariant requires it to equal a tier in the content ladder | Bigger bags are appended ladder tiers in a new content version, never ad-hoc numbers. Do not hard-code 20 anywhere except the ladder |
 | Bounded inventory reads | Read bound is fixed at 32 rows; `sellMany` accepts up to 30 | Derive both from the ladder's top capacity plus stack kinds before the first bigger bag ships |
-| Salvage materials (v1.1) | Potions are item rows (`itemKind: 'potion'`) counted outside gear capacity | Materials follow the same stack-row pattern with a new `itemKind` literal. Do not add material counters to the hero document |
+| Salvage materials (v2.0) | Potions are item rows (`itemKind: 'potion'`) counted outside gear capacity | Materials follow the same stack-row pattern with a new `itemKind` literal. Do not add material counters to the hero document |
 | Gear upgrades (v2.0) | Items copy catalog stats at creation under a `contentVersion` | Keep copied stats and version on items; upgrades rewrite them under a receipt. Do not move item stats to catalog lookups |
 | Gold economy (v1.1 merchant) | Bag prices 40/150/600/2,000 are the only gold sink | Merchant prices are tuned against bag prices and D30 income; never remove the bag purchase path |
 | Five gear slots (later) | Capacity counts unequipped gear only | Keep that rule, so new slots never shrink a bag |

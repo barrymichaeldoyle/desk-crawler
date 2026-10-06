@@ -18,6 +18,7 @@ import { Route as SupportRouteImport } from './routes/support'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppDeskCrawlerRouteImport } from './routes/app/desk-crawler'
+import { Route as DevDeskCrawlerRouteImport } from './routes/dev/desk-crawler'
 import { Route as GamesDeskCrawlerRouteImport } from './routes/games/desk-crawler'
 import { Route as HelpDeskCrawlerRouteImport } from './routes/help/desk-crawler'
 import { Route as AppDeskCrawlerIndexRouteImport } from './routes/app/desk-crawler/index'
@@ -72,6 +73,11 @@ const AppDeskCrawlerRoute = AppDeskCrawlerRouteImport.update({
   path: '/desk-crawler',
   getParentRoute: () => AppRoute,
 } as any)
+const DevDeskCrawlerRoute = DevDeskCrawlerRouteImport.update({
+  id: '/dev/desk-crawler',
+  path: '/dev/desk-crawler',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesDeskCrawlerRoute = GamesDeskCrawlerRouteImport.update({
   id: '/games/desk-crawler',
   path: '/games/desk-crawler',
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
   '/app/desk-crawler': typeof AppDeskCrawlerRouteWithChildren
+  '/dev/desk-crawler': typeof DevDeskCrawlerRoute
   '/games/desk-crawler': typeof GamesDeskCrawlerRoute
   '/help/desk-crawler': typeof HelpDeskCrawlerRoute
   '/app/': typeof AppIndexRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
+  '/dev/desk-crawler': typeof DevDeskCrawlerRoute
   '/games/desk-crawler': typeof GamesDeskCrawlerRoute
   '/help/desk-crawler': typeof HelpDeskCrawlerRoute
   '/app': typeof AppIndexRoute
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
   '/app/desk-crawler': typeof AppDeskCrawlerRouteWithChildren
+  '/dev/desk-crawler': typeof DevDeskCrawlerRoute
   '/games/desk-crawler': typeof GamesDeskCrawlerRoute
   '/help/desk-crawler': typeof HelpDeskCrawlerRoute
   '/app/': typeof AppIndexRoute
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/terms'
     | '/app/desk-crawler'
+    | '/dev/desk-crawler'
     | '/games/desk-crawler'
     | '/help/desk-crawler'
     | '/app/'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/support'
     | '/terms'
+    | '/dev/desk-crawler'
     | '/games/desk-crawler'
     | '/help/desk-crawler'
     | '/app'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/terms'
     | '/app/desk-crawler'
+    | '/dev/desk-crawler'
     | '/games/desk-crawler'
     | '/help/desk-crawler'
     | '/app/'
@@ -238,6 +250,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   SupportRoute: typeof SupportRoute
   TermsRoute: typeof TermsRoute
+  DevDeskCrawlerRoute: typeof DevDeskCrawlerRoute
   GamesDeskCrawlerRoute: typeof GamesDeskCrawlerRoute
   HelpDeskCrawlerRoute: typeof HelpDeskCrawlerRoute
   ConnectTrmnlDeskCrawlerInstallRoute: typeof ConnectTrmnlDeskCrawlerInstallRoute
@@ -308,6 +321,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/desk-crawler'
       preLoaderRoute: typeof AppDeskCrawlerRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/dev/desk-crawler': {
+      id: '/dev/desk-crawler'
+      path: '/dev/desk-crawler'
+      fullPath: '/dev/desk-crawler'
+      preLoaderRoute: typeof DevDeskCrawlerRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/games/desk-crawler': {
       id: '/games/desk-crawler'
@@ -406,6 +426,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   SupportRoute: SupportRoute,
   TermsRoute: TermsRoute,
+  DevDeskCrawlerRoute: DevDeskCrawlerRoute,
   GamesDeskCrawlerRoute: GamesDeskCrawlerRoute,
   HelpDeskCrawlerRoute: HelpDeskCrawlerRoute,
   ConnectTrmnlDeskCrawlerInstallRoute: ConnectTrmnlDeskCrawlerInstallRoute,

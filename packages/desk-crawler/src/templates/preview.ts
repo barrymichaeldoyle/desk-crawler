@@ -33,8 +33,13 @@ export const PREVIEW_LAYOUTS = {
 } as const
 export type PreviewLayout = keyof typeof PREVIEW_LAYOUTS
 
-/** Mashup slots this plugin does not own: a dither field labelled as the owner's other plugins. */
-const OTHER_SLOTS_STYLE = `.trmnl .screen .mashup .view:empty{background:conic-gradient(#000 25%,#fff 0 50%,#000 0 75%,#fff 0) 0 0/12px 12px !important;opacity:.35}`
+/** Mashup slots this plugin does not own: a dither field labelled as the owner's other plugins, its cell sized to the device so it survives scaling down. */
+const otherSlotsStyle = (device: PreviewDevice) => {
+  const cell = Math.round((12 * PREVIEW_DEVICES[device].width) / 800)
+  // X-class screens paint a white `.view::before` card under each slot, so the dither goes on both.
+  const dither = `background:conic-gradient(#000 25%,#fff 0 50%,#000 0 75%,#fff 0) 0 0/${cell}px ${cell}px !important`
+  return `.trmnl .screen .mashup .view:empty{${dither};opacity:.35}.trmnl .screen .mashup .view:empty::before{${dither}}`
+}
 
 /**
  * A standalone HTML document for one rendered layout on one device class.
@@ -51,6 +56,6 @@ export function previewDocument(renderedMarkup: string, device: PreviewDevice, l
   const classes = options.portrait ? PREVIEW_DEVICES[device].classes.replace('screen--landscape', 'screen--portrait') : PREVIEW_DEVICES[device].classes
   return `<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><base href="https://trmnl.com/">
 <link rel="stylesheet" href="https://trmnl.com/css/${FRAMEWORK_VERSION}/plugins.css"><script src="https://trmnl.com/js/${FRAMEWORK_VERSION}/plugins.js"></script>
-<style>html,body{margin:0;overflow:hidden}${options.shadeOtherSlots ? OTHER_SLOTS_STYLE : ''}</style>
+<style>html,body{margin:0;overflow:hidden}${options.shadeOtherSlots ? otherSlotsStyle(device) : ''}</style>
 </head><body class="environment trmnl"><div class="${classes}">${PREVIEW_LAYOUTS[layout].wrapper(renderedMarkup)}</div></body></html>`
 }

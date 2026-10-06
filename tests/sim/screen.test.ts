@@ -91,7 +91,8 @@ describe('companion QR in every view', () => {
         const html = await liquid.parseAndRender(markup, { ...payload(), ...state, qr_base: `${base}/app`, companion_qr_base: `${base}/bag` })
         expect(html).toContain(`src="${base}/app/`)
         expect(html).not.toContain(`src="${base}/bag/`)
-        expect(html.match(/src="https:\/\/art.test\/art\/qr\//g)).toHaveLength(2)
+        // One small and one large code in each of the landscape and portrait arrangements.
+        expect(html.match(/src="https:\/\/art.test\/art\/qr\//g)).toHaveLength(4)
       }
     }
   })

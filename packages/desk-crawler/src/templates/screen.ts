@@ -1,12 +1,13 @@
 /**
- * Four self-contained TRMNL layouts. Template v29 reserves a companion QR in
- * every view and gives compact OG screens more room for complete stories.
+ * Four self-contained TRMNL layouts. Template v30 adds a portrait arrangement
+ * of every view beside the unchanged landscape one (v29: a companion QR in
+ * every view, more room for complete stories on compact OG screens).
  * User text arrives only through escaped merge_variables; scenes and QR codes
  * use existing integer-scaled artwork. No shared-template registration.
  */
 import { GLYPHS, glyphRows } from '../art/glyphs'
 
-export const TEMPLATE_VERSION = 29
+export const TEMPLATE_VERSION = 30
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -62,6 +63,19 @@ const progress = (label: string, value: string, pct: string, size = '') => `
         </div>
         <div class="track outline"><div class="fill" style="width: {{ ${pct} | default: 0 }}%"></div></div>
       </div>`
+
+/**
+ * Portrait bars: ten pixel segments from framework classes, black when earned and grey (dithered on the OG) when not.
+ * TRMNL caps inline styles at six per plugin; the landscape bars use them, so portrait draws its bars without any.
+ */
+const segmentBar = (label: string, value: string, pct: string, large = false) => `
+      <div class="flex flex--col flex--left gap--xsmall stretch-x">
+        <span><span class="value value--xsmall lg:value--small">${value}</span> <span class="label lg:title--small">${label}</span></span>
+        {% assign seg_on = ${pct} | default: 0 | plus: 5 | divided_by: 10 %}<div class="flex flex--row gap--xsmall stretch-x">{% for i in (1..10) %}<div class="grow h--[10px] ${large ? 'lg:h--[24px]' : 'lg:h--[16px]'} {% if i <= seg_on %}bg--black{% else %}bg--gray-50{% endif %}"></div>{% endfor %}</div>
+      </div>`
+
+const hpSegments = (large = false) => segmentBar('HP', '{{ hp }}/{{ max_hp }}', 'hp_pct', large)
+const xpSegments = (large = false) => segmentBar('XP', '{{ xp }}/{{ xp_to_next }}', 'xp_pct', large)
 
 const hpBar = (size = '') => progress('HP', '{{ hp }}/{{ max_hp }}', 'hp_pct', size)
 const xpBar = (size = '') => progress('XP', '{{ xp }}/{{ xp_to_next }}', 'xp_pct', size)
@@ -153,18 +167,20 @@ const storyList = (clamp: number, classes: string, size = 16, fit = 60) => `
  * Pinned framework 3.4 emits its final stats before signalling readiness. Fit the
  * actual rich-text boxes at that point, reserving the footer and following rank
  * line. Only visibility changes; there are no styles, network calls or writes.
- * Scope to this view so another Desk Crawler slot has its own height budget.
+ * Scope to this view so another Desk Crawler slot has its own height budget, and
+ * to the orientation layout the framework is showing (the other is display: none).
  */
 const fitStories = `<script>
 (() => {
   const view = document.currentScript.closest('.view');
   if (!view) return;
   const fit = () => {
-    const layout = view.querySelector('.layout');
-    const footer = view.querySelector('.title_bar');
+    const layout = Array.from(view.querySelectorAll('.layout')).find(el => el.getClientRects().length > 0);
+    const footer = Array.from(view.querySelectorAll('.title_bar')).find(el => el.getClientRects().length > 0);
     if (!layout || !footer) return;
     const layoutBottom = Math.min(footer.getBoundingClientRect().top, layout.getBoundingClientRect().bottom - (parseFloat(getComputedStyle(layout).paddingBottom) || 0));
     view.querySelectorAll('[data-story-list]').forEach(list => {
+      if (!list.getClientRects().length) return;
       const entries = Array.from(list.children).filter(entry => entry.classList.contains('block'));
       entries.forEach(entry => entry.classList.remove('hidden'));
       const parent = list.parentElement;
@@ -277,8 +293,111 @@ const welcome = (layout: WelcomeLayout) => {
   return layout === 'full' ? `${scene('scene_url')}${row}` : row
 }
 
-export const markupFull = `${glyphAssigns([16, 24])}
-<div class="layout layout--col layout--top layout--stretch-x gap--xsmall lg:gap--small">
+
+/**
+ * Landscape and portrait arrangements of one view; the framework's `portrait:` classes show the one that matches the
+ * device. Each hides itself in the other orientation; showing one with `portrait:flex` would make it a row whose
+ * stretch-x children all take an equal share of the height. Each arrangement carries its own title bar because the
+ * framework sizes a layout only when the title bar is its next sibling (`.layout:has(+.title_bar)`).
+ */
+const oriented = (classes: string, landscape: string, portrait: string, bar: string) => `
+<div class="${classes} portrait:hidden">${landscape}
+</div>${bar.replace('class="title_bar"', 'class="title_bar portrait:hidden"')}
+<div class="${classes} landscape:hidden">${portrait}
+</div>${bar.replace('class="title_bar"', 'class="title_bar landscape:hidden"')}`
+
+/** A standing companion QR beside its caption, for the narrow portrait columns. */
+const qrFooter = (scale = 3, largeScale = 4) => `
+  {% if qr_base != "" or companion_qr_base != "" %}<div class="no-shrink flex flex--row flex--left flex--center-y gap--small stretch-x" data-companion-qr="true">
+    {% if qr_base != "" %}<div class="no-shrink">${qrImage(scale, largeScale)}</div><span class="label lg:title--small grow" data-clamp="3">{{ qr_label | escape }}</span>
+    {% else %}<div class="no-shrink">${qrImage(scale, largeScale, 'companion_qr_base')}</div><span class="label lg:title--small grow">Your bag</span>{% endif %}
+  </div>{% endif %}`
+
+/**
+ * Full, portrait: name and status, HP and XP side by side, the scene, then the
+ * stories take the height, with the ranking and companion QR on the last row.
+ */
+const fullPortrait = `
+  {% if status == "unlinked" or first_run %}<div class="grow flex flex--col flex--center-x flex--center-y stretch-x">${welcome('halfVertical')}</div>
+  {% else %}
+  <div class="no-shrink flex flex--col flex--left gap--xsmall stretch-x">
+    <span class="title lg:hidden" data-clamp="1">{{ hero_name | truncate: 16 | escape }}, level {{ level }}</span>
+    <span class="hidden lg:inline-block title lg:title--large" data-fit-value="true">{{ hero_name | escape }}, level {{ level }}</span>
+    ${statusLine(2, 40)}${nextTick('hidden lg:block label lg:title--small')}
+    <span class="hidden lg:block label lg:title--small">{{ gold }} gold · {{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}</span>
+  </div>
+  <div class="no-shrink grid grid--cols-2 gap--medium lg:gap--large stretch-x">
+    <div>${hpSegments(true)}</div>
+    <div>${xpSegments(true)}</div>
+  </div>
+  <div class="hidden lg:block no-shrink stretch-x"><div class="grid grid--cols-2 gap--large">${gearSlot('Weapon', 'weapon')}${gearSlot('Armor', 'armor')}</div></div>
+  <div class="no-shrink flex flex--col gap--small stretch-x">${scene('scene_url_small', 'scene_url_large')}${divider}</div>
+  <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small stretch-x">
+    ${attention('label lg:title--small', 3)}
+    {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(2, 'title lg:title', 24, 40)}
+  </div>
+  <div class="no-shrink flex flex--row flex--left flex--top gap--medium stretch-x">
+    <div class="grow w--min-0 flex flex--col flex--left flex--stretch-x gap--xsmall">{% if qr_base == "" %}${rankPanel}{% endif %}</div>
+    ${bagQr(3, 4, true)}
+  </div>
+  {% unless attention %}${recapRibbon}{% endunless %}
+  {% endif %}`
+
+/** Side, portrait: a narrow column. Hero and health first, the stories take the height, the companion QR closes the column. */
+const halfVerticalPortrait = `
+  {% if status == "unlinked" or first_run %}${welcome('halfVertical')}
+  {% else %}
+  <div class="no-shrink flex flex--col flex--left flex--stretch-x gap--xsmall stretch-x">
+    <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
+    ${statusLine(2, 24)}${nextTick('label lg:title--small')}${hpSegments()}${xpSegments()}
+  </div>
+  <div class="no-shrink stretch-x"><div class="hidden lg:block">${scene('scene_url_small')}</div>${divider}</div>
+  <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--small stretch-x">
+    {% if attention %}${attention('label lg:title--small', 4)}{% else %}${recapBlock(true)}{% endif %}
+    {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(3, 'label lg:title--small', 16, 26)}
+  </div>
+  ${qrFooter()}
+  {% endif %}`
+
+/** Quarter, portrait: hero line, the stories, then the companion QR across the bottom. */
+const quadrantPortrait = `
+  {% if status == "unlinked" or first_run %}${welcome('halfVertical')}
+  {% else %}
+  <span class="no-shrink label lg:title--small" data-clamp="2">{{ hero_name | escape }}, level {{ level }} · HP {{ hp }}/{{ max_hp }}</span>
+  <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small stretch-x">
+    {% if attention %}${attention('label lg:title--small', 3)}{% else %}${recapBlock(true)}{% endif %}
+    ${storyList(3, 'label lg:title--small', 16, 24)}
+  </div>
+  ${qrFooter()}
+  {% endif %}`
+
+/**
+ * Side, landscape: hero and QR side by side, then the recap and stories. A portrait Half has nearly the same proportions
+ * but less height, so it uses this arrangement without the scene and with the one-line recap.
+ */
+const halfVerticalBody = (withScene: boolean) => `
+  {% if status == "unlinked" or first_run %}${welcome('halfVertical')}
+  {% else %}
+  <div class="grid no-shrink stretch-x gap--small">
+    <div class="col--span-8 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
+      <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
+      ${statusLine(2, 42)}${nextTick('label lg:title--small')}${withScene ? hpBar(' progress-bar--small') : hpSegments()}
+      <div class="hidden lg:block stretch-x">${withScene ? xpBar(' progress-bar--small') : xpSegments()}</div>
+    </div>
+    <div class="col--span-4 flex flex--col flex--center-x flex--top">${bagQr()}</div>
+  </div>
+  <div class="no-shrink stretch-x">${withScene ? `<div class="hidden lg:block">${scene('scene_url_small')}</div>` : ''}${divider}</div>
+  <div class="grow h--full h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--small pt--2">
+    {% if attention %}${attention('label lg:title--small', 3)}{% else %}${recapBlock(!withScene)}{% endif %}
+    {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(2, 'title title--small lg:title', 24, 50)}
+  </div>
+  {% endif %}
+`
+
+const halfVerticalLandscape = halfVerticalBody(true)
+const halfHorizontalPortrait = halfVerticalBody(false)
+
+export const markupFull = `${glyphAssigns([16, 24])}${oriented('layout layout--col layout--top layout--stretch-x gap--xsmall lg:gap--small', `
   {% if status == "unlinked" or first_run %}${welcome('full')}
   {% else %}
   <div class="grid no-shrink stretch-x gap--medium">
@@ -316,10 +435,9 @@ export const markupFull = `${glyphAssigns([16, 24])}
   </div>
   {% unless attention %}${recapRibbon}{% endunless %}
   {% endif %}
-</div>${titleBarFull}${fitStories}`
+`, fullPortrait, titleBarFull)}${fitStories}`
 
-export const markupHalfHorizontal = `${glyphAssigns([16])}
-<div class="layout layout--col layout--top layout--stretch-x gap--small">
+export const markupHalfHorizontal = `${glyphAssigns([16, 24])}${oriented('layout layout--col layout--top layout--stretch-x gap--small', `
   {% if status == "unlinked" or first_run %}${welcome('halfHorizontal')}
   {% else %}
   <div class="grid grow h--full h--min-0 stretch-x gap--medium">
@@ -335,30 +453,11 @@ export const markupHalfHorizontal = `${glyphAssigns([16])}
   </div>
   {% unless attention %}${recapRibbon}{% endunless %}
   {% endif %}
-</div>${titleBar}${fitStories}`
+`, halfHorizontalPortrait, titleBar)}${fitStories}`
 
-export const markupHalfVertical = `${glyphAssigns([16, 24])}
-<div class="layout layout--col layout--top layout--stretch-x gap--small lg:gap--medium">
-  {% if status == "unlinked" or first_run %}${welcome('halfVertical')}
-  {% else %}
-  <div class="grid no-shrink stretch-x gap--small">
-    <div class="col--span-8 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
-      <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
-      ${statusLine(2, 42)}${nextTick('label lg:title--small')}${hpBar(' progress-bar--small')}
-      <div class="hidden lg:block stretch-x">${xpBar(' progress-bar--small')}</div>
-    </div>
-    <div class="col--span-4 flex flex--col flex--center-x flex--top">${bagQr()}</div>
-  </div>
-  <div class="no-shrink stretch-x"><div class="hidden lg:block">${scene('scene_url_small')}</div>${divider}</div>
-  <div class="grow h--full h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--small pt--2">
-    {% if attention %}${attention('label lg:title--small', 3)}{% else %}${recapBlock()}{% endif %}
-    {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(2, 'title title--small lg:title', 24, 50)}
-  </div>
-  {% endif %}
-</div>${titleBar}${fitStories}`
+export const markupHalfVertical = `${glyphAssigns([16, 24])}${oriented('layout layout--col layout--top layout--stretch-x gap--small lg:gap--medium', halfVerticalLandscape, halfVerticalPortrait, titleBar)}${fitStories}`
 
-export const markupQuadrant = `${glyphAssigns([16])}
-<div class="layout layout--col layout--top layout--stretch-x gap--small">
+export const markupQuadrant = `${glyphAssigns([16])}${oriented('layout layout--col layout--top layout--stretch-x gap--small', `
   {% if status == "unlinked" or first_run %}${welcome('quadrant')}
   {% else %}
     <span class="no-shrink label lg:title--small" data-clamp="1">{{ hero_name | escape }}, level {{ level }} · HP {{ hp }}/{{ max_hp }}</span>
@@ -372,7 +471,7 @@ export const markupQuadrant = `${glyphAssigns([16])}
       </div>
     </div>
   {% endif %}
-</div>${titleBar}${fitStories}`
+`, quadrantPortrait, titleBar)}${fitStories}`
 
 export const screenMarkup = {
   markup: markupFull,

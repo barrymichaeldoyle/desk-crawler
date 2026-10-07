@@ -3,7 +3,7 @@ import type { Doc } from '../_generated/dataModel'
 import type { QueryCtx } from '../_generated/server'
 import { HOUR_MS, hourStart, WINDOW_7D_HOURS } from '@trmnl-games/desk-crawler/sim/score'
 import { levelGroup } from '@trmnl-games/desk-crawler/sim/core/stats'
-import type { PayloadRanking } from '@trmnl-games/desk-crawler/payload'
+import { TOP_ROWS, type PayloadRanking } from '@trmnl-games/desk-crawler/payload'
 
 export type Board = 'overall' | 'recent_24h' | 'recent_7d'
 
@@ -33,7 +33,7 @@ export async function maskedEntries(ctx: QueryCtx, entries: Doc<'leaderboardGene
 
 /**
  * Device ranking (D20/D31/D32): the hero's own seven-day group rank from the
- * published set, its group's Top 5 and both populations. Fixed indexed reads;
+ * published set, its group's first `TOP_ROWS` rows and both populations. Fixed indexed reads;
  * the captured cohort comes from the hero's own row, never from live level.
  */
 export async function readDeviceRanking(ctx: QueryCtx, world: Doc<'worldState'> | null, hero: Doc<'heroes'>): Promise<PayloadRanking | null> {
@@ -65,6 +65,6 @@ export async function readDeviceRanking(ctx: QueryCtx, world: Doc<'worldState'> 
     windowStart: hourStart(publication.scoreAt) - (WINDOW_7D_HOURS - 1) * HOUR_MS,
     totalPlayers: generation?.totalPlayers ?? 0,
     globalTotalPlayers: publication.globalTotalPlayers,
-    top5: generation ? await maskedEntries(ctx, generation.entries, 5) : [],
+    top: generation ? await maskedEntries(ctx, generation.entries, TOP_ROWS) : [],
   }
 }

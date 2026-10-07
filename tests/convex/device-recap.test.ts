@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { api } from '@trmnl-games/backend/api'
 import schema from '../../apps/backend/convex/schema'
 import type { Doc, Id } from '@trmnl-games/backend/data-model'
-import { MAX_RECAP_EVENTS, RECAP_WINDOW_MS } from '@trmnl-games/desk-crawler/payload'
+import { MAX_LOGS, MAX_RECAP_EVENTS, RECAP_WINDOW_MS } from '@trmnl-games/desk-crawler/payload'
 import { seedHero, seedWorld, type T } from './helpers'
 
 const modules = import.meta.glob('../../apps/backend/convex/**/*.ts')
@@ -32,7 +32,7 @@ async function insert(t: T, heroId: Id<'heroes'>, count: number, source: 'tick' 
 }
 
 describe('device recap read path', () => {
-  it('covers the whole stand-up period independently of the ten latest stories, excludes boundary rows, later rows and other heroes', async () => {
+  it('covers the whole stand-up period independently of the latest stories, excludes boundary rows, later rows and other heroes', async () => {
     const { t, heroId, owner } = await setup()
     await insert(t, heroId, 49) // The 49th row sits exactly on the period's start, 19:00 the evening before.
     const otherHero = await seedHero(t, {}, 'OtherOwner')
@@ -43,7 +43,7 @@ describe('device recap read path', () => {
       await ctx.db.insert('tickLogs', { ...fields, sequence: 99, at: END + 1 })
     })
     const preview = await owner.query(api.trmnlPayload.mine, { now: NOW })
-    expect(preview!.log).toHaveLength(10)
+    expect(preview!.log).toHaveLength(MAX_LOGS)
     expect(preview!.recap).toMatchObject({ label: 'Night recap', events: 48, partial: false, from: (END - RECAP_WINDOW_MS) / 1000, to: END / 1000, totals: { potions: 48 } })
     // The owner's offset moves the boundaries: at 10:00 Johannesburg the stand-up ended at 05:00 UTC, before the first eight rows.
     expect((await owner.query(api.trmnlPayload.mine, { now: NOW, utcOffset: 7200 }))!.recap).toMatchObject({ label: 'Night recap', events: 41, to: Date.UTC(2026, 9, 6, 5) / 1000 })

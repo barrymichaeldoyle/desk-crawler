@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { contentV1 } from '@trmnl-games/desk-crawler/content/v1'
-import { aboutDuration, buildPayload, celebrationFor, MAX_LOGS, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
+import { aboutDuration, buildPayload, celebrationFor, MAX_LOGS, TOP_ROWS, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
 
 const NOW = Date.UTC(2026, 9, 4, 8, 20)
 const input: PayloadInput = {
@@ -69,7 +69,7 @@ describe('first-run and companion QR fields', () => {
     expect(p).toMatchObject({ qr_base: '', companion_qr_base: 'https://art.test/art/qr/v3/bag' })
     expect(pick(buildPayload({ ...input, hero: null })).companion_qr_base).toBe('')
     expect(pick(buildPayload({ ...input, artBaseUrl: null })).companion_qr_base).toBe('')
-    // D85: the full layout's corner code goes to the companion home; unlinked payloads and missing art carry none.
+    // D88: the full layout's corner code goes to the companion home; unlinked payloads and missing art carry none.
     const home = (p: unknown) => (p as { home_qr_base: string }).home_qr_base
     expect(home(buildPayload(input))).toBe('https://art.test/art/qr/v3/app')
     expect(home(buildPayload({ ...input, hero: null }))).toBe('')
@@ -77,13 +77,27 @@ describe('first-run and companion QR fields', () => {
   })
 })
 
+describe('board rows (D89)', () => {
+  it('sends the first ten rows as top10 and keeps top5 as the first five', () => {
+    const top = Array.from({ length: 12 }, (_, i) => ({ rank: i + 1, name: `P${i + 1}`, hero_name: `H${i + 1}`, level: 5, score: 1000 - i }))
+    const ranking = { rank: 3, rankDelta: null, status: 'ranked' as const, cohortKey: '4-7', cohortLabel: 'Levels 4-7', score: 998, scoreAt: NOW, asOfTick: 1, builtAt: NOW, windowStart: NOW - 7 * 86_400_000, totalPlayers: 12, globalTotalPlayers: 12, top }
+    const p = buildPayload({ ...input, ranking }) as unknown as { top5: Array<{ rank: number }>; top10: Array<{ rank: number; class: string }> }
+    expect(TOP_ROWS).toBe(10)
+    expect(p.top10.map((row) => row.rank)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    expect(p.top5.map((row) => row.rank)).toEqual([1, 2, 3, 4, 5])
+    expect(p.top10[0]!.class).toBe('warrior')
+    const empty = buildPayload({ ...input, ranking: null }) as unknown as { top5: unknown[]; top10: unknown[] }
+    expect([empty.top5, empty.top10]).toEqual([[], []])
+  })
+})
+
 describe('log lines and celebrations (D44)', () => {
   const played = { ...input, logs: Array.from({ length: 12 }, (_, i) => ({ at: NOW - (i + 1) * 900_000, kind: 'combat', summary: `Fight ${i}.` })) }
 
-  it('carries up to ten logs with UTC seconds for the HH:MM label', () => {
-    const log = (buildPayload(played) as unknown as { log: Array<{ u: number; s: string }> }).log
-    expect(MAX_LOGS).toBe(10)
-    expect(log).toHaveLength(10)
+  it('carries up to twenty logs with UTC seconds for the HH:MM label', () => {
+    const log = (buildPayload({ ...played, logs: Array.from({ length: 24 }, (_, i) => ({ at: NOW - (i + 1) * 900_000, kind: 'combat', summary: `Fight ${i}.` })) }) as unknown as { log: Array<{ u: number; s: string }> }).log
+    expect(MAX_LOGS).toBe(20)
+    expect(log).toHaveLength(20)
     expect(log[0]).toMatchObject({ u: (NOW - 900_000) / 1000, s: 'Fight 0.' })
   })
 
@@ -129,8 +143,10 @@ describe('status times (D45)', () => {
   it('leads the story list with the destination and arrival while travelling', () => {
     const logs = Array.from({ length: MAX_LOGS }, (_, i) => ({ at: NOW - (i + 1) * 60_000, kind: 'system', summary: `Story ${i}.` }))
     const travelling = { ...input, logs, latestEvent: { kind: 'levelup' }, hero: { ...input.hero!, status: 'travelling' as const, lastTick: 1, targetBiomeId: 'server_room', arriveAtTick: 2 } }
-    const withOffset = buildPayload({ ...travelling, utcOffset: 7200 }) as unknown as { log: Array<{ k: string; n: string; u: number; d: string }>; celebration: string | null }
-    expect(withOffset.log[0]).toMatchObject({ k: 'travel', n: 'Off to the [[Server Room]], arriving', u: Date.UTC(2026, 9, 4, 8, 30) / 1000, d: '' })
+    const withOffset = buildPayload({ ...travelling, utcOffset: 7200 }) as unknown as { log: Array<{ k: string; n: string; u: number; d: string; live?: boolean }>; celebration: string | null }
+    // D91: the owner-local arrival (08:30 UTC + 2 h) is part of the story, and `live` keeps the time column empty.
+    expect(withOffset.log[0]).toMatchObject({ k: 'travel', n: 'Off to the [[Server Room]], arriving 10:30.', u: Date.UTC(2026, 9, 4, 8, 30) / 1000, d: '', live: true })
+    expect(withOffset.log[1]!.live).toBeUndefined()
     expect(withOffset.log).toHaveLength(MAX_LOGS)
     expect(withOffset.log[1]!.n).toBe('Story 0.')
     expect(withOffset.celebration).toBeNull()

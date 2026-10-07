@@ -17,7 +17,9 @@ export type { ActivityEntry, ActivityRecap, RecapPeriod } from './activityRecap'
 
 export const STALE_AFTER_MS = 30 * 60 * 1000
 /** Ten newest stories, independent of the twelve-hour recap and visible layout count. */
-export const MAX_LOGS = 10
+export const MAX_LOGS = 20
+/** Rows of the own group's board the device receives (`top10`); `top5` stays as the first five for older templates. */
+export const TOP_ROWS = 10
 
 export interface PayloadWorld {
   readonly currentTick: number
@@ -95,7 +97,8 @@ export interface PayloadRanking {
   readonly windowStart: number
   readonly totalPlayers: number
   readonly globalTotalPlayers: number
-  readonly top5: ReadonlyArray<{ rank: number; name: string; hero_name: string; level: number; score: number }>
+  /** The group's first `TOP_ROWS` rows. */
+  readonly top: ReadonlyArray<{ rank: number; name: string; hero_name: string; level: number; score: number }>
 }
 
 const iso = (timestamp: number) => new Date(timestamp).toISOString().replace(/\.\d{3}Z$/, 'Z')
@@ -146,6 +149,7 @@ function rankingFields(ranking: PayloadRanking | null, unlinked: boolean, timeZo
       total_players: 0,
       global_total_players: unlinked ? 0 : (ranking?.globalTotalPlayers ?? 0),
       top5: [] as Array<{ rank: number; name: string; hero_name: string; level: number; class: string; score: number }>,
+      top10: [] as Array<{ rank: number; name: string; hero_name: string; level: number; class: string; score: number }>,
       leaderboard_as_of_label: 'Ranking within the hour',
     }
   }
@@ -164,7 +168,8 @@ function rankingFields(ranking: PayloadRanking | null, unlinked: boolean, timeZo
     leaderboard_built_at: iso(ranking.builtAt),
     total_players: ranking.totalPlayers,
     global_total_players: ranking.globalTotalPlayers,
-    top5: ranking.top5.map((row) => ({ ...row, class: 'warrior' })),
+    top5: ranking.top.slice(0, 5).map((row) => ({ ...row, class: 'warrior' })),
+    top10: ranking.top.slice(0, TOP_ROWS).map((row) => ({ ...row, class: 'warrior' })),
     leaderboard_as_of_label: `${asOf.label} ${asOf.offset}`,
   }
 }
@@ -341,11 +346,15 @@ export function buildPayload(input: PayloadInput) {
   }
 
   // While travelling, the destination and arrival lead the story list, where players look for what is happening; the
-  // header keeps its status line. The entry is live, never stored, and carries the arrival time as its HH:MM.
+  // header keeps its status line. The entry is live, never stored, and says the owner-local arrival time in its story
+  // (D91): the HH:MM column is when something happened, so `live` tells the template to leave it empty here.
   const arrivesAt = hero.status === 'travelling' && etaTicks > 0 ? slotEta(now, etaTicks) : null
   const travelLine = arrivesAt === null ? null : (() => {
-    const story = Number.isInteger(input.utcOffset) ? `Off to the ${area(hero.targetBiomeId)}, arriving` : `Off to the ${area(hero.targetBiomeId)}.`
-    return { at: iso(arrivesAt), u: Math.floor(arrivesAt / 1000), t: formatLocal(arrivesAt, input.timezone).label, k: 'travel', s: story, n: story, d: '' }
+    const offset = input.utcOffset
+    const story = typeof offset === 'number' && Number.isInteger(offset)
+      ? `Off to the ${area(hero.targetBiomeId)}, arriving ${new Date(arrivesAt + offset * 1000).toISOString().slice(11, 16)}.`
+      : `Off to the ${area(hero.targetBiomeId)}.`
+    return { at: iso(arrivesAt), u: Math.floor(arrivesAt / 1000), t: formatLocal(arrivesAt, input.timezone).label, k: 'travel', s: story, n: story, d: '', live: true }
   })()
 
   let attention: string | null = null
@@ -370,7 +379,7 @@ export function buildPayload(input: PayloadInput) {
     ...(needsBag ? qrFields('bag', 'Scan to open your bag') : qrFields(firstRun ? 'app' : null, 'Scan to open your companion')),
     // The standing link to the bag (gear and potions): the full layout shows it whenever no action QR takes its place.
     companion_qr_base: input.artBaseUrl ? `${input.artBaseUrl}${qrBasePath('bag')}` : '',
-    // D85: the full layout's small corner code to the companion home; the bag link stays for older templates and narrow views.
+    // D88: the full layout's small corner code to the companion home; the bag link stays for older templates and narrow views.
     home_qr_base: input.artBaseUrl ? `${input.artBaseUrl}${qrBasePath('app')}` : '',
     first_run: firstRun,
     ...sceneUrls(hero.biomeId, sceneFor(hero.status, hero.wakeAtTick !== undefined, input.latestEvent)),

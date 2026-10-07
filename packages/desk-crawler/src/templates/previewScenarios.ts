@@ -6,7 +6,7 @@
  * a redeemable keepsake code.
  */
 import { contentV1 } from '../content/v1'
-import { MAX_RECAP_EVENTS, type ActivityEntry, type PayloadInput } from '../lib/payload'
+import { MAX_LOGS, MAX_RECAP_EVENTS, type ActivityEntry, type PayloadInput } from '../lib/payload'
 import type { OutcomeDetail } from '../sim/core/types'
 
 export const PREVIEW_NOW = Date.UTC(2026, 9, 4, 8, 20)
@@ -44,6 +44,17 @@ export function withOvernightRecap(input: PayloadInput, overnightEntries: Activi
   return input.activity ? input : { ...input, activity: { entries: overnightEntries.map(entry => ({ ...entry, at: entry.at - NOW + input.now })), truncated: false } }
 }
 
+/** Fourteen older adventures, so the base log carries the full `MAX_LOGS` the device receives. */
+const olderLogs: PayloadInput['logs'] = Array.from({ length: 14 }, (_, i) => {
+  const at = NOW - (97 + i * 15) * 60_000
+  return [
+    { at, kind: 'combat', summary: 'Filed a [[Paper Imp]] under defeated. +6 XP, +2 gold.', deltas: { xpEarned: 6, gold: 2, hp: -4 } },
+    { at, kind: 'rest', summary: 'Took a coffee break. +12 HP.', deltas: { xpEarned: 0, gold: 0, hp: 12 } },
+    { at, kind: 'loot', summary: 'Found 8 gold in a desk drawer.', deltas: { xpEarned: 0, gold: 8, hp: 0 } },
+    { at, kind: 'combat', summary: 'Out-argued a [[Stapler Mimic]]. +10 XP, +4 gold.', deltas: { xpEarned: 10, gold: 4, hp: -7 } },
+  ][i % 4]!
+})
+
 export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
   const base: PayloadInput = {
     now: NOW,
@@ -67,6 +78,7 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
       { at: NOW - 52 * 60_000, kind: 'combat', summary: 'Rebooted an [[Overheated Rack]] for good. +11 XP, +4 gold.', deltas: { xpEarned: 11, gold: 4, hp: -9 } },
       { at: NOW - 67 * 60_000, kind: 'loot', summary: 'Found 22 gold under a raised floor tile.', deltas: { xpEarned: 0, gold: 22, hp: 0 } },
       { at: NOW - 82 * 60_000, kind: 'combat', summary: 'Unplugged a [[Cable Serpent]]. +9 XP, +3 gold.', deltas: { xpEarned: 9, gold: 3, hp: -15 } },
+      ...olderLogs,
     ],
     instanceName: 'Desk Crawler',
     content: contentV1,
@@ -86,12 +98,17 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
       windowStart: NOW - 167 * 3_600_000,
       totalPlayers: 41,
       globalTotalPlayers: 212,
-      top5: [
+      top: [
         { rank: 1, name: 'Ana', hero_name: 'Pip', level: 7, score: 2410 },
         { rank: 2, name: 'Bo', hero_name: 'Staple', level: 6, score: 1990 },
         { rank: 3, name: 'barrymichaeldoyle', hero_name: 'Baz', level: 5, score: 1840 },
         { rank: 4, name: 'Cy', hero_name: 'Mug', level: 5, score: 1700 },
         { rank: 5, name: 'Dee', hero_name: 'Clip', level: 4, score: 1515 },
+        { rank: 6, name: 'Eli', hero_name: 'Toner', level: 6, score: 1390 },
+        { rank: 7, name: 'Fen', hero_name: 'Lanyard', level: 4, score: 1210 },
+        { rank: 8, name: 'Gus', hero_name: 'Memo', level: 5, score: 1085 },
+        { rank: 9, name: 'Hal', hero_name: 'Badge', level: 4, score: 940 },
+        { rank: 10, name: 'Ivy', hero_name: 'Ream', level: 7, score: 815 },
       ],
     },
   }
@@ -120,13 +137,13 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
       hero: hero({ name: 'Sir Staplington' }),
       ownerAlias: 'A_Very_Long_Alias__',
       // Widest case for the unclamped rank rows: a 20-character public name with a five-digit score.
-      ranking: { ...base.ranking!, rank: 1, score: 12840, top5: [{ rank: 1, name: 'Maximilian_Wolfgangs', hero_name: 'Sir Staplington', level: 12, score: 12840 }, ...base.ranking!.top5.slice(1)] },
+      ranking: { ...base.ranking!, rank: 1, score: 12840, top: [{ rank: 1, name: 'Maximilian_Wolfgangs', hero_name: 'Sir Staplington', level: 12, score: 12840 }, ...base.ranking!.top.slice(1)] },
       logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'Sent an elite [[Microwave Wraith]] back to the kitchen. +188 XP, +57 gold. Reached level 12! Found a [[Rare Ladle of Ruin]].', deltas: { xpEarned: 188, gold: 57, hp: -48 } }, ...base.logs],
     },
     unlinked: { ...base, hero: null, ranking: null, logs: [], latestEvent: null },
     // Setup screen while the service is paused: no code to scan, so the panel says so instead of asking for a scan.
     unlinkedPaused: { ...base, hero: null, ranking: null, logs: [], latestEvent: null, world: { ...base.world!, maintenanceMode: true } },
-    firstRun: { ...base, hero: hero({ level: 1, xp: 0, hp: 60, gold: 0, biomeId: 'office_cubicles', lastTick: 0 }), logs: [], latestEvent: null, ranking: { ...base.ranking!, rank: null, rankDelta: null, status: 'awaiting', score: null, top5: [] } },
+    firstRun: { ...base, hero: hero({ level: 1, xp: 0, hp: 60, gold: 0, biomeId: 'office_cubicles', lastTick: 0 }), logs: [], latestEvent: null, ranking: { ...base.ranking!, rank: null, rankDelta: null, status: 'awaiting', score: null, top: [] } },
   }
 
   // A fictional public sample generated through the same payload and templates.
@@ -168,7 +185,7 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
     arrivalRecap: { ...base, activity: { entries: [activityEntry({ variant: 'travel', phase: 'arrive', fromBiomeId: 'office_cubicles', toBiomeId: 'server_room', arrivalTick: 120 }, 0), ...overnightEntries], truncated: false } },
   }
   // Saturated histories prove layout capacity is measured instead of capped at three stories.
-  const denseLogs = (summary: string): PayloadInput['logs'] => Array.from({ length: 10 }, (_, i) => ({ at: NOW - (i + 1) * 900_000, kind: 'rest', summary, deltas: { xpEarned: 0, gold: 0, hp: 0 } }))
+  const denseLogs = (summary: string): PayloadInput['logs'] => Array.from({ length: MAX_LOGS }, (_, i) => ({ at: NOW - (i + 1) * 900_000, kind: 'rest', summary, deltas: { xpEarned: 0, gold: 0, hp: 0 } }))
   Object.assign(recapStates, {
     denseShort: { ...base, logs: denseLogs('Took a coffee break anyway.') },
     emptyHistory: { ...base, logs: [] },
@@ -176,11 +193,11 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
     denseLong: { ...states.longText!, logs: denseLogs('Sent an elite [[Microwave Wraith]] back to the kitchen. Reached level 12! Found a [[Rare Ladle of Ruin]].') },
     longHero: { ...base, hero: hero({ name: 'W'.repeat(16) }), logs: denseLogs('Filed a [[Paper Imp]] under defeated.') },
     noMetadata: { ...base, logs: denseLogs('A quiet moment.').map(({ deltas: _deltas, ...entry }) => entry) },
-    largeRanking: { ...base, logs: denseLogs('Filed a [[Paper Imp]] under defeated.'), ranking: { ...base.ranking!, rank: 12345, totalPlayers: 999999, top5: base.ranking!.top5.map(row => ({ ...row, score: 999999 })) } },
+    largeRanking: { ...base, logs: denseLogs('Filed a [[Paper Imp]] under defeated.'), ranking: { ...base.ranking!, rank: 12345, totalPlayers: 999999, top: base.ranking!.top.map(row => ({ ...row, score: 999999 })) } },
   })
 
   const marketing: Record<string, PayloadInput> = {
-    sample: { ...base, ownerAlias: 'Steve', hero: hero({ name: 'Pip' }), ranking: { ...base.ranking!, top5: base.ranking!.top5.map(row => row.rank === 3 ? { ...row, name: 'Steve', hero_name: 'Pip' } : row) } },
+    sample: { ...base, ownerAlias: 'Steve', hero: hero({ name: 'Pip' }), ranking: { ...base.ranking!, top: base.ranking!.top.map(row => row.rank === 3 ? { ...row, name: 'Steve', hero_name: 'Pip' } : row) } },
   }
   return { groups: { states, recap: recapStates, potionFinds: potionStates, noEffect: noEffectStates, marketing }, overnightEntries, base }
 }

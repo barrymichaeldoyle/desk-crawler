@@ -85,7 +85,7 @@ describe('companion QR in every view', () => {
   const base = 'https://art.test/art/qr/v3'
   const liquid = new Liquid({ timezoneOffset: 0 })
 
-  it('keeps a small unlabelled home code in the full layout and a full bag panel in its place (D85)', async () => {
+  it('keeps a small unlabelled home code in the full layout and a full bag panel in its place (D88)', async () => {
     const standing = await liquid.parseAndRender(screenMarkup.markup, { ...payload(), companion_qr_base: `${base}/bag`, home_qr_base: `${base}/app` })
     expect(standing).toContain(`src="${base}/app/2.png"`)
     expect(standing).toContain(`src="${base}/app/3.png"`)
@@ -174,14 +174,14 @@ describe('full layout', () => {
   })
 
   const top5 = [
-    { rank: 1, name: 'Ana', score: 2410 },
-    { rank: 2, name: 'Bo', score: 1990 },
-    { rank: 3, name: 'barrymichaeldoyle', score: 1840 },
-    { rank: 4, name: 'Cy', score: 1700 },
-    { rank: 5, name: 'Dee', score: 1515 },
+    { rank: 1, name: 'Ana', hero_name: 'Pip', level: 7, score: 2410 },
+    { rank: 2, name: 'Bo', hero_name: 'Staple', level: 6, score: 1990 },
+    { rank: 3, name: 'barrymichaeldoyle', hero_name: 'Baz', level: 5, score: 1840 },
+    { rank: 4, name: 'Cy', hero_name: 'Mug', level: 5, score: 1700 },
+    { rank: 5, name: 'Dee', hero_name: 'Clip', level: 4, score: 1515 },
   ]
   const board = (rank: number | null, score = 1840) => ({ ...payload(), rank, leaderboard_score: score, total_players: 141, leaderboard_cohort_label: 'Levels 4-7', top5, owner_name: 'barrymichaeldoyle' })
-  const rows = (html: string) => [...html.matchAll(/<div class="([^"]*)" data-rank-row="(\d+)">(.*?)<\/div>/g)].map((m) => ({ rank: Number(m[2]), own: m[1]!.includes('label--inverted'), hidden: m[1]!.startsWith('hidden'), ogOnly: m[1]!.startsWith('lg:hidden'), text: m[3]!.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, '\u00a0') }))
+  const rows = (html: string) => [...html.matchAll(/<div class="([^"]*)" data-rank-row="(\d+)">(.*?XP<\/span>)<\/div>/g)].map((m) => ({ rank: Number(m[2]), own: m[1]!.includes('label--inverted'), hidden: m[1]!.startsWith('hidden'), ogOnly: m[1]!.startsWith('lg:hidden'), text: m[3]!.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, '\u00a0') }))
 
   it('marks the own row instead of repeating the rank, and never shows the ordinal line', async () => {
     const html = await render(board(3))
@@ -195,6 +195,31 @@ describe('full layout', () => {
     expect(landscape.map((r) => [r.rank, r.own])).toEqual([[1, false], [2, false], [3, true], [4, false], [5, false]])
     expect(landscape[2]!.text).toBe('3. barrymichaeldoyle1840\u00a0XP')
     expect(landscape.filter((r) => r.hidden).map((r) => r.rank)).toEqual([4, 5])
+  })
+
+  it('draws a vertical rule between the stories and the ranking on the X, in the landscape only', async () => {
+    const html = await render(board(3))
+    const [landscape, portrait] = html.split('landscape:hidden')
+    expect(landscape).toMatch(/<div class="col--span-4 flex flex--row flex--stretch-y gap--medium" data-board-column="true">\s*<div class="hidden lg:block no-shrink border--v-30" data-column-rule="true"><\/div>/)
+    expect(portrait).not.toContain('data-column-rule')
+  })
+
+  it('shows up to ten rows on the X from top10, falling back to top5', async () => {
+    const ten = [...top5, ...[6, 7, 8, 9, 10].map((rank) => ({ rank, name: `P${rank}`, hero_name: `H${rank}`, level: 4, score: 1600 - rank * 100 }))]
+    const html = await render({ ...board(3), top10: ten })
+    const [landscape, portrait] = html.split('landscape:hidden')
+    // Landscape: one list; rows 4-10 are X only, and nothing is appended because the hero is on the board.
+    expect(rows(landscape!).map((r) => [r.rank, r.hidden])).toEqual([[1, false], [2, false], [3, false], [4, true], [5, true], [6, true], [7, true], [8, true], [9, true], [10, true]])
+    // Portrait: rows 1-5 and 6-10 in two X-only columns; the OG keeps the first three.
+    expect(portrait).toMatch(/class="grid grid--cols-1 lg:grid--cols-2 gap--none lg:gap--large stretch-x"/)
+    expect(rows(portrait!).map((r) => [r.rank, r.hidden])).toEqual([[1, false], [2, false], [3, false], [4, true], [5, true], [6, true], [7, true], [8, true], [9, true], [10, true]])
+    // A hero below the tenth row is appended on the X, and below the third on the OG.
+    // In the landscape the hero takes the tenth row's place, so the column keeps ten rows.
+    const eleventh = rows((await render({ ...board(11, 400), top10: ten })).split('landscape:hidden')[0]!)
+    expect(eleventh.map((r) => r.rank)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 11])
+    expect(eleventh.slice(9).map((r) => [r.rank, r.own, r.ogOnly, r.hidden])).toEqual([[11, true, true, false], [11, true, false, true]])
+    // An older payload without top10 still draws its five rows.
+    expect(rows((await render(board(3))).split('landscape:hidden')[0]!).map((r) => r.rank)).toEqual([1, 2, 3, 4, 5])
   })
 
   it('appends the own row below the rows a device shows', async () => {
@@ -241,6 +266,25 @@ describe('rich text and status times (D45)', () => {
 })
 
 describe('log lines (D44)', () => {
+  it('leaves the time column empty for the live travel line, which says its arrival in the story (D91)', async () => {
+    const vars = payload() as { log: Array<Record<string, unknown>> } & Record<string, unknown>
+    const travel = { u: NOW / 1000, k: 'travel', s: 'Off to the [[Server Room]], arriving 10:30.', n: 'Off to the [[Server Room]], arriving 10:30.', d: '', live: true }
+    for (const [key, markup] of Object.entries(screenMarkup)) {
+      const html: string = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...vars, utc_offset: 7200, log: [travel, ...vars.log] })
+      expect(html, key).toContain('arriving 10:30.')
+      // Each travel line's block (up to the next entry's rule) has no time and no empty row in the narrow columns;
+      // the stored entry after it still has its time.
+      const blocks = html.split('arriving 10:30.').slice(1).map((rest) => rest.split('border--h-30')[0]!)
+      expect(blocks.length, key).toBeGreaterThan(0)
+      for (const block of blocks) {
+        expect(block, key).not.toContain('data-story-time')
+        expect(block, key).not.toContain('data-story-changes')
+        expect(block, key).not.toContain('data-story-lead-meta')
+      }
+      expect(html, key).toContain('data-story-time="true">')
+    }
+  })
+
   it('shows potion acquisition beside the other changes in all four layouts', async () => {
     const vars = payload()
     for (const markup of Object.values(screenMarkup)) {
@@ -253,7 +297,34 @@ describe('log lines (D44)', () => {
     const html = await render({ ...payload(), utc_offset: 7200 })
     expect(html).toContain('class="image no-shrink" src="data:image/svg+xml,')
     expect(html).toMatch(/<span class="text--regular">Unplugged a Cable Serpent/)
-    expect(html).toMatch(/data-story-time="true">10:19<\/span><\/div><div class="flex[^"]*" data-story-changes="true">/)
+    expect(html).toMatch(/data-story-time="true">10:19<\/span><\/div><div class="(lg:hidden )?flex[^"]*" data-story-changes="true">/)
+  })
+
+  it('gives the newest story the whole line on the X and puts its changes and time below it, in the columns', async () => {
+    const vars = payload() as { log: Array<Record<string, unknown>> } & Record<string, unknown>
+    const html = await render({ ...vars, utc_offset: 7200, log: [{ ...vars.log[0], n: 'Took down an elite [[Legacy Mainframe]]. The floor heard it.' }, ...vars.log] })
+    const lead = html.split('The floor heard it.')[1]!.split('border--h-30')[0]!
+    // On the X: no chips on the story's line, a meta row with the stat columns and the time; on the OG: the time stays on the line.
+    expect(lead).toMatch(/<span class="lg:hidden label lg:title--small no-shrink" data-story-time="true">10:19<\/span>/)
+    expect(lead).toMatch(/<div class="hidden lg:flex flex--row flex--right flex--center-y gap--xsmall" data-story-lead-meta="true"><span class="hidden lg:flex[^"]*" data-story-chips-inline="true">.*data-chip-cell="xp">.*<span class="label lg:title--small no-shrink" data-story-time="true">10:19<\/span><\/div>/)
+    expect(lead.indexOf('data-story-chips-inline')).toBeGreaterThan(lead.indexOf('data-story-lead-meta'))
+  })
+
+  it('puts the changes on the story line on the X in the full layout, in fixed XP, gold and HP columns', async () => {
+    const vars = payload() as { log: Array<Record<string, unknown>> } & Record<string, unknown>
+    const html = await render({ ...vars, utc_offset: 7200, log: [{ ...vars.log[0], d: '+1\u00a0healing potion · +14\u00a0XP · −12\u00a0HP' }, { ...vars.log[0], d: '' }] })
+    const cells = (kind: string) => [...html.matchAll(new RegExp(`data-chip-cell="${kind}">(<span[^>]*>[^<]*</span>)?</span>`, 'g'))].map((m) => (m[1] ?? '').replace(/<[^>]+>/g, ''))
+    // The first entry: XP and HP in their columns, gold empty, the potion just before them; landscape and portrait each draw it once.
+    expect(cells('xp')).toEqual(['+14\u00a0XP', '+14\u00a0XP'])
+    expect(cells('gold')).toEqual(['', ''])
+    expect(cells('hp')).toEqual(['−12\u00a0HP', '−12\u00a0HP'])
+    expect(html).toMatch(/data-story-chips-inline="true"><span class="label lg:title--small label--outline">\+1\u00a0healing potion<\/span><span[^>]*data-chip-cell="xp"/)
+    // The second entry has no changes, so it reserves no columns and its story keeps the line.
+    expect(html.match(/data-story-chips-inline/g)).toHaveLength(2)
+    expect(html).toMatch(/<div class="lg:hidden flex[^"]*" data-story-changes="true">/)
+    // The narrower layouts keep the changes under the story on both devices.
+    const side = await new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup.markup_half_vertical, { ...vars, utc_offset: 7200 })
+    expect(side).not.toContain('data-story-chips-inline')
   })
 
   it('leaves the time out without an offset', async () => {
@@ -300,7 +371,7 @@ describe('log lines (D44)', () => {
     const vars = payload() as { log: Array<Record<string, unknown>> } & Record<string, unknown>
     const html = await render({ ...vars, log: [{ ...vars.log[0], n: 'A very long story '.repeat(10) }] })
     expect(html).toMatch(/data-clamp="2" data-clamp-lg="0"><span class="text--regular">A very long story/)
-    expect(html).toMatch(/<\/span><\/div><div class="flex[^"]*" data-story-changes="true">/)
+    expect(html).toMatch(/<\/span><\/div><div class="(lg:hidden )?flex[^"]*" data-story-changes="true">/)
     const old = await render({ ...vars, log: [{ s: 'Old story. +4 XP.', k: 'combat', u: NOW / 1000 }] })
     expect(old).toContain('Old story. +4 XP.')
     expect(old).not.toContain('undefined')
@@ -382,7 +453,7 @@ describe('HUD hearts and counters (D72)', () => {
     expect(await new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup.markup_quadrant, payload())).not.toContain('data-xp-ticks')
   })
 
-  it('shows attack and defense beside the name, the HP count alone after the hearts, and the bag beside the potions (D85)', async () => {
+  it('shows attack and defense beside the name, the HP count alone after the hearts, and the bag beside the potions (D88)', async () => {
     const vars = { ...payload(), gold: 640, potions: 1, weapon: 'Uncommon Cable Cutter' }
     const escape = (uri: string) => uri.replace(/[.*+?^$(){}|[\]\\]/g, '\\$&')
     const fullView = await render(vars)

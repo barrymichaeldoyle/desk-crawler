@@ -58,6 +58,8 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
 
   let weaponName: string | null = null
   let armorName: string | null = null
+  let weaponAttack = 0
+  let armorDefense = 0
   let heldItemName: string | null = null
   let potions = 0
   let bagUsed = 0
@@ -75,6 +77,8 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
       item ? `${item.rarity === 'common' ? '' : item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1) + ' '}${item.name}` : null
     weaponName = label(named(hero.weaponId))
     armorName = label(named(hero.armorId))
+    weaponAttack = named(hero.weaponId)?.attack ?? 0
+    armorDefense = named(hero.armorId)?.defense ?? 0
     heldItemName = label(named(hero.heldItemId))
     potions = items.find((item) => item.kind === 'potion')?.quantity ?? 0
     bagUsed = countBag({
@@ -135,6 +139,8 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
       : null,
     weaponName,
     armorName,
+    weaponAttack,
+    armorDefense,
     potions,
     bagUsed,
     bagCapacity: hero?.bagCapacity ?? 0,

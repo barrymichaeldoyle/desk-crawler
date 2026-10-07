@@ -69,4 +69,4 @@ D43 does not require Barry to check every physical layout. D46's physical/claim/
 - Approved simpler logo/favicon implemented; new TRMNL plugin icon saved. Local app/touch/social assets generated and inspected.
 - [Review email](review-email.md) and [installation screenshot video](evidence/install-demo/README.md) prepared, not sent or published. Current candidate validation is recorded in [submission preparation](evidence/submission-preparation.md).
 
-Template v29 (D58) and later layout work are superseded by production v32 ([HUD layout](evidence/hud-layout.md)). D73 six-digit keepsake codes with a daily wrong-code limit are deployed with this update ([contract](playlist-retention.md)).
+Template v29 (D58) and later layout work are superseded by production v32 ([HUD layout](evidence/hud-layout.md)). Local template v33 (D74) adds XP ticks, attack and defense, a shorter full header and the marked-own-row leaderboard ([HUD polish](evidence/hud-polish.md)); it is verified locally and not yet deployed. D73 six-digit keepsake codes with a daily wrong-code limit are deployed with this update ([contract](playlist-retention.md)).

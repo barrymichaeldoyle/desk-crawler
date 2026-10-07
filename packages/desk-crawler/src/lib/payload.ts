@@ -3,7 +3,7 @@
  * writes. The caller supplies `now` and already-authorized, bounded inputs.
  */
 import type { ContentCatalog } from '../sim/core/types'
-import { maxHp, xpToLeave } from '../sim/core/stats'
+import { baseAttack, baseDefense, maxHp, xpToLeave } from '../sim/core/stats'
 import { FULL_SCALE, LARGE_SCALE, MEDIUM_SCALE, SMALL_SCALE } from '../art/scene'
 import { QR_LARGE_SCALE, QR_SCALE, qrBasePath, qrPath, type QrTarget } from '../art/qr'
 import { sceneFor, scenePath, type LatestEvent } from '../art/sceneKey'
@@ -54,6 +54,9 @@ export interface PayloadInput {
   readonly hero: PayloadHero | null
   readonly weaponName: string | null
   readonly armorName: string | null
+  /** Attack bonus of the equipped weapon and defense bonus of the equipped armor; 0 with nothing equipped. */
+  readonly weaponAttack: number
+  readonly armorDefense: number
   readonly potions: number
   readonly bagUsed: number
   readonly bagCapacity: number
@@ -260,6 +263,8 @@ export function buildPayload(input: PayloadInput) {
       hp: null,
       max_hp: null,
       hp_pct: null,
+      attack: null,
+      defense: null,
       gold: null,
       status: 'unlinked' as const,
       status_label: 'Setup not finished',
@@ -359,6 +364,9 @@ export function buildPayload(input: PayloadInput) {
     hp: hero.hp,
     max_hp: max,
     hp_pct: clampPct(Math.round((hero.hp * 100) / max)),
+    // The same derived stats the companion HUD shows (deriveStats): level base plus the equipped gear bonus.
+    attack: baseAttack(hero.level) + input.weaponAttack,
+    defense: baseDefense(hero.level) + input.armorDefense,
     gold: hero.gold,
     status: hero.status,
     status_label: statusLabel,

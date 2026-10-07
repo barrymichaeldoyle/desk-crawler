@@ -1,16 +1,17 @@
 /**
- * Four self-contained TRMNL layouts. Template v32 brings the companion's HUD to
- * the device: half-heart health, coin and potion counters, stat changes as
- * chips with the time at the end of the story line, and no next-adventure
- * clock (v31: centred setup panel; v30: portrait arrangements; v29: a
- * companion QR in every view).
+ * Four self-contained TRMNL layouts. Template v33 completes the HUD: XP as ten
+ * half-step ticks under the hearts with the numbers at the end, attack and
+ * defense marks in the counter line, a shorter full header so the scene and
+ * stories move up, and a leaderboard that marks the hero's own row instead of
+ * repeating the rank (v32: hearts, counters and chips; v31: centred setup
+ * panel; v30: portrait arrangements; v29: a companion QR in every view).
  * User text arrives only through escaped merge_variables; scenes and QR codes
  * use existing integer-scaled artwork. No shared-template registration.
  */
 import { GLYPHS, glyphRows } from '../art/glyphs'
 import { hudMarkUri } from '../art/hud'
 
-export const TEMPLATE_VERSION = 32
+export const TEMPLATE_VERSION = 33
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -21,13 +22,20 @@ const TITLE_ICON = svgDataUri(
     '<path d="M19 4v4M17 6h4"/><path d="M5 9v2M4 10h2"/></svg>',
 )
 
-/** Rune divider between the scene and the story: a thin rule with a diamond and runic ticks. */
-const RUNE_DIVIDER = svgDataUri(
-  '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="12" viewBox="0 0 600 12" fill="black">' +
-    '<rect x="0" y="5" width="270" height="2"/><rect x="330" y="5" width="270" height="2"/>' +
-    '<path d="M300 0l6 6-6 6-6-6z"/><rect x="280" y="2" width="2" height="8"/><rect x="318" y="2" width="2" height="8"/>' +
-    '<rect x="262" y="3" width="2" height="6"/><rect x="336" y="3" width="2" height="6"/></svg>',
-)
+/**
+ * Rune divider between the scene and the story: a thin rule with a diamond and runic ticks, drawn at the width of its
+ * column so the OG keeps whole pixels instead of scaling the image down.
+ */
+const runeDivider = (width: number) => {
+  const c = width / 2
+  return svgDataUri(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="12" viewBox="0 0 ${width} 12" fill="black">` +
+      `<rect x="0" y="5" width="${c - 30}" height="2"/><rect x="${c + 30}" y="5" width="${c - 30}" height="2"/>` +
+      `<path d="M${c} 0l6 6-6 6-6-6z"/><rect x="${c - 20}" y="2" width="2" height="8"/><rect x="${c + 18}" y="2" width="2" height="8"/>` +
+      `<rect x="${c - 38}" y="3" width="2" height="6"/><rect x="${c + 36}" y="3" width="2" height="6"/></svg>`,
+  )
+}
+const RUNE_DIVIDER = runeDivider(600)
 
 /**
  * Device-envelope-only code: no code in owner/public preview payloads. Fits the existing footer height. "code" tells a
@@ -59,40 +67,12 @@ const scene = (field: SceneField, large = field === 'scene_url' ? 'scene_url_lar
   {% if ${field} != "" %}<div class="flex flex--row flex--center-x stretch-x"><img class="image lg:hidden" src="{{ ${field} }}" alt=""><img class="image hidden lg:block" src="{{ ${large} }}" alt=""></div>{% endif %}`
 }
 
-/** The row stretches so the framework's image max-width keeps the 600-pixel rule inside narrow portrait columns. */
+/** The row stretches so the framework's image max-width keeps the rule inside narrow portrait columns. */
 const divider = `
   <div class="flex flex--row flex--center-x stretch-x"><img class="image" src="${RUNE_DIVIDER}" alt=""></div>`
-
-/**
- * Framework 3.4 progress bar: content + track + fill. The fill width is the one
- * documented inline-style exception (P18), always a server-clamped 0-100 integer.
- * The numbers lead and the unit follows ("118/148 HP"). `outline` gives the
- * track a strong edge so an empty bar still reads as a bar (the framework's own
- * track border is a muted gray on the X).
- * Nothing on screen goes below the regular label size: label--small renders in
- * the 1-bit pixel font and is unreadable on the OG.
- */
-const progress = (label: string, value: string, pct: string, size = '') => `
-      <div class="progress-bar${size}">
-        <div class="content">
-          <span><span class="value value--xsmall lg:value--small">${value}</span> <span class="label lg:title--small">${label}</span></span>
-        </div>
-        <div class="track outline"><div class="fill" style="width: {{ ${pct} | default: 0 }}%"></div></div>
-      </div>`
-
-/**
- * Portrait bars: ten pixel segments from framework classes, black when earned and grey (dithered on the OG) when not.
- * TRMNL caps inline styles at six per plugin; the landscape bars use them, so portrait draws its bars without any.
- */
-const segmentBar = (label: string, value: string, pct: string, large = false) => `
-      <div class="flex flex--col flex--left gap--xsmall stretch-x">
-        <span><span class="value value--xsmall lg:value--small">${value}</span> <span class="label lg:title--small">${label}</span></span>
-        {% assign seg_on = ${pct} | default: 0 | plus: 5 | divided_by: 10 %}<div class="flex flex--row gap--xsmall stretch-x">{% for i in (1..10) %}<div class="grow h--[10px] ${large ? 'lg:h--[24px]' : 'lg:h--[16px]'} {% if i <= seg_on %}bg--black{% else %}bg--gray-50{% endif %}"></div>{% endfor %}</div>
-      </div>`
-
-const xpSegments = (large = false) => segmentBar('XP', '{{ xp }}/{{ xp_to_next }}', 'xp_pct', large)
-
-const xpBar = (size = '') => progress('XP', '{{ xp }}/{{ xp_to_next }}', 'xp_pct', size)
+/** The full landscape rule shares its row with the leaderboard and bag captions, above the seven-column story list. */
+const storyDivider = `
+  <div class="flex flex--row flex--center-x stretch-x"><img class="image" src="${runeDivider(440)}" alt=""></div>`
 
 /**
  * HUD marks assigned once per layout (`hud_heart_full`...). Drawn at twice their grid so the X, where the framework
@@ -100,27 +80,59 @@ const xpBar = (size = '') => progress('XP', '{{ xp }}/{{ xp_to_next }}', 'xp_pct
  */
 const HUD_ASSIGNS =
   `{% assign hud_heart_full = "${hudMarkUri('heartFull', 36, 32)}" %}{% assign hud_heart_half = "${hudMarkUri('heartHalf', 36, 32)}" %}{% assign hud_heart_empty = "${hudMarkUri('heartEmpty', 36, 32)}" %}` +
+  `{% assign hud_tick_full = "${hudMarkUri('tickFull', 36, 16)}" %}{% assign hud_tick_half = "${hudMarkUri('tickHalf', 36, 16)}" %}{% assign hud_tick_empty = "${hudMarkUri('tickEmpty', 36, 16)}" %}` +
+  `{% assign hud_sword = "${hudMarkUri('sword', 24, 24)}" %}{% assign hud_shield = "${hudMarkUri('shield', 24, 24)}" %}` +
   `{% assign hud_coin = "${hudMarkUri('coin', 24, 24)}" %}{% assign hud_potion = "${hudMarkUri('potion', 24, 24)}" %}`
 
 /**
+ * A HUD row: marks and counts that wrap where a column is too narrow for all of them. It never shrinks, so beside a
+ * long hero name (the quarter header) the name clamps instead of the hearts sliding past the panel edge.
+ */
+const hudRow = (data: string, inner: string) => `<div class="flex flex--row flex--wrap flex--left flex--center-y gap--small no-shrink" ${data}>${inner}</div>`
+
+/** One count with its HUD mark instead of a word: the marks name each count, as in the companion's HUD. */
+const COUNTER_ICON = 'w--[16px] h--[16px] no-shrink'
+const counter = (icon: string, text: string, classes = '') => `<div class="${classes}flex flex--row flex--center-y gap--xsmall no-shrink"><img class="${COUNTER_ICON}" src="{{ ${icon} }}" alt=""><span class="label lg:title--small">${text}</span></div>`
+/** Attack and defense (the companion's ATK/DEF, D60): the level base plus the equipped gear. */
+const attackDefense = (classes = '') => counter('hud_sword', '{{ attack }}', classes) + counter('hud_shield', '{{ defense }}', classes)
+const goldPotions = (classes = '') => counter('hud_coin', '{{ gold }}', classes) + counter('hud_potion', '{{ potions }}', classes)
+/** The X full has the width for the words beside the hero: the same marks, with their counts named. */
+const heroCounters = hudRow('data-counters="words"', counter('hud_sword', '{{ attack }} attack') + counter('hud_shield', '{{ defense }} defense') + counter('hud_coin', '{{ gold }} gold') + counter('hud_potion', '{{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}')).replace('class="flex', 'class="hidden lg:flex')
+
+/**
  * Health as ten half-heart hearts, the companion's HUD meter (D60): each half fills independently, so the row reads in
- * 5% steps. Rounded from the real numbers, and never empty while the hero has any health. Wide rows carry the count;
- * narrow columns show it in the counter line instead, since ten hearts already fill their width.
+ * 5% steps. Rounded from the real numbers, and never empty while the hero has any health. Wide rows carry the count
+ * and the attack and defense marks after it (`extra`); narrow columns show the count in the counter rows instead,
+ * since ten hearts already fill their width.
  */
 const HEART_CLASSES = 'w--[18px] h--[16px] no-shrink'
 const hpCount = '<span class="label lg:title--small no-shrink" data-hp-count="true">{{ hp }}/{{ max_hp }} HP</span>'
-const hearts = (count = true) =>
+const hearts = (count = true, extra = '') =>
   `{% if max_hp > 0 %}{% assign heart_halves = max_hp | divided_by: 2 | floor %}{% assign heart_halves = hp | default: 0 | times: 20 | plus: heart_halves | divided_by: max_hp | floor %}{% else %}{% assign heart_halves = 0 %}{% endif %}{% if hp > 0 and heart_halves < 1 %}{% assign heart_halves = 1 %}{% endif %}` +
-  `<div class="flex flex--row flex--left flex--center-y gap--small" data-hearts="{{ heart_halves }}"><div class="flex flex--row gap--[2px] no-shrink">{% for i in (1..10) %}{% assign heart_right = i | times: 2 %}{% assign heart_left = heart_right | minus: 1 %}<img class="${HEART_CLASSES}" src="{% if heart_halves >= heart_right %}{{ hud_heart_full }}{% elsif heart_halves >= heart_left %}{{ hud_heart_half }}{% else %}{{ hud_heart_empty }}{% endif %}" alt="">{% endfor %}</div>${count ? hpCount : ''}</div>`
+  hudRow(`data-hearts="{{ heart_halves }}"`, `<div class="flex flex--row gap--[2px] no-shrink">{% for i in (1..10) %}{% assign heart_right = i | times: 2 %}{% assign heart_left = heart_right | minus: 1 %}<img class="${HEART_CLASSES}" src="{% if heart_halves >= heart_right %}{{ hud_heart_full }}{% elsif heart_halves >= heart_left %}{{ hud_heart_half }}{% else %}{{ hud_heart_empty }}{% endif %}" alt="">{% endfor %}</div>${count ? hpCount : ''}${extra}`)
 
 /**
- * Coins and potions with their HUD marks instead of words. Narrow columns lead with the HP count (a full heart marks
- * it) and keep only the numbers, since ten hearts already fill their width and the marks name each count.
+ * XP as ten half-step ticks the width of the hearts, the thin bar directly under them with the numbers at the end
+ * (D74): the same 5% steps and the same floor as the hearts, so liquidjs and Ruby Liquid agree. Wide rows add the
+ * coin and potion counts after the numbers (`extra`); the 240-pixel portrait columns wrap the numbers under the ticks.
  */
-const COUNTER_ICON = 'w--[16px] h--[16px] no-shrink'
-const counter = (icon: string, text: string) => `<div class="flex flex--row flex--center-y gap--xsmall no-shrink"><img class="${COUNTER_ICON}" src="{{ ${icon} }}" alt=""><span class="label lg:title--small">${text}</span></div>`
-const counters = (narrow = false) =>
-  `<div class="flex flex--row flex--left flex--center-y gap--small" data-counters="true">${narrow ? counter('hud_heart_full', '{{ hp }}/{{ max_hp }}') : ''}${counter('hud_coin', narrow ? '{{ gold }}' : '{{ gold }} gold')}${counter('hud_potion', narrow ? '{{ potions }}' : '{{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}')}</div>`
+const TICK_CLASSES = 'w--[18px] h--[8px] no-shrink'
+const xpTicks = (extra = '') =>
+  `{% assign xp_halves = xp_pct | default: 0 | times: 20 | plus: 50 | divided_by: 100 | floor %}` +
+  hudRow(`data-xp-ticks="{{ xp_halves }}"`, `<div class="flex flex--row gap--[2px] no-shrink">{% for i in (1..10) %}{% assign tick_right = i | times: 2 %}{% assign tick_left = tick_right | minus: 1 %}<img class="${TICK_CLASSES}" src="{% if xp_halves >= tick_right %}{{ hud_tick_full }}{% elsif xp_halves >= tick_left %}{{ hud_tick_half }}{% else %}{{ hud_tick_empty }}{% endif %}" alt="">{% endfor %}</div><span class="label lg:title--small no-shrink" data-xp-count="true">{{ xp }}/{{ xp_to_next }} XP</span>${extra}`)
+
+/**
+ * The wide HUD (full landscape and portrait): hearts, HP count, attack and defense on one row; XP ticks, XP count,
+ * coins and potions on the next. Two rows, so the scene and the stories sit higher than under the v32 bar.
+ */
+const hudWide = (wordsOnX = false) => `${hearts(true, attackDefense(wordsOnX ? 'lg:hidden ' : ''))}
+    ${xpTicks(goldPotions(wordsOnX ? 'lg:hidden ' : ''))}`
+
+/**
+ * Narrow columns (side, half, their portrait forms): the hearts alone fill the width, so the HP count leads a combat
+ * row with attack and defense (a full heart marks it), and coins and potions take a row of their own.
+ */
+const counters = () => `${hudRow('data-counters="true"', counter('hud_heart_full', '{{ hp }}/{{ max_hp }}') + attackDefense())}${hudRow('data-counters="2"', goldPotions())}`
 
 /** One glyph as a compact URL-encoded SVG: a single path of horizontal runs keeps each icon to a few hundred bytes. */
 export const glyphUri = (kind: string, size: number) => {
@@ -172,7 +184,8 @@ const plainOf = (expr: string) => `${expr} | replace: "[[", "" | replace: "]]", 
 
 /**
  * One story as a ledger line: the glyph, the story, and its HH:MM at the end of the line; the stat changes follow as
- * outlined chips, one per change, indented to the story's edge. The chips sit in a block so they wrap like words when
+ * outlined chips, one per change, indented to the story's edge. The glyph sits two pixels down so it centres on the
+ * letters rather than hugging the rule above the entry. The chips sit in a block so they wrap like words when
  * a narrow column cannot hold them all; the 240-pixel portrait columns put the time there too (`timeBelow`), where the
  * story line has no room for it. A zero-gap grid keeps the chips directly beneath the story.
  */
@@ -180,7 +193,7 @@ const logLine = (entry: string, classes: string, clamp: number, size: number, fi
   const time = `{% if utc_offset != nil %}<span class="label lg:title--small no-shrink" data-story-time="true">{{ ${entry}.u | plus: utc_offset | date: "%H:%M" }}</span>{% endif %}`
   const changes = `{% assign line_changes = ${entry}.d | default: "" | split: " · " %}{% for change in line_changes %} <span class="label lg:title--small label--outline">{{ change | escape }}</span>{% endfor %}`
   const hasChanges = `${entry}.d != nil and ${entry}.d != ""`
-  return `{% assign line_story = ${entry}.n | default: ${entry}.s %}{% assign line_plain = ${plainOf('line_story')} %}<div class="${wrapper} stretch-x"><div class="grid grid--cols-1 gap--none">${entry === 'log[0]' ? '' : '{% unless forloop.first %}<div class="border--h-30 stretch-x"></div>{% endunless %}'}<div class="flex flex--row flex--left flex--top gap--xsmall"><div class="no-shrink">${logIcon(`${entry}.k`, size)}</div><span class="${classes} grow" ${fitClamp('line_plain', clamp, Math.max(0, fit - (timeBelow ? 0 : 14)))}>${storyText}</span>${timeBelow ? '' : time}</div>{% if ${timeBelow ? `utc_offset != nil or ${hasChanges}` : hasChanges} %}<div class="flex flex--row flex--left flex--top gap--xsmall pt--1" data-story-changes="true"><div class="no-shrink w--[${size}px]"></div><div class="grow w--min-0">${timeBelow ? time : ''}${changes}</div></div>{% endif %}</div></div>`
+  return `{% assign line_story = ${entry}.n | default: ${entry}.s %}{% assign line_plain = ${plainOf('line_story')} %}<div class="${wrapper} stretch-x"><div class="grid grid--cols-1 gap--none">${entry === 'log[0]' ? '' : '{% unless forloop.first %}<div class="border--h-30 stretch-x"></div>{% endunless %}'}<div class="flex flex--row flex--left flex--top gap--xsmall"><div class="no-shrink pt--0.5">${logIcon(`${entry}.k`, size)}</div><span class="${classes} grow" ${fitClamp('line_plain', clamp, Math.max(0, fit - (timeBelow ? 0 : 14)))}>${storyText}</span>${timeBelow ? '' : time}</div>{% if ${timeBelow ? `utc_offset != nil or ${hasChanges}` : hasChanges} %}<div class="flex flex--row flex--left flex--top gap--xsmall pt--1" data-story-changes="true"><div class="no-shrink w--[${size}px]"></div><div class="grow w--min-0">${timeBelow ? time : ''}${changes}</div></div>{% endif %}</div></div>`
 }
 
 /** The status line, its clamp fitted like log lines. */
@@ -255,18 +268,27 @@ const recapRibbon = `
     <div class="pt--2"><span class="label text--regular inline-block lg:hidden" data-fit-value="true">{{ recap.label | escape }}: {{ recap.compact | escape }}</span><span class="hidden lg:inline-block title title--small text--regular" data-fit-value="true">{{ recap.label | escape }}: {% if recap.gains != "" %}{{ recap.gains | escape }} · {% endif %}{{ recap.activity | escape }}{% if recap.highlights != "" %} · {{ recap.highlights | escape }}{% endif %}</span></div>
   </div>{% endif %}`
 
-/** English ordinal suffix for `rank` (1st, 2nd, 3rd, 4th, 11th-13th, 21st...), assigned to `rank_suffix`. */
-const rankSuffix = `{% assign rank_mod100 = rank | modulo: 100 %}{% assign rank_mod10 = rank | modulo: 10 %}{% if rank_mod100 >= 11 and rank_mod100 <= 13 %}{% assign rank_suffix = "th" %}{% elsif rank_mod10 == 1 %}{% assign rank_suffix = "st" %}{% elsif rank_mod10 == 2 %}{% assign rank_suffix = "nd" %}{% elsif rank_mod10 == 3 %}{% assign rank_suffix = "rd" %}{% else %}{% assign rank_suffix = "th" %}{% endif %}`
-
 /**
- * Own rank as a big "3rd" with its context stacked beside it ("of 41 this week" over the level group).
- * Top 5 is cut to three rows on the OG so every row stays at a readable size.
+ * The seven-day own-group board (D74): the Top 5 as rows, the hero's own row inverted where it appears, and appended
+ * after the list when it sits below the rows a device shows. The rank is no longer repeated above the list, since the
+ * marked row says it. The OG keeps three rows so every row stays at a readable size; the X shows all five.
+ * `heading` puts the period and group line inside the panel; the full landscape carries it in the divider row instead.
  */
-const rankPanel = `
-      {% if rank %}${rankSuffix}<span class="label lg:hidden">{{ rank }}{{ rank_suffix }} of {{ total_players }} this week</span>{% if leaderboard_cohort_label != "" %}<span class="label lg:hidden" data-clamp="1">{{ leaderboard_cohort_label | escape }}</span>{% endif %}<div class="hidden lg:flex flex--row flex--left flex--center-y gap--small"><div class="grow w--min-0"><span class="value value--small lg:value--large inline-block" data-fit-value="true">{{ rank }}{{ rank_suffix }}</span></div><div class="no-shrink"><div><span class="label lg:title--small">of {{ total_players }} this week</span></div>{% if leaderboard_cohort_label != "" %}<div><span class="label lg:title--small" data-clamp="1">{{ leaderboard_cohort_label | escape }}</span></div>{% endif %}</div></div>
-      {% else %}<span class="label lg:title--small">This week{% if leaderboard_cohort_label != "" %}, {{ leaderboard_cohort_label | escape }}{% endif %}</span>
-      {% if rank_status == "dormant" %}<span class="label">Not ranked while paused</span>{% else %}<span class="label">Ranking within the hour</span>{% endif %}{% endif %}
-      {% for row in top5 %}<div class="{% if forloop.index > 3 %}hidden lg:flex {% endif %}flex flex--row flex--between stretch-x gap--small"><span class="label lg:title--small grow" data-clamp="1">{{ row.rank }}. {{ row.name | escape }}</span><span class="label lg:title--small no-shrink">{{ row.score }}&nbsp;XP</span></div>{% endfor %}`
+/** The row itself is the label, so an inverted own row keeps its text white: a `.label` child would set its own colour. */
+const rankRow = (text: string, score: string, classes: string, own: string) =>
+  `<div class="${classes}label lg:title--small flex flex--row flex--between flex--center-y stretch-x gap--small{% if ${own} %} label--inverted{% endif %}" data-rank-row="{{ ${text === 'rank' ? 'rank' : 'row.rank'} }}">` +
+  `<span class="grow w--min-0" data-clamp="1">{{ ${text} }}. {{ ${text === 'rank' ? 'owner_name' : 'row.name'} | escape }}</span>` +
+  `<span class="no-shrink">{{ ${score} }}&nbsp;XP</span></div>`
+const rankHeading = `This week{% if leaderboard_cohort_label != "" %} · {{ leaderboard_cohort_label | escape }}{% endif %}`
+const rankPanel = (heading: boolean) => `
+      ${heading ? `<span class="label lg:title--small text--bold" data-clamp="1">${rankHeading}</span>` : ''}
+      {% unless rank %}{% if rank_status == "dormant" %}<span class="label lg:title--small">Not ranked while paused</span>{% else %}<span class="label lg:title--small">Ranking within the hour</span>{% endif %}{% endunless %}
+      {% for row in top5 %}${rankRow('row.rank', 'row.score', '{% if forloop.index > 3 %}hidden lg:flex {% endif %}', 'rank and row.rank == rank')}{% endfor %}
+      {% if rank and rank > 3 %}${rankRow('rank', 'leaderboard_score', 'lg:hidden ', 'true')}{% endif %}
+      {% if rank and rank > 5 %}${rankRow('rank', 'leaderboard_score', 'hidden lg:flex ', 'true')}{% endif %}`
+
+/** Period and group caption in the divider row, flanked by rules like the bag caption; the OG shortens "Levels" to "Lv". */
+const rankCaption = `<div class="flex flex--row flex--center-y gap--xsmall stretch-x"><div class="border--h-30 grow"></div><span class="label lg:title--small no-shrink lg:hidden">This week{% if leaderboard_cohort_label != "" %} · {{ leaderboard_cohort_label | replace: "Levels ", "Lv " | escape }}{% endif %}</span><span class="hidden lg:inline-block label lg:title--small no-shrink">${rankHeading}</span><div class="border--h-30 grow"></div></div>`
 
 /** The one quiet attention message (service, delay, death, inventory sleep): never clipped, shown in every size. */
 const attention = (classes: string, clamp: number) => `
@@ -285,10 +307,13 @@ const bagQr = (scale = 3, largeScale = 4, caption = true) => `
 
 /**
  * Equipped gear with its slot named, so a find reads as a weapon or armor at a glance (X only: the OG has no spare line).
- * Plain blocks, not a flex column: the framework's flex gap outranks gap--none and left the caption floating.
+ * One line under the HUD rows in the full landscape, so the header stays three rows; the portrait keeps the two
+ * stacked slots. Plain blocks, not a flex column: the framework's flex gap outranks gap--none and left the caption floating.
  */
 const gearSlot = (slot: string, field: string) => `
       <div class="hidden lg:block text--center"><div><span class="label">${slot}</span></div><div><span class="title--small" data-clamp="2">{% if ${field} != "" %}{{ ${field} | escape }}{% else %}None{% endif %}</span></div></div>`
+const gearName = (field: string) => `<span class="text--bold inline-block">{% if ${field} != "" %}{{ ${field} | escape }}{% else %}None{% endif %}</span>`
+const gearLine = `{% assign gear_plain = weapon | default: "None" | append: armor | default: "None" %}<div class="hidden lg:block stretch-x" data-gear-line="true"><span class="title--small text--regular" ${fitClamp('gear_plain', 1, 44)}>Weapon ${gearName('weapon')} · Armor ${gearName('armor')}</span></div>`
 
 /**
  * `shortColumn` is the column for the portrait half and `narrowColumn` for the portrait quarter. Neither slot has the
@@ -372,9 +397,7 @@ const fullPortrait = `
     ${statusLine(2, 40)}
   </div>
   <div class="no-shrink flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small stretch-x">
-    ${hearts()}
-    ${xpSegments(true)}
-    ${counters()}
+    ${hudWide()}
   </div>
   <div class="hidden lg:block no-shrink stretch-x"><div class="grid grid--cols-2 gap--large">${gearSlot('Weapon', 'weapon')}${gearSlot('Armor', 'armor')}</div></div>
   <div class="no-shrink flex flex--col gap--small stretch-x">${scene('scene_url_small', 'scene_url_medium')}${divider}</div>
@@ -383,7 +406,7 @@ const fullPortrait = `
     {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(2, 'title lg:title', 24, 40)}
   </div>
   <div class="no-shrink flex flex--row flex--left flex--top gap--medium stretch-x">
-    <div class="grow w--min-0 flex flex--col flex--left flex--stretch-x gap--xsmall">{% if qr_base == "" %}${rankPanel}{% endif %}</div>
+    <div class="grow w--min-0 flex flex--col flex--left flex--stretch-x gap--xsmall">{% if qr_base == "" %}${rankPanel(true)}{% endif %}</div>
     ${bagQr(3, 4, true)}
   </div>
   {% unless attention %}${recapRibbon}{% endunless %}
@@ -395,7 +418,7 @@ const halfVerticalPortrait = `
   {% else %}
   <div class="no-shrink flex flex--col flex--left flex--stretch-x gap--xsmall stretch-x">
     <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
-    ${statusLine(2, 24)}${hearts(false)}${xpSegments()}${counters(true)}
+    ${statusLine(2, 24)}${hearts(false)}${xpTicks()}${counters()}
   </div>
   <div class="no-shrink stretch-x"><div class="hidden lg:block">${scene('scene_url_small')}</div>${divider}</div>
   <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--small stretch-x">
@@ -431,8 +454,8 @@ const halfVerticalBody = (withScene: boolean) => `
     <div class="col--span-8 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
       <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
       ${statusLine(2, 42)}${hearts(false)}
-      <div class="hidden lg:block stretch-x">${withScene ? xpBar(' progress-bar--small') : xpSegments()}</div>
-      ${counters(true)}
+      <div class="hidden lg:block stretch-x">${xpTicks()}</div>
+      ${counters()}
     </div>
     <div class="col--span-4 flex flex--col flex--center-x flex--top">${bagQr()}</div>
   </div>
@@ -453,19 +476,19 @@ export const markupFull = `${glyphAssigns([16, 24])}${HUD_ASSIGNS}${oriented('la
   <div class="grid no-shrink stretch-x gap--medium">
     <div class="col--span-5 flex flex--col flex--left gap--xsmall">
       <span class="title lg:hidden" data-clamp="1">{{ hero_name | truncate: 12 | escape }}, level {{ level }}</span>
-      <span class="hidden lg:inline-block title lg:title--large" data-fit-value="true">{{ hero_name | escape }}, level {{ level }}</span>
+      <span class="hidden lg:inline-block title" data-fit-value="true">{{ hero_name | escape }}, level {{ level }}</span>
       ${statusLine(2, 56)}
-      ${counters()}
+      ${heroCounters}
     </div>
-    <div class="col--span-7 flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small">
-      ${hearts()}
-      ${xpBar(' lg:progress-bar--large')}
-      <div class="hidden lg:block stretch-x"><div class="grid grid--cols-2 gap--large">${gearSlot('Weapon', 'weapon')}${gearSlot('Armor', 'armor')}</div></div>
+    <div class="col--span-7 flex flex--col flex--left flex--stretch-x gap--xsmall">
+      ${hudWide(true)}
+      ${gearLine}
     </div>
   </div>
   <div class="no-shrink flex flex--col gap--small stretch-x">${scene('scene_url_small', 'scene_url_large')}
     <div class="grid stretch-x gap--small">
-      <div class="col--span-10">${divider}</div>
+      <div class="col--span-7 lg:col--span-6">${storyDivider}</div>
+      <div class="col--span-3 lg:col--span-4 flex flex--col flex--center-y">{% if qr_base == "" %}${rankCaption}{% else %}<div class="border--h-30 stretch-x"></div>{% endif %}</div>
       <div class="col--span-2 flex flex--row flex--center-y gap--xsmall"><div class="border--h-30 grow"></div><span class="label lg:title--small no-shrink">{% if qr_base != "" %}Companion{% else %}Your bag{% endif %}</span><div class="border--h-30 grow"></div></div>
     </div>
   </div>
@@ -475,7 +498,7 @@ export const markupFull = `${glyphAssigns([16, 24])}${HUD_ASSIGNS}${oriented('la
       {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(2, 'title lg:title', 24, 56)}
     </div>
     <div class="col--span-3 lg:col--span-4 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
-      {% if qr_base == "" %}${rankPanel}{% endif %}
+      {% if qr_base == "" %}${rankPanel(false)}{% endif %}
     </div>
     <div class="col--span-2 flex flex--col flex--center-x flex--top gap--small">${bagQr(3, 4, false)}</div>
   </div>
@@ -490,8 +513,8 @@ export const markupHalfHorizontal = `${glyphAssigns([16, 24])}${HUD_ASSIGNS}${or
     <div class="col--span-4 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
       <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
       ${statusLine(2, 36)}${hearts(false)}
-      <div class="hidden lg:block stretch-x">${xpBar(' progress-bar--small')}</div>
-      ${counters(true)}
+      <div class="hidden lg:block stretch-x">${xpTicks()}</div>
+      ${counters()}
       <div class="hidden lg:block">${scene('scene_url_small')}</div>
     </div>
     <div class="col--span-6 h--full flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
@@ -509,7 +532,7 @@ export const markupQuadrant = `${glyphAssigns([16])}${HUD_ASSIGNS}${oriented('la
   {% if status == "unlinked" or first_run %}${welcome('quadrant')}
   {% else %}
     <div class="no-shrink flex flex--row flex--left flex--center-y gap--small stretch-x">
-      <span class="label lg:title--small grow" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
+      <span class="label lg:title--small grow w--min-0" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
       ${hearts(false)}
     </div>
     <div class="grid grow h--full h--min-0 stretch-x gap--small">

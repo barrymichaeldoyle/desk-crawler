@@ -1,8 +1,9 @@
 /**
  * 1-bit HUD marks for the device screen: the companion's half-heart health
- * (D60) and the coin and potion counters, drawn in the same grid style as the
- * log glyphs. Each row is a string of cells; '#' is ink. Hearts are 9x8 so the
- * two halves meet on a centre column; the counters are 8x8.
+ * (D60), the XP ticks that match it, and the attack, defense, coin and potion
+ * counters, drawn in the same grid style as the log glyphs. Each row is a
+ * string of cells; '#' is ink. Hearts and XP ticks are 9 wide so the two halves
+ * meet on a centre column; the counters are 8x8.
  */
 export const HUD_MARKS = {
   /** Outline only: this half-heart pair is spent. */
@@ -15,6 +16,16 @@ export const HUD_MARKS = {
   coin: ['..####..', '.#....#.', '#..##..#', '#.#..#.#', '#.#..#.#', '#..##..#', '.#....#.', '..####..'],
   /** A stoppered flask, half full. */
   potion: ['...##...', '...##...', '..####..', '.#....#.', '#......#', '#.####.#', '#.####.#', '.######.'],
+  /** Attack: an upright blade with its guard and pommel, like the title icon. */
+  sword: ['...##...', '...##...', '...##...', '...##...', '.######.', '...##...', '...##...', '..####..'],
+  /** Defense: a heater shield with a boss. */
+  shield: ['########', '#......#', '#..##..#', '#..##..#', '#......#', '.#....#.', '..#..#..', '...##...'],
+  /** XP tick, both halves unearned: an outlined box the width of a heart. */
+  tickEmpty: ['#########', '#.......#', '#.......#', '#########'],
+  /** Left half earned. */
+  tickHalf: ['#########', '#####...#', '#####...#', '#########'],
+  /** Both halves earned. */
+  tickFull: ['#########', '#########', '#########', '#########'],
 } as const
 export type HudMark = keyof typeof HUD_MARKS
 

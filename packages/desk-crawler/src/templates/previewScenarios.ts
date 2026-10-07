@@ -51,6 +51,8 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
     hero: { name: 'Baz', level: 5, xp: 210, hp: 118, gold: 640, status: 'exploring', biomeId: 'server_room', lastTick: 120, lastAdvancedAt: NOW - 7 * 60_000, quarantined: false },
     weaponName: 'Uncommon Cable Cutter',
     armorName: 'Insulated Cardigan',
+    weaponAttack: 5,
+    armorDefense: 2,
     potions: 4,
     bagUsed: 17,
     bagCapacity: 20,

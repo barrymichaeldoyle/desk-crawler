@@ -51,3 +51,5 @@ The [D56 adaptive layout](adaptive-log-layout.md) is deployed v27, verified by 2
 [Compact layout polish and QR coverage](layout-polish.md) records local template v29, 256 OG/X checks and 248 visible QRs. Production remains v28; no rollout has been performed for this candidate.
 
 [HUD layout](hud-layout.md) records local template v32 (D72): half-heart health, coin and potion counters, stat chips and no next-adventure clock, verified by 288 tests, official lint, the Ruby Liquid cross-check and a 504-preview sweep, then deployed from `4a12184` with green lint and Workers build. Live render and physical readability remain unverified.
+
+[HUD polish](hud-polish.md) records local template v33 (D74): XP ticks under the hearts, attack and defense marks, a two-row full header that moves the scene and stories up, and a leaderboard that marks the hero's own row instead of repeating the rank. 293 tests, official lint, the Ruby Liquid cross-check and a 768-preview sweep pass; not deployed.

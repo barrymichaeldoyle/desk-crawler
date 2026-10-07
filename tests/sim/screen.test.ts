@@ -16,6 +16,8 @@ const payload = () =>
     hero: { name: 'Baz', level: 5, xp: 210, hp: 118, gold: 640, status: 'exploring', biomeId: 'server_room', lastTick: 120, lastAdvancedAt: NOW - 60_000, quarantined: false },
     weaponName: null,
     armorName: null,
+    weaponAttack: 0,
+    armorDefense: 0,
     potions: 1,
     bagUsed: 3,
     bagCapacity: 30,
@@ -141,19 +143,55 @@ describe('parseUtcOffset', () => {
 })
 
 describe('full layout', () => {
-  it('shows the HP count beside the hearts, leads the XP bar with the numbers and names the gear slots', async () => {
+  it('shows the HP count beside the hearts, the XP numbers after the ticks, and names the gear slots', async () => {
     const html = await render({ ...payload(), weapon: 'Uncommon Cable Cutter', armor: '' })
     expect(html).toMatch(/data-hp-count="true">118\/148 HP</)
-    expect(html).toMatch(/210\/656<\/span> <span class="label[^"]*">XP</)
-    expect(html).toContain('class="track outline"')
+    expect(html).toMatch(/data-xp-count="true">210\/656 XP</)
+    expect(html).not.toContain('progress-bar')
+    expect(html).not.toContain('style=')
     expect(html).toMatch(/>Weapon<\/span><\/div><div><span[^>]*>Uncommon Cable Cutter</)
     expect(html).toMatch(/>Armor<\/span><\/div><div><span[^>]*>None</)
   })
 
-  it('shows the own rank as an ordinal', async () => {
-    const ranked = (rank: number) => render({ ...payload(), rank, total_players: 141, leaderboard_cohort_label: 'Levels 4-7' })
-    const cases: Array<[number, string]> = [[1, '1st'], [2, '2nd'], [3, '3rd'], [4, '4th'], [11, '11th'], [12, '12th'], [13, '13th'], [21, '21st'], [102, '102nd'], [111, '111th']]
-    for (const [rank, label] of cases) expect((await ranked(rank)).replace(/<[^>]+>/g, '').replace(/\s+/g, ' ')).toContain(`${label}of 141 this week`)
+  const top5 = [
+    { rank: 1, name: 'Ana', score: 2410 },
+    { rank: 2, name: 'Bo', score: 1990 },
+    { rank: 3, name: 'barrymichaeldoyle', score: 1840 },
+    { rank: 4, name: 'Cy', score: 1700 },
+    { rank: 5, name: 'Dee', score: 1515 },
+  ]
+  const board = (rank: number | null, score = 1840) => ({ ...payload(), rank, leaderboard_score: score, total_players: 141, leaderboard_cohort_label: 'Levels 4-7', top5, owner_name: 'barrymichaeldoyle' })
+  const rows = (html: string) => [...html.matchAll(/<div class="([^"]*)" data-rank-row="(\d+)">(.*?)<\/div>/g)].map((m) => ({ rank: Number(m[2]), own: m[1]!.includes('label--inverted'), hidden: m[1]!.startsWith('hidden'), ogOnly: m[1]!.startsWith('lg:hidden'), text: m[3]!.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, '\u00a0') }))
+
+  it('marks the own row instead of repeating the rank, and never shows the ordinal line', async () => {
+    const html = await render(board(3))
+    const text = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ')
+    expect(text).not.toContain('of 141')
+    expect(text).not.toContain('3rd')
+    expect(text).toContain('This week · Lv 4-7')
+    expect(text).toContain('This week · Levels 4-7')
+    // The landscape and portrait arrangements each list the five rows once; only the third is inverted.
+    const landscape = rows(html.split('landscape:hidden')[0]!)
+    expect(landscape.map((r) => [r.rank, r.own])).toEqual([[1, false], [2, false], [3, true], [4, false], [5, false]])
+    expect(landscape[2]!.text).toBe('3. barrymichaeldoyle1840\u00a0XP')
+    expect(landscape.filter((r) => r.hidden).map((r) => r.rank)).toEqual([4, 5])
+  })
+
+  it('appends the own row below the rows a device shows', async () => {
+    const fourth = rows((await render(board(4, 1700))).split('landscape:hidden')[0]!)
+    expect(fourth.map((r) => [r.rank, r.own, r.ogOnly])).toEqual([[1, false, false], [2, false, false], [3, false, false], [4, true, false], [5, false, false], [4, true, true]])
+    const twelfth = rows((await render(board(12, 980))).split('landscape:hidden')[0]!)
+    expect(twelfth.slice(5).map((r) => [r.rank, r.own, r.ogOnly, r.hidden, r.text])).toEqual([[12, true, true, false, '12. barrymichaeldoyle980\u00a0XP'], [12, true, false, true, '12. barrymichaeldoyle980\u00a0XP']])
+    expect(twelfth.slice(0, 5).every((r) => !r.own)).toBe(true)
+  })
+
+  it('explains an absent rank without marking any row', async () => {
+    const awaiting = await render({ ...board(null), top5: [] })
+    expect(awaiting).toContain('Ranking within the hour')
+    expect(rows(awaiting)).toEqual([])
+    const dormant = await render({ ...board(null), rank_status: 'dormant' })
+    expect(dormant).toContain('Not ranked while paused')
+    expect(rows(dormant).some((r) => r.own)).toBe(false)
   })
 
   it('shows the standing bag QR beside the rank, and only the action QR when one is set', async () => {
@@ -291,13 +329,39 @@ describe('HUD hearts and counters (D72)', () => {
     expect(dead).toMatch(/data-hp-count="true">0\/148 HP</)
   })
 
-  it('counts gold and potions with their marks, in words where there is room and as bare numbers in narrow columns', async () => {
-    const vars = { ...payload(), gold: 640, potions: 1 }
+  it('draws XP as ten half-step ticks under the hearts, floored like them', async () => {
+    const tick = (mark: 'tickFull' | 'tickHalf' | 'tickEmpty') => hudMarkUri(mark, 36, 16)
+    const ticks = (html: string) => {
+      const rows = [...html.matchAll(/data-xp-ticks="\d+"><div[^>]*>((?:<img[^>]*>)+)<\/div>/g)].map((m) => m[1]).join('')
+      return (['tickFull', 'tickHalf', 'tickEmpty'] as const).map((mark) => rows.split(`src="${tick(mark)}"`).length - 1)
+    }
+    // 32% → 6.4 halves → 6: three full ticks, in both the landscape and portrait arrangements.
+    const html = await render(payload())
+    expect(html).toContain('data-xp-ticks="6"')
+    expect(ticks(html)).toEqual([6, 0, 14])
+    expect(ticks(await render({ ...payload(), xp_pct: 75 }))).toEqual([14, 2, 4])
+    expect(ticks(await render({ ...payload(), xp_pct: 0 }))).toEqual([0, 0, 20])
+    expect(ticks(await render({ ...payload(), xp_pct: 100 }))).toEqual([20, 0, 0])
+    // Narrow columns keep the ticks on the X only, except the portrait side, which has the height for them.
+    const half = await new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup.markup_half_horizontal, payload())
+    expect(half).toMatch(/hidden lg:block stretch-x">{?[^]*?data-xp-ticks="6"/)
+    expect(await new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup.markup_quadrant, payload())).not.toContain('data-xp-ticks')
+  })
+
+  it('shows attack and defense with their marks beside the HP count, and gold and potions beside the XP count', async () => {
+    const vars = { ...payload(), gold: 640, potions: 1, weapon: 'Uncommon Cable Cutter' }
+    const escape = (uri: string) => uri.replace(/[.*+?^$(){}|[\]\\]/g, '\\$&')
     const fullView = await render(vars)
-    expect(fullView).toMatch(new RegExp(`src="${hudMarkUri('coin', 24, 24).replace(/[.*+?^$(){}|[\]\\]/g, '\\$&')}" alt=""><span class="label lg:title--small">640 gold<`))
-    expect(fullView).toContain('>1 potion<')
+    expect(fullView).toMatch(new RegExp(`data-hp-count="true">118/148 HP</span><div[^>]*><img[^>]*src="${escape(hudMarkUri('sword', 24, 24))}" alt=""><span class="label lg:title--small">18</span></div><div[^>]*><img[^>]*src="${escape(hudMarkUri('shield', 24, 24))}" alt=""><span class="label lg:title--small">7</span></div></div>`))
+    expect(fullView).toMatch(new RegExp(`data-xp-count="true">210/656 XP</span><div[^>]*><img[^>]*src="${escape(hudMarkUri('coin', 24, 24))}" alt=""><span class="label lg:title--small">640</span></div><div[^>]*><img[^>]*src="${escape(hudMarkUri('potion', 24, 24))}" alt=""><span class="label lg:title--small">1</span></div></div>`))
+    // The X full names the counts beside the hero (the OG rows above are lg:hidden) and puts the gear on one line.
+    expect(fullView).toMatch(/<div class="hidden lg:flex[^"]*" data-counters="words">(?:<div[^>]*><img[^>]*><span class="label lg:title--small">(?:18 attack|7 defense|640 gold|1 potion)<\/span><\/div>){4}<\/div>/)
+    expect(await render({ ...vars, potions: 2 })).toContain('>2 potions<')
+    expect(fullView).toMatch(/data-gear-line="true"><span class="title--small text--regular" data-clamp="0" data-clamp-lg="0">Weapon <span class="text--bold inline-block">Uncommon Cable Cutter<\/span> · Armor <span class="text--bold inline-block">None<\/span><\/span>/)
+    expect(fullView.split('landscape:hidden')[0]).toMatch(/data-hp-count="true">118\/148 HP<\/span><div class="lg:hidden flex/)
+    // Narrow columns: the HP count leads the combat row, and coins and potions take their own row.
     const side = await new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup.markup_half_vertical, vars)
-    expect(side).toMatch(/data-counters="true"><div[^>]*><img[^>]*><span class="label lg:title--small">118\/148<\/span><\/div><div[^>]*><img[^>]*><span class="label lg:title--small">640<\/span><\/div><div[^>]*><img[^>]*><span class="label lg:title--small">1<\/span>/)
+    expect(side).toMatch(/data-counters="true"><div[^>]*><img[^>]*><span class="label lg:title--small">118\/148<\/span><\/div><div[^>]*><img[^>]*><span class="label lg:title--small">18<\/span><\/div><div[^>]*><img[^>]*><span class="label lg:title--small">7<\/span><\/div><\/div><div[^>]*data-counters="2"><div[^>]*><img[^>]*><span class="label lg:title--small">640<\/span><\/div><div[^>]*><img[^>]*><span class="label lg:title--small">1<\/span>/)
   })
 
   it('puts the time under the story in the narrow portrait columns only', async () => {

@@ -40,7 +40,7 @@ export const Route = createFileRoute('/help/desk-crawler')({
       <h2>Getting knocked out</h2>
       <p>Your hero revives automatically after eight game ticks, normally about two hours, and returns to Office Cubicles. You keep your XP and equipment; getting knocked out costs 10% of your current gold. Office Cubicles provides a safe place to recover. You do not need to keep the companion open or press a revive button.</p>
       <h2>Understanding rankings</h2>
-      <p>The screen shows your seven-day XP rank among heroes in your level group. The companion also offers a 24-hour view and a lifetime board. Rankings publish hourly, so a recent adventure or level-up can appear before your rank updates.</p>
+      <p>The screen shows the seven-day XP Top 5 for your level group, with your own row marked, or added below the list when you sit lower. The companion also offers a 24-hour view and a lifetime board. Rankings publish hourly, so a recent adventure or level-up can appear before your rank updates.</p>
       <p>Paused and sleeping heroes keep their progress, but their recent XP ages out. After seven days without earned XP, they leave the weekly board until they earn XP again. Lifetime progress stays recorded.</p>
       <h2>If the screen looks old</h2>
       <ul>

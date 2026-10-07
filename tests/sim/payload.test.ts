@@ -11,6 +11,8 @@ const input: PayloadInput = {
   hero: { name: 'Baz', level: 1, xp: 0, hp: 60, gold: 0, status: 'exploring', biomeId: 'office_cubicles', lastTick: 0, quarantined: false },
   weaponName: null,
   armorName: null,
+  weaponAttack: 0,
+  armorDefense: 0,
   potions: 3,
   bagUsed: 0,
   bagCapacity: 30,
@@ -24,6 +26,15 @@ const input: PayloadInput = {
   ranking: null,
 }
 const pick = (p: unknown) => p as { first_run: boolean; qr_base: string; qr_label: string; companion_qr_base: string; status: string }
+
+describe('derived combat stats', () => {
+  it('adds the equipped gear bonus to the level base, and is null when unlinked', () => {
+    const stats = (p: unknown) => p as { attack: number | null; defense: number | null }
+    expect(stats(buildPayload(input))).toMatchObject({ attack: 10, defense: 4 })
+    expect(stats(buildPayload({ ...input, hero: { ...input.hero!, level: 5 }, weaponAttack: 5, armorDefense: 2 }))).toMatchObject({ attack: 23, defense: 9 })
+    expect(stats(buildPayload({ ...input, hero: null }))).toMatchObject({ attack: null, defense: null })
+  })
+})
 
 describe('first-run and companion QR fields', () => {
   it('welcomes a brand-new hero with a QR to the companion', () => {

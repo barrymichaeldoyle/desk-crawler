@@ -24,6 +24,8 @@ Polish evidence and outstanding responsive verification: [companion polish](evid
 
 Use semantic HTML, visible focus, labeled buttons, sufficient contrast, 44px touch targets, reduced-motion support and appropriate live-region messages for actions. No sound or nagging prompts. Specific visual comps are an implementation design task, not created in this planning phase.
 
+Public pages and the authenticated companion share a footer stating “Unofficial companion site. Not operated by TRMNL.” TRMNL links to its official site at `https://trmnl.com`. This clarifies site ownership without denying the author's paid plugin-author and open-source contributor relationship with TRMNL. A “Built by Barry Michael Doyle” credit links to `https://barrymichaeldoyle.com`, alongside his [LinkedIn](https://www.linkedin.com/in/barry-michael-doyle-11369683/) and [X](https://x.com/barrymdoyle) profiles. These are normal crawlable links without `nofollow`.
+
 ## Routes and information hierarchy
 
 | Route | Audience | Main content |

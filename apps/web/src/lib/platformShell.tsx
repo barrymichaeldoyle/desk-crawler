@@ -3,6 +3,7 @@ import { Link } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 import { Button, LoadingState } from './ui'
 import { OfflineNote } from './network'
+import { SiteLinks } from './prose'
 
 export function PlatformHeader() {
   return (
@@ -35,6 +36,9 @@ export function AuthShell({ children }: { children: ReactNode }) {
         </main>
       </Show>
       <Show when="signed-in">{children}</Show>
+      <div className="mt-auto border-t border-rule">
+        <SiteLinks className="mx-auto w-full max-w-6xl px-4 py-6" />
+      </div>
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { Liquid } from 'liquidjs'
 import { contentV1 } from '@trmnl-games/desk-crawler/content/v1'
 import { buildPayload } from '@trmnl-games/desk-crawler/payload'
 import { parseUtcOffset, screenMarkup, glyphUri } from '@trmnl-games/desk-crawler/templates/screen'
+import { hudMarkUri } from '@trmnl-games/desk-crawler/art/hud'
 
 const NOW = Date.UTC(2026, 9, 4, 8, 20)
 
@@ -58,7 +59,7 @@ describe('device catch-up summary (D54)', () => {
       expect(text).toContain('Last 12 hours')
       expect(text).toContain('Gained 1 level')
       expect(text).toContain('Unplugged a Cable Serpent.')
-      expect(text).toContain('+14 XP · +5 gold · −12 HP')
+      for (const change of ['+14\u00a0XP', '+5\u00a0gold', '−12\u00a0HP']) expect(html).toContain(`label--outline">${change}<`)
       const escaped = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...payload(), recap: { ...recap, label: '<script>unsafe</script>' } })
       expect(escaped).toContain('&lt;script&gt;unsafe&lt;/script&gt;')
       expect(escaped).not.toContain('<script>unsafe</script>')
@@ -140,9 +141,10 @@ describe('parseUtcOffset', () => {
 })
 
 describe('full layout', () => {
-  it('leads bars with the numbers and names the gear slots', async () => {
+  it('shows the HP count beside the hearts, leads the XP bar with the numbers and names the gear slots', async () => {
     const html = await render({ ...payload(), weapon: 'Uncommon Cable Cutter', armor: '' })
-    expect(html).toMatch(/118\/148<\/span> <span class="label[^"]*">HP</)
+    expect(html).toMatch(/data-hp-count="true">118\/148 HP</)
+    expect(html).toMatch(/210\/656<\/span> <span class="label[^"]*">XP</)
     expect(html).toContain('class="track outline"')
     expect(html).toMatch(/>Weapon<\/span><\/div><div><span[^>]*>Uncommon Cable Cutter</)
     expect(html).toMatch(/>Armor<\/span><\/div><div><span[^>]*>None</)
@@ -184,14 +186,15 @@ describe('log lines (D44)', () => {
     const vars = payload()
     for (const markup of Object.values(screenMarkup)) {
       const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...vars, log: [{ n: 'Found a healing potion. Drank a potion.', s: 'Found a healing potion. Drank a potion.', k: 'loot', u: NOW / 1000, d: '+1 healing potion · +20 HP' }] })
-      expect(html.replace(/<[^>]+>/g, '')).toContain('+1 healing potion · +20 HP')
+      expect(html).toContain('label--outline">+1\u00a0healing potion<')
+      expect(html).toContain('label--outline">+20\u00a0HP<')
     }
   })
   it('shows each line with its glyph and owner-local HH:MM', async () => {
     const html = await render({ ...payload(), utc_offset: 7200 })
     expect(html).toContain('class="image no-shrink" src="data:image/svg+xml,')
     expect(html).toMatch(/<span class="text--regular">Unplugged a Cable Serpent/)
-    expect(html).toMatch(/label lg:title--small no-shrink">10:19<\/span><span[^>]*>\+14/)
+    expect(html).toMatch(/data-story-time="true">10:19<\/span><\/div><div class="flex[^"]*" data-story-changes="true">/)
   })
 
   it('leaves the time out without an offset', async () => {
@@ -229,31 +232,78 @@ describe('log lines (D44)', () => {
       const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, vars)
       const text = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ')
       expect(text).toContain('Unplugged a Cable Serpent.')
-      expect(text).toContain('+14 XP · +5 gold · −12 HP')
-      expect(text).not.toContain('Serpent. +14')
+      expect(text).toContain('+14 XP +5 gold −12 HP')
+      expect(html).toMatch(/data-story-changes="true"><div class="no-shrink w--\[\d+px\]"><\/div><div class="grow w--min-0"> <span class="label lg:title--small label--outline">\+14\u00a0XP<\/span> <span[^>]*>\+5\u00a0gold<\/span> <span[^>]*>−12\u00a0HP<\/span><\/div>/)
     }
   })
 
   it('keeps numeric changes outside narrative clamping and falls back for older payloads', async () => {
     const vars = payload() as { log: Array<Record<string, unknown>> } & Record<string, unknown>
     const html = await render({ ...vars, log: [{ ...vars.log[0], n: 'A very long story '.repeat(10) }] })
-    expect(html).toMatch(/<\/span><\/div><div class="flex[^"]*"><span class="label lg:title--small grow">\+14 XP · \+5 gold · −12 HP<\/span>/)
+    expect(html).toMatch(/data-clamp="2" data-clamp-lg="0"><span class="text--regular">A very long story/)
+    expect(html).toMatch(/<\/span><\/div><div class="flex[^"]*" data-story-changes="true">/)
     const old = await render({ ...vars, log: [{ s: 'Old story. +4 XP.', k: 'combat', u: NOW / 1000 }] })
     expect(old).toContain('Old story. +4 XP.')
     expect(old).not.toContain('undefined')
   })
 })
 
-describe('next adventure line (D42)', () => {
-  it('renders HH:MM in the owner offset from the utc_offset merge variable', async () => {
+describe('next adventure clock (D72)', () => {
+  it('stays in the payload for the companion but is never drawn on the device', async () => {
     const vars = payload()
     expect(vars.next_tick_at).toBe(Math.floor(Date.UTC(2026, 9, 4, 8, 30) / 1000))
-    expect(await render({ ...vars, utc_offset: 7200 })).toContain('Next adventure 10:30')
+    for (const markup of Object.values(screenMarkup)) {
+      const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...vars, utc_offset: 7200 })
+      expect(html).not.toContain('Next adventure')
+      expect(html).not.toContain('10:30')
+    }
+  })
+})
+
+describe('HUD hearts and counters (D72)', () => {
+  const full = hudMarkUri('heartFull', 36, 32)
+  const half = hudMarkUri('heartHalf', 36, 32)
+  const empty = hudMarkUri('heartEmpty', 36, 32)
+  /** Hearts inside the heart rows only; the narrow counter line also uses the full heart as its HP mark. */
+  const count = (html: string, uri: string) => {
+    const rows = [...html.matchAll(/data-hearts="\d+"><div[^>]*>((?:<img[^>]*>)+)<\/div>/g)].map((m) => m[1]).join('')
+    return rows.split(`src="${uri}"`).length - 1
+  }
+
+  it('fills ten hearts in half steps from the real numbers in every layout', async () => {
+    for (const markup of Object.values(screenMarkup)) {
+      const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, payload())
+      // 118/148 → 15.9 halves → 16: eight full hearts and two empty ones, in both the landscape and portrait arrangements.
+      expect(html).toContain('data-hearts="16"')
+      expect([count(html, full), count(html, half), count(html, empty)]).toEqual([16, 0, 4])
+      const odd = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...payload(), hp: 75, max_hp: 100 })
+      expect([count(odd, full), count(odd, half), count(odd, empty)]).toEqual([14, 2, 4])
+    }
   })
 
-  it('is omitted without an offset, and TRMNL metadata alone does not supply one', async () => {
-    const vars = payload()
-    expect(await render({ ...vars, utc_offset: null })).not.toContain('Next adventure')
-    expect(await render({ ...vars, trmnl: { user: { utc_offset: 7200 } } })).not.toContain('Next adventure')
+  it('never shows an empty row while the hero has any health, and shows all empty at zero', async () => {
+    const low = await render({ ...payload(), hp: 1, max_hp: 148 })
+    expect(low).toContain('data-hearts="1"')
+    expect([count(low, full), count(low, half), count(low, empty)]).toEqual([0, 2, 18])
+    const dead = await render({ ...payload(), hp: 0, hp_pct: 0 })
+    expect(dead).toContain('data-hearts="0"')
+    expect([count(dead, full), count(dead, half), count(dead, empty)]).toEqual([0, 0, 20])
+    expect(dead).toMatch(/data-hp-count="true">0\/148 HP</)
+  })
+
+  it('counts gold and potions with their marks, in words where there is room and as bare numbers in narrow columns', async () => {
+    const vars = { ...payload(), gold: 640, potions: 1 }
+    const fullView = await render(vars)
+    expect(fullView).toMatch(new RegExp(`src="${hudMarkUri('coin', 24, 24).replace(/[.*+?^$(){}|[\]\\]/g, '\\$&')}" alt=""><span class="label lg:title--small">640 gold<`))
+    expect(fullView).toContain('>1 potion<')
+    const side = await new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup.markup_half_vertical, vars)
+    expect(side).toMatch(/data-counters="true"><div[^>]*><img[^>]*><span class="label lg:title--small">118\/148<\/span><\/div><div[^>]*><img[^>]*><span class="label lg:title--small">640<\/span><\/div><div[^>]*><img[^>]*><span class="label lg:title--small">1<\/span>/)
+  })
+
+  it('puts the time under the story in the narrow portrait columns only', async () => {
+    const quadrant = await new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup.markup_quadrant, { ...payload(), utc_offset: 7200 })
+    const [landscape, portrait] = quadrant.split('landscape:hidden')
+    expect(landscape).toMatch(/data-story-time="true">10:19<\/span><\/div>/)
+    expect(portrait).toMatch(/data-story-changes="true"><div[^>]*><\/div><div class="grow w--min-0"><span class="label lg:title--small no-shrink" data-story-time="true">10:19<\/span> <span/)
   })
 })

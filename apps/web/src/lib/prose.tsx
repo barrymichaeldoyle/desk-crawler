@@ -16,17 +16,27 @@ export function ProsePage({ title, updated, children }: { title: string; updated
   )
 }
 
-/** Footer links to the public pages. */
+/** Shared footer with public links, unofficial status and author credit. */
 export function SiteLinks({ className = '' }: { className?: string }) {
   return (
-    <nav aria-label="Site" className={`flex flex-wrap gap-4 text-sm underline underline-offset-4 ${className}`}>
-      <Link to="/app">My games</Link>
-      <Link to="/account">Account</Link>
-      <Link to="/help/desk-crawler">TRMNL help</Link>
-      <Link to="/support">Support</Link>
-      <Link to="/privacy">Privacy</Link>
-      <Link to="/terms">Terms</Link>
-    </nav>
+    <footer className={`flex flex-col gap-4 text-sm ${className}`}>
+      <nav aria-label="Site" className="flex flex-wrap gap-4 underline underline-offset-4">
+        <Link to="/app">My games</Link>
+        <Link to="/account">Account</Link>
+        <Link to="/help/desk-crawler">TRMNL help</Link>
+        <Link to="/support">Support</Link>
+        <Link to="/privacy">Privacy</Link>
+        <Link to="/terms">Terms</Link>
+      </nav>
+      <div className="flex flex-col gap-2 text-muted">
+        <p>Unofficial companion site. Not operated by <a href="https://trmnl.com" className="underline underline-offset-4">TRMNL</a>.</p>
+        <p>
+          Built by <a href="https://barrymichaeldoyle.com" className="underline underline-offset-4">Barry Michael Doyle</a>.{' '}
+          <a href="https://www.linkedin.com/in/barry-michael-doyle-11369683/" className="underline underline-offset-4">LinkedIn</a>{' · '}
+          <a href="https://x.com/barrymdoyle" className="underline underline-offset-4">X</a>
+        </p>
+      </div>
+    </footer>
   )
 }
 

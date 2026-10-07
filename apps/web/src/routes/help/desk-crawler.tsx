@@ -46,7 +46,7 @@ export const Route = createFileRoute('/help/desk-crawler')({
       <ul>
         <li>"Updates delayed" means the game service is running late. Nothing is lost and you don't need to do anything.</li>
         <li>If the companion website is current but the screen is not, check the plugin's refresh setting and playlist position in TRMNL.</li>
-        <li>“Next adventure” is the expected game tick when that screen was generated. A slow refresh can leave a time that has already passed; check the companion for the current state.</li>
+        <li>Adventures run every quarter hour, on the hour and at :15, :30 and :45 in your TRMNL timezone. The screen shows no countdown; the time beside each story is when it happened, and the companion shows the next adventure.</li>
         <li>If you disconnected or uninstalled, install again from TRMNL. Your hero keeps all progress.</li>
       </ul>
       <h2>Disconnecting and removing</h2>

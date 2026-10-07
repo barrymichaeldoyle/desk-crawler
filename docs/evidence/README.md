@@ -49,3 +49,5 @@ The [D56 adaptive layout](adaptive-log-layout.md) is deployed v27, verified by 2
 [D57 bottom recap and wider ranking](recap-ribbon.md) is deployed v28: complete one-line X summary above the title bar, wider ranking and 20% smaller standing QR. All 256 previews and 202 tests pass; Barry approved production rollout on October 6; actual X server image, eight live-data previews and natural tick 222 passed with progress preserved.
 
 [Compact layout polish and QR coverage](layout-polish.md) records local template v29, 256 OG/X checks and 248 visible QRs. Production remains v28; no rollout has been performed for this candidate.
+
+[HUD layout](hud-layout.md) records local template v32 (D72): half-heart health, coin and potion counters, stat chips and no next-adventure clock, verified by 288 tests, official lint, the Ruby Liquid cross-check and a 504-preview sweep. Not deployed; rollout needs separate approval.

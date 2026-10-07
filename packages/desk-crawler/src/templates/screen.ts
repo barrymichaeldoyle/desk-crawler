@@ -56,11 +56,12 @@ type SceneField = 'scene_url' | 'scene_url_small'
 /** Base scene everywhere, swapped for an integer-scaled larger image on screen--lg (TRMNL X). */
 const scene = (field: SceneField, large = field === 'scene_url' ? 'scene_url_large' : 'scene_url_medium') => {
   return `
-  {% if ${field} != "" %}<div class="flex flex--row flex--center-x"><img class="image lg:hidden" src="{{ ${field} }}" alt=""><img class="image hidden lg:block" src="{{ ${large} }}" alt=""></div>{% endif %}`
+  {% if ${field} != "" %}<div class="flex flex--row flex--center-x stretch-x"><img class="image lg:hidden" src="{{ ${field} }}" alt=""><img class="image hidden lg:block" src="{{ ${large} }}" alt=""></div>{% endif %}`
 }
 
+/** The row stretches so the framework's image max-width keeps the 600-pixel rule inside narrow portrait columns. */
 const divider = `
-  <div class="flex flex--row flex--center-x"><img class="image" src="${RUNE_DIVIDER}" alt=""></div>`
+  <div class="flex flex--row flex--center-x stretch-x"><img class="image" src="${RUNE_DIVIDER}" alt=""></div>`
 
 /**
  * Framework 3.4 progress bar: content + track + fill. The fill width is the one
@@ -109,7 +110,7 @@ const HUD_ASSIGNS =
 const HEART_CLASSES = 'w--[18px] h--[16px] no-shrink'
 const hpCount = '<span class="label lg:title--small no-shrink" data-hp-count="true">{{ hp }}/{{ max_hp }} HP</span>'
 const hearts = (count = true) =>
-  `{% if max_hp > 0 %}{% assign heart_halves = max_hp | divided_by: 2 %}{% assign heart_halves = hp | default: 0 | times: 20 | plus: heart_halves | divided_by: max_hp %}{% else %}{% assign heart_halves = 0 %}{% endif %}{% if hp > 0 and heart_halves < 1 %}{% assign heart_halves = 1 %}{% endif %}` +
+  `{% if max_hp > 0 %}{% assign heart_halves = max_hp | divided_by: 2 | floor %}{% assign heart_halves = hp | default: 0 | times: 20 | plus: heart_halves | divided_by: max_hp | floor %}{% else %}{% assign heart_halves = 0 %}{% endif %}{% if hp > 0 and heart_halves < 1 %}{% assign heart_halves = 1 %}{% endif %}` +
   `<div class="flex flex--row flex--left flex--center-y gap--small" data-hearts="{{ heart_halves }}"><div class="flex flex--row gap--[2px] no-shrink">{% for i in (1..10) %}{% assign heart_right = i | times: 2 %}{% assign heart_left = heart_right | minus: 1 %}<img class="${HEART_CLASSES}" src="{% if heart_halves >= heart_right %}{{ hud_heart_full }}{% elsif heart_halves >= heart_left %}{{ hud_heart_half }}{% else %}{{ hud_heart_empty }}{% endif %}" alt="">{% endfor %}</div>${count ? hpCount : ''}</div>`
 
 /**
@@ -376,7 +377,7 @@ const fullPortrait = `
     ${counters()}
   </div>
   <div class="hidden lg:block no-shrink stretch-x"><div class="grid grid--cols-2 gap--large">${gearSlot('Weapon', 'weapon')}${gearSlot('Armor', 'armor')}</div></div>
-  <div class="no-shrink flex flex--col gap--small stretch-x">${scene('scene_url_small', 'scene_url_large')}${divider}</div>
+  <div class="no-shrink flex flex--col gap--small stretch-x">${scene('scene_url_small', 'scene_url_medium')}${divider}</div>
   <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small stretch-x">
     ${attention('label lg:title--small', 3)}
     {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(2, 'title lg:title', 24, 40)}

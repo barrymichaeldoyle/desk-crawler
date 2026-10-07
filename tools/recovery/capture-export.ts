@@ -35,7 +35,8 @@ try {
   const result = spawnSync(process.execPath, [cli, 'export', '--deployment', source, '--path', archive], {
     cwd: repository, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024,
   })
-  if (result.status !== 0) throw new Error('Convex export failed; no checkpoint was written')
+  // The CLI's own message (auth, deployment or network) is the only clue a scheduled run leaves; it never contains the key.
+  if (result.status !== 0) throw new Error(`Convex export failed; no checkpoint was written. CLI said: ${(result.stderr || result.stdout || String(result.error ?? '')).trim().slice(-1500)}`)
   chmodSync(archive, 0o600)
   const timestamp = result.stderr.match(/Created snapshot export at timestamp (\d+)/)?.[1]
   if (!timestamp) throw new Error('Snapshot timestamp was not provided; refusing to use download time')

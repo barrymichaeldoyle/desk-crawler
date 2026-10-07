@@ -16,4 +16,4 @@ The screen route now parses `trmnl[user][utc_offset]` before the payload query a
 
 ## Rollout state
 
-Pushed with the D74 template as one production deployment; see the decision record for the build outcome.
+Pushed as `33917c3`; lint and the Workers build passed, so production serves the stand-up and retro recap. Live server render unverified.

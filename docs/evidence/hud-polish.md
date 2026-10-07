@@ -1,6 +1,6 @@
 # HUD polish: XP ticks, attack and defense, a shorter header and a marked leaderboard row — 2026-10-07
 
-Barry liked the v32 hearts and asked for the XP bar to sit up with them and be skinnier to match, for attack and defense to show, for the scene to move up so the stories get more room, and for a better leaderboard without the redundant "3rd of 41 this week" line. Template **v33** (D74) was verified locally. **It is not committed or deployed; the live server render and physical readability are unverified.**
+Barry liked the v32 hearts and asked for the XP bar to sit up with them and be skinnier to match, for attack and defense to show, for the scene to move up so the stories get more room, and for a better leaderboard without the redundant "3rd of 41 this week" line. Template **v33** (D74) was verified locally and then deployed through the main pipeline (`33917c3`, together with D75). **The live server render and physical readability are unverified.**
 
 ## Behavior
 
@@ -39,4 +39,4 @@ Captures: [OG full](layouts/v33-og-full.png), [OG full with the own row appended
 
 ## Rollout state
 
-Not committed, not deployed. Production stays on v32 (`4a12184`). Deployment, the live server render and the physical check on the X need Barry's authorization.
+Barry approved deployment. `de19580` passed lint but its Workers build failed; Cloudflare's build log API refused the local token, and the web build, typecheck and tests passed locally. The D75 push `33917c3`, with identical web and template code, passed lint and the Workers build, so production carries v33. The live server render and the physical check on the X are still to be done.

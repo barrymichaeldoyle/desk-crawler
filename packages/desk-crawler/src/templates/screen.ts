@@ -1,14 +1,16 @@
 /**
- * Four self-contained TRMNL layouts. Template v31 centers the setup and
- * first-run panel in every size with the largest served QR codes (v30: a
- * portrait arrangement of every view beside the landscape one; v29: a
+ * Four self-contained TRMNL layouts. Template v32 brings the companion's HUD to
+ * the device: half-heart health, coin and potion counters, stat changes as
+ * chips with the time at the end of the story line, and no next-adventure
+ * clock (v31: centred setup panel; v30: portrait arrangements; v29: a
  * companion QR in every view).
  * User text arrives only through escaped merge_variables; scenes and QR codes
  * use existing integer-scaled artwork. No shared-template registration.
  */
 import { GLYPHS, glyphRows } from '../art/glyphs'
+import { hudMarkUri } from '../art/hud'
 
-export const TEMPLATE_VERSION = 31
+export const TEMPLATE_VERSION = 32
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -87,27 +89,37 @@ const segmentBar = (label: string, value: string, pct: string, large = false) =>
         {% assign seg_on = ${pct} | default: 0 | plus: 5 | divided_by: 10 %}<div class="flex flex--row gap--xsmall stretch-x">{% for i in (1..10) %}<div class="grow h--[10px] ${large ? 'lg:h--[24px]' : 'lg:h--[16px]'} {% if i <= seg_on %}bg--black{% else %}bg--gray-50{% endif %}"></div>{% endfor %}</div>
       </div>`
 
-const hpSegments = (large = false) => segmentBar('HP', '{{ hp }}/{{ max_hp }}', 'hp_pct', large)
 const xpSegments = (large = false) => segmentBar('XP', '{{ xp }}/{{ xp_to_next }}', 'xp_pct', large)
 
-const hpBar = (size = '') => progress('HP', '{{ hp }}/{{ max_hp }}', 'hp_pct', size)
 const xpBar = (size = '') => progress('XP', '{{ xp }}/{{ xp_to_next }}', 'xp_pct', size)
 
 /**
- * D42: next tick as 24-hour HH:MM in the owner's TRMNL timezone, no zone label.
- * TRMNL renders Liquid in UTC. Third-party markup only sees merge_variables (not the `trmnl` object), so the screen
- * route copies the request's `trmnl[user][utc_offset]` into the `utc_offset` merge variable; without it the line is omitted.
+ * HUD marks assigned once per layout (`hud_heart_full`...). Drawn at twice their grid so the X, where the framework
+ * scales pixel classes up, keeps whole pixels; the classes size them on the OG.
  */
-const nextTick = (classes: string) => `
-      {% if next_tick_at and utc_offset != nil %}<span class="${classes}">Next adventure {{ next_tick_at | plus: utc_offset | date: "%H:%M" }}</span>{% endif %}`
+const HUD_ASSIGNS =
+  `{% assign hud_heart_full = "${hudMarkUri('heartFull', 36, 32)}" %}{% assign hud_heart_half = "${hudMarkUri('heartHalf', 36, 32)}" %}{% assign hud_heart_empty = "${hudMarkUri('heartEmpty', 36, 32)}" %}` +
+  `{% assign hud_coin = "${hudMarkUri('coin', 24, 24)}" %}{% assign hud_potion = "${hudMarkUri('potion', 24, 24)}" %}`
 
-/** Full layout: on the OG the next tick (D42) sits in the title bar's instance slot; the body has no spare line for it. */
-const titleBarFull = `
-<div class="title_bar">
-  <img class="image image-stroke" src="${TITLE_ICON}" alt="">
-  <span class="title">Desk Crawler</span>{% unless status == "unlinked" or first_run %}${nextTick('instance lg:hidden')}{% endunless %}
-  ${keepsakeFooter}
-</div>`
+/**
+ * Health as ten half-heart hearts, the companion's HUD meter (D60): each half fills independently, so the row reads in
+ * 5% steps. Rounded from the real numbers, and never empty while the hero has any health. Wide rows carry the count;
+ * narrow columns show it in the counter line instead, since ten hearts already fill their width.
+ */
+const HEART_CLASSES = 'w--[18px] h--[16px] no-shrink'
+const hpCount = '<span class="label lg:title--small no-shrink" data-hp-count="true">{{ hp }}/{{ max_hp }} HP</span>'
+const hearts = (count = true) =>
+  `{% if max_hp > 0 %}{% assign heart_halves = max_hp | divided_by: 2 %}{% assign heart_halves = hp | default: 0 | times: 20 | plus: heart_halves | divided_by: max_hp %}{% else %}{% assign heart_halves = 0 %}{% endif %}{% if hp > 0 and heart_halves < 1 %}{% assign heart_halves = 1 %}{% endif %}` +
+  `<div class="flex flex--row flex--left flex--center-y gap--small" data-hearts="{{ heart_halves }}"><div class="flex flex--row gap--[2px] no-shrink">{% for i in (1..10) %}{% assign heart_right = i | times: 2 %}{% assign heart_left = heart_right | minus: 1 %}<img class="${HEART_CLASSES}" src="{% if heart_halves >= heart_right %}{{ hud_heart_full }}{% elsif heart_halves >= heart_left %}{{ hud_heart_half }}{% else %}{{ hud_heart_empty }}{% endif %}" alt="">{% endfor %}</div>${count ? hpCount : ''}</div>`
+
+/**
+ * Coins and potions with their HUD marks instead of words. Narrow columns lead with the HP count (a full heart marks
+ * it) and keep only the numbers, since ten hearts already fill their width and the marks name each count.
+ */
+const COUNTER_ICON = 'w--[16px] h--[16px] no-shrink'
+const counter = (icon: string, text: string) => `<div class="flex flex--row flex--center-y gap--xsmall no-shrink"><img class="${COUNTER_ICON}" src="{{ ${icon} }}" alt=""><span class="label lg:title--small">${text}</span></div>`
+const counters = (narrow = false) =>
+  `<div class="flex flex--row flex--left flex--center-y gap--small" data-counters="true">${narrow ? counter('hud_heart_full', '{{ hp }}/{{ max_hp }}') : ''}${counter('hud_coin', narrow ? '{{ gold }}' : '{{ gold }} gold')}${counter('hud_potion', narrow ? '{{ potions }}' : '{{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}')}</div>`
 
 /** One glyph as a compact URL-encoded SVG: a single path of horizontal runs keeps each icon to a few hundred bytes. */
 export const glyphUri = (kind: string, size: number) => {
@@ -157,9 +169,18 @@ const fitClamp = (plain: string, clamp: number, fit: number) =>
 
 const plainOf = (expr: string) => `${expr} | replace: "[[", "" | replace: "]]", ""`
 
-/** Story uses an icon-sized gutter; a zero-gap grid keeps its stats directly beneath it. */
-const logLine = (entry: string, classes: string, clamp: number, size: number, fit: number, wrapper = 'block') =>
-  `{% assign line_story = ${entry}.n | default: ${entry}.s %}{% assign line_plain = ${plainOf('line_story')} %}<div class="${wrapper} stretch-x"><div class="grid grid--cols-1 gap--none">${entry === 'log[0]' ? '' : '{% unless forloop.first %}<div class="border--h-30 stretch-x"></div>{% endunless %}'}<div class="flex flex--row flex--left flex--top gap--xsmall"><div class="no-shrink">${logIcon(`${entry}.k`, size)}</div><span class="${classes} grow" ${fitClamp('line_plain', clamp, Math.max(0, fit - 10))}>${storyText}</span></div>{% if utc_offset != nil or ${entry}.d != nil and ${entry}.d != "" %}<div class="flex flex--row flex--left flex--top gap--xsmall">{% if utc_offset != nil %}<span class="label lg:title--small no-shrink">{{ ${entry}.u | plus: utc_offset | date: "%H:%M" }}</span>{% endif %}{% if ${entry}.d != nil and ${entry}.d != "" %}<span class="label lg:title--small grow">{{ ${entry}.d | escape }}</span>{% endif %}</div>{% endif %}</div></div>`
+/**
+ * One story as a ledger line: the glyph, the story, and its HH:MM at the end of the line; the stat changes follow as
+ * outlined chips, one per change, indented to the story's edge. The chips sit in a block so they wrap like words when
+ * a narrow column cannot hold them all; the 240-pixel portrait columns put the time there too (`timeBelow`), where the
+ * story line has no room for it. A zero-gap grid keeps the chips directly beneath the story.
+ */
+const logLine = (entry: string, classes: string, clamp: number, size: number, fit: number, wrapper = 'block', timeBelow = false) => {
+  const time = `{% if utc_offset != nil %}<span class="label lg:title--small no-shrink" data-story-time="true">{{ ${entry}.u | plus: utc_offset | date: "%H:%M" }}</span>{% endif %}`
+  const changes = `{% assign line_changes = ${entry}.d | default: "" | split: " · " %}{% for change in line_changes %} <span class="label lg:title--small label--outline">{{ change | escape }}</span>{% endfor %}`
+  const hasChanges = `${entry}.d != nil and ${entry}.d != ""`
+  return `{% assign line_story = ${entry}.n | default: ${entry}.s %}{% assign line_plain = ${plainOf('line_story')} %}<div class="${wrapper} stretch-x"><div class="grid grid--cols-1 gap--none">${entry === 'log[0]' ? '' : '{% unless forloop.first %}<div class="border--h-30 stretch-x"></div>{% endunless %}'}<div class="flex flex--row flex--left flex--top gap--xsmall"><div class="no-shrink">${logIcon(`${entry}.k`, size)}</div><span class="${classes} grow" ${fitClamp('line_plain', clamp, Math.max(0, fit - (timeBelow ? 0 : 14)))}>${storyText}</span>${timeBelow ? '' : time}</div>{% if ${timeBelow ? `utc_offset != nil or ${hasChanges}` : hasChanges} %}<div class="flex flex--row flex--left flex--top gap--xsmall pt--1" data-story-changes="true"><div class="no-shrink w--[${size}px]"></div><div class="grow w--min-0">${timeBelow ? time : ''}${changes}</div></div>{% endif %}</div></div>`
+}
 
 /** The status line, its clamp fitted like log lines. */
 const statusLine = (clamp: number, fit: number) =>
@@ -170,9 +191,9 @@ const celebrationBadge = (classes: string) => `
       {% if celebration %}<span class="${classes} label--inverted">{{ celebration | escape }}</span>{% endif %}`
 
 /** Whole story/stat pairs; the fitter keeps the longest newest-first prefix that fits. */
-const storyList = (clamp: number, classes: string, size = 16, fit = 60) => `
+const storyList = (clamp: number, classes: string, size = 16, fit = 60, timeBelow = false) => `
   <div class="grow stretch-x" data-story-list="true">
-    {% for entry in log %}{% unless attention and forloop.index > 1 %}{% if forloop.first %}${logLine('entry', classes, clamp, size, fit)}{% else %}${logLine('entry', 'label lg:title--small', 1, 16, 28, 'block pt--1')}{% endif %}{% endunless %}{% endfor %}
+    {% for entry in log %}{% unless attention and forloop.index > 1 %}{% if forloop.first %}${logLine('entry', classes, clamp, size, fit, 'block', timeBelow)}{% else %}${logLine('entry', 'label lg:title--small', 1, 16, 28, 'block pt--1', timeBelow)}{% endif %}{% endunless %}{% endfor %}
     {% if log.size == 0 %}<span class="label lg:title--small">The first adventure starts soon.</span>{% endif %}
   </div>`
 
@@ -347,12 +368,12 @@ const fullPortrait = `
   <div class="no-shrink flex flex--col flex--left gap--xsmall stretch-x">
     <span class="title lg:hidden" data-clamp="1">{{ hero_name | truncate: 16 | escape }}, level {{ level }}</span>
     <span class="hidden lg:inline-block title lg:title--large" data-fit-value="true">{{ hero_name | escape }}, level {{ level }}</span>
-    ${statusLine(2, 40)}${nextTick('label lg:title--small')}
-    <span class="hidden lg:block label lg:title--small">{{ gold }} gold · {{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}</span>
+    ${statusLine(2, 40)}
   </div>
-  <div class="no-shrink grid grid--cols-2 gap--medium lg:gap--large stretch-x">
-    <div>${hpSegments(true)}</div>
-    <div>${xpSegments(true)}</div>
+  <div class="no-shrink flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small stretch-x">
+    ${hearts()}
+    ${xpSegments(true)}
+    ${counters()}
   </div>
   <div class="hidden lg:block no-shrink stretch-x"><div class="grid grid--cols-2 gap--large">${gearSlot('Weapon', 'weapon')}${gearSlot('Armor', 'armor')}</div></div>
   <div class="no-shrink flex flex--col gap--small stretch-x">${scene('scene_url_small', 'scene_url_large')}${divider}</div>
@@ -373,12 +394,12 @@ const halfVerticalPortrait = `
   {% else %}
   <div class="no-shrink flex flex--col flex--left flex--stretch-x gap--xsmall stretch-x">
     <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
-    ${statusLine(2, 24)}${nextTick('label lg:title--small')}${hpSegments()}${xpSegments()}
+    ${statusLine(2, 24)}${hearts(false)}${xpSegments()}${counters(true)}
   </div>
   <div class="no-shrink stretch-x"><div class="hidden lg:block">${scene('scene_url_small')}</div>${divider}</div>
   <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--small stretch-x">
     {% if attention %}${attention('label lg:title--small', 4)}{% else %}${recapBlock(true)}{% endif %}
-    {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(3, 'label lg:title--small', 16, 26)}
+    {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(3, 'label lg:title--small', 16, 26, true)}
   </div>
   ${qrFooter()}
   {% endif %}`
@@ -387,10 +408,13 @@ const halfVerticalPortrait = `
 const quadrantPortrait = `
   {% if status == "unlinked" or first_run %}${welcome('narrowColumn')}
   {% else %}
-  <span class="no-shrink label lg:title--small" data-clamp="2">{{ hero_name | escape }}, level {{ level }} · HP {{ hp }}/{{ max_hp }}</span>
+  <div class="no-shrink flex flex--col flex--left flex--stretch-x gap--xsmall stretch-x">
+    <span class="label lg:title--small" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
+    ${hearts(false)}
+  </div>
   <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small stretch-x">
     {% if attention %}${attention('label lg:title--small', 3)}{% else %}${recapBlock(true)}{% endif %}
-    ${storyList(3, 'label lg:title--small', 16, 24)}
+    ${storyList(3, 'label lg:title--small', 16, 24, true)}
   </div>
   ${qrFooter()}
   {% endif %}`
@@ -405,8 +429,9 @@ const halfVerticalBody = (withScene: boolean) => `
   <div class="grid no-shrink stretch-x gap--small">
     <div class="col--span-8 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
       <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
-      ${statusLine(2, 42)}${nextTick('label lg:title--small')}${withScene ? hpBar(' progress-bar--small') : hpSegments()}
+      ${statusLine(2, 42)}${hearts(false)}
       <div class="hidden lg:block stretch-x">${withScene ? xpBar(' progress-bar--small') : xpSegments()}</div>
+      ${counters(true)}
     </div>
     <div class="col--span-4 flex flex--col flex--center-x flex--top">${bagQr()}</div>
   </div>
@@ -421,24 +446,20 @@ const halfVerticalBody = (withScene: boolean) => `
 const halfVerticalLandscape = halfVerticalBody(true)
 const halfHorizontalPortrait = halfVerticalBody(false)
 
-export const markupFull = `${glyphAssigns([16, 24])}${oriented('layout layout--col layout--top layout--stretch-x gap--xsmall lg:gap--small', `
+export const markupFull = `${glyphAssigns([16, 24])}${HUD_ASSIGNS}${oriented('layout layout--col layout--top layout--stretch-x gap--xsmall lg:gap--small', `
   {% if status == "unlinked" or first_run %}${welcome('full')}
   {% else %}
   <div class="grid no-shrink stretch-x gap--medium">
     <div class="col--span-5 flex flex--col flex--left gap--xsmall">
       <span class="title lg:hidden" data-clamp="1">{{ hero_name | truncate: 12 | escape }}, level {{ level }}</span>
       <span class="hidden lg:inline-block title lg:title--large" data-fit-value="true">{{ hero_name | escape }}, level {{ level }}</span>
-      ${statusLine(2, 56)}${nextTick('hidden lg:block label lg:title--small')}
-      <span class="hidden lg:block label lg:title--small">{{ gold }} gold · {{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}</span>
+      ${statusLine(2, 56)}
+      ${counters()}
     </div>
-    <div class="col--span-7">
-      <div class="grid grid--cols-1 gap--small">
-        <div class="grid grid--cols-2 gap--medium lg:gap--large">
-          <div>${hpBar(' lg:progress-bar--large')}</div>
-          <div>${xpBar(' lg:progress-bar--large')}</div>
-        </div>
-        <div class="hidden lg:block"><div class="grid grid--cols-2 gap--large">${gearSlot('Weapon', 'weapon')}${gearSlot('Armor', 'armor')}</div></div>
-      </div>
+    <div class="col--span-7 flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small">
+      ${hearts()}
+      ${xpBar(' lg:progress-bar--large')}
+      <div class="hidden lg:block stretch-x"><div class="grid grid--cols-2 gap--large">${gearSlot('Weapon', 'weapon')}${gearSlot('Armor', 'armor')}</div></div>
     </div>
   </div>
   <div class="no-shrink flex flex--col gap--small stretch-x">${scene('scene_url_small', 'scene_url_large')}
@@ -459,18 +480,20 @@ export const markupFull = `${glyphAssigns([16, 24])}${oriented('layout layout--c
   </div>
   {% unless attention %}${recapRibbon}{% endunless %}
   {% endif %}
-`, fullPortrait, titleBarFull, titleBar)}${fitStories}`
+`, fullPortrait, titleBar)}${fitStories}`
 
-export const markupHalfHorizontal = `${glyphAssigns([16, 24])}${oriented('layout layout--col layout--top layout--stretch-x gap--small', `
+export const markupHalfHorizontal = `${glyphAssigns([16, 24])}${HUD_ASSIGNS}${oriented('layout layout--col layout--top layout--stretch-x gap--small', `
   {% if status == "unlinked" or first_run %}${welcome('halfHorizontal')}
   {% else %}
   <div class="grid grow h--full h--min-0 stretch-x gap--medium">
-    <div class="col--span-3 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
+    <div class="col--span-4 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
       <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
-      ${statusLine(2, 28)}${nextTick('label lg:title--small')}${hpBar(' progress-bar--small')}
+      ${statusLine(2, 36)}${hearts(false)}
+      <div class="hidden lg:block stretch-x">${xpBar(' progress-bar--small')}</div>
+      ${counters(true)}
       <div class="hidden lg:block">${scene('scene_url_small')}</div>
     </div>
-    <div class="col--span-7 h--full flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
+    <div class="col--span-6 h--full flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
       ${attention('label lg:title--small', 3)}${storyList(2, 'label lg:title--small', 16, 62)}
     </div>
     <div class="col--span-2 flex flex--col flex--center-x flex--top">${bagQr()}</div>
@@ -479,12 +502,15 @@ export const markupHalfHorizontal = `${glyphAssigns([16, 24])}${oriented('layout
   {% endif %}
 `, halfHorizontalPortrait, titleBar)}${fitStories}`
 
-export const markupHalfVertical = `${glyphAssigns([16, 24])}${oriented('layout layout--col layout--top layout--stretch-x gap--small lg:gap--medium', halfVerticalLandscape, halfVerticalPortrait, titleBar, titleBarNarrow)}${fitStories}`
+export const markupHalfVertical = `${glyphAssigns([16, 24])}${HUD_ASSIGNS}${oriented('layout layout--col layout--top layout--stretch-x gap--small lg:gap--medium', halfVerticalLandscape, halfVerticalPortrait, titleBar, titleBarNarrow)}${fitStories}`
 
-export const markupQuadrant = `${glyphAssigns([16])}${oriented('layout layout--col layout--top layout--stretch-x gap--small', `
+export const markupQuadrant = `${glyphAssigns([16])}${HUD_ASSIGNS}${oriented('layout layout--col layout--top layout--stretch-x gap--small', `
   {% if status == "unlinked" or first_run %}${welcome('quadrant')}
   {% else %}
-    <span class="no-shrink label lg:title--small" data-clamp="1">{{ hero_name | escape }}, level {{ level }} · HP {{ hp }}/{{ max_hp }}</span>
+    <div class="no-shrink flex flex--row flex--left flex--center-y gap--small stretch-x">
+      <span class="label lg:title--small grow" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
+      ${hearts(false)}
+    </div>
     <div class="grid grow h--full h--min-0 stretch-x gap--small">
       <div class="col--span-8 h--full flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
         {% if attention %}${attention('label lg:title--small', 3)}{% else %}${recapBlock(true)}{% endif %}

@@ -27,7 +27,7 @@ Scope still to deploy (all local, approved):
 | Platformer HUD companion | D60 | The reviewed companion |
 | Achievements | D65/O14 | Deployed 2026-10-06 at Barry's request as an additive system: optional counters with a one-off backfill, new tables, companion section and device celebration. No payload meaning changed |
 
-Then: reset-first deployment ([runbook](release/pre-launch-reset.md)), fresh install → Save → first adventure recording, review package and email, Submit for Review. Each external action needs its own authorization.
+Done: the reset-first deployment ([runbook](release/pre-launch-reset.md)), the install recording, the review package and Submit for Review (2026-10-07). Barry sends the review email himself. Each further external action needs its own authorization.
 
 **After submission (D70).** There is no scope freeze. The D63 reset is the last moment stored meaning changes without a migration; from that deployment on, every change ships under the post-launch preservation rule (progress preserved, old payload fields and templates keep their meaning, balance under a new content version). Review may take a while, so v1.1 work starts immediately and additive systems deploy as they pass their checks. The one courtesy to reviewers: keep the submitted listing, recording and help accurate, and refresh the review package when a deployed change alters what they see.
 

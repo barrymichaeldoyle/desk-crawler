@@ -1,6 +1,6 @@
 # TRMNL review email — draft, not sent
 
-Use after the remaining [release checks](evidence/release.md) pass. The [official submission instructions](https://docs.trmnl.com/go/plugin-marketplace/going-live), rechecked 2026-10-05, require **Submit for Review** in My Plugins, then an email with plugin ID, owner email, public benefit, an installation video, testing access and promotion plans. Neither action has been performed.
+Use after the remaining [release checks](evidence/release.md) pass. The [official submission instructions](https://docs.trmnl.com/go/plugin-marketplace/going-live), rechecked 2026-10-05, require **Submit for Review** in My Plugins, then an email with plugin ID, owner email, public benefit, an installation video, testing access and promotion plans. Barry submitted plugin 564 for review on 2026-10-07 and is sending the email from his own final draft.
 
 To: team@trmnl.com  
 Subject: Public plugin submission - Desk Crawler

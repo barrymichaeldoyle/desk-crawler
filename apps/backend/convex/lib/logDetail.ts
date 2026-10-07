@@ -70,6 +70,13 @@ const outcome = v.union(
     reviveAtTick: v.number(),
   }),
   v.object({
+    variant: v.literal('choice'),
+    phase: v.union(v.literal('offered'), v.literal('defaulted')),
+    eventId: v.string(),
+    optionId: v.optional(v.string()),
+    expiresAtTick: v.number(),
+  }),
+  v.object({
     variant: v.literal('merchant'),
     offers: v.array(v.object({ id: v.union(v.literal('potions'), v.literal('pouch'), v.literal('bag')), name: v.string(), quantity: v.number(), price: v.number(), tierId: v.optional(v.string()) })),
     expiresAtTick: v.number(),
@@ -100,8 +107,11 @@ export const commandDetail = v.object({
   result: v.optional(v.string()),
   /** Bag slots a purchase added (D61). */
   bagSlots: v.optional(v.number()),
-  /** Potions a merchant purchase added (D78). */
+  /** Potions a merchant purchase added (D78), or a choice's potions (D79). */
   potionsBought: v.optional(v.number()),
+  /** The event and option a `heroes.choose` command resolved (D79). */
+  eventId: v.optional(v.string()),
+  optionId: v.optional(v.string()),
 })
 
 /** One earned achievement (D65); the name is copied so reads never need the catalog. */

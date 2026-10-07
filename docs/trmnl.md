@@ -116,7 +116,7 @@ Root values are flat; bounded `log` and `top5` arrays are intentionally nested. 
 | `biome_id`, `biome_name` | Current biome; empty when unlinked |
 | `sprite`, `sprite_url` | Allowlisted sprite ID + versioned public HTTPS asset URL, or empty strings |
 | `weapon`, `armor` | Equipped names or empty strings |
-| `notice` | D78: one cheerful line while a merchant visit is open ("Merchant visiting. Shop in the companion soon."), null otherwise and whenever `attention` is set. Templates v34 draw it as an outlined chip in the attention slot without collapsing the stories or the recap. Additive v1 field |
+| `notice` | One cheerful line, null whenever `attention` is set: "A decision is waiting in the companion." while a choice is pending (D79), else "Merchant visiting. Shop in the companion soon." while a merchant visit is open (D78), else null. Templates v34 draw it as an outlined chip in the attention slot without collapsing the stories or the recap. Additive v1 field |
 | `attack`, `defense` | Current combat stats, the level base plus the equipped gear bonus (the same `deriveStats` the companion shows); null when unlinked. Templates v33 draw them beside the HP count with sword and shield marks (D74). Additive v1 fields |
 | `potions` | Nonnegative quantity; 0 when unlinked |
 | `bag_used`, `bag_capacity`, `held_item`, `wake_at_tick` | Live bag usage/capacity (initial 30; null unlinked), retained gear name or empty, nullable scheduled inventory-wake tick |

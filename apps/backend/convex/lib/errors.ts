@@ -26,6 +26,7 @@ export type ErrorCode =
   | 'POUCH_UNAVAILABLE'
   | 'POUCH_FULL'
   | 'MERCHANT_GONE'
+  | 'NO_CHOICE'
   | 'OFFER_UNAVAILABLE'
   | 'NOT_ENOUGH_GOLD'
   | 'HELD_ITEM_PENDING'

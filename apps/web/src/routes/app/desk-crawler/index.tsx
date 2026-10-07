@@ -133,7 +133,10 @@ type HeroView = {
   stance: StanceId
   stances: Stance[]
   merchantTicksLeft: number | null
+  choice: Choice | null
 }
+
+type Choice = { eventId: string; title: string; prompt: string; expiresAtTick: number; ticksLeft: number; defaultOptionId: string; options: Array<{ id: string; label: string; change: { gold: number; hp: number; potions: number } }> }
 
 type StanceId = 'cautious' | 'balanced' | 'bold'
 type Stance = { id: StanceId; name: string; blurb: string; potionBelowPct: number; restBelowPct: number; resumeAtPct: number; victoryXpPct: number }
@@ -145,11 +148,12 @@ function HeroSheet({ hero }: { hero: HeroView }) {
   const pause = useIntent(api.heroes.pause)
   const resume = useIntent(api.heroes.resume)
   const stance = useIntent(api.heroes.setStance)
+  const choose = useIntent(api.heroes.choose)
   const [action, setAction] = useState<'potion' | 'pause' | 'resume' | null>(null)
   const feedback = action ? { potion, pause, resume }[action] : null
   const healthy = hero.simulationState !== 'quarantined'
   const canAct = healthy && (hero.status === 'exploring' || hero.status === 'resting')
-  const busy = travel.pending || potion.pending || pause.pending || resume.pending || stance.pending
+  const busy = travel.pending || potion.pending || pause.pending || resume.pending || stance.pending || choose.pending
   const healing = Math.min(hero.maxHp - hero.hp, pctOf(hero.maxHp, POTION_HEAL_PCT))
   const potionLabel = !bag ? 'Drink potion' : !bag.potions ? 'No potions' : hero.hp >= hero.maxHp ? `Drink potion (${bag.potions})` : `Drink potion +${healing} HP (${bag.potions})`
 
@@ -186,6 +190,25 @@ function HeroSheet({ hero }: { hero: HeroView }) {
         {!healthy ? <p className="text-sm">Paused for a service check. <Link to="/support" className="underline underline-offset-4">Contact support</Link> if it lasts.</p> : null}
         <ActionFeedback error={feedback?.error ?? null} message={feedback?.message ?? null} />
       </section>
+
+      {hero.choice ? (
+        <section aria-labelledby="choice-title" className="flex flex-col gap-3 border-[3px] border-night bg-panel p-4">
+          <h2 id="choice-title" className="font-display text-2xl font-bold">{hero.choice.title}</h2>
+          <p>{hero.choice.prompt}</p>
+          <div className="flex flex-wrap gap-2">
+            {hero.choice.options.map((option) => {
+              const parts = [option.change.gold ? `${option.change.gold > 0 ? '+' : '−'}${Math.abs(option.change.gold)} gold` : null, option.change.hp ? `${option.change.hp > 0 ? '+' : '−'}${Math.abs(option.change.hp)} HP` : null, option.change.potions ? `+${option.change.potions} ${option.change.potions === 1 ? 'potion' : 'potions'}` : null].filter(Boolean)
+              return (
+                <Button key={option.id} variant={option.id === hero.choice!.defaultOptionId ? 'secondary' : 'primary'} pending={choose.pending} busyLabel="Deciding…" disabled={!healthy || busy} onClick={() => choose.run({ optionId: option.id }, 'Decided.')}>
+                  {option.label}{parts.length ? ` (${parts.join(', ')})` : ''}
+                </Button>
+              )
+            })}
+          </div>
+          <p className="text-sm text-muted">Decides itself in {hero.choice.ticksLeft === 1 ? 'one adventure' : `${hero.choice.ticksLeft} adventures`}: {hero.choice.options.find((option) => option.id === hero.choice!.defaultOptionId)?.label ?? 'the default'}.</p>
+          <ActionFeedback {...choose} />
+        </section>
+      ) : null}
 
       {hero.stances.length > 0 ? (
         <section aria-labelledby="stance-title" className="flex flex-col gap-3">

@@ -24,6 +24,7 @@ export type LogKind =
   | 'levelup'
   | 'achievement'
   | 'merchant'
+  | 'choice'
   | 'system'
 
 // ---------------------------------------------------------------- content
@@ -151,7 +152,7 @@ export interface SimulationConstants {
   readonly damageVariance: Range
   readonly combatGearDropPct: number
   /** `merchant` is the D78 visit; absent before v4. */
-  readonly lootWeights: Readonly<{ gear: number; potion: number; gold: number; merchant?: number }>
+  readonly lootWeights: Readonly<{ gear: number; potion: number; gold: number; merchant?: number; event?: number }>
   readonly trapAvoidPct: number
   readonly retreatGoldLossPct: number
   readonly deathGoldLossPct: number
@@ -216,6 +217,53 @@ export interface MerchantVisit {
   readonly biomeId: string
 }
 
+/**
+ * A narrative event choice (D79): a short office situation with two or three options, one of which happens by
+ * itself when the player does not answer within the expiry. Effects are authored and deterministic; the hero never
+ * earns XP from a choice, so the intent path and the simulator path apply exactly the same thing.
+ */
+export interface ChoiceEffect {
+  /** Gold added (negative spends; a spend the hero cannot afford is clamped to zero). */
+  readonly gold?: number
+  /** Gold per biome tier, added on top of `gold`. */
+  readonly goldPerTier?: number
+  /** Percent of maximum HP healed (positive) or lost (negative, never below 1 HP). */
+  readonly hpPct?: number
+  /** Potions added, within the pouch cap (overflow is lost, never sold). */
+  readonly potions?: number
+}
+
+export interface ChoiceOption {
+  readonly id: string
+  readonly label: string
+  /** The story line logged when this option resolves. */
+  readonly story: string
+  readonly effect: ChoiceEffect
+}
+
+export interface EventTemplate {
+  readonly id: string
+  readonly title: string
+  /** The situation, logged when the choice is offered. */
+  readonly prompt: string
+  readonly options: readonly ChoiceOption[]
+  /** The option that resolves by itself at expiry. */
+  readonly defaultOptionId: string
+}
+
+export interface ChoiceRule {
+  readonly events: readonly EventTemplate[]
+  /** Ticks a choice stays open; 96 is a day. */
+  readonly expiresAfterTicks: number
+}
+
+export interface PendingChoice {
+  readonly eventId: string
+  readonly offeredAtTick: number
+  readonly expiresAtTick: number
+  readonly biomeTier: number
+}
+
 /** Per-hero bag capacity that grows (D61). */
 export interface BagLadder {
   /** Ordered by strictly increasing capacity; tiers[0] is a new hero's bag. */
@@ -241,6 +289,8 @@ export interface ContentCatalog {
   /** Absent before v4 (D77/D78). */
   readonly potionPouch?: PotionPouch
   readonly merchant?: MerchantRule
+  /** Absent before v5 (D79). */
+  readonly choices?: ChoiceRule
   readonly narrative: Readonly<{ biomes: Readonly<Record<string, BiomeNarrative>>; shared: SharedNarrative; monsters: Readonly<Record<string, MonsterNarrative>> }>
 }
 
@@ -279,6 +329,10 @@ export interface HeroCounters {
   readonly purchases: number
   /** Merchant visits met while exploring (D78). */
   readonly merchantVisits: number
+  /** Choices answered in the companion (D79), written by the intent. */
+  readonly choicesMade: number
+  /** Choices that resolved by their default at expiry (D79). */
+  readonly choicesDefaulted: number
 }
 
 /** Counter names that hold one number (everything except `monsterWins`). */
@@ -313,6 +367,8 @@ export interface HeroState {
   readonly potionCap?: number
   /** An open merchant visit (D78); the simulator clears it once it expires. */
   readonly merchant?: MerchantVisit
+  /** A pending narrative choice (D79); answered by the intent or resolved by the simulator at expiry. */
+  readonly choice?: PendingChoice
 }
 
 export interface ItemSnapshot {
@@ -405,6 +461,7 @@ export type OutcomeDetail =
   | { readonly variant: 'travel'; readonly phase: 'depart' | 'arrive'; readonly fromBiomeId: string; readonly toBiomeId: string; readonly arrivalTick: number }
   | { readonly variant: 'revival'; readonly previousBiomeId: string; readonly safeBiomeId: string; readonly hpGranted: number; readonly reviveAtTick: number }
   | { readonly variant: 'merchant'; readonly offers: readonly MerchantOffer[]; readonly expiresAtTick: number }
+  | { readonly variant: 'choice'; readonly phase: 'offered' | 'defaulted'; readonly eventId: string; readonly optionId?: string; readonly expiresAtTick: number }
 
 export interface LogDetail {
   readonly v: 1
@@ -455,6 +512,8 @@ export interface TickMetrics {
   readonly jackpots: number
   readonly merchantVisits: number
   readonly pouchUpgrades: number
+  readonly choicesOffered: number
+  readonly choicesDefaulted: number
 }
 
 export interface SimulationResult {

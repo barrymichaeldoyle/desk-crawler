@@ -34,6 +34,9 @@ describe('merchant notice (D78)', () => {
     expect(notice(buildPayload({ ...input, hero: { ...input.hero!, merchantExpiresAtTick: 5 } }))).toBe('Merchant visiting. Shop in the companion soon.')
     expect(notice(buildPayload({ ...input, world: { ...input.world!, currentTick: 5 }, hero: { ...input.hero!, merchantExpiresAtTick: 5 } }))).toBeNull()
     expect(notice(buildPayload({ ...input, hero: { ...input.hero!, status: 'dead', hp: 0, reviveAtTick: 9, merchantExpiresAtTick: 5 } }))).toBeNull()
+    // D79: a waiting decision outranks the merchant.
+    expect(notice(buildPayload({ ...input, hero: { ...input.hero!, merchantExpiresAtTick: 5, choiceExpiresAtTick: 90 } }))).toBe('A decision is waiting in the companion.')
+    expect(notice(buildPayload({ ...input, world: { ...input.world!, currentTick: 90 }, hero: { ...input.hero!, choiceExpiresAtTick: 90 } }))).toBeNull()
   })
 })
 

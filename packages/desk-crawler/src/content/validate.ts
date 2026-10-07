@@ -45,6 +45,28 @@ export function validateCatalog(content: ContentCatalog): string[] {
     if (!Number.isSafeInteger(pouch.findPermille) || pouch.findPermille < 0 || pouch.findPermille > 1000) problems.push('pouch find chance must be a permille')
   }
   if (c.lootWeights.merchant !== undefined && !content.merchant) problems.push('a merchant loot weight needs merchant rules')
+  // D79: every event has two or three options with distinct ids, a default among them, and bounded effects.
+  if (c.lootWeights.event !== undefined && !content.choices) problems.push('an event loot weight needs choice rules')
+  if (content.choices) {
+    if (!(content.choices.expiresAfterTicks >= 4 && content.choices.expiresAfterTicks <= 192)) problems.push('choices must expire between 4 and 192 ticks')
+    if (content.choices.events.length === 0) problems.push('choices need at least one event')
+    const eventIds = new Set<string>()
+    for (const event of content.choices.events) {
+      if (eventIds.has(event.id)) problems.push(`duplicate event ${event.id}`)
+      eventIds.add(event.id)
+      if (event.options.length < 2 || event.options.length > 3) problems.push(`event ${event.id} needs two or three options`)
+      if (new Set(event.options.map((option) => option.id)).size !== event.options.length) problems.push(`event ${event.id} has duplicate option ids`)
+      if (!event.options.some((option) => option.id === event.defaultOptionId)) problems.push(`event ${event.id} default is not one of its options`)
+      if ([...event.prompt].length > c.summaryMaxCodePoints) problems.push(`event ${event.id} prompt too long`)
+      for (const option of event.options) {
+        const e = option.effect
+        if ([...option.story].length > c.summaryMaxCodePoints) problems.push(`option ${event.id}/${option.id} story too long`)
+        if (e.hpPct !== undefined && (e.hpPct < -50 || e.hpPct > 50)) problems.push(`option ${event.id}/${option.id} HP effect out of bounds`)
+        if (e.potions !== undefined && (e.potions < 0 || e.potions > 3)) problems.push(`option ${event.id}/${option.id} potion effect out of bounds`)
+        if ((e.gold ?? 0) < -100 || (e.gold ?? 0) > 500 || (e.goldPerTier ?? 0) < 0 || (e.goldPerTier ?? 0) > 100) problems.push(`option ${event.id}/${option.id} gold effect out of bounds`)
+      }
+    }
+  }
   if (content.merchant) {
     if (!(content.merchant.potionPrice >= 1 && content.merchant.maxPotionsOffered >= 1 && content.merchant.maxPotionsOffered <= 10)) problems.push('merchant potion offer out of bounds')
     if (!(content.merchant.staysForTicks >= 1 && content.merchant.staysForTicks <= 8)) problems.push('merchant must stay between 1 and 8 ticks')

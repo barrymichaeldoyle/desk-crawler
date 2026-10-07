@@ -12,6 +12,7 @@ export const KIND_TONE: Record<string, string> = {
   travel: 'text-sky-ink',
   trap: 'text-rare-ink',
   merchant: 'text-gold-ink',
+  choice: 'text-sky-ink',
   system: 'text-muted',
 }
 

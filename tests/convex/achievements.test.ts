@@ -150,7 +150,7 @@ describe('achievements (D65)', () => {
     expect((await rows(t)).map((r) => r.achievementId)).toContain('adventures_1')
     // The pending hero is never ticked; the backfill writes its zeros, and a second run patches nothing.
     expect(await t.mutation(internal.achievements.backfillCounters, {})).toEqual({ patched: 1, done: true })
-    expect((await t.run(async (ctx) => await ctx.db.get(stored)))?.counters).toEqual({ ...legacy, monsterWins: {}, eliteWins: 0, jackpots: 0, rareFinds: 0, potionsUsed: 0, trapsAvoided: 0, restTicks: 0, trips: 0, itemsSold: 0, stanceChanges: 0, purchases: 0, merchantVisits: 0 })
+    expect((await t.run(async (ctx) => await ctx.db.get(stored)))?.counters).toEqual({ ...legacy, monsterWins: {}, eliteWins: 0, jackpots: 0, rareFinds: 0, potionsUsed: 0, trapsAvoided: 0, restTicks: 0, trips: 0, itemsSold: 0, stanceChanges: 0, purchases: 0, merchantVisits: 0, choicesMade: 0, choicesDefaulted: 0 })
     expect(await t.mutation(internal.achievements.backfillCounters, {})).toEqual({ patched: 0, done: true })
   })
 

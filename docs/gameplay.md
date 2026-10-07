@@ -85,6 +85,8 @@ Potion pouch (D77, content v4): the potion cap is a per-hero ladder, Thermos 20 
 
 Wandering merchant (D78, content v4): 6 of 100 loot draws are a merchant visit instead of gear, a potion or gold. The visit opens one to three offers (a potion bundle of one to three at 12 gold × biome tier each, the next pouch and the next bag at ladder prices when the hero may take them early) for four ticks, stored on the hero and sold once each through `inventory.buyOffer`. Nothing is bought automatically; an expired visit is cleared on the hero's next evaluation in any status, with no event.
 
+Narrative choices (D79, content v5): 4 of 100 loot draws offer one of six office situations with two options, logged as the tick's story and kept on the hero for 96 ticks (one pending at a time; another draw falls through to gold). Answering in the companion applies the option's authored effect (gold, a share of maximum HP or potions, never XP) at once; letting it expire applies the default option as the whole event of the next exploring or resting tick. The same pure resolver serves both, clamped to what the hero has, so neither path can award twice and no choice ever needs intervention.
+
 Manual potions are allowed only when exploring/resting and below full HP. A potion can help a resting hero resume when its HP reaches 75%. Manual use cannot revive or heal while travelling/paused/sleeping. Repeated calls consume finite items and never advance encounters.
 
 ## Encounters

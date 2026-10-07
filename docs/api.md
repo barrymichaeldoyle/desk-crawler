@@ -25,7 +25,7 @@ Failures are not receipts for successful operations. Transport retries are bound
 | Function | Arguments | Result | Bounded reads |
 | --- | --- | --- | --- |
 | `users.me` | none | public alias, legacy timezone (D39), owner/game state, sanitized hero name/status/activation state, analytics consent, `hasActiveInstallation` | Identity index + user/current game profile/hero + first owned active installation + revoked-identity hash lookup when no user row exists |
-| `heroes.mine` | none | sanitized hero state including activation state, derived stats, XP threshold, biome unlocks, stance and every stance's thresholds and victory XP share (D76), `merchantTicksLeft` (D78), server tick/health | User + active hero + bounded equipped items/world/run |
+| `heroes.mine` | none | sanitized hero state including activation state, derived stats, XP threshold, biome unlocks, stance and every stance's thresholds and victory XP share (D76), `merchantTicksLeft` (D78), the pending `choice` with each option's concrete change and the adventures left (D79), server tick/health | User + active hero + bounded equipped items/world/run |
 | `heroes.returnSummary` | none | Nullable visit baseline, observed level/lifetime XP/log sequence, nullable gains, current bag/unequipped counts, held name and status/wake/simulation state | Own user + current hero + <=32 inventory rows; no history scan |
 | `heroes.recentLog` | `paginationOpts` | Own log page with id/time/tick/kind/summary/source and display deltas; continuation. Additive `deltas.potionsFound` is 0 or 1, derived from the stored loot outcome, including same-tick use. No raw simulation detail | Hero-index page |
 | `inventory.mine` | none | Bag gear (≤20 unequipped) + equipped + ≤1 held gear + ≤1 potion stack, equipment/held IDs, capacity/used, D61 `ladder` (current bag name; next bag with capacity, price, milestone and whether it can be bought now) and wake readiness | Hero inventory index |
@@ -59,6 +59,7 @@ No unbounded public hero lists, arbitrary hero-ID reads, or public token lookup 
 | `inventory.resumeAdventures` | `biomeId?` | Set next-tick wake deadline and optional pending destination (D29); return wake tick and arrival tick if travelling. Repeating with the same arguments while wake is pending is a no-op; a different destination replaces the pending one before wake | Sleeping, no held item, at least one free bag slot; destination unlocked and not the current biome |
 | `users.replacePublicNames` | required alias/hero replacement fields | Validate restricted repair, increment public-name version, clear completed repair flags; preserve progress | Active owner with admin-set repair requirement; not ordinary rename |
 | `heroes.pause` | none | Save exploring/resting status and pause | Already paused is no-op; dead/travelling/sleeping rejected |
+| `heroes.choose` | `optionId` | D79: answer the pending choice; the server applies the option's authored effect once and clears the choice; returns gold and HP after | Open unexpired choice; option must belong to its event; quarantined rejected |
 | `heroes.setStance` | `stance: cautious \| balanced \| bold` | Set the sustain stance (D76); counts `stanceChanges` and logs a command story | Any gameplay status; quarantined rejected; current stance is a no-op; unknown stance rejected |
 | `heroes.resume` | none | Restore prior status; no catch-up | Exploring/resting already unpaused is no-op; sleeping uses resumeAdventures |
 | `trmnl.disconnect` | `instanceId` | Tombstone that instance, preserve hero | Own instance; repeated disconnect no-op |
@@ -116,7 +117,7 @@ Rate limits must cover direct public Convex function calls as well as web routes
 
 ## Stable error codes
 
-`UNAUTHENTICATED`, `ACCOUNT_UNAVAILABLE`, `HERO_EXISTS`, `HERO_NOT_FOUND`, `INVALID_INPUT`, `ALIAS_TAKEN`, `INVALID_STATE`, `BIOME_LOCKED`, `ITEM_NOT_AVAILABLE`, `ITEM_EQUIPPED`, `ITEM_HELD`, `BAG_FULL`, `BAG_UNAVAILABLE`, `POUCH_UNAVAILABLE`, `POUCH_FULL`, `MERCHANT_GONE`, `OFFER_UNAVAILABLE`, `NOT_ENOUGH_GOLD`, `HELD_ITEM_PENDING`, `NAME_REPAIR_REQUIRED`, `LEVEL_REQUIREMENT`, `NO_POTION`, `FULL_HP`, `RATE_LIMITED`, `OPERATION_CONFLICT`, `INSTALL_INVALID`, `TRMNL_REQUIRED`, `CONNECTION_CONFLICT`, `CONNECTION_UNAVAILABLE`, `MANAGEMENT_EXPIRED`, `SERVICE_PAUSED`, `RECAP_CHANGED`.
+`UNAUTHENTICATED`, `ACCOUNT_UNAVAILABLE`, `HERO_EXISTS`, `HERO_NOT_FOUND`, `INVALID_INPUT`, `ALIAS_TAKEN`, `INVALID_STATE`, `BIOME_LOCKED`, `ITEM_NOT_AVAILABLE`, `ITEM_EQUIPPED`, `ITEM_HELD`, `BAG_FULL`, `BAG_UNAVAILABLE`, `POUCH_UNAVAILABLE`, `POUCH_FULL`, `MERCHANT_GONE`, `OFFER_UNAVAILABLE`, `NO_CHOICE`, `NOT_ENOUGH_GOLD`, `HELD_ITEM_PENDING`, `NAME_REPAIR_REQUIRED`, `LEVEL_REQUIREMENT`, `NO_POTION`, `FULL_HP`, `RATE_LIMITED`, `OPERATION_CONFLICT`, `INSTALL_INVALID`, `TRMNL_REQUIRED`, `CONNECTION_CONFLICT`, `CONNECTION_UNAVAILABLE`, `MANAGEMENT_EXPIRED`, `SERVICE_PAUSED`, `RECAP_CHANGED`.
 
 Unknown transient backend errors map to a retryable generic service message. Do not classify a programmer invariant failure as an endlessly retryable user operation.
 

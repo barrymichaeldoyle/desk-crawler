@@ -57,7 +57,7 @@ Core batch: stances, configurable rest/potion thresholds, a small set of event c
 | Feature | Dependencies and boundaries |
 | --- | --- |
 | Stances/policies | Shipped 2026-10-07 (D76): content v3 stances replace the sustain thresholds; the companion offers three presets. Versioned resolver modifiers; validate thresholds and avoid infinite rest/potion loops |
-| Narrative choices | Pending-choice table, expiry/default resolution, transactionally idempotent selection; passive players continue |
+| Narrative choices | Shipped 2026-10-07 (D79): six authored events, one pending on the hero (no separate table), 96-tick expiry resolved by the simulator's default, receipted `heroes.choose`. Pending-choice table, expiry/default resolution, transactionally idempotent selection; passive players continue |
 | Merchant | Shipped 2026-10-07 (D78): six of a hundred loot draws, up to three offers, four-tick expiry, receipted purchases, a device notice line and no push. Bounded offers/price validation, four-tick expiry, purchase receipts; no push spam. Prices sit beside the D61 bag prices (40/150/600/2,000), the first gold sink |
 | Potion pouch (P29) | Shipped 2026-10-07 (D77): Thermos 20 → Lunchbox 30 → Cooler Bag 40 → Vending Cart 60 by milestone, find, purchase or the merchant. The potion stack cap becomes a content ladder (one additive tier field on the hero, cap from content like `bagCapacity`); milestones, a rare find and a `buyBag`-shaped purchase advance it. Potions stay outside the bag and the 32-row read. Second gold sink; tune with the merchant and the configurable potion threshold |
 | Effects | Typed duration/modifier rules; death ordering and rest cleansing explicitly designed |

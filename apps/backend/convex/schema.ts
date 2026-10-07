@@ -46,6 +46,9 @@ export const heroCounters = v.object({
   /** D78: merchant offers bought, and merchant visits met. */
   purchases: v.optional(v.number()),
   merchantVisits: v.optional(v.number()),
+  /** D79: choices answered in the companion, and choices that defaulted at expiry. */
+  choicesMade: v.optional(v.number()),
+  choicesDefaulted: v.optional(v.number()),
 })
 
 /** D78 merchant offers: at most three, each bought at most once. */
@@ -69,6 +72,7 @@ export const logKind = v.union(
   v.literal('levelup'),
   v.literal('achievement'),
   v.literal('merchant'),
+  v.literal('choice'),
   v.literal('system'),
 )
 
@@ -168,6 +172,8 @@ export default defineSchema({
     potionCap: v.optional(v.number()),
     /** D78: an open merchant visit, cleared by the simulator when it expires or by the last purchase. */
     merchant: v.optional(merchantVisit),
+    /** D79: a pending narrative choice, answered by `heroes.choose` or defaulted by the simulator at expiry. */
+    choice: v.optional(v.object({ eventId: v.string(), offeredAtTick: v.number(), expiresAtTick: v.number(), biomeTier: v.number() })),
     eligibleFromTick: v.number(),
     lastTick: v.number(),
     lastProgressTick: v.number(),

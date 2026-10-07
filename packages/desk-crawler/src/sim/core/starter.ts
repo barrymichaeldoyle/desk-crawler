@@ -45,6 +45,8 @@ export function zeroCounters(): HeroCounters {
   stanceChanges: 0,
   purchases: 0,
   merchantVisits: 0,
+  choicesMade: 0,
+  choicesDefaulted: 0,
   }
 }
 

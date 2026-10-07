@@ -45,6 +45,8 @@ export interface PayloadHero {
   readonly quarantined: boolean
   /** D78: an open merchant visit ends at this tick. */
   readonly merchantExpiresAtTick?: number
+  /** D79: a pending choice resolves by itself at this tick. */
+  readonly choiceExpiresAtTick?: number
 }
 
 export interface PayloadInput {
@@ -342,7 +344,9 @@ export function buildPayload(input: PayloadInput) {
   else if (hero.status === 'dead') attention = 'Revives automatically with all XP and gear.'
   else if (hero.status === 'sleeping' && hero.wakeAtTick === undefined) attention = 'Make room in your bag in the companion, then resume.'
   // D78: a merchant visit is a cheerful notice, never an attention line (attention collapses the stories), and only while its offers are open.
-  const notice = attention === null && hero.merchantExpiresAtTick !== undefined && hero.merchantExpiresAtTick > (world?.currentTick ?? hero.lastTick) ? 'Merchant visiting. Shop in the companion soon.' : null
+  const tickNow = world?.currentTick ?? hero.lastTick
+  // D79 outranks D78: a decision waiting is the more useful line; neither ever outranks a problem.
+  const notice = attention !== null ? null : hero.choiceExpiresAtTick !== undefined && hero.choiceExpiresAtTick > tickNow ? 'A decision is waiting in the companion.' : hero.merchantExpiresAtTick !== undefined && hero.merchantExpiresAtTick > tickNow ? 'Merchant visiting. Shop in the companion soon.' : null
 
   const needsBag = hero.status === 'sleeping' && hero.wakeAtTick === undefined && !hero.quarantined && !servicePaused
   // A brand-new hero has no adventures yet: the screen welcomes them and links the companion.

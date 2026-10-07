@@ -1,5 +1,6 @@
 import { applyItemChanges } from './apply'
 import { isBagFull, milestoneUpgrade, nextEarlyTier } from './bag'
+import { eventById, optionOf, resolveEffect } from './choice'
 import { nextEarlyPouchTier, potionCap, pouchMilestoneUpgrade } from './pouch'
 import { assertHeroInvariants, SimulationInvariantError } from './invariants'
 import { codePoints, composeSummary, fill, rarityLabel, variant, withArticle, type NarrativeVars } from './narrative'
@@ -26,6 +27,7 @@ import type {
   TickMetrics,
   MerchantOffer,
   MerchantVisit,
+  PendingChoice,
   PouchTier,
 } from './types'
 
@@ -50,6 +52,8 @@ const ZERO_METRICS: TickMetrics = {
   jackpots: 0,
   merchantVisits: 0,
   pouchUpgrades: 0,
+  choicesOffered: 0,
+  choicesDefaulted: 0,
 }
 
 interface Streams {
@@ -185,8 +189,35 @@ class TickRun {
     })
   }
 
+  /**
+   * D79: a choice the player let expire resolves by its default option, as this tick's whole event, so the player
+   * reads what happened and the encounter rhythm resumes next tick. Only an exploring or resting hero resolves it;
+   * dead, travelling, paused and sleeping heroes keep it pending until they are back.
+   */
+  private resolveExpiredChoice(): SimulationResult | undefined {
+    const { h, content, input } = this
+    const pending = h.choice
+    if (pending === undefined || input.tick < pending.expiresAtTick) return undefined
+    const event = eventById(content, pending.eventId)
+    const option = event === undefined ? undefined : optionOf(event, event.defaultOptionId)
+    delete h.choice
+    if (event === undefined || option === undefined) return undefined
+    const potionRow = input.inventory.find((item) => item.kind === 'potion')
+    const change = resolveEffect(content, h, potionRow?.quantity ?? 0, option.effect, pending.biomeTier)
+    h.gold += change.gold
+    if (change.gold > 0) h.counters.goldEarned += change.gold
+    h.hp += change.hp
+    for (let i = 0; i < change.potions; i += 1) this.gainPotion(potionRow?.id)
+    h.counters.choicesDefaulted += 1
+    this.metrics.choicesDefaulted = 1
+    const summary = composeSummary(option.story, option.story, ['Decided by itself.'], content.constants.summaryMaxCodePoints)
+    return this.finish('advanced', { kind: 'choice', summary, outcome: { variant: 'choice', phase: 'defaulted', eventId: event.id, optionId: option.id, expiresAtTick: pending.expiresAtTick } })
+  }
+
   private restingTick(): SimulationResult {
     const { h, content } = this
+    const expired = this.resolveExpiredChoice()
+    if (expired !== undefined) return expired
     const max = maxHp(h.level)
     const healing = Math.min(max - h.hp, pctOf(max, content.constants.restingHealPct))
     h.hp += healing
@@ -204,6 +235,8 @@ class TickRun {
 
   private explore(): SimulationResult {
     const { h, content, input } = this
+    const expired = this.resolveExpiredChoice()
+    if (expired !== undefined) return expired
     const c = content.constants
     const sustain = this.sustain()
     const max = maxHp(h.level)
@@ -358,12 +391,25 @@ class TickRun {
             break
           }
         }
-        const found = pickWeighted<'gear' | 'potion' | 'gold' | 'merchant'>(this.rng.encounter, [
+        let found = pickWeighted<'gear' | 'potion' | 'gold' | 'merchant' | 'event'>(this.rng.encounter, [
           ['gear', c.lootWeights.gear],
           ['potion', c.lootWeights.potion],
           ['gold', c.lootWeights.gold],
           ...(c.lootWeights.merchant === undefined ? [] : [['merchant', c.lootWeights.merchant] as const]),
+          ...(c.lootWeights.event === undefined ? [] : [['event', c.lootWeights.event] as const]),
         ])
+        // D79: one pending choice at a time; a second draw while one is open falls through to gold.
+        if (found === 'event' && (h.choice !== undefined || content.choices === undefined)) found = 'gold'
+        if (found === 'event') {
+          const event = pickOne(this.rng.reward, content.choices!.events)
+          const choice: PendingChoice = { eventId: event.id, offeredAtTick: input.tick, expiresAtTick: input.tick + content.choices!.expiresAfterTicks, biomeTier: biome.tier }
+          h.choice = choice
+          this.metrics.choicesOffered = 1
+          primary = event.prompt
+          compact = `${event.title}. Decide in the companion.`
+          outcome = { variant: 'choice', phase: 'offered', eventId: event.id, expiresAtTick: choice.expiresAtTick }
+          break
+        }
         if (found === 'merchant') {
           const visit = this.merchantVisit(biome.tier)
           h.merchant = visit
@@ -439,7 +485,7 @@ class TickRun {
     }
 
     // Death and safe-biome protection come before level-up.
-    let logKind: LogKind = outcome.variant === 'merchant' ? 'merchant' : kind
+    let logKind: LogKind = outcome.variant === 'merchant' ? 'merchant' : outcome.variant === 'choice' ? 'choice' : kind
     const consequences: string[] = []
     if (lethal) {
       const ticks = c.reviveAfterTicks
@@ -682,6 +728,7 @@ function validateOutput(input: SimulationInput, result: SimulationResult): void 
   if (out.bagCapacity < hero.bagCapacity) fail('BAG_SHRANK', 'bag capacity decreased')
   if ((out.potionCap ?? 0) < (hero.potionCap ?? 0)) fail('POUCH_SHRANK', 'potion cap decreased')
   if (out.merchant !== undefined && (out.merchant.offers.length === 0 || out.merchant.offers.length > 3 || out.merchant.expiresAtTick <= input.tick)) fail('MERCHANT', 'merchant offers must be one to three and still open')
+  if (out.choice !== undefined && hero.choice === undefined && out.choice.offeredAtTick !== input.tick) fail('CHOICE', 'a new choice must be offered this tick')
   if (result.event && codePoints(result.event.summary) > input.content.constants.summaryMaxCodePoints) {
     fail('SUMMARY_LENGTH', result.event.summary)
   }

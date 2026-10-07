@@ -32,7 +32,9 @@ const scratch = mkdtempSync(join(tmpdir(), 'desk-crawler-checkpoint-'))
 chmodSync(scratch, 0o700)
 try {
   const archive = join(scratch, 'snapshot.zip')
-  const result = spawnSync(process.execPath, [cli, 'export', '--deployment', source, '--path', archive], {
+  // A deploy key names its own deployment (checked against --source above); naming it again makes the CLI look the
+  // deployment up through the dashboard API, which a deploy key cannot authenticate against.
+  const result = spawnSync(process.execPath, [cli, 'export', ...(deployKey ? [] : ['--deployment', source]), '--path', archive], {
     cwd: repository, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024,
   })
   // The CLI's own message (auth, deployment or network) is the only clue a scheduled run leaves; it never contains the key.

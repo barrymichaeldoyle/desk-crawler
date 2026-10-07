@@ -249,7 +249,7 @@ Set pieces are recomputed when the catalog version changes, so adding a biome in
 | | | III | 12 | Full Set | Every design, once. |
 | | | IV | 24 | Second Shelf | Facilities have been informed. |
 
-Launch total: 60 monster tiers, 5 set pieces and 66 counter tiers, 131 ids.
+Launch total: 60 monster tiers, 5 set pieces and 66 counter tiers, 131 ids. Catalog version 2 (v1.1, 2026-10-07) appends 15 counter tiers in five families, 146 ids: Purchases (1 / 5 / 25 merchant purchases), Merchants met (1 / 10 / 50 visits), Stance changes (1 / 5 / 25), Decisions made (1 / 5 / 25 / 100 choices answered) under a new "Decisions" category, and Epic finds (1 / 5) under Lifetime.
 
 ### Later releases
 
@@ -257,7 +257,7 @@ Each release appends families for its new system under a new catalog version; it
 
 | Release | Families |
 | --- | --- |
-| v1.1 Decisions | Merchant purchases, stance changes, event choices taken |
+| v1.1 Decisions | Shipped as catalog version 2 on 2026-10-07: Purchases, Merchants met, Stance changes, Decisions made, Epic finds |
 | v1.2 Other people | Meetings completed, meetings with the same hero, world events survived |
 | v2.0 Depth | Archive and Parking Garage monsters (five tiers each), salvage, upgrades, persistent elite defeats, dungeon clears |
 | v2.1 Guilds | Raid contributions, hall contributions |

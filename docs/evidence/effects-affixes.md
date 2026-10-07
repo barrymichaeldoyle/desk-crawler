@@ -13,4 +13,4 @@ See the decision record: affixes are rolled on rare and epic gear at generation 
 
 ## Rollout state
 
-Deployed through main; production switches to content v6 between runs with `npx convex run world:setActiveContentVersion '{"contentVersion":"v6"}' --prod` after the Workers build is green.
+Deployed from `0894e14` (lint and Workers build green); production switched to content v6 (`{"from":"v5","to":"v6"}`) on 2026-10-07. Live render unverified.

@@ -8,7 +8,7 @@ import type { NumericCounter } from '../sim/core/types'
  * never logs, so a hero who did the deed before an achievement existed earns
  * it on the first evaluation after release.
  */
-export const ACHIEVEMENTS_VERSION = 1
+export const ACHIEVEMENTS_VERSION = 2
 
 export type AchievementPredicate =
   | { readonly kind: 'counter'; readonly counter: NumericCounter; readonly atLeast: number }
@@ -259,6 +259,34 @@ family('keepsakes', 'Keepsakes', 'Lifetime', [
   ['Full Set', 'Every design, once.'],
   ['Second Shelf', 'Facilities have been informed.'],
 ], (i) => ({ kind: 'keepsakes', atLeast: [1, 6, 12, 24][i]! }))
+
+// ---------------------------------------------------------------- v1.1 Decisions (catalog version 2; appended, never edited)
+
+counter('purchases', 'Purchases', 'Decisions', 'purchases', [1, 5, 25], [
+  ['Impulse Buy', 'The merchant had a nice smile.'],
+  ['Loyalty Card', 'Fifth stamp. The sixth is not free.'],
+  ['Preferred Customer', 'The merchant waves from across the floor.'],
+])
+counter('merchants', 'Merchants met', 'Decisions', 'merchantVisits', [1, 10, 50], [
+  ['Trestle Table', 'A cart, a cloth and a price list.'],
+  ['Market Day', 'Ten visits and counting.'],
+  ['Trade Route', 'The merchant plans the rounds around you.'],
+])
+counter('stances', 'Stance changes', 'Decisions', 'stanceChanges', [1, 5, 25], [
+  ['New Posture', 'Tried a different approach.'],
+  ['Mood Board', 'Five changes of heart.'],
+  ['Agile', 'Pivots weekly. Sometimes daily.'],
+])
+counter('choices', 'Decisions made', 'Decisions', 'choicesMade', [1, 5, 25, 100], [
+  ['Decider', 'Made one call. It counts.'],
+  ['Executive Function', 'Five decisions, all on time.'],
+  ['Steering Committee', 'Twenty-five decisions and a slide deck.'],
+  ['Chief Decision Officer', 'The role exists now. It is you.'],
+])
+counter('epics', 'Epic finds', 'Lifetime', 'epicFinds', [1, 5], [
+  ['Legendary Stationery', 'Epic gear. One in a hundred.'],
+  ['The Good Drawer', 'Five epics. It locks, obviously.'],
+])
 
 /** Families in display order. */
 export const ACHIEVEMENT_FAMILIES: readonly AchievementFamily[] = families

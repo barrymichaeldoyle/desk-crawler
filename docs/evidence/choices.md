@@ -15,4 +15,4 @@ Difference from the roadmap: no separate pending-choice table. There is at most 
 
 ## Rollout state
 
-Deployed through main; production switches to content v5 between runs with `npx convex run world:setActiveContentVersion '{"contentVersion":"v5"}' --prod` after the Workers build is green.
+Deployed from `51e8e9c` (lint and Workers build green); production switched to content v5 (`{"from":"v4","to":"v5"}`) and then to v6 the same day.

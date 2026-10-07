@@ -69,6 +69,11 @@ describe('first-run and companion QR fields', () => {
     expect(p).toMatchObject({ qr_base: '', companion_qr_base: 'https://art.test/art/qr/v3/bag' })
     expect(pick(buildPayload({ ...input, hero: null })).companion_qr_base).toBe('')
     expect(pick(buildPayload({ ...input, artBaseUrl: null })).companion_qr_base).toBe('')
+    // D85: the full layout's corner code goes to the companion home; unlinked payloads and missing art carry none.
+    const home = (p: unknown) => (p as { home_qr_base: string }).home_qr_base
+    expect(home(buildPayload(input))).toBe('https://art.test/art/qr/v3/app')
+    expect(home(buildPayload({ ...input, hero: null }))).toBe('')
+    expect(home(buildPayload({ ...input, artBaseUrl: null }))).toBe('')
   })
 })
 
@@ -121,6 +126,20 @@ describe('status times (D45)', () => {
     expect(travelling).toMatchObject({ status_eta_label: 'To the [[Server Room]], arriving', status_eta_at: Date.UTC(2026, 9, 4, 8, 30) / 1000 })
   })
 
+  it('leads the story list with the destination and arrival while travelling', () => {
+    const logs = Array.from({ length: MAX_LOGS }, (_, i) => ({ at: NOW - (i + 1) * 60_000, kind: 'system', summary: `Story ${i}.` }))
+    const travelling = { ...input, logs, latestEvent: { kind: 'levelup' }, hero: { ...input.hero!, status: 'travelling' as const, lastTick: 1, targetBiomeId: 'server_room', arriveAtTick: 2 } }
+    const withOffset = buildPayload({ ...travelling, utcOffset: 7200 }) as unknown as { log: Array<{ k: string; n: string; u: number; d: string }>; celebration: string | null }
+    expect(withOffset.log[0]).toMatchObject({ k: 'travel', n: 'Off to the [[Server Room]], arriving', u: Date.UTC(2026, 9, 4, 8, 30) / 1000, d: '' })
+    expect(withOffset.log).toHaveLength(MAX_LOGS)
+    expect(withOffset.log[1]!.n).toBe('Story 0.')
+    expect(withOffset.celebration).toBeNull()
+    const noOffset = buildPayload(travelling) as unknown as { log: Array<{ n: string }> }
+    expect(noOffset.log[0]!.n).toBe('Off to the [[Server Room]].')
+    const pending = buildPayload({ ...travelling, hero: { ...travelling.hero, lastTick: 2 } }) as unknown as { log: Array<{ n: string }> }
+    expect(pending.log[0]!.n).toBe('Story 0.')
+  })
+
   it('formats fallback durations', () => {
     expect([1, 3, 4, 5, 8].map(aboutDuration)).toEqual(['15 min', '45 min', '1 h', '1 h 15 min', '2 h'])
   })
@@ -146,9 +165,9 @@ describe('device recap privacy and compatibility', () => {
     expect(buildPayload(input).recap).toBeNull()
     expect(buildPayload({ ...input, hero: null, activity: { entries: [], truncated: false } }).recap).toBeNull()
     // 08:20 UTC with no offset is the morning stand-up; with Johannesburg's offset too; at 20:00 local it is the retro (D75).
-    expect(buildPayload({ ...input, activity: { entries: [], truncated: false } }).recap).toMatchObject({ label: 'Morning stand-up', activity: 'No new adventures', from: Date.UTC(2026, 9, 3, 19) / 1000, to: Date.UTC(2026, 9, 4, 7) / 1000 })
-    expect(buildPayload({ ...input, utcOffset: 7200, activity: { entries: [], truncated: false } }).recap).toMatchObject({ label: 'Morning stand-up', to: Date.UTC(2026, 9, 4, 5) / 1000 })
-    expect(buildPayload({ ...input, now: Date.UTC(2026, 9, 4, 18), utcOffset: 7200, activity: { entries: [], truncated: false } }).recap).toMatchObject({ label: 'Sprint retro', from: Date.UTC(2026, 9, 4, 5) / 1000, to: Date.UTC(2026, 9, 4, 17) / 1000 })
+    expect(buildPayload({ ...input, activity: { entries: [], truncated: false } }).recap).toMatchObject({ label: 'Night recap', activity: 'No new adventures', from: Date.UTC(2026, 9, 3, 19) / 1000, to: Date.UTC(2026, 9, 4, 7) / 1000 })
+    expect(buildPayload({ ...input, utcOffset: 7200, activity: { entries: [], truncated: false } }).recap).toMatchObject({ label: 'Night recap', to: Date.UTC(2026, 9, 4, 5) / 1000 })
+    expect(buildPayload({ ...input, now: Date.UTC(2026, 9, 4, 18), utcOffset: 7200, activity: { entries: [], truncated: false } }).recap).toMatchObject({ label: 'Day recap', from: Date.UTC(2026, 9, 4, 5) / 1000, to: Date.UTC(2026, 9, 4, 17) / 1000 })
     expect(JSON.stringify(buildPayload({ ...input, activity: { entries: [], truncated: false } }).recap)).not.toContain('Last 12 hours')
   })
 })

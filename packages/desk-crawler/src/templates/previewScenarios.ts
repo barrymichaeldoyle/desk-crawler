@@ -12,7 +12,7 @@ import type { OutcomeDetail } from '../sim/core/types'
 export const PREVIEW_NOW = Date.UTC(2026, 9, 4, 8, 20)
 /** The sample owner is in Johannesburg (UTC+2); TRMNL renders Liquid in UTC and the screen route adds `utc_offset`. */
 export const PREVIEW_UTC_OFFSET = 2 * 3600
-/** The end of the recap period the preview clock falls in: the 07:00 stand-up in Johannesburg (D75). */
+/** The end of the recap period the preview clock falls in: the night recap, which ends at 07:00 in Johannesburg (D75). */
 export const PREVIEW_PERIOD_END = Date.UTC(2026, 9, 4, 5, 0)
 /** Preview-only sample of the verified device-envelope field; never an actual redeemable code. */
 export const PREVIEW_KEEPSAKE_CODE = '482 917'
@@ -106,7 +106,7 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
     elite: { ...base, latestEvent: { kind: 'combat', outcome: { variant: 'combat', monsterId: 'legacy_mainframe', elite: true, outcome: 'victory' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'Took down an elite [[Legacy Mainframe]]. The floor heard it. +64 XP, +15 gold.', deltas: { xpEarned: 64, gold: 15, hp: -42 } }, ...base.logs] },
     levelUp: { ...base, hero: hero({ level: 6, xp: 12 }), latestEvent: { kind: 'levelup', outcome: { variant: 'combat', monsterId: 'cable_serpent', elite: false, outcome: 'victory' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'levelup', summary: 'Unplugged a [[Cable Serpent]]. +15 XP, +5 gold. Reached level 6!', deltas: { xpEarned: 15, gold: 5, hp: 8 } }, ...base.logs] },
     dead: { ...base, hero: hero({ status: 'dead', hp: 0, reviveAtTick: 125 }), latestEvent: { kind: 'death', outcome: { variant: 'combat', monsterId: 'firewall_gremlin', elite: false } }, logs: [{ at: NOW - 7 * 60_000, kind: 'death', summary: 'Flattened by a [[Firewall Gremlin]]. Lost 64 gold.', deltas: { xpEarned: 0, gold: -64, hp: -118 } }, ...base.logs] },
-    travelling: { ...base, hero: hero({ status: 'travelling', targetBiomeId: 'cafeteria_depths', arriveAtTick: 121 }), latestEvent: { kind: 'system' } },
+    travelling: { ...base, hero: hero({ status: 'travelling', targetBiomeId: 'cafeteria_depths', arriveAtTick: 121 }), latestEvent: { kind: 'system' }, logs: [{ at: NOW - 3 * 60_000, kind: 'system', summary: 'Set off for the Cafeteria Depths.', deltas: { xpEarned: 0, gold: 0, hp: 0 } }, ...base.logs] },
     sleeping: { ...base, hero: hero({ status: 'sleeping' }), heldItemName: 'Rare Spork Halberd', bagUsed: 20, latestEvent: { kind: 'loot', outcome: { variant: 'loot', found: 'gear' } }, logs: [{ at: NOW - 7 * 60_000, kind: 'loot', summary: 'Found a [[Rare Spork Halberd]]. Bag full. Holding it until you make room.' }, ...base.logs] },
     paused: { ...base, hero: hero({ status: 'paused' }), ranking: { ...base.ranking!, rank: null, rankDelta: null, status: 'dormant', score: null } },
     quarantined: { ...base, hero: hero({ quarantined: true }) },
@@ -140,7 +140,7 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
     coffeeBreak: { ...base, hero: hero({ biomeId: 'office_cubicles', hp: 148 }), latestEvent: { kind: 'rest' }, logs: [{ at: NOW - 7 * 60_000, kind: 'rest', summary: 'Took a coffee break anyway.', deltas: { xpEarned: 0, gold: 0, hp: 0 } }, ...base.logs] },
   }
   // Explicit recorded-outcome fixtures; these are fictional and never written to a deployment.
-  // Recorded outcomes sit inside the period the preview clock shows: at 10:20 Johannesburg that is the morning stand-up, the night up to 07:00 (05:00 UTC).
+  // Recorded outcomes sit inside the period the preview clock shows: at 10:20 Johannesburg that is the night recap, up to 07:00 (05:00 UTC).
   const activityEntry = (outcome: OutcomeDetail, index: number, patch: Partial<ActivityEntry> = {}): ActivityEntry => ({ at: PREVIEW_PERIOD_END - (index + 1) * 900_000, deltas: { xpEarned: 0, gold: 0, hp: 0 }, detail: { outcome, levelsGained: 0, heldFind: false }, ...patch })
   const fixtureFight: OutcomeDetail = { variant: 'combat', monsterId: 'cable_serpent', elite: false, monsterHpStart: 40, monsterHpEnd: 0, rounds: [], outcome: 'victory', xpGranted: 14, goldGranted: 5, gearDropped: false }
   const fixtureGear: OutcomeDetail = { variant: 'loot', found: 'gear', rarity: 'rare', goldGranted: 0, jackpot: false, potionFullFallback: false }

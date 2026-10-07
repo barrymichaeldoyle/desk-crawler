@@ -54,7 +54,16 @@ const { groups, overnightEntries } = previewScenarios(LOCAL_ART_ORIGIN)
 const SCENARIOS: Array<{ group: PreviewScenarioGroup; name: string; input: PayloadInput }> = (Object.keys(groups) as PreviewScenarioGroup[]).flatMap((group) =>
   Object.entries(groups[group]).map(([name, input]) => ({ group, name, input })),
 )
-const SCENARIO_NAMES = SCENARIOS.map((scenario) => scenario.name)
+
+/**
+ * A real hero's payload from `pnpm pull:trmnl` (tools/trmnl/pull-live.mjs), shown as the "live" scenario when the
+ * file exists. Re-pulling hot-reloads it. Its art URLs point at the pulled deployment and are redrawn locally.
+ */
+interface LivePull { alias: string; deployment: string; now: number; utcOffset: number; payload: Record<string, unknown> }
+const LIVE_FILES: Record<string, LivePull> = import.meta.env.DEV ? import.meta.glob('../../../../../.previews/live-payload.json', { eager: true, import: 'default' }) : {}
+const LIVE = Object.values(LIVE_FILES)[0] ?? null
+const LIVE_SCENARIO = 'live'
+const SCENARIO_NAMES = [...SCENARIOS.map((scenario) => scenario.name), ...(LIVE ? [LIVE_SCENARIO] : [])]
 
 interface PreviewSearch {
   view: View
@@ -103,17 +112,24 @@ interface Shot {
 
 /** The same envelope tools/trmnl/preview.ts renders: payload, owner offset and optional keepsake code. */
 async function renderShot(shot: Shot, options: { recap: boolean; keepsake: boolean }): Promise<string> {
-  const scenario = SCENARIOS.find((entry) => entry.name === shot.scenario)!
-  const input = options.recap ? withOvernightRecap(scenario.input, overnightEntries) : scenario.input
-  const payload = sceneUrlsAt(buildPayload(input), input.now, PREVIEW_UTC_OFFSET)
   const { engine, templates } = await getRenderer()
   const inner = await engine.render(templates[shot.layout], {
-    ...payload,
+    ...shotPayload(shot.scenario, options.recap),
     desk_keepsake_code: options.keepsake && !KEEPSAKE_FREE_SCENARIOS.has(shot.scenario) ? PREVIEW_KEEPSAKE_CODE : null,
-    utc_offset: NO_OFFSET_SCENARIOS.has(shot.scenario) ? null : PREVIEW_UTC_OFFSET,
   })
   const orientation = shot.portrait ? ' portrait' : ''
   return previewDocument(inlineArt(inner), shot.device, shot.layout, `${shot.scenario} · ${PREVIEW_DEVICES[shot.device].label}${orientation} · ${PREVIEW_LAYOUTS[shot.layout].label}`, { shadeOtherSlots: true, portrait: shot.portrait })
+}
+
+/** The merge variables before the keepsake code: a fictional scenario's built payload, or the pulled live one as the screen route sends it. */
+function shotPayload(name: string, recap: boolean): Record<string, unknown> {
+  if (name === LIVE_SCENARIO && LIVE) {
+    const local = JSON.parse(JSON.stringify(LIVE.payload).replace(/https:\/\/[\w.-]+\/art\//g, `${LOCAL_ART_ORIGIN}/art/`)) as ReturnType<typeof buildPayload>
+    return { ...sceneUrlsAt(local, LIVE.now, LIVE.utcOffset), utc_offset: LIVE.utcOffset }
+  }
+  const scenario = SCENARIOS.find((entry) => entry.name === name)!
+  const input = recap ? withOvernightRecap(scenario.input, overnightEntries) : scenario.input
+  return { ...sceneUrlsAt(buildPayload(input), input.now, PREVIEW_UTC_OFFSET), utc_offset: NO_OFFSET_SCENARIOS.has(name) ? null : PREVIEW_UTC_OFFSET }
 }
 
 function shotsFor(search: PreviewSearch): Shot[] {
@@ -136,7 +152,7 @@ function PreviewGallery() {
       <header className="flex flex-col gap-1">
         <h1 className="font-display text-3xl font-bold">TRMNL previews</h1>
         <p className="text-sm text-muted">
-          Fictional scenarios through the real payload and templates in framework 3.4. Template edits reload here. This approximates TRMNL's renderer, so check a live device before you ship lifecycle changes. Shaded slots stand in for other plugins.
+          Fictional scenarios through the real payload and templates in framework 3.4, plus a real hero as “live” after <code>pnpm pull:trmnl</code>. Template edits and re-pulls reload here. This approximates TRMNL's renderer, so check a live device before you ship lifecycle changes. Shaded slots stand in for other plugins.
         </p>
       </header>
 
@@ -151,6 +167,11 @@ function PreviewGallery() {
               onChange={(event) => set({ scenario: event.target.value })}
               className="min-h-11 border-2 border-edge bg-night px-2 text-ink disabled:opacity-50"
             >
+              {LIVE ? (
+                <optgroup label={`Live (${LIVE.deployment})`}>
+                  <option value={LIVE_SCENARIO}>{`${LIVE_SCENARIO} · ${LIVE.alias} · pulled ${new Date(LIVE.now + LIVE.utcOffset * 1000).toISOString().slice(11, 16)}`}</option>
+                </optgroup>
+              ) : null}
               {(Object.keys(groups) as PreviewScenarioGroup[]).map((group) => (
                 <optgroup key={group} label={PREVIEW_SCENARIO_GROUP_LABELS[group]}>
                   {Object.keys(groups[group]).map((name) => (

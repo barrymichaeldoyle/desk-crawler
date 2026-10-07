@@ -20,4 +20,4 @@ Barry asked whether the morning stand-up line could carry icons. He also noted t
 
 ## Rollout state
 
-Local only; not pushed or deployed.
+Pushed as `8a84b23`; lint and the Workers build passed (18:06 UTC), so production serves template v35. Live server render and physical readability are unverified.

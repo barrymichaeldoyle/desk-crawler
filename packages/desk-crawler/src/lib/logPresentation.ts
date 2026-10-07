@@ -62,5 +62,8 @@ export function logPresentation(entry: { readonly summary: string; readonly kind
     deltas.offers ? `${deltas.offers} ${deltas.offers === 1 ? 'offer' : 'offers'} open` : null,
     deltas.effectGained ? `${deltas.effectGained.replace(/_/g, ' ').replace(/^./, (c) => c.toUpperCase())}` : null,
   ].filter((part): part is string => part !== null)
-  return { narrative, changes: changes.length > 0 ? changes : ['No effect'] }
+  // "No effect" explains an adventure that changed nothing (a coffee break at full HP); travel and companion actions
+  // (kind `system`) were never meant to change stats, so they stand alone.
+  const quiet = entry.kind === 'travel' || entry.kind === 'system'
+  return { narrative, changes: changes.length > 0 || quiet ? changes : ['No effect'] }
 }

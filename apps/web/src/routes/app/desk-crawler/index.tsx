@@ -15,21 +15,23 @@ import { GameScreen, latestLogQuery } from './-gameScreen'
 import { AdventureLog } from './-log'
 import { Records } from './-records'
 import { Achievements } from './-achievements'
+import { KeepsakeCallout } from './-keepsakes'
 
 const DevicePreview = lazy(() => import('./-devicePreview').then((module) => ({ default: module.DevicePreview })))
 
 export const Route = createFileRoute('/app/desk-crawler/')({
   head: () => seo({ title: 'Hero', index: false }),
   loader: ({ context }) =>
-    preload(context, convexQuery(api.heroes.mine, {}), convexQuery(api.inventory.mine, {}), convexQuery(api.heroes.returnSummary, {}), convexQuery(api.leaderboard.view, {}), convexQuery(api.achievements.mine, {}), latestLogQuery()),
+    preload(context, convexQuery(api.heroes.mine, {}), convexQuery(api.inventory.mine, {}), convexQuery(api.heroes.returnSummary, {}), convexQuery(api.leaderboard.view, {}), convexQuery(api.achievements.mine, {}), convexQuery(api.keepsakes.mine, {}), latestLogQuery()),
   component: HeroHome,
 })
 
 type Biome = { id: string; name: string; unlocked: boolean; unlockLevel: number }
 
 /**
- * The game screen leads: the hero's scene in colour under a platformer HUD,
- * then the few commands the game asks for, the world map, the quest log and
+ * The game screen leads, after an unclaimed weekly keepsake's callout (a
+ * reason to go and look at the TRMNL): the hero's scene in colour under a
+ * platformer HUD, then the few commands the game asks for, the world map, the quest log and
  * what the owner's TRMNL is showing.
  */
 function HeroHome() {
@@ -40,6 +42,7 @@ function HeroHome() {
 
   return (
     <div className="flex min-w-0 flex-col gap-8">
+      <KeepsakeCallout />
       <GameScreen hero={{ ...hero, biomeName, targetName }} />
       <HeroSheet hero={hero} />
       {/* Reading order on phones: tally, quest log, records, achievements, then the device. Wide screens pair the tally and log with the rest. */}

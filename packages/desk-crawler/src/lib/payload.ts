@@ -255,6 +255,7 @@ export function buildPayload(input: PayloadInput) {
       ...common,
       ...qrFields(servicePaused ? null : 'app', 'Scan to finish setup'),
       companion_qr_base: '',
+      home_qr_base: '',
       first_run: false,
       ...sceneUrls(content.safeBiomeId, { pose: 'idle', subject: { kind: 'prop', id: 'signpost' } }),
       hero_tick: null,
@@ -339,6 +340,14 @@ export function buildPayload(input: PayloadInput) {
       break
   }
 
+  // While travelling, the destination and arrival lead the story list, where players look for what is happening; the
+  // header keeps its status line. The entry is live, never stored, and carries the arrival time as its HH:MM.
+  const arrivesAt = hero.status === 'travelling' && etaTicks > 0 ? slotEta(now, etaTicks) : null
+  const travelLine = arrivesAt === null ? null : (() => {
+    const story = Number.isInteger(input.utcOffset) ? `Off to the ${area(hero.targetBiomeId)}, arriving` : `Off to the ${area(hero.targetBiomeId)}.`
+    return { at: iso(arrivesAt), u: Math.floor(arrivesAt / 1000), t: formatLocal(arrivesAt, input.timezone).label, k: 'travel', s: story, n: story, d: '' }
+  })()
+
   let attention: string | null = null
   if (hero.quarantined || servicePaused) attention = 'Paused for a service check. Nothing is lost.'
   else if (stale) attention = 'Updates delayed. Nothing is lost.'
@@ -361,6 +370,8 @@ export function buildPayload(input: PayloadInput) {
     ...(needsBag ? qrFields('bag', 'Scan to open your bag') : qrFields(firstRun ? 'app' : null, 'Scan to open your companion')),
     // The standing link to the bag (gear and potions): the full layout shows it whenever no action QR takes its place.
     companion_qr_base: input.artBaseUrl ? `${input.artBaseUrl}${qrBasePath('bag')}` : '',
+    // D85: the full layout's small corner code to the companion home; the bag link stays for older templates and narrow views.
+    home_qr_base: input.artBaseUrl ? `${input.artBaseUrl}${qrBasePath('app')}` : '',
     first_run: firstRun,
     ...sceneUrls(hero.biomeId, sceneFor(hero.status, hero.wakeAtTick !== undefined, input.latestEvent)),
     hero_tick: hero.lastTick,
@@ -398,8 +409,9 @@ export function buildPayload(input: PayloadInput) {
     bag_capacity: input.bagCapacity,
     held_item: input.heldItemName ?? '',
     wake_at_tick: hero.wakeAtTick ?? null,
-    log: logs,
-    celebration: attention === null && logs.length > 0 ? celebrationFor(input.newestEvent === undefined ? input.latestEvent : input.newestEvent, hero.level) : null,
+    log: travelLine === null ? logs : [travelLine, ...logs].slice(0, MAX_LOGS),
+    // The badge sits above the newest story, so it waits while the travel line leads.
+    celebration: attention === null && travelLine === null && logs.length > 0 ? celebrationFor(input.newestEvent === undefined ? input.latestEvent : input.newestEvent, hero.level) : null,
     attention,
     notice,
   }

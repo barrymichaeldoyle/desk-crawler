@@ -67,15 +67,16 @@ describe('scene art', () => {
 })
 
 describe('local scene time', () => {
-  it('uses local 06:00–18:00 boundaries, fractional offsets and midnight rollover', () => {
+  it('uses local 07:00–19:00 boundaries, fractional offsets and midnight rollover', () => {
     const at = (hour: number, minute = 0) => Date.UTC(2026, 9, 5, hour, minute)
-    expect(sceneTimeAt(at(5, 59), 0)).toBe('night')
-    expect(sceneTimeAt(at(6), 0)).toBe('day')
-    expect(sceneTimeAt(at(17, 59), 0)).toBe('day')
-    expect(sceneTimeAt(at(18), 0)).toBe('night')
-    expect(sceneTimeAt(at(4), 2 * 3600)).toBe('day')
-    expect(sceneTimeAt(at(16), 2 * 3600)).toBe('night')
-    expect(sceneTimeAt(at(0, 15), 5.75 * 3600)).toBe('day')
+    expect(sceneTimeAt(at(6, 59), 0)).toBe('night')
+    expect(sceneTimeAt(at(7), 0)).toBe('day')
+    expect(sceneTimeAt(at(18, 59), 0)).toBe('day')
+    expect(sceneTimeAt(at(19), 0)).toBe('night')
+    expect(sceneTimeAt(at(5), 2 * 3600)).toBe('day')
+    expect(sceneTimeAt(at(17), 2 * 3600)).toBe('night')
+    expect(sceneTimeAt(at(1, 15), 5.75 * 3600)).toBe('day')
+    expect(sceneTimeAt(at(1, 14), 5.75 * 3600)).toBe('night')
     expect(sceneTimeAt(at(10), -4.5 * 3600)).toBe('night')
     expect(sceneTimeAt(at(23), 2 * 3600)).toBe('night')
     expect(sceneTimeAt(at(1), -4 * 3600)).toBe('night')
@@ -85,7 +86,7 @@ describe('local scene time', () => {
   it('selects all scales together without mutating the payload or legacy URLs', () => {
     const url = (scale: number) => `https://example.test${scenePath('office_cubicles', 'fight', { kind: 'monster', id: 'paper_imp', elite: true }, scale)}`
     const payload = Object.freeze({ scene_url: url(5), scene_url_small: url(2), scene_url_large: url(6), scene_url_medium: url(3), gold: 42 })
-    const local = sceneUrlsAt(payload, Date.UTC(2026, 9, 5, 16), 7200)
+    const local = sceneUrlsAt(payload, Date.UTC(2026, 9, 5, 17), 7200)
     for (const key of ['scene_url', 'scene_url_small', 'scene_url_large', 'scene_url_medium'] as const) {
       expect(local[key]).toBe(payload[key].replace('/day/', '/night/'))
       expect(payload[key]).toContain('/day/')

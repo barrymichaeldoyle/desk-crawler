@@ -93,7 +93,7 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
       .order('desc')
       .take(MAX_LOGS)
     logs = recent.map((log) => ({ at: log.at, kind: log.kind, summary: log.summary, deltas: displayLogDeltas(log) }))
-    // The most recently completed stand-up or retro period in the owner's local time (D75), the same one buildPayload labels.
+    // The most recently completed night or day period in the owner's local time (D75), the same one buildPayload labels.
     const period = recapPeriod(now, utcOffset)
     const window = await ctx.db
       .query('tickLogs')

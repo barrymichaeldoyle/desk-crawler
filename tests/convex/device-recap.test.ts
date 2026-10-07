@@ -44,9 +44,9 @@ describe('device recap read path', () => {
     })
     const preview = await owner.query(api.trmnlPayload.mine, { now: NOW })
     expect(preview!.log).toHaveLength(10)
-    expect(preview!.recap).toMatchObject({ label: 'Morning stand-up', events: 48, partial: false, from: (END - RECAP_WINDOW_MS) / 1000, to: END / 1000, totals: { potions: 48 } })
+    expect(preview!.recap).toMatchObject({ label: 'Night recap', events: 48, partial: false, from: (END - RECAP_WINDOW_MS) / 1000, to: END / 1000, totals: { potions: 48 } })
     // The owner's offset moves the boundaries: at 10:00 Johannesburg the stand-up ended at 05:00 UTC, before the first eight rows.
-    expect((await owner.query(api.trmnlPayload.mine, { now: NOW, utcOffset: 7200 }))!.recap).toMatchObject({ label: 'Morning stand-up', events: 41, to: Date.UTC(2026, 9, 6, 5) / 1000 })
+    expect((await owner.query(api.trmnlPayload.mine, { now: NOW, utcOffset: 7200 }))!.recap).toMatchObject({ label: 'Night recap', events: 41, to: Date.UTC(2026, 9, 6, 5) / 1000 })
     expect(JSON.stringify(preview!.recap)).not.toMatch(/heroId|userId|monsterId|simulationVersion|operation/)
     expect(await t.query(api.trmnlPayload.mine, { now: NOW })).toBeNull()
     expect(await t.withIdentity({ issuer: 'issuer', subject: 'Stranger' }).query(api.trmnlPayload.mine, { now: NOW })).toBeNull()
@@ -81,7 +81,7 @@ describe('device recap read path', () => {
     // 20:00 the same day: the retro covers 07:00 to 19:00, after the one row at 07:00.
     const preview = await owner.query(api.trmnlPayload.mine, { now: NOW + RECAP_WINDOW_MS })
     expect(preview!.log).toHaveLength(1)
-    expect(preview!.recap).toMatchObject({ label: 'Sprint retro', events: 0, activity: 'No new adventures', partial: false })
+    expect(preview!.recap).toMatchObject({ label: 'Day recap', events: 0, activity: 'No new adventures', partial: false })
     await t.run(ctx => ctx.db.patch(heroId, { activationState: 'pending_trmnl' }))
     expect(await owner.query(api.trmnlPayload.mine, { now: NOW })).toBeNull()
   })

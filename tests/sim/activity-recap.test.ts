@@ -13,15 +13,15 @@ const fight: OutcomeDetail = { variant: 'combat', monsterId: 'paper_imp', elite:
 
 describe('recap periods (D75)', () => {
   it('reports the most recently completed stand-up or retro period in the owner\'s local time', () => {
-    expect(PERIOD).toEqual({ label: 'Morning stand-up', span: '19:00-07:00', from: END - RECAP_WINDOW_MS, to: END })
+    expect(PERIOD).toEqual({ label: 'Night recap', span: '19:00-07:00', from: END - RECAP_WINDOW_MS, to: END })
     // 06:59 UTC: the stand-up has not happened yet, so the previous evening's retro (07:00 to 19:00 yesterday) stands.
-    expect(recapPeriod(Date.UTC(2026, 9, 6, 6, 59), null)).toEqual({ label: 'Sprint retro', span: '07:00-19:00', from: Date.UTC(2026, 9, 5, 7), to: Date.UTC(2026, 9, 5, 19) })
-    expect(recapPeriod(Date.UTC(2026, 9, 6, 19), null)).toEqual({ label: 'Sprint retro', span: '07:00-19:00', from: Date.UTC(2026, 9, 6, 7), to: Date.UTC(2026, 9, 6, 19) })
+    expect(recapPeriod(Date.UTC(2026, 9, 6, 6, 59), null)).toEqual({ label: 'Day recap', span: '07:00-19:00', from: Date.UTC(2026, 9, 5, 7), to: Date.UTC(2026, 9, 5, 19) })
+    expect(recapPeriod(Date.UTC(2026, 9, 6, 19), null)).toEqual({ label: 'Day recap', span: '07:00-19:00', from: Date.UTC(2026, 9, 6, 7), to: Date.UTC(2026, 9, 6, 19) })
     // Johannesburg (UTC+2) at 08:20 UTC is 10:20 local: the stand-up at 07:00 local, which is 05:00 UTC.
-    expect(recapPeriod(Date.UTC(2026, 9, 4, 8, 20), 7200)).toEqual({ label: 'Morning stand-up', span: '19:00-07:00', from: Date.UTC(2026, 9, 3, 17), to: Date.UTC(2026, 9, 4, 5) })
+    expect(recapPeriod(Date.UTC(2026, 9, 4, 8, 20), 7200)).toEqual({ label: 'Night recap', span: '19:00-07:00', from: Date.UTC(2026, 9, 3, 17), to: Date.UTC(2026, 9, 4, 5) })
     // Honolulu (UTC−10) at 04:30 UTC is 18:30 the previous local day: still the stand-up of that local morning.
-    expect(recapPeriod(Date.UTC(2026, 9, 6, 4, 30), -36000)).toEqual({ label: 'Morning stand-up', span: '19:00-07:00', from: Date.UTC(2026, 9, 5, 5), to: Date.UTC(2026, 9, 5, 17) })
-    expect(recapPeriod(Date.UTC(2026, 9, 6, 5), -36000).label).toBe('Sprint retro')
+    expect(recapPeriod(Date.UTC(2026, 9, 6, 4, 30), -36000)).toEqual({ label: 'Night recap', span: '19:00-07:00', from: Date.UTC(2026, 9, 5, 5), to: Date.UTC(2026, 9, 5, 17) })
+    expect(recapPeriod(Date.UTC(2026, 9, 6, 5), -36000).label).toBe('Day recap')
   })
 })
 
@@ -50,7 +50,7 @@ describe('12-hour device recap', () => {
       { k: 'potion', t: '1 potion' },
       { k: 'rest', t: '1 break' },
     ])
-    expect(activityRecap([], PERIOD, contentV1, true)).toMatchObject({ label: 'Morning stand-up · partial', span: '19:00-07:00', items: [{ k: 'none', t: 'No adventures in sample' }] })
+    expect(activityRecap([], PERIOD, contentV1, true)).toMatchObject({ label: 'Night recap · partial', span: '19:00-07:00', items: [{ k: 'none', t: 'No adventures in sample' }] })
   })
 
   it('retains older milestones even when the newest event is an uneventful break', () => {
@@ -80,10 +80,10 @@ describe('12-hour device recap', () => {
     ], PERIOD, contentV1)
     expect(recap.events).toBe(2)
     expect(recap.totals.gold).toBe(24)
-    expect(recap.label).toBe('Morning stand-up')
+    expect(recap.label).toBe('Night recap')
     expect(recap.from).toBe((END - RECAP_WINDOW_MS) / 1000)
     expect(recap.to).toBe(END / 1000)
-    expect(activityRecap([], recapPeriod(Date.UTC(2026, 9, 6, 20), null), contentV1).label).toBe('Sprint retro')
+    expect(activityRecap([], recapPeriod(Date.UTC(2026, 9, 6, 20), null), contentV1).label).toBe('Day recap')
   })
 
   it('counts defeats separately from victory and keeps important historical facts ahead of rare finds', () => {
@@ -103,7 +103,7 @@ describe('12-hour device recap', () => {
   })
 
   it('labels capped results as partial and distinguishes an empty window from zero-reward adventures', () => {
-    expect(activityRecap([], PERIOD, contentV1)).toMatchObject({ label: 'Morning stand-up', activity: 'No new adventures', compact: 'No new adventures', events: 0 })
+    expect(activityRecap([], PERIOD, contentV1)).toMatchObject({ label: 'Night recap', activity: 'No new adventures', compact: 'No new adventures', events: 0 })
     const cap = activityRecap(Array.from({ length: MAX_RECAP_EVENTS + 1 }, () => entry(loot())), PERIOD, contentV1)
     expect(cap.partial).toBe(true)
     expect(cap.label).toContain('partial')

@@ -85,8 +85,24 @@ describe('companion QR in every view', () => {
   const base = 'https://art.test/art/qr/v3'
   const liquid = new Liquid({ timezoneOffset: 0 })
 
-  it('keeps a standing bag link in all layouts and lets the action destination take priority', async () => {
-    for (const markup of Object.values(screenMarkup)) {
+  it('keeps a small unlabelled home code in the full layout and a full bag panel in its place (D85)', async () => {
+    const standing = await liquid.parseAndRender(screenMarkup.markup, { ...payload(), companion_qr_base: `${base}/bag`, home_qr_base: `${base}/app` })
+    expect(standing).toContain(`src="${base}/app/2.png"`)
+    expect(standing).toContain(`src="${base}/app/3.png"`)
+    expect(standing).not.toContain(`src="${base}/bag/`)
+    expect(standing).not.toContain('Your bag')
+    expect(standing).not.toContain('data-bag-full')
+    const full = await liquid.parseAndRender(screenMarkup.markup, { ...payload(), companion_qr_base: `${base}/bag`, home_qr_base: `${base}/app`, qr_base: `${base}/bag`, qr_label: 'Scan to open your bag', attention: 'Make room in your bag in the companion, then resume.' })
+    expect(full).toContain('data-bag-full="true"')
+    expect(full).toContain('Adventures are paused until you make room.')
+    expect(full).toContain(`src="${base}/bag/3.png"`)
+    expect(full).toContain(`src="${base}/bag/5.png"`)
+    expect(full).not.toContain(`src="${base}/app/`)
+    expect(full).not.toContain('data-story-list="true"')
+  })
+
+  it('keeps a standing bag link in the narrow layouts and lets the action destination take priority', async () => {
+    for (const markup of [screenMarkup.markup_half_horizontal, screenMarkup.markup_half_vertical, screenMarkup.markup_quadrant]) {
       const standing = await liquid.parseAndRender(markup, { ...payload(), companion_qr_base: `${base}/bag` })
       expect(standing).toContain(`src="${base}/bag/3.png"`)
       expect(standing).toContain(`src="${base}/bag/4.png"`)
@@ -198,14 +214,15 @@ describe('full layout', () => {
     expect(rows(dormant).some((r) => r.own)).toBe(false)
   })
 
-  it('shows the standing bag QR beside the rank, and only the action QR when one is set', async () => {
+  it('shows the home code in the corner beside the rank, and only the bag panel when the bag is full', async () => {
     const base = 'https://art.test/art/qr/v3'
-    const standing = await render({ ...payload(), companion_qr_base: `${base}/bag` })
-    expect(standing).toContain(`src="${base}/bag/3.png"`)
-    expect(standing).toContain('Your bag')
-    const action = await render({ ...payload(), companion_qr_base: `${base}/bag`, qr_base: `${base}/bag`, qr_url: `${base}/bag/3.png`, qr_url_large: `${base}/bag/5.png`, qr_label: 'Scan to open your bag' })
-    expect(action).not.toContain('Your bag')
+    const standing = await render({ ...payload(), companion_qr_base: `${base}/bag`, home_qr_base: `${base}/app` })
+    expect(standing).toContain('data-home-qr="true"')
+    expect(standing).toContain('This week')
+    const action = await render({ ...payload(), companion_qr_base: `${base}/bag`, home_qr_base: `${base}/app`, qr_base: `${base}/bag`, qr_url: `${base}/bag/3.png`, qr_url_large: `${base}/bag/5.png`, qr_label: 'Scan to open your bag' })
+    expect(action).not.toContain('data-home-qr')
     expect(action).not.toContain('This week')
+    expect(action).toContain('Bag full')
   })
 })
 
@@ -365,19 +382,26 @@ describe('HUD hearts and counters (D72)', () => {
     expect(await new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup.markup_quadrant, payload())).not.toContain('data-xp-ticks')
   })
 
-  it('shows attack, defense and the bag with their marks beside the HP count, and gold and potions beside the XP count', async () => {
+  it('shows attack and defense beside the name, the HP count alone after the hearts, and the bag beside the potions (D85)', async () => {
     const vars = { ...payload(), gold: 640, potions: 1, weapon: 'Uncommon Cable Cutter' }
     const escape = (uri: string) => uri.replace(/[.*+?^$(){}|[\]\\]/g, '\\$&')
     const fullView = await render(vars)
-    expect(fullView).toMatch(new RegExp(`data-hp-count="true">118/148 HP</span><div[^>]*><img[^>]*src="${escape(hudMarkUri('sword', 24, 24))}" alt=""><span class="label lg:title--small">18</span></div><div[^>]*><img[^>]*src="${escape(hudMarkUri('shield', 24, 24))}" alt=""><span class="label lg:title--small">7</span></div><div data-bag-count="true"[^>]*><img[^>]*src="${escape(hudMarkUri('bag', 24, 24))}" alt=""><span class="label lg:title--small">3/30</span></div></div>`))
-    expect(fullView).toMatch(new RegExp(`data-xp-count="true">210/656 XP</span><div[^>]*><img[^>]*src="${escape(hudMarkUri('coin', 24, 24))}" alt=""><span class="label lg:title--small">640</span></div><div[^>]*><img[^>]*src="${escape(hudMarkUri('potion', 24, 24))}" alt=""><span class="label lg:title--small">1</span></div></div>`))
-    // The X full names the counts beside the hero (the OG rows above are lg:hidden) and puts the gear on one line.
-    expect(fullView).toMatch(/<div class="hidden lg:flex[^"]*" data-counters="words">(?:<div[^>]*><img[^>]*><span class="label lg:title--small">(?:18 attack|7 defense|640 gold|1 potion)<\/span><\/div>){4}<\/div>/)
+    const [landscape, portrait] = fullView.split('landscape:hidden')
+    for (const view of [landscape, portrait]) {
+      expect(view).toMatch(new RegExp(`level 5</span>\\s*<div[^>]*data-attack-defense="true"><div[^>]*><img[^>]*src="${escape(hudMarkUri('sword', 24, 24))}" alt=""><span class="label lg:title--small">18</span></div><div[^>]*><img[^>]*src="${escape(hudMarkUri('shield', 24, 24))}" alt=""><span class="label lg:title--small">7</span></div></div></div>`))
+      expect(view).toMatch(/data-hp-count="true">118\/148 HP<\/span><\/div>/)
+    }
+    const goldPotionsBag = new RegExp(`<div[^>]*><img[^>]*src="${escape(hudMarkUri('coin', 24, 24))}" alt=""><span class="label lg:title--small">640</span></div><div[^>]*><img[^>]*src="${escape(hudMarkUri('potion', 24, 24))}" alt=""><span class="label lg:title--small">1</span></div><div data-bag-count="true"[^>]*><img[^>]*src="${escape(hudMarkUri('bag', 24, 24))}" alt=""><span class="label lg:title--small">3/30</span></div></div>`)
+    // Landscape: under the hero, marks on the OG and named counts on the X; the XP row ends at its count.
+    expect(landscape).toMatch(new RegExp(`data-counters="marks">${goldPotionsBag.source}`))
+    expect(landscape).toMatch(/<div class="hidden lg:flex[^"]*" data-counters="words">(?:<div[^>]*><img[^>]*><span class="label lg:title--small">(?:640 gold|1 potion|3\/30)<\/span><\/div>){3}<\/div>/)
+    expect(landscape).toMatch(/data-xp-count="true">210\/656 XP<\/span><\/div>/)
+    // Portrait: after the XP count.
+    expect(portrait).toMatch(new RegExp(`data-xp-count="true">210/656 XP</span>${goldPotionsBag.source}`))
     // Unlinked payloads carry no bag, so no count is drawn.
     expect(await render({ ...vars, bag_capacity: null })).not.toContain('data-bag-count')
     expect(await render({ ...vars, potions: 2 })).toContain('>2 potions<')
     expect(fullView).toMatch(/data-gear-line="true"><span class="title--small text--regular" data-clamp="0" data-clamp-lg="0">Weapon <span class="text--bold inline-block">Uncommon Cable Cutter<\/span> · Armor <span class="text--bold inline-block">None<\/span><\/span>/)
-    expect(fullView.split('landscape:hidden')[0]).toMatch(/data-hp-count="true">118\/148 HP<\/span><div class="lg:hidden flex/)
     // Narrow columns: the HP count leads the combat row, and coins and potions take their own row.
     const side = await new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup.markup_half_vertical, vars)
     expect(side).toMatch(/data-counters="true"><div[^>]*><img[^>]*><span class="label lg:title--small">118\/148<\/span><\/div><div[^>]*><img[^>]*><span class="label lg:title--small">18<\/span><\/div><div[^>]*><img[^>]*><span class="label lg:title--small">7<\/span><\/div><\/div><div[^>]*data-counters="2"><div[^>]*><img[^>]*><span class="label lg:title--small">640<\/span><\/div><div[^>]*><img[^>]*><span class="label lg:title--small">1<\/span>/)

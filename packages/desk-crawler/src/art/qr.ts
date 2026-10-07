@@ -10,8 +10,8 @@ import { encodePng1Bit } from './png'
 export const QR_VERSION = 3
 export const QR_SCALE = 3
 export const QR_LARGE_SCALE = 5
-/** Every served scale: layouts pick one per size and screen (3-5 on the OG, up to 7 on the X). */
-export const QR_SCALES = new Set([3, 4, 5, 7])
+/** Every served scale: layouts pick one per size and screen (2-5 on the OG, up to 7 on the X). 2 is the full layout's corner code. */
+export const QR_SCALES = new Set([2, 3, 4, 5, 7])
 /**
  * v3: low error correction and a two-module quiet zone keep the codes compact on the screen (the bag link drops from
  * 33 to 29 modules). The 1-bit render is crisp and the layout leaves white space around every code, so both hold up.

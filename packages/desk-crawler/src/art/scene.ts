@@ -187,22 +187,34 @@ function drawWithHalo(c: Canvas, s: Sprite, left: number, top: number): void {
   c.draw(s, left, top)
 }
 
+/** A sprite on the stage, back to front, with what it is so the companion can colour it (sceneColour.ts). */
+export type Placement =
+  | { readonly role: 'cloak' | 'hero' | 'crown'; readonly sprite: Sprite; readonly left: number; readonly top: number }
+  | { readonly role: 'monster'; readonly id: keyof typeof monsterArt; readonly sprite: Sprite; readonly left: number; readonly top: number }
+  | { readonly role: 'prop'; readonly id: PropId; readonly sprite: Sprite; readonly left: number; readonly top: number }
+
+export function scenePlacements(pose: HeroPose, subject: Subject): Placement[] {
+  const hero = heroPoses[pose]
+  const placements: Placement[] = []
+  if (CLOAKED_POSES.has(pose)) placements.push({ role: 'cloak', sprite: heroCloak, left: HERO_X - 5, top: GROUND - hero.height + 8 })
+  placements.push({ role: 'hero', sprite: hero, left: HERO_X, top: GROUND - hero.height })
+  if (subject.kind === 'monster') {
+    const art = monsterArt[subject.id]
+    placements.push({ role: 'monster', id: subject.id, sprite: art, left: SUBJECT_X, top: GROUND - art.height })
+    if (subject.elite) placements.push({ role: 'crown', sprite: eliteCrown, left: SUBJECT_X + Math.floor((art.width - eliteCrown.width) / 2), top: GROUND - art.height - eliteCrown.height - 2 })
+  } else if (subject.kind === 'prop') {
+    const art = propArt[subject.id]
+    placements.push({ role: 'prop', id: subject.id, sprite: art, left: SUBJECT_X, top: GROUND - art.height })
+  }
+  return placements
+}
+
 export function composeScene(biome: BiomeArt, pose: HeroPose, subject: Subject, time: SceneTime = 'day'): Canvas {
   const c = new Canvas(STAGE_WIDTH, STAGE_HEIGHT)
   BACKDROPS[biome](c, time)
   // Ground and a clear floor band.
   c.rect(0, GROUND, STAGE_WIDTH, 1, '#')
   c.rect(0, GROUND - 22, STAGE_WIDTH, 0, 'w')
-  const hero = heroPoses[pose]
-  if (CLOAKED_POSES.has(pose)) drawWithHalo(c, heroCloak, HERO_X - 5, GROUND - hero.height + 8)
-  drawWithHalo(c, hero, HERO_X, GROUND - hero.height)
-  if (subject.kind === 'monster') {
-    const art = monsterArt[subject.id]
-    drawWithHalo(c, art, SUBJECT_X, GROUND - art.height)
-    if (subject.elite) drawWithHalo(c, eliteCrown, SUBJECT_X + Math.floor((art.width - eliteCrown.width) / 2), GROUND - art.height - eliteCrown.height - 2)
-  } else if (subject.kind === 'prop') {
-    const art = propArt[subject.id]
-    drawWithHalo(c, art, SUBJECT_X, GROUND - art.height)
-  }
+  for (const { sprite: art, left, top } of scenePlacements(pose, subject)) drawWithHalo(c, art, left, top)
   return c
 }

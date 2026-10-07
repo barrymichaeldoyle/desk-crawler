@@ -1,6 +1,8 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { api } from '@trmnl-games/backend/api'
+import { sceneColourUri } from '@trmnl-games/desk-crawler/art/sceneColour'
 import { keepUnitsTogether } from '@trmnl-games/desk-crawler/payload'
 import { markedRuns } from '@trmnl-games/desk-crawler/sim/core/narrative'
 import { logPresentation, type LogDeltas } from '@trmnl-games/desk-crawler/log'
@@ -20,6 +22,8 @@ export const latestLogQuery = () => convexQuery(api.heroes.recentLog, { paginati
 
 const HEARTS = 10
 const FALLBACK_BANDS = BIOME_BANDS.office_cubicles!
+/** The scene's box at each width; the colour layer shares it so its fills sit under the right pixels. */
+const SCENE_BOX = 'block h-[160px] w-full object-cover object-[41%_50%] sm:h-auto sm:pt-[9.5rem] lg:mx-auto lg:w-[1064px] lg:pt-28'
 
 /** One pixel heart; each half fills independently so health reads in half-heart steps. */
 function Heart({ left, right }: { left: boolean; right: boolean }) {
@@ -56,6 +60,7 @@ export function GameScreen({ hero }: { hero: ScreenHero }) {
   const pulse = usePulse(hero)
   const now = useMinute()
   const bands = BIOME_BANDS[hero.biomeId] ?? FALLBACK_BANDS
+  const colours = useMemo(() => sceneColourUri(hero.scenePath), [hero.scenePath])
   const xpPct = hero.xpToNext > 0 ? Math.min(100, Math.round((hero.xp * 100) / hero.xpToNext)) : 0
   return (
     <section aria-label={`${hero.name}'s game screen`} className="relative overflow-hidden border-4 border-night bg-night">
@@ -101,7 +106,9 @@ export function GameScreen({ hero }: { hero: ScreenHero }) {
           <div style={{ background: bands[2] }} />
           <div className="border-t-[6px] border-night/25" style={{ background: bands[3] }} />
         </div>
-        <img src={localSceneUrl(artUrl(hero.scenePath), now)} alt={`${hero.name}: ${pulse.sentence}`} width={760} height={200} className="relative block h-[160px] w-full object-cover object-[41%_50%] mix-blend-multiply [image-rendering:pixelated] sm:h-auto sm:pt-[9.5rem] lg:mx-auto lg:w-[1064px] lg:pt-28" />
+        {/* The hero and their foe in colour (D87): flat fills sized and cropped exactly like the art multiplied over them. */}
+        {colours ? <img src={colours} alt="" aria-hidden="true" width={760} height={200} className={`absolute inset-x-0 top-0 ${SCENE_BOX}`} /> : null}
+        <img src={localSceneUrl(artUrl(hero.scenePath), now)} alt={`${hero.name}: ${pulse.sentence}`} width={760} height={200} className={`relative mix-blend-multiply [image-rendering:pixelated] ${SCENE_BOX}`} />
       </div>
 
       {/* Reserved for the status line plus one detail line, so the strip holds its height while the log loads. */}

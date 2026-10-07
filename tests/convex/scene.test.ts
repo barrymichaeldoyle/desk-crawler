@@ -26,7 +26,7 @@ describe('TRMNL local sky', () => {
       await ctx.db.insert('trmnlInstances', { userId: hero.userId, grantId, uuid, state: 'active', confirmedBy: 'success_callback', createdAt: now })
     })
     const before = await t.run(async (ctx) => await ctx.db.get(heroId))
-    for (const [offset, time] of [['7200', 'day'], ['28800', 'night'], ['-21600', 'night'], ['', 'day'], ['invalid', 'day']] as const) {
+    for (const [offset, time] of [['7200', 'day'], ['32400', 'night'], ['-21600', 'night'], ['', 'day'], ['invalid', 'day']] as const) {
       const body = new URLSearchParams({ user_uuid: uuid, 'trmnl[user][utc_offset]': offset })
       const response = await t.fetch('/trmnl/v1/screen', { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() })
       expect(response.status).toBe(200)

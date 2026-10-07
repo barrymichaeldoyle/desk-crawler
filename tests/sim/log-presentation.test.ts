@@ -25,6 +25,9 @@ describe('story and stat changes', () => {
     const fallback = displayLogDeltas({ deltas: { ...zero, gold: 5 }, detail: { outcome: { variant: 'loot', found: 'gold', potionFullFallback: true } } })
     expect(present('Potion pouch full; sold a spare for 5 gold.', fallback, 'loot').changes).toEqual(['+5 gold'])
     expect(present('Found a healing potion.', zero, 'loot').changes).toEqual(['No effect'])
+    // Travel and companion actions never meant to change stats, so they carry no "No effect" chip.
+    expect(present('Set off for the Server Room.', zero, 'system').changes).toEqual([])
+    expect(present('Arrived in the Server Room.', zero, 'travel').changes).toEqual([])
     expect(displayLogDeltas({ deltas: zero, detail: { operation: 'drink_potion' } }).potionsFound).toBe(0)
   })
   it('keeps expense-claim flavor and shows the reward once', () => {

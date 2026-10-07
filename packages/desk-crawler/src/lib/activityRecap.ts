@@ -6,17 +6,17 @@ export const RECAP_WINDOW_MS = 12 * 60 * 60 * 1000
 export const MAX_RECAP_EVENTS = 200
 
 /**
- * Recap periods follow the office day in the owner's local time (D75): the morning stand-up at 07:00 reports the night
- * (19:00 to 07:00) and the sprint retro at 19:00 reports the day (07:00 to 19:00). A recap is shown only once its
- * period has ended, so the device never summarises a window that is still running.
+ * Recap periods follow the owner's local day (D75, D84): at 07:00 the night recap reports 19:00 to 07:00 and at
+ * 19:00 the day recap reports 07:00 to 19:00. The office window's sky switches at the same hours. A recap is shown only
+ * once its period has ended, so the device never summarises a window that is still running.
  */
-export const STAND_UP_HOUR = 7
-export const RETRO_HOUR = 19
+export const DAY_START_HOUR = 7
+export const NIGHT_START_HOUR = 19
 const HOUR_MS = 60 * 60 * 1000
 const DAY_MS = 24 * HOUR_MS
 
 export interface RecapPeriod {
-  /** 'Morning stand-up' (the night just ended) or 'Sprint retro' (the day just ended). */
+  /** 'Night recap' (the night just ended) or 'Day recap' (the day just ended). */
   readonly label: string
   /** The period's local clock span, '19:00-07:00' or '07:00-19:00', so the screen says which hours it covers. */
   readonly span: string
@@ -30,12 +30,12 @@ export function recapPeriod(now: number, utcOffsetSeconds: number | null): Recap
   const offset = (utcOffsetSeconds ?? 0) * 1000
   const local = now + offset
   const dayStart = Math.floor(local / DAY_MS) * DAY_MS
-  const standUp = dayStart + STAND_UP_HOUR * HOUR_MS
-  const retro = dayStart + RETRO_HOUR * HOUR_MS
-  const end = local >= retro ? retro : local >= standUp ? standUp : retro - DAY_MS
-  const label = end === standUp ? 'Morning stand-up' : 'Sprint retro'
+  const morning = dayStart + DAY_START_HOUR * HOUR_MS
+  const evening = dayStart + NIGHT_START_HOUR * HOUR_MS
+  const end = local >= evening ? evening : local >= morning ? morning : evening - DAY_MS
+  const label = end === morning ? 'Night recap' : 'Day recap'
   const clock = (hour: number) => `${String(hour).padStart(2, '0')}:00`
-  const span = end === standUp ? `${clock(RETRO_HOUR)}-${clock(STAND_UP_HOUR)}` : `${clock(STAND_UP_HOUR)}-${clock(RETRO_HOUR)}`
+  const span = end === morning ? `${clock(NIGHT_START_HOUR)}-${clock(DAY_START_HOUR)}` : `${clock(DAY_START_HOUR)}-${clock(NIGHT_START_HOUR)}`
   return { label, span, from: end - RECAP_WINDOW_MS - offset, to: end - offset }
 }
 

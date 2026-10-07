@@ -41,6 +41,7 @@ export function zeroCounters(): HeroCounters {
     restTicks: 0,
     trips: 0,
     itemsSold: 0,
+  stanceChanges: 0,
   }
 }
 

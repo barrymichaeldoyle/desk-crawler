@@ -25,7 +25,7 @@ Failures are not receipts for successful operations. Transport retries are bound
 | Function | Arguments | Result | Bounded reads |
 | --- | --- | --- | --- |
 | `users.me` | none | public alias, legacy timezone (D39), owner/game state, sanitized hero name/status/activation state, analytics consent, `hasActiveInstallation` | Identity index + user/current game profile/hero + first owned active installation + revoked-identity hash lookup when no user row exists |
-| `heroes.mine` | none | sanitized hero state including activation state, derived stats, XP threshold, biome unlocks, server tick/health | User + active hero + bounded equipped items/world/run |
+| `heroes.mine` | none | sanitized hero state including activation state, derived stats, XP threshold, biome unlocks, stance and every stance's thresholds and victory XP share (D76), server tick/health | User + active hero + bounded equipped items/world/run |
 | `heroes.returnSummary` | none | Nullable visit baseline, observed level/lifetime XP/log sequence, nullable gains, current bag/unequipped counts, held name and status/wake/simulation state | Own user + current hero + <=32 inventory rows; no history scan |
 | `heroes.recentLog` | `paginationOpts` | Own log page with id/time/tick/kind/summary/source and display deltas; continuation. Additive `deltas.potionsFound` is 0 or 1, derived from the stored loot outcome, including same-tick use. No raw simulation detail | Hero-index page |
 | `inventory.mine` | none | Bag gear (≤20 unequipped) + equipped + ≤1 held gear + ≤1 potion stack, equipment/held IDs, capacity/used, D61 `ladder` (current bag name; next bag with capacity, price, milestone and whether it can be bought now) and wake readiness | Hero inventory index |
@@ -57,6 +57,7 @@ No unbounded public hero lists, arbitrary hero-ID reads, or public token lookup 
 | `inventory.resumeAdventures` | `biomeId?` | Set next-tick wake deadline and optional pending destination (D29); return wake tick and arrival tick if travelling. Repeating with the same arguments while wake is pending is a no-op; a different destination replaces the pending one before wake | Sleeping, no held item, at least one free bag slot; destination unlocked and not the current biome |
 | `users.replacePublicNames` | required alias/hero replacement fields | Validate restricted repair, increment public-name version, clear completed repair flags; preserve progress | Active owner with admin-set repair requirement; not ordinary rename |
 | `heroes.pause` | none | Save exploring/resting status and pause | Already paused is no-op; dead/travelling/sleeping rejected |
+| `heroes.setStance` | `stance: cautious \| balanced \| bold` | Set the sustain stance (D76); counts `stanceChanges` and logs a command story | Any gameplay status; quarantined rejected; current stance is a no-op; unknown stance rejected |
 | `heroes.resume` | none | Restore prior status; no catch-up | Exploring/resting already unpaused is no-op; sleeping uses resumeAdventures |
 | `trmnl.disconnect` | `instanceId` | Tombstone that instance, preserve hero | Own instance; repeated disconnect no-op |
 | `deletion.requestDeletionEmail` | None; authenticated action | Reserve a confirmation and email the verified primary Clerk address; no deletion | Own account; one request per 30 minutes |

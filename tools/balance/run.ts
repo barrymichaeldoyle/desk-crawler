@@ -1,7 +1,7 @@
 /**
  * Deterministic balance harness (quality.md, A03). Runs the real pure simulator
  * in memory; never touches a database. Usage:
- *   pnpm balance [--heroes 500] [--days 30] [--content v2] [--json out.json]
+ *   pnpm balance [--heroes 500] [--days 30] [--content v3] [--stance cautious|balanced|bold] [--json out.json]
  */
 import { writeFileSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
@@ -11,7 +11,7 @@ import { nextEarlyTier } from '@trmnl-games/desk-crawler/sim/core/bag'
 import { simulateHero, SIMULATION_VERSION } from '@trmnl-games/desk-crawler/sim/core/simulate'
 import { starterHero, starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
 import { cumulativeXpToReach } from '@trmnl-games/desk-crawler/sim/core/stats'
-import type { ContentCatalog, HeroState, ItemSnapshot } from '@trmnl-games/desk-crawler/sim/core/types'
+import type { ContentCatalog, HeroState, ItemSnapshot, StanceId } from '@trmnl-games/desk-crawler/sim/core/types'
 import { createRng } from '@trmnl-games/desk-crawler/sim/core/rng'
 import { ACHIEVEMENTS, ACHIEVEMENT_FAMILIES, rarityBand } from '@trmnl-games/desk-crawler/content/achievements'
 import { allSatisfied } from '@trmnl-games/desk-crawler/sim/core/achievements'
@@ -89,6 +89,8 @@ function args() {
     heroes: Number(get('--heroes', '500')),
     days: Number(get('--days', '30')),
     content: get('--content', ACTIVE_CONTENT) as CatalogId,
+    /** D76: every hero plays this stance; omitted means no stance (the catalog constants). */
+    stance: argv.includes('--stance') ? (get('--stance', 'balanced') as StanceId) : undefined,
     json: get('--json', ''),
     ticks: argv.includes('--ticks') ? Number(get('--ticks', '')) : undefined,
   }
@@ -153,7 +155,7 @@ function visit(hero: HeroState, inventory: ItemSnapshot[], tick: number, content
   return { hero: h, inventory: kept, bought }
 }
 
-export function simulateCohort(policy: Policy, heroes: number, days: number, content: ContentCatalog, ticks = days * TICKS_PER_DAY): HeroLog[] {
+export function simulateCohort(policy: Policy, heroes: number, days: number, content: ContentCatalog, ticks = days * TICKS_PER_DAY, stance?: StanceId): HeroLog[] {
   const logs: HeroLog[] = []
   const bis = bestInSlot(content)
   const kit = starterKit(content)
@@ -161,7 +163,7 @@ export function simulateCohort(policy: Policy, heroes: number, days: number, con
     let nextId = 0
     const id = () => `h${String(nextId++).padStart(6, '0')}`
     let inventory: ItemSnapshot[] = [{ ...kit.weapon, id: id() }, { ...kit.armor, id: id() }, { ...kit.potions, id: id() }]
-    let hero: HeroState = { ...starterHero(`hero-${index}`, content, 0), weaponId: inventory[0]!.id, armorId: inventory[1]!.id }
+    let hero: HeroState = { ...starterHero(`hero-${index}`, content, 0), weaponId: inventory[0]!.id, armorId: inventory[1]!.id, ...(stance === undefined ? {} : { stance }) }
     const offset = (index * 37) % TICKS_PER_DAY
     const log: HeroLog = {
       reachTick: new Map(),
@@ -398,8 +400,8 @@ function main() {
   const started = Date.now()
   const ticks = options.ticks ?? options.days * TICKS_PER_DAY
   const totalDays = ticks / TICKS_PER_DAY
-  const reports = POLICIES.map((policy) => summarize(policy, simulateCohort(policy, options.heroes, totalDays, content, ticks), totalDays, content))
-  const meta = { reportVersion: 2, contentVersion: content.contentVersion, simulationVersion: SIMULATION_VERSION, heroes: options.heroes, days: totalDays, ticks, seconds: (Date.now() - started) / 1000, cumulativeXpToLevel8: cumulativeXpToReach(8), deathDenominator: 'hero-days with at least one exploring/resting tick in the biome; multiple deaths count once for probability', uncertainty: 'Wilson 95% descriptive interval; repeated days per seeded hero are correlated, not a player forecast' }
+  const reports = POLICIES.map((policy) => summarize(policy, simulateCohort(policy, options.heroes, totalDays, content, ticks, options.stance), totalDays, content))
+  const meta = { reportVersion: 2, contentVersion: content.contentVersion, stance: options.stance ?? null, simulationVersion: SIMULATION_VERSION, heroes: options.heroes, days: totalDays, ticks, seconds: (Date.now() - started) / 1000, cumulativeXpToLevel8: cumulativeXpToReach(8), deathDenominator: 'hero-days with at least one exploring/resting tick in the biome; multiple deaths count once for probability', uncertainty: 'Wilson 95% descriptive interval; repeated days per seeded hero are correlated, not a player forecast' }
   if (options.json) writeFileSync(options.json, JSON.stringify({ meta, reports }, null, 2) + '\n')
   console.log(JSON.stringify(meta))
   for (const r of reports) {

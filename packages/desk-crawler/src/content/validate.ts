@@ -23,6 +23,15 @@ export function validateCatalog(content: ContentCatalog): string[] {
     if (name.endsWith('Pct')) percent(name, value as number)
   }
   percent('elite.chancePct', c.elite.chancePct)
+  // D76: thresholds must be ordered so a hero cannot loop between resting and exploring, and each stance is complete.
+  for (const stance of Object.values(content.stances ?? {})) {
+    for (const [name, value] of [['autoPotionBelowPct', stance.autoPotionBelowPct], ['restBelowPct', stance.restBelowPct], ['resumeExploringAtPct', stance.resumeExploringAtPct]] as const) percent(`stance ${stance.id} ${name}`, value)
+    if (!(stance.restBelowPct < stance.autoPotionBelowPct && stance.autoPotionBelowPct < stance.resumeExploringAtPct)) problems.push(`stance ${stance.id} thresholds must satisfy rest < potion < resume`)
+    if (!Number.isSafeInteger(stance.victoryXpPct) || stance.victoryXpPct < 50 || stance.victoryXpPct > 150) problems.push(`stance ${stance.id} victory XP must be an integer percentage between 50 and 150`)
+    if (stance.restBelowPct > c.reviveHpPct) problems.push(`stance ${stance.id} would rest a hero straight after revival`)
+  }
+  if (content.stances && !(['cautious', 'balanced', 'bold'] as const).every((id) => content.stances?.[id]?.id === id)) problems.push('stances must define cautious, balanced and bold under their own ids')
+  if (content.stances && (content.stances.balanced.autoPotionBelowPct !== c.autoPotionBelowPct || content.stances.balanced.restBelowPct !== c.restBelowPct || content.stances.balanced.resumeExploringAtPct !== c.resumeExploringAtPct || content.stances.balanced.victoryXpPct !== 100)) problems.push('the balanced stance must mirror the catalog constants')
   percent('jackpot.chancePct', c.jackpot.chancePct)
 
   const monsterIds = new Set<string>()

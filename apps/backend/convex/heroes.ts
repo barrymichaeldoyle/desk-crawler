@@ -67,6 +67,9 @@ export const mine = query({
       wakeAtTick: hero.wakeAtTick ?? null,
       lastTick: hero.lastTick,
       counters: withCounterDefaults(hero.counters),
+      // D76: the chosen stance and every stance's thresholds, so the companion can show what each one does.
+      stance: hero.stance ?? 'balanced',
+      stances: Object.values(content.stances ?? {}).map((rule) => ({ id: rule.id, name: rule.name, blurb: rule.blurb, potionBelowPct: rule.autoPotionBelowPct, restBelowPct: rule.restBelowPct, resumeAtPct: rule.resumeExploringAtPct, victoryXpPct: rule.victoryXpPct })),
       biomes: content.biomes.map((biome) => ({ id: biome.id, name: biome.name, unlockLevel: biome.unlockLevel, unlocked: biome.unlockLevel <= hero.level })),
       world: world
         ? {
@@ -115,6 +118,28 @@ export const changeBiome = mutation({
       await ctx.db.patch(hero._id, { status: 'travelling', targetBiomeId: biome.id, arriveAtTick })
       await commandLog(ctx, hero, 'change_biome', `Set off for the ${biome.name}.`)
       return { changed: true, tick: arriveAtTick }
+    }),
+})
+
+const STANCE_IDS = ['cautious', 'balanced', 'bold'] as const
+
+/**
+ * Choose how the hero sustains itself (D76). A policy, not an action: allowed in every gameplay status, takes effect
+ * at the hero's next evaluation under a catalog that knows stances, never advances or rewards anything.
+ */
+export const setStance = mutation({
+  args: { operationId: v.string(), stance: v.union(v.literal('cautious'), v.literal('balanced'), v.literal('bold')) },
+  returns: intentResult,
+  handler: async (ctx, args) =>
+    await runIntent(ctx, args.operationId, 'heroes.setStance', { stance: args.stance }, async (user) => {
+      const hero = await requirePlayableHero(ctx, user)
+      const rule = catalogs[ACTIVE_CONTENT].stances?.[args.stance]
+      if (!rule || !STANCE_IDS.includes(args.stance)) throw appError('INVALID_INPUT', 'Unknown stance.')
+      if ((hero.stance ?? 'balanced') === args.stance) return { changed: false }
+      const counters = withCounterDefaults(hero.counters)
+      await ctx.db.patch(hero._id, { stance: args.stance, counters: { ...counters, stanceChanges: counters.stanceChanges + 1 } })
+      await commandLog(ctx, hero, 'set_stance', `Switched to the ${rule.name.toLowerCase()} stance.`)
+      return { changed: true }
     }),
 })
 

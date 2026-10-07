@@ -41,6 +41,7 @@ export function assertHeroInvariants(hero: HeroState, inventory: readonly ItemSn
     if (!isCount(wins)) fail('COUNTER', `monster wins for ${id} invalid`)
   }
 
+  if (hero.stance !== undefined && !['cautious', 'balanced', 'bold'].includes(hero.stance)) fail('STANCE', `unknown stance ${hero.stance}`)
   const biomeIds = new Set(content.biomes.map((biome) => biome.id))
   if (!biomeIds.has(hero.biomeId)) fail('BIOME', `unknown biome ${hero.biomeId}`)
   if (hero.targetBiomeId !== undefined && !biomeIds.has(hero.targetBiomeId)) fail('TARGET', `unknown target ${hero.targetBiomeId}`)

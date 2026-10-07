@@ -56,7 +56,7 @@ Core batch: stances, configurable rest/potion thresholds, a small set of event c
 
 | Feature | Dependencies and boundaries |
 | --- | --- |
-| Stances/policies | Versioned resolver modifiers; validate thresholds and avoid infinite rest/potion loops |
+| Stances/policies | Shipped 2026-10-07 (D76): content v3 stances replace the sustain thresholds; the companion offers three presets. Versioned resolver modifiers; validate thresholds and avoid infinite rest/potion loops |
 | Narrative choices | Pending-choice table, expiry/default resolution, transactionally idempotent selection; passive players continue |
 | Merchant | Bounded offers/price validation, four-tick expiry, purchase receipts; no push spam. Prices sit beside the D61 bag prices (40/150/600/2,000), the first gold sink |
 | Potion pouch (P29) | The potion stack cap becomes a content ladder (one additive tier field on the hero, cap from content like `bagCapacity`); milestones, a rare find and a `buyBag`-shaped purchase advance it. Potions stay outside the bag and the 32-row read. Second gold sink; tune with the merchant and the configurable potion threshold |

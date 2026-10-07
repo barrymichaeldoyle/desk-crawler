@@ -26,6 +26,7 @@ export function toHeroState(hero: Doc<'heroes'>): HeroState {
     bagCapacity: hero.bagCapacity,
     lastLevelUpTick: hero.lastLevelUpTick,
     counters: withCounterDefaults(hero.counters),
+    ...(hero.stance === undefined ? {} : { stance: hero.stance }),
   }
 }
 

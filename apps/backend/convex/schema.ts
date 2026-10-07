@@ -41,6 +41,8 @@ export const heroCounters = v.object({
   restTicks: v.optional(v.number()),
   trips: v.optional(v.number()),
   itemsSold: v.optional(v.number()),
+  /** D76: stance switches made in the companion. */
+  stanceChanges: v.optional(v.number()),
 })
 
 export const logKind = v.union(
@@ -146,6 +148,8 @@ export default defineSchema({
     heldItemId: v.optional(v.id('items')),
     /** D61: unequipped gear the bag holds, always a ladder tier's capacity. */
     bagCapacity: v.number(),
+    /** D76: how carefully the hero sustains itself; absent means balanced. */
+    stance: v.optional(v.union(v.literal('cautious'), v.literal('balanced'), v.literal('bold'))),
     eligibleFromTick: v.number(),
     lastTick: v.number(),
     lastProgressTick: v.number(),

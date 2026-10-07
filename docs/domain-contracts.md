@@ -8,7 +8,7 @@ This defines the boundary between simulator, persistence and rendering so future
 
 | Member | Content |
 | --- | --- |
-| `hero` | ID and current domain values: class, level/current XP/lifetime XP, HP/gold, status/biome/travel/revival/pause/sleep-wake fields, equipment/held references and lifetime counters |
+| `hero` | ID and current domain values: optional stance (D76), class, level/current XP/lifetime XP, HP/gold, status/biome/travel/revival/pause/sleep-wake fields, equipment/held references and lifetime counters |
 | `inventory` | At most 32 owned item snapshots (bag gear up to the hero's capacity, at most 20 in v1, + two equipped + held gear + potion), sorted lexically by item ID; copied template/version/name/rarity/stat/quantity/requirement/sale fields |
 | `tick` | Current run's logical tick |
 | `contentVersion` | Exact immutable catalog version |

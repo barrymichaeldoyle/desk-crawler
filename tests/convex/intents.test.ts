@@ -131,4 +131,24 @@ describe('player intents', () => {
     await user.mutation(api.heroes.resume, { operationId: opId() })
     expect((await t.run(async (ctx) => await ctx.db.get(heroId)))?.status).toBe('exploring')
   })
+
+  it('switches stance as a policy in any status, counts the switch, and treats the current stance as a no-op (D76)', async () => {
+    const heroId = await seedHero(t, {}, 'Ana')
+    const user = as(t, 'Ana')
+    const view = (await user.query(api.heroes.mine, {})) as { stance: string; stances: Array<{ id: string; potionBelowPct: number }> }
+    expect(view.stance).toBe('balanced')
+    expect(view.stances.map((s) => s.id)).toEqual(['cautious', 'balanced', 'bold'])
+    expect(await user.mutation(api.heroes.setStance, { operationId: opId(), stance: 'balanced' })).toMatchObject({ changed: false })
+    expect(await user.mutation(api.heroes.setStance, { operationId: opId(), stance: 'bold' })).toMatchObject({ changed: true })
+    const hero = await t.run(async (ctx) => await ctx.db.get(heroId))
+    expect(hero).toMatchObject({ stance: 'bold', status: 'exploring' })
+    expect(hero?.counters.stanceChanges).toBe(1)
+    const log = await t.run(async (ctx) => await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', heroId)).order('desc').first())
+    expect(log).toMatchObject({ source: 'command', kind: 'system', summary: 'Switched to the bold stance.', detail: { operation: 'set_stance' }, deltas: { xpEarned: 0, gold: 0, hp: 0 } })
+    // Allowed while paused: a stance is not an action.
+    await user.mutation(api.heroes.pause, { operationId: opId() })
+    expect(await user.mutation(api.heroes.setStance, { operationId: opId(), stance: 'cautious' })).toMatchObject({ changed: true })
+    expect((await t.run(async (ctx) => await ctx.db.get(heroId)))?.counters.stanceChanges).toBe(2)
+    expect((await user.query(api.heroes.mine, {}) as { stance: string }).stance).toBe('cautious')
+  })
 })

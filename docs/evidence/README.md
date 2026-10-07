@@ -55,3 +55,5 @@ The [D56 adaptive layout](adaptive-log-layout.md) is deployed v27, verified by 2
 [HUD polish](hud-polish.md) records local template v33 (D74): XP ticks under the hearts, attack and defense marks, a two-row full header that moves the scene and stories up, and a leaderboard that marks the hero's own row instead of repeating the rank. 293 tests, official lint, the Ruby Liquid cross-check and a 768-preview sweep pass; deployed from `33917c3`.
 
 [Recap periods](recap-periods.md) records D75: the device recap becomes the morning stand-up (the night) and the sprint retro (the day) in the owner's local time, shown only once the period has ended, with the device offset wired through the payload query.
+
+[Balance](balance.md) gains the content v3 stance section (D76): three 300-hero, 30-day reports, one per stance, showing bold as the fast, risky stance and cautious as the safe, slow one, with balanced equal to v2.

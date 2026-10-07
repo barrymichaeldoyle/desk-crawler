@@ -11,6 +11,8 @@ export type EncounterKind = 'combat' | 'loot' | 'trap' | 'rest'
 export type GearKind = 'weapon' | 'armor'
 export type ItemKind = GearKind | 'potion'
 export type Rarity = 'common' | 'uncommon' | 'rare'
+/** How carefully the hero looks after itself between fights (D76). */
+export type StanceId = 'cautious' | 'balanced' | 'bold'
 export type LogKind =
   | 'combat'
   | 'loot'
@@ -120,6 +122,18 @@ export interface SharedNarrative {
   readonly bagFind: readonly string[]
 }
 
+/** One stance: the sustain thresholds it replaces (D76). The balanced stance mirrors the catalog constants. */
+export interface StanceRule {
+  readonly id: StanceId
+  readonly name: string
+  readonly blurb: string
+  readonly autoPotionBelowPct: number
+  readonly restBelowPct: number
+  readonly resumeExploringAtPct: number
+  /** Victory XP scale: the pace a stance buys with its risk (100 leaves rewards untouched). */
+  readonly victoryXpPct: number
+}
+
 export interface SimulationConstants {
   readonly potionStackCap: number
   readonly potionHealPct: number
@@ -173,6 +187,8 @@ export interface ContentCatalog {
   readonly rarities: readonly RarityRule[]
   readonly potion: Readonly<{ templateId: string; name: string }>
   readonly bagLadder: BagLadder
+  /** Absent in catalogs before v3: every hero then behaves as balanced. */
+  readonly stances?: Readonly<Record<StanceId, StanceRule>>
   readonly narrative: Readonly<{ biomes: Readonly<Record<string, BiomeNarrative>>; shared: SharedNarrative; monsters: Readonly<Record<string, MonsterNarrative>> }>
 }
 
@@ -205,6 +221,8 @@ export interface HeroCounters {
   /** Arrivals in another biome. */
   readonly trips: number
   readonly itemsSold: number
+  /** Stance switches made in the companion (D76), written by the intent. */
+  readonly stanceChanges: number
 }
 
 /** Counter names that hold one number (everything except `monsterWins`). */
@@ -233,6 +251,8 @@ export interface HeroState {
   readonly bagCapacity: number
   readonly lastLevelUpTick: number
   readonly counters: HeroCounters
+  /** Chosen in the companion; absent means balanced (D76). */
+  readonly stance?: StanceId
 }
 
 export interface ItemSnapshot {

@@ -1,5 +1,30 @@
 # Balance evidence — A03
 
+## Content v3 stances (D76), 2026-10-07
+
+First v1.1 system. Each stance replaces the three sustain thresholds and scales victory XP: cautious 65 / 50 / 90% at 90% XP, balanced 50 / 35 / 75% at 100% (the v2 constants, so an unchosen hero is unchanged), bold 35 / 20 / 60% at 115% XP. The XP scale came from measurement: with thresholds alone, cautious reached level 12 faster than balanced (15.1 against 15.9 days for the three-day cohort) with no knockouts, and bold was slower on every measure (18.3 days, 13.3% Cafeteria death days), so there was no reason to pick anything but cautious. The scale turns the three into a triangle.
+
+Reproduction (deterministic, 300 heroes, all six cohorts, every hero on one stance):
+
+```sh
+pnpm balance --heroes 300 --days 30 --content v3 --stance cautious --json docs/evidence/balance-v3-stance-cautious-30-days.json
+pnpm balance --heroes 300 --days 30 --content v3 --stance balanced --json docs/evidence/balance-v3-stance-balanced-30-days.json
+pnpm balance --heroes 300 --days 30 --content v3 --stance bold --json docs/evidence/balance-v3-stance-bold-30-days.json
+```
+
+The balanced report equals the v2 report seed for seed (the stance tests also prove it per tick), so the v2 column below is the balanced one.
+
+| Cohort | Level 8 median day: cautious / balanced / bold | Level 12: cautious / balanced / bold | Cafeteria death-day %: cautious / balanced / bold | Time resting | Last-24h XP median | Potions left at day 30 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Daily | 9.1 / 7.8 / **7.2** | 14.9 / 13.0 / **12.7** | **0.6** / 2.9 / 11.7 | 5.2 / 2.7 / 1.2% | 1,731 / 1,967 / **2,243** | 3 / 18 / 20 |
+| Three-day | 11.3 / 9.2 / **8.3** | 17.6 / 15.9 / 16.5 | **0.8** / 3.0 / 10.2 | 5.2 / 2.5 / 0.8% | 1,714 / 1,965 / **2,239** | 2 / 10 / 18 |
+| Seven-day | 22.2 / 16.8 / **15.9** | >30 / 30.0 / >30 | **1.6** / 7.6 / 30.1 | 2.0 / 1.1 / 0.2% | 1,325 / 1,767 / **2,029** | 0 / 0 / 5 |
+| Undergeared three-day | 11.8 / 9.6 / 9.5 | 23.9 / 25.7 / 29.6 | 19.7 / 47.2 / 78.7 | 9.1 / 2.8 / 0.2% | 1,286 / 1,323 / 213 | 0 / 1 / 20 |
+
+How to read it: bold is the fastest way through the early levels and earns about 14% more XP a day while it stays alive, at three to four times the knockout rate; past level 12 the knockouts (eight ticks dead, 10% of gold) eat into the gain for the three-day cohort. Cautious almost never goes down and keeps healthier, but spends every potion it finds and levels 10–20% slower. A weekly bold manager loses 30% of its Cafeteria days to knockouts; that is the stance doing what it says, and the companion card says so. Nothing changes for unattended or safe-farming heroes, since they never fight in the Cafeteria. Gold at day 30 moves by under 10% in either direction.
+
+Deployment: the catalog ships beside v2 and the live world switches between runs with `npx convex run world:setActiveContentVersion '{"contentVersion":"v3"}' --prod`. Until the switch, a chosen stance is stored and shown but every hero plays balanced.
+
 ## Content v2 sustain thresholds (D71), 2026-10-07
 
 Barry asked for the two open balance questions to be decided and tuned before submission. Both were re-measured on the release catalog v1 first, because the earlier numbers below came from v4, before the D61 bag ladder and the D66 gear split.

@@ -83,6 +83,15 @@ class TickRun {
     }
   }
 
+  /**
+   * The sustain thresholds this hero plays by (D76): its stance's, when the pinned catalog knows stances, else the
+   * catalog constants. A hero without a stance, or any hero under a pre-v3 catalog, plays exactly as before.
+   */
+  private sustain(): { autoPotionBelowPct: number; restBelowPct: number; resumeExploringAtPct: number; victoryXpPct: number } {
+    const rule = this.content.stances?.[this.h.stance ?? 'balanced']
+    return rule ?? { ...this.content.constants, victoryXpPct: 100 }
+  }
+
   private narrate(templates: readonly string[], vars: NarrativeVars, callbacks?: Readonly<Record<string, string>>): string {
     return variant(this.rng.narrative, templates, vars, this.input.recentSummaries, callbacks)
   }
@@ -174,7 +183,7 @@ class TickRun {
     const healing = Math.min(max - h.hp, pctOf(max, content.constants.restingHealPct))
     h.hp += healing
     h.counters.restTicks += 1
-    if (h.hp * 100 >= max * content.constants.resumeExploringAtPct) h.status = 'exploring'
+    if (h.hp * 100 >= max * this.sustain().resumeExploringAtPct) h.status = 'exploring'
     const text = this.narrate(content.narrative.shared.restingHeal, { heal: healing })
     return this.finish('rested', {
       kind: 'rest',
@@ -188,13 +197,14 @@ class TickRun {
   private explore(): SimulationResult {
     const { h, content, input } = this
     const c = content.constants
+    const sustain = this.sustain()
     const max = maxHp(h.level)
     const potionRow = input.inventory.find((item) => item.kind === 'potion')
     let potionQty = potionRow?.quantity ?? 0
     let potionsUsed = 0
     let potionHealing = 0
 
-    if (h.hp * 100 < max * c.autoPotionBelowPct && potionRow !== undefined && potionQty > 0) {
+    if (h.hp * 100 < max * sustain.autoPotionBelowPct && potionRow !== undefined && potionQty > 0) {
       potionHealing = Math.min(max - h.hp, pctOf(max, c.potionHealPct))
       h.hp += potionHealing
       potionQty -= 1
@@ -205,7 +215,7 @@ class TickRun {
     }
     const potionSuffix = potionsUsed > 0 ? ['Drank a potion.'] : []
 
-    if (h.hp * 100 < max * c.restBelowPct) {
+    if (h.hp * 100 < max * sustain.restBelowPct) {
       h.status = 'resting'
       const healing = Math.min(max - h.hp, pctOf(max, c.restingHealPct))
       h.hp += healing
@@ -269,7 +279,8 @@ class TickRun {
         vars.monster = monster.name
         let gearDropped = false
         if (result === 'victory') {
-          xpGranted = this.rng.reward.int(monster.xp.min, monster.xp.max) * (elite ? c.elite.xpMultiplier : 1)
+          // Rolled exactly as before; the stance scales the roll afterwards, so the reward stream is unchanged (D76).
+          xpGranted = Math.max(1, Math.floor((this.rng.reward.int(monster.xp.min, monster.xp.max) * (elite ? c.elite.xpMultiplier : 1) * this.sustain().victoryXpPct) / 100))
           goldGranted = this.rng.reward.int(monster.gold.min, monster.gold.max) * (elite ? c.elite.goldMultiplier : 1)
           gearDropped = this.rng.reward.chance(c.combatGearDropPct)
           if (gearDropped) gear = this.generateGear(biome.tier)

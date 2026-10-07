@@ -79,6 +79,8 @@ One accepted logical tick yields at most one gameplay encounter per eligible her
 9. Apply death/safe-biome protection before level-up. A lethal encounter cannot be undone by a level-up heal. A dead hero still receives earned XP if the resolver already earned it.
 10. Apply rewards, level-ups, clamps and lifetime counters. If a new gear find exceeded bag capacity, retain it and enter sleeping after those effects. Produce one concise combined summary/detail; prioritize retained-find/sleep explanation. Adapter credits earned XP to both rolling windows once.
 
+Stances (D76, content v3): the hero's stance replaces the three sustain thresholds in steps 5 to 7. Cautious drinks below 65%, rests below 50%, leaves rest at 90% and earns 90% of victory XP; balanced is the catalog's 50/35/75 at 100%; bold drinks below 35%, rests below 20%, leaves rest at 60% and earns 115% of victory XP (scaled after the ordinary roll, floored, never below 1). Thresholds are ordered rest < potion < resume by the catalog validator so no stance can loop, and rest never exceeds the 50% revival HP. A hero with no stance, or any hero under a catalog without stances, uses the constants. Changing stance is a policy intent, allowed in every status, and takes effect at the next evaluation.
+
 Manual potions are allowed only when exploring/resting and below full HP. A potion can help a resting hero resume when its HP reaches 75%. Manual use cannot revive or heal while travelling/paused/sleeping. Repeated calls consume finite items and never advance encounters.
 
 ## Encounters

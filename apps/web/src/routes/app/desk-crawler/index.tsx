@@ -130,7 +130,12 @@ type HeroView = {
   targetBiomeId: string | null
   simulationState: string
   biomes: Biome[]
+  stance: StanceId
+  stances: Stance[]
 }
+
+type StanceId = 'cautious' | 'balanced' | 'bold'
+type Stance = { id: StanceId; name: string; blurb: string; potionBelowPct: number; restBelowPct: number; resumeAtPct: number; victoryXpPct: number }
 
 function HeroSheet({ hero }: { hero: HeroView }) {
   const { data: bag } = useQuery(convexQuery(api.inventory.mine, {}))
@@ -138,11 +143,12 @@ function HeroSheet({ hero }: { hero: HeroView }) {
   const potion = useIntent(api.inventory.usePotion)
   const pause = useIntent(api.heroes.pause)
   const resume = useIntent(api.heroes.resume)
+  const stance = useIntent(api.heroes.setStance)
   const [action, setAction] = useState<'potion' | 'pause' | 'resume' | null>(null)
   const feedback = action ? { potion, pause, resume }[action] : null
   const healthy = hero.simulationState !== 'quarantined'
   const canAct = healthy && (hero.status === 'exploring' || hero.status === 'resting')
-  const busy = travel.pending || potion.pending || pause.pending || resume.pending
+  const busy = travel.pending || potion.pending || pause.pending || resume.pending || stance.pending
   const healing = Math.min(hero.maxHp - hero.hp, pctOf(hero.maxHp, POTION_HEAL_PCT))
   const potionLabel = !bag ? 'Drink potion' : !bag.potions ? 'No potions' : hero.hp >= hero.maxHp ? `Drink potion (${bag.potions})` : `Drink potion +${healing} HP (${bag.potions})`
 
@@ -178,6 +184,26 @@ function HeroSheet({ hero }: { hero: HeroView }) {
         {!healthy ? <p className="text-sm">Paused for a service check. <Link to="/support" className="underline underline-offset-4">Contact support</Link> if it lasts.</p> : null}
         <ActionFeedback error={feedback?.error ?? null} message={feedback?.message ?? null} />
       </section>
+
+      {hero.stances.length > 0 ? (
+        <section aria-labelledby="stance-title" className="flex flex-col gap-3">
+          <h2 id="stance-title" className="font-display text-3xl font-bold">Stance</h2>
+          <p className="text-sm text-muted">How carefully your hero looks after itself between fights. Changes apply from the next adventure.</p>
+          <div role="radiogroup" aria-label="Stance" className="grid gap-3 sm:grid-cols-3">
+            {hero.stances.map((option) => {
+              const chosen = option.id === hero.stance
+              return (
+                <button key={option.id} type="button" role="radio" aria-checked={chosen} disabled={!healthy || busy} onClick={() => { if (!chosen) void stance.run({ stance: option.id }, `${option.name} stance from the next adventure.`) }} className={`flex min-w-0 flex-col gap-1 border-[3px] p-4 text-left ${chosen ? 'border-night bg-night text-gold-ink' : 'border-night bg-panel'} disabled:opacity-60`}>
+                  <span className="font-display text-2xl font-bold">{option.name}{chosen ? ' ✓' : ''}</span>
+                  <span className="text-sm">{option.blurb}</span>
+                  <span className={`text-xs ${chosen ? '' : 'text-muted'}`}>Potion below {option.potionBelowPct}% · rest below {option.restBelowPct}% · back out at {option.resumeAtPct}% · {option.victoryXpPct}% XP from wins</span>
+                </button>
+              )
+            })}
+          </div>
+          <ActionFeedback {...stance} />
+        </section>
+      ) : null}
 
       <section aria-labelledby="map-title">
         <h2 id="map-title" className="font-display text-3xl font-bold">World map</h2>

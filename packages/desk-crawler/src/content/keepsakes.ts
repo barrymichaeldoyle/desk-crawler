@@ -17,6 +17,8 @@ export const DESK_KEEPSAKES = [
 export const KEEPSAKE_WEEK_MS = 7 * 24 * 60 * 60 * 1000
 /** Monday 00:00 UTC; the client never chooses the award period. */
 const MONDAY_EPOCH = Date.UTC(1970, 0, 5)
+/** Last moment a pre-D73 letter code still collects, so screens rendered before the six-digit switch keep their grace week. */
+export const LETTER_CODES_UNTIL = Date.UTC(2026, 9, 19)
 export const keepsakeWeek = (now: number) => Math.floor((now - MONDAY_EPOCH) / KEEPSAKE_WEEK_MS)
 export const keepsakeWeekStartsAt = (week: number) => MONDAY_EPOCH + week * KEEPSAKE_WEEK_MS
 

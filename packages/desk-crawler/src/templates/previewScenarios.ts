@@ -13,7 +13,7 @@ export const PREVIEW_NOW = Date.UTC(2026, 9, 4, 8, 20)
 /** The sample owner is in Johannesburg (UTC+2); TRMNL renders Liquid in UTC and the screen route adds `utc_offset`. */
 export const PREVIEW_UTC_OFFSET = 2 * 3600
 /** Preview-only sample of the verified device-envelope field; never an actual redeemable code. */
-export const PREVIEW_KEEPSAKE_CODE = 'ABCD-EFGH'
+export const PREVIEW_KEEPSAKE_CODE = '482 917'
 /** Screens that never show a keepsake code. */
 export const KEEPSAKE_FREE_SCENARIOS: ReadonlySet<string> = new Set(['unlinked', 'unlinkedPaused', 'sample'])
 /** Scenarios that render without the owner's UTC offset, to prove the fallback. */

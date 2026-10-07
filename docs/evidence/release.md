@@ -34,7 +34,7 @@ The approved D54 recap release passed 202 tests, all 200 OG/X previews, the actu
 | --- | --- |
 | Listing name, categories, lifecycle URLs and knowledge-base URL | Saved fields verified; categories updated, existing lifecycle/help URLs remain correct ([evidence](listing-polish-deploy.md)) |
 | Description | 33-character description saved and verified on 2026-10-05: `A quiet office RPG for your TRMNL`; games + entertainment categories saved. Live editor currently allows 50 characters; published docs say 35 |
-| Featured image | Regenerated from the existing live installation; new 800×480 image verified on the actual install page ([evidence](listing-polish-deploy.md)). Fictional candidate remains the landing sample |
+| Featured image | Regenerated again on 2026-10-07 after the v32 HUD layout; the new 800×480 image shows the reviewed layout ([evidence](hud-layout.md)). Fictional candidate remains the landing sample |
 | Install video | Done 2026-10-07: Barry recorded and hosted the install video; the link is in his email draft |
 | Reviewer testing | Supported reviewer-owned email/Google/GitHub signup documented; no owner credentials or auth bypass |
 | Review email | Done 2026-10-07: Barry is finishing the final email himself, video link included; owner/sender barry@barrymichaeldoyle.com. Not yet sent |

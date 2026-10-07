@@ -4,7 +4,7 @@ import { useMutation } from 'convex/react'
 import { ConvexError } from 'convex/values'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { api } from '@trmnl-games/backend/api'
-import { DESK_KEEPSAKES, keepsakeShelf, keepsakeWeek } from '@trmnl-games/desk-crawler/content/keepsakes'
+import { DESK_KEEPSAKES, keepsakeShelf, keepsakeWeek, LETTER_CODES_UNTIL } from '@trmnl-games/desk-crawler/content/keepsakes'
 import { errorMessage } from '../../../lib/intent'
 import { useOnline } from '../../../lib/network'
 import { Submission } from '../../../lib/submission'
@@ -40,13 +40,14 @@ export function DeskKeepsakes() {
     setMessage(null)
     if (!online) { setError('You are offline. Reconnect, then try again.'); return }
     const normalized = code.trim().toUpperCase().replace(/[\s-]/g, '')
-    if (!/^[A-HJ-NP-Z2-9]{8}$/.test(normalized)) { setError('Enter the eight-letter-and-number code shown beside “Keepsake” on your TRMNL.'); return }
+    const letterCode = Date.now() < LETTER_CODES_UNTIL && /^[A-HJ-NP-Z2-9]{8}$/.test(normalized)
+    if (!/^\d{6}$/.test(normalized) && !letterCode) { setError('Enter the six-digit code shown beside “Keepsake” on your TRMNL.'); return }
     inFlight.current = true
     setPending(true)
     try {
       await submission.current.run({ code: normalized }, async (input) => {
         const result = await mutate(input)
-        if (result.outcome === 'invalid_code') setError('That code doesn’t match your TRMNL connection. Check the letters on your screen, or wait for its next refresh.')
+        if (result.outcome === 'invalid_code') setError('That code doesn’t match your TRMNL connection. Check the digits on your screen, or wait for its next refresh.')
         else if (result.outcome === 'already_claimed') setMessage('This week’s keepsake is already on your shelf. The next code arrives next week.')
         else {
           const earned = DESK_KEEPSAKES[(result.totalCollected - 1) % DESK_KEEPSAKES.length]!
@@ -72,7 +73,7 @@ export function DeskKeepsakes() {
       {collectedThisWeek ? <p className="text-sm font-semibold">Collected this week. {collection.nextAvailableAt ? `The next code arrives ${new Date(collection.nextAvailableAt).toLocaleString(undefined, { weekday: 'long', hour: 'numeric', minute: '2-digit' })}.` : 'The next code arrives next week.'}</p> : <form onSubmit={claim} className="flex flex-wrap items-end gap-3">
         <div className="flex min-w-0 flex-col gap-1">
           <label htmlFor="keepsake-code" className="text-sm font-semibold">Code from your TRMNL</label>
-          <input id="keepsake-code" value={code} onChange={(event) => { setCode(event.target.value); setError(null); setMessage(null) }} placeholder="ABCD-EFGH" maxLength={16} autoComplete="off" autoCapitalize="characters" spellCheck={false} disabled={pending || !collection.connected} aria-describedby="keepsake-help" aria-invalid={error ? true : undefined} className="min-h-11 w-48 border-2 border-edge bg-ground px-3 text-base uppercase" />
+          <input id="keepsake-code" type="text" inputMode="numeric" value={code} onChange={(event) => { setCode(event.target.value); setError(null); setMessage(null) }} placeholder="123 456" maxLength={10} autoComplete="one-time-code" spellCheck={false} disabled={pending || !collection.connected} aria-describedby="keepsake-help" aria-invalid={error ? true : undefined} className="min-h-11 w-48 border-2 border-edge bg-ground px-3 text-base tabular-nums tracking-widest" />
         </div>
         <Button type="submit" pending={pending} busyLabel="Collecting…" disabled={!collection.connected || !code.trim()}>Collect keepsake</Button>
       </form>}

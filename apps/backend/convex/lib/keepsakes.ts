@@ -5,10 +5,23 @@ import type { QueryCtx } from '../_generated/server'
 import { isDeskCrawler } from './gameProfile'
 
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-/** 40-bit owner/week code, keyed with a private installation hash. Never returned to the companion. */
-export function keepsakeCode(tokenHash: string, userId: string, week: number): string {
+
+function keepsakeDigest(tokenHash: string, userId: string, week: number, tag: string) {
   const encode = new TextEncoder()
-  const digest = hmac(sha256, encode.encode(tokenHash), encode.encode(JSON.stringify(['desk-keepsake-v1', userId, week])))
+  return hmac(sha256, encode.encode(tokenHash), encode.encode(JSON.stringify([tag, userId, week])))
+}
+
+/** Six-digit owner/week code (D73), keyed with a private installation hash. Never returned to the companion. */
+export function keepsakeCode(tokenHash: string, userId: string, week: number): string {
+  const digest = keepsakeDigest(tokenHash, userId, week, 'desk-keepsake-v2')
+  const value = new DataView(digest.buffer, digest.byteOffset, 4).getUint32(0) % 1_000_000
+  const code = String(value).padStart(6, '0')
+  return `${code.slice(0, 3)} ${code.slice(3)}`
+}
+
+/** 40-bit letter code shown before D73. Accepted until `LETTER_CODES_UNTIL`, never generated for screens. */
+export function letterKeepsakeCode(tokenHash: string, userId: string, week: number): string {
+  const digest = keepsakeDigest(tokenHash, userId, week, 'desk-keepsake-v1')
   let bits = 0
   let value = 0
   let code = ''

@@ -1,6 +1,6 @@
 # Implementation status
 
-Updated 2026-10-06. Production companion is live at `trmnlgames.com` (TRMNL Games platform, Desk Crawler under `/app/desk-crawler`), Convex `exciting-cormorant-948`, the TRMNL Games Clerk production instance, TRMNL plugin 564. The old `desk-crawler.grandprixpicks.com` host no longer serves the companion. Barry submitted plugin 564 for marketplace review on 2026-10-07; the review email is his final draft to send. Work continues under D70; [release evidence](evidence/release.md) records verified behavior and open checks.
+Updated 2026-10-07. Production companion is live at `trmnlgames.com` (TRMNL Games platform, Desk Crawler under `/app/desk-crawler`), Convex `exciting-cormorant-948`, the TRMNL Games Clerk production instance, TRMNL plugin 564. The old `desk-crawler.grandprixpicks.com` host no longer serves the companion. Barry submitted plugin 564 for marketplace review on 2026-10-07; the review email is his to send. Production runs template v32 (D72 HUD layout, live server render verified) and the listing image was regenerated from it. Work continues under D70; [release evidence](evidence/release.md) records verified behavior and open checks.
 
 The latest [engineering pass](evidence/engineering-readiness.md) completed authz/reviewer/health/cost checks, actual subscription inspection and isolated recovery/lifecycle/failure rehearsals. Four reproduced backend defects are deployed; D53 shows `No effect` for known zero-delta logs. The candidate passes 187 tests, typechecks, build and Worker dry run; it was [deployed with approval on October 6](evidence/engineering-deploy.md). Ongoing protected capture, real-provider fixtures and funding/tuning decisions remain open. The [hourly capture template](../tools/recovery/checkpoint-workflow.yml.txt) is prepared but inactive.
 
@@ -18,7 +18,7 @@ Deployed on 2026-10-05 following Barry’s approval: D46 weekly permanent Desk k
 
 | Package | State | Evidence |
 | --- | --- | --- |
-| A03 pure simulator + content | Done. One release catalog v1 (D63) with harness tuning, the D45/D47 narrative, D61 bag ladder, luck (D35), D29 Resume destination. Local, pending the reset-first deployment | Current simulator tests and extended [balance](evidence/balance.md) |
+| A03 pure simulator + content | Done. One release catalog v1 (D63) with harness tuning, the D45/D47 narrative, D61 bag ladder, luck (D35), D29 Resume destination. Deployed after the pre-launch reset; content v2 (D71) live since tick 259 | Current simulator tests and extended [balance](evidence/balance.md) |
 | A01 platform | V01 build/SSR/auth proven locally; protocol facts from the live install | [platform spikes](evidence/platform-spikes.md), [lifecycle](evidence/trmnl-lifecycle.md) |
 | A02 foundation | Schema for every current table, Clerk auth config, users | Typecheck across app/core/Convex |
 | A05 scheduler | Live since 20:58 UTC: guarded ticks, page chain, quarantine, dormant skip, watchdog incl. ranking stalls | convex-test tick matrix |
@@ -69,4 +69,4 @@ D43 does not require Barry to check every physical layout. D46's physical/claim/
 - Approved simpler logo/favicon implemented; new TRMNL plugin icon saved. Local app/touch/social assets generated and inspected.
 - [Review email](review-email.md) and [installation screenshot video](evidence/install-demo/README.md) prepared, not sent or published. Current candidate validation is recorded in [submission preparation](evidence/submission-preparation.md).
 
-D58 [layout polish](evidence/layout-polish.md) is prepared locally as template v29: QR in all four views, better OG history density and space below X full dividers. 205 tests, official markup lint, build and 256 OG/X previews pass. Production remains v28; rollout and actual server-image checks are pending.
+Template v29 (D58) and later layout work are superseded by production v32 ([HUD layout](evidence/hud-layout.md)). D73 six-digit keepsake codes with a daily wrong-code limit are deployed with this update ([contract](playlist-retention.md)).

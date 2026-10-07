@@ -5,8 +5,9 @@ import { api, internal } from '@trmnl-games/backend/api'
 import type { Id } from '@trmnl-games/backend/data-model'
 import schema from '../../apps/backend/convex/schema'
 import { sha256Hex } from '../../apps/backend/convex/lib/hash'
-import { keepsakeCode } from '../../apps/backend/convex/lib/keepsakes'
-import { DESK_KEEPSAKES, KEEPSAKE_WEEK_MS, keepsakeShelf, keepsakeWeek, keepsakeWeekStartsAt } from '@trmnl-games/desk-crawler/content/keepsakes'
+import { keepsakeCode, letterKeepsakeCode } from '../../apps/backend/convex/lib/keepsakes'
+import { KEEPSAKE_MISS_LIMIT } from '../../apps/backend/convex/keepsakes'
+import { DESK_KEEPSAKES, KEEPSAKE_WEEK_MS, keepsakeShelf, keepsakeWeek, keepsakeWeekStartsAt, LETTER_CODES_UNTIL } from '@trmnl-games/desk-crawler/content/keepsakes'
 import { seedDeletionConfirmation, seedHero, seedWorld, type T } from './helpers'
 
 const modules = import.meta.glob('../../apps/backend/convex/**/*.ts')
@@ -44,7 +45,7 @@ describe('weekly TRMNL keepsakes', () => {
 
   it('puts the code only in the authenticated device envelope; reads earn nothing', async () => {
     const first = await envelope(t)
-    expect(first.merge_variables.desk_keepsake_code).toMatch(/^[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/)
+    expect(first.merge_variables.desk_keepsake_code).toMatch(/^\d{3} \d{3}$/)
     expect(await envelope(t)).toEqual(first)
     const preview = await owner().query(api.trmnlPayload.mine, { now: NOW })
     expect(preview).not.toHaveProperty('desk_keepsake_code')
@@ -112,11 +113,23 @@ describe('weekly TRMNL keepsakes', () => {
     expect(await owner().mutation(api.keepsakes.claim, { operationId: 'revoked-0001', code })).toMatchObject({ outcome: 'invalid_code' })
   })
 
-  it('commits invalid attempts so the rate limit cannot be bypassed by failed guesses', async () => {
-    for (let i = 0; i < 60; i++) expect(await owner().mutation(api.keepsakes.claim, { operationId: `bad-code-${i}`, code: 'INVALID' })).toMatchObject({ outcome: 'invalid_code' })
-    await expect(owner().mutation(api.keepsakes.claim, { operationId: 'bad-code-61', code: 'INVALID' })).rejects.toThrow(/Too many actions/)
-    vi.setSystemTime(NOW + 10 * 60_000)
-    expect(await owner().mutation(api.keepsakes.claim, { operationId: 'valid-after-limit', code: (await envelope(t)).merge_variables.desk_keepsake_code! })).toMatchObject({ outcome: 'claimed' })
+  it('commits wrong guesses and stops them for the UTC day once the miss limit is reached', async () => {
+    const valid = (await envelope(t)).merge_variables.desk_keepsake_code!
+    const wrong = valid === '000 000' ? '000 001' : '000 000'
+    for (let i = 0; i < KEEPSAKE_MISS_LIMIT; i++) expect(await owner().mutation(api.keepsakes.claim, { operationId: `bad-code-${i}`, code: i % 2 ? wrong : 'INVALID' })).toMatchObject({ outcome: 'invalid_code' })
+    await expect(owner().mutation(api.keepsakes.claim, { operationId: 'bad-code-late', code: wrong })).rejects.toThrow(/wrong keepsake codes/)
+    await expect(owner().mutation(api.keepsakes.claim, { operationId: 'valid-in-limit', code: valid })).rejects.toThrow(/wrong keepsake codes/)
+    vi.setSystemTime(Math.ceil(NOW / 86_400_000) * 86_400_000)
+    expect(await owner().mutation(api.keepsakes.claim, { operationId: 'valid-next-day', code: valid.replace(' ', '') })).toMatchObject({ outcome: 'claimed' })
+  })
+
+  it('accepts letter codes from screens rendered before the six-digit switch until the cutoff', async () => {
+    const { userId } = await t.run(async (ctx) => (await ctx.db.get(heroId))!)
+    const letters = (now: number) => letterKeepsakeCode(sha256Hex(TOKEN), userId, keepsakeWeek(now))
+    expect(await owner().mutation(api.keepsakes.claim, { operationId: 'letters-0001', code: letters(NOW).toLowerCase() })).toMatchObject({ outcome: 'claimed', totalCollected: 1 })
+    vi.setSystemTime(LETTER_CODES_UNTIL)
+    expect(await owner().mutation(api.keepsakes.claim, { operationId: 'letters-0002', code: letters(LETTER_CODES_UNTIL) })).toMatchObject({ outcome: 'invalid_code', totalCollected: 1 })
+    expect(await owner().mutation(api.keepsakes.claim, { operationId: 'digits-0002', code: (await envelope(t)).merge_variables.desk_keepsake_code! })).toMatchObject({ outcome: 'claimed', totalCollected: 2 })
   })
 
   it('preserves the next design across missed weeks and keeps repeat collections bounded', async () => {
@@ -138,6 +151,7 @@ describe('weekly TRMNL keepsakes', () => {
     vi.stubEnv('CLERK_SECRET_KEY', 'sk_test_fake')
     vi.stubGlobal('fetch', vi.fn(async () => new Response(null, { status: 200 })))
     const code = (await envelope(t)).merge_variables.desk_keepsake_code!
+    await owner().mutation(api.keepsakes.claim, { operationId: 'wrong-before-delete', code: code === '000 000' ? '000 001' : '000 000' })
     await owner().mutation(api.keepsakes.claim, { operationId: 'before-delete', code })
     if (kind === 'game') await owner().mutation(api.deletion.requestGameDeletion, { operationId: 'delete-0001', confirm: 'DELETE' })
     else await owner().mutation(api.deletion.requestDeletion, { operationId: 'delete-0001', confirm: 'DELETE', token: await seedDeletionConfirmation(t, 'Ana') })
@@ -145,5 +159,6 @@ describe('weekly TRMNL keepsakes', () => {
     await expect(owner().mutation(api.keepsakes.claim, { operationId: 'during-delete', code })).rejects.toThrow()
     await t.finishAllScheduledFunctions(vi.runAllTimers)
     expect(await t.run(async (ctx) => await ctx.db.query('deskKeepsakes').collect())).toEqual([])
+    if (kind === 'account') expect(await t.run(async (ctx) => (await ctx.db.query('rateLimitBuckets').collect()).filter((row) => row.key.startsWith('keepsake:')))).toEqual([])
   })
 })

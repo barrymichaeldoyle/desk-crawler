@@ -453,8 +453,10 @@ export const recordDeletionEmail = internalMutation({
 
 /** Bounded scrub of all known exact references; repeat until no account references remain. */
 async function scrubAccountReferences(ctx: MutationCtx, args: { userId: Id<'users'>; tokenIdentifier: string; heroRef?: string }): Promise<number> {
-  const buckets = await ctx.db.query('rateLimitBuckets').withIndex('by_key', (q) => q.eq('key', `intent:${args.userId}`)).take(BATCH)
-  let changed = await deleteBatch(ctx, buckets)
+  let changed = 0
+  for (const key of [`intent:${args.userId}`, `keepsake:${args.userId}`]) {
+    changed += await deleteBatch(ctx, await ctx.db.query('rateLimitBuckets').withIndex('by_key', (q) => q.eq('key', key)).take(BATCH))
+  }
   const refs = [args.userId, args.tokenIdentifier, args.tokenIdentifier.split('|').at(-1), args.heroRef].filter((ref): ref is string => !!ref)
   for (const ref of new Set(refs)) {
     const targets = await ctx.db.query('adminAuditEvents').withIndex('by_targetRef', (q) => q.eq('targetRef', ref)).take(BATCH)

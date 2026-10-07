@@ -6,7 +6,7 @@ These are planned Convex function contracts. Public companion functions use Cler
 
 `keepsakes.mine({})` returns only the authenticated activated owner’s `{ totalCollected, lastClaimWeek, nextAvailableAt, connected }` or null. It contains no claim code; next availability derives from the last server-selected claim week, not a wall-clock read in the query.
 
-`keepsakes.claim({ operationId, code })` returns `{ operationId, changed, outcome: claimed | already_claimed | invalid_code, totalCollected }`. Current owner/week/connection are resolved server-side; current or prior-week codes award at most once in the current UTC week. Invalid codes return a definite outcome and commit the limiter/receipt; `RATE_LIMITED` retains the normal intent contract. No gameplay or ranking changes. Both account and game deletion deny the operation. [Full contract](playlist-retention.md).
+`keepsakes.claim({ operationId, code })` returns `{ operationId, changed, outcome: claimed | already_claimed | invalid_code, totalCollected }`. Current owner/week/connection are resolved server-side; current or prior-week codes award at most once in the current UTC week. Codes are six digits (D73); letter codes from earlier screens are accepted until 2026-10-19. Invalid codes return a definite outcome and commit the limiter/receipt; ten wrong codes in a UTC day return `RATE_LIMITED` for the rest of that day, and `RATE_LIMITED` otherwise retains the normal intent contract. No gameplay or ranking changes. Both account and game deletion deny the operation. [Full contract](playlist-retention.md).
 
 ## Common intent contract
 

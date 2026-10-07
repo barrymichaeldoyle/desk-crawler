@@ -5,7 +5,7 @@ import type { Doc } from './_generated/dataModel'
 import { currentUser } from './lib/intent'
 
 import { bagUsed as countBag } from '@trmnl-games/desk-crawler/sim/core/bag'
-import { buildPayload, MAX_LOGS, MAX_RECAP_EVENTS, RECAP_WINDOW_MS, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
+import { buildPayload, MAX_LOGS, MAX_RECAP_EVENTS, recapPeriod, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
 import { readWorld, worldContent } from './world'
 import { readDeviceRanking } from './lib/rankingRead'
 import { keepsakeCode, keepsakeGrant } from './lib/keepsakes'
@@ -18,7 +18,7 @@ import { displayLogDeltas } from '@trmnl-games/desk-crawler/log'
  * answers a generic 404. Read-only: confirmation/activation happen before this.
  */
 export const forInstance = internalQuery({
-  args: { gameSlug: v.optional(v.literal('desk-crawler')), tokenHash: v.string(), uuid: v.string(), now: v.number(), instanceName: v.union(v.string(), v.null()) },
+  args: { gameSlug: v.optional(v.literal('desk-crawler')), tokenHash: v.string(), uuid: v.string(), now: v.number(), instanceName: v.union(v.string(), v.null()), utcOffset: v.optional(v.union(v.number(), v.null())) },
   returns: v.union(
     v.null(),
     v.object({ outcome: v.literal('recoverable') }),
@@ -40,7 +40,7 @@ export const forInstance = internalQuery({
     const user = await ctx.db.get(instance.userId)
     if (user === null || user.state !== 'active' || (await gameProfile(ctx, user._id))?.state === 'deleting') return null
 
-    const payload = await payloadFor(ctx, user, args.now, args.instanceName)
+    const payload = await payloadFor(ctx, user, args.now, args.instanceName, args.utcOffset ?? null)
     // Device envelope only: canonical/owner-preview payload never contains a claim code.
     const week = keepsakeWeek(args.now)
     const collection = await ctx.db.query('deskKeepsakes').withIndex('by_userId', (q) => q.eq('userId', user._id)).unique()
@@ -50,7 +50,7 @@ export const forInstance = internalQuery({
 })
 
 /** The canonical device payload for a user's current hero. Shared by the device endpoint and the owner preview. */
-async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instanceName: string | null) {
+async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instanceName: string | null, utcOffset: number | null) {
   const world = await readWorld(ctx)
   const content = worldContent(world)
   const heroDoc = await currentHero(ctx, user)
@@ -92,9 +92,11 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
       .order('desc')
       .take(MAX_LOGS)
     logs = recent.map((log) => ({ at: log.at, kind: log.kind, summary: log.summary, deltas: displayLogDeltas(log) }))
+    // The most recently completed stand-up or retro period in the owner's local time (D75), the same one buildPayload labels.
+    const period = recapPeriod(now, utcOffset)
     const window = await ctx.db
       .query('tickLogs')
-      .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id).gt('at', now - RECAP_WINDOW_MS).lte('at', now))
+      .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id).gt('at', period.from).lte('at', period.to))
       .order('desc')
       .take(MAX_RECAP_EVENTS + 1)
     activity = { entries: window.slice(0, MAX_RECAP_EVENTS), truncated: window.length > MAX_RECAP_EVENTS }
@@ -147,6 +149,7 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
     heldItemName,
     logs,
     ...(activity ? { activity } : {}),
+    utcOffset,
     instanceName,
     content,
     spriteBaseUrl: process.env.SPRITE_BASE_URL ?? null,
@@ -163,13 +166,13 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
  * the client (rounded to the minute) so the query stays cacheable.
  */
 export const mine = query({
-  args: { now: v.number() },
+  args: { now: v.number(), utcOffset: v.optional(v.union(v.number(), v.null())) },
   returns: v.union(v.null(), v.any()),
-  handler: async (ctx, { now }) => {
+  handler: async (ctx, { now, utcOffset }) => {
     const user = await currentUser(ctx)
     if (user === null || user.state !== 'active' || (await gameProfile(ctx, user._id))?.state === 'deleting') return null
     const hero = await currentHero(ctx, user)
     if (hero === null || hero.activationState !== 'active') return null
-    return await payloadFor(ctx, user, now, null)
+    return await payloadFor(ctx, user, now, null, utcOffset ?? null)
   },
 })

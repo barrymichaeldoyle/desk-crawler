@@ -37,7 +37,8 @@ function remembered(): { device: PreviewDevice; layout: PreviewLayout } {
  */
 export function DevicePreview({ sceneUrl, heroName }: { sceneUrl: string; heroName: string }) {
   const now = useMinute()
-  const { data: payload, isError: payloadError } = useQuery({ ...convexQuery(api.trmnlPayload.mine, { now: now ?? 0 }), enabled: now !== null, throwOnError: false })
+  const utcOffset = browserUtcOffset(now)
+  const { data: payload, isError: payloadError } = useQuery({ ...convexQuery(api.trmnlPayload.mine, { now: now ?? 0, utcOffset }), enabled: now !== null, throwOnError: false })
   const [choice, setChoice] = useState<{ device: PreviewDevice; layout: PreviewLayout }>({ device: 'x', layout: 'markup' })
   const [html, setHtml] = useState<string | null>(null)
   const [scale, setScale] = useState(0)
@@ -45,7 +46,6 @@ export function DevicePreview({ sceneUrl, heroName }: { sceneUrl: string; heroNa
   const [failed, setFailed] = useState(false)
   const frame = useRef<HTMLDivElement>(null)
   const device = PREVIEW_DEVICES[choice.device]
-  const utcOffset = browserUtcOffset(now)
   const localSceneUrl = sceneForNow(sceneUrl, now)
 
   useEffect(() => setChoice(remembered()), [])

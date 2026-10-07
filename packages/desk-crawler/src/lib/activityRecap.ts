@@ -5,21 +5,51 @@ export const RECAP_WINDOW_MS = 12 * 60 * 60 * 1000
 /** Includes commands; an extra row detects an incomplete window. */
 export const MAX_RECAP_EVENTS = 200
 
+/**
+ * Recap periods follow the office day in the owner's local time (D75): the morning stand-up at 07:00 reports the night
+ * (19:00 to 07:00) and the sprint retro at 19:00 reports the day (07:00 to 19:00). A recap is shown only once its
+ * period has ended, so the device never summarises a window that is still running.
+ */
+export const STAND_UP_HOUR = 7
+export const RETRO_HOUR = 19
+const HOUR_MS = 60 * 60 * 1000
+const DAY_MS = 24 * HOUR_MS
+
+export interface RecapPeriod {
+  /** 'Morning stand-up' (the night just ended) or 'Sprint retro' (the day just ended). */
+  readonly label: string
+  /** UTC milliseconds; the window is half-open, (from, to]. */
+  readonly from: number
+  readonly to: number
+}
+
+/** The most recently completed period at `now`, with the owner's UTC offset in seconds (0 when TRMNL sends none). */
+export function recapPeriod(now: number, utcOffsetSeconds: number | null): RecapPeriod {
+  const offset = (utcOffsetSeconds ?? 0) * 1000
+  const local = now + offset
+  const dayStart = Math.floor(local / DAY_MS) * DAY_MS
+  const standUp = dayStart + STAND_UP_HOUR * HOUR_MS
+  const retro = dayStart + RETRO_HOUR * HOUR_MS
+  const end = local >= retro ? retro : local >= standUp ? standUp : retro - DAY_MS
+  const label = end === standUp ? 'Morning stand-up' : 'Sprint retro'
+  return { label, from: end - RECAP_WINDOW_MS - offset, to: end - offset }
+}
+
 export interface ActivityEntry {
   readonly at: number
   readonly deltas: LogDeltas
   readonly detail: Pick<LogDetail, 'outcome' | 'levelsGained' | 'heldFind'> | { readonly operation: string } | { readonly achievementId: string }
 }
 
-/** Read-only, deterministic digest of recorded outcomes. Never infer facts from jokes. */
-export function activityRecap(entries: readonly ActivityEntry[], now: number, content: ContentCatalog, truncated = false) {
+/** Read-only, deterministic digest of recorded outcomes within one completed period. Never infer facts from jokes. */
+export function activityRecap(entries: readonly ActivityEntry[], period: RecapPeriod, content: ContentCatalog, truncated = false) {
   const totals = { xp: 0, gold: 0, wins: 0, gear: 0, potions: 0, breaks: 0, levels: 0, knockouts: 0, revivals: 0, rareFinds: 0, elites: 0, jackpots: 0 }
   const arrivals = new Set<string>()
   let heldFind = false
   let events = 0
   for (const entry of entries.slice(0, MAX_RECAP_EVENTS)) {
     // Half-open window avoids counting a boundary event in both adjacent windows.
-    if (entry.at <= now - RECAP_WINDOW_MS || entry.at > now) continue
+    if (entry.at <= period.from || entry.at > period.to) continue
     if (!('outcome' in entry.detail)) continue
     events++
     const { outcome, levelsGained } = entry.detail
@@ -71,10 +101,10 @@ export function activityRecap(entries: readonly ActivityEntry[], now: number, co
   // Compact screens get one useful fact about progress and one about activity.
   const compact = (highlights[0] ? [highlights[0], gains[0]] : [gains[0], activity[0]]).filter(Boolean).join(' · ') || (events ? 'Adventures continued' : partial ? 'No adventures in sample' : 'No new adventures')
   return {
-    label: partial ? 'Last 12 hours · partial' : 'Last 12 hours',
+    label: partial ? `${period.label} · partial` : period.label,
     partial,
-    from: Math.floor((now - RECAP_WINDOW_MS) / 1000),
-    to: Math.floor(now / 1000),
+    from: Math.floor(period.from / 1000),
+    to: Math.floor(period.to / 1000),
     events,
     totals,
     activity: activity.join(' · ') || (events ? 'Adventures continued' : partial ? 'No adventures in sample' : 'No new adventures'),

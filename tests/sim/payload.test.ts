@@ -131,6 +131,10 @@ describe('device recap privacy and compatibility', () => {
   it('omits a recap when no separate window was read, and never exposes one for an unlinked hero', () => {
     expect(buildPayload(input).recap).toBeNull()
     expect(buildPayload({ ...input, hero: null, activity: { entries: [], truncated: false } }).recap).toBeNull()
-    expect(buildPayload({ ...input, activity: { entries: [], truncated: false } }).recap).toMatchObject({ label: 'Last 12 hours', activity: 'No new adventures' })
+    // 08:20 UTC with no offset is the morning stand-up; with Johannesburg's offset too; at 20:00 local it is the retro (D75).
+    expect(buildPayload({ ...input, activity: { entries: [], truncated: false } }).recap).toMatchObject({ label: 'Morning stand-up', activity: 'No new adventures', from: Date.UTC(2026, 9, 3, 19) / 1000, to: Date.UTC(2026, 9, 4, 7) / 1000 })
+    expect(buildPayload({ ...input, utcOffset: 7200, activity: { entries: [], truncated: false } }).recap).toMatchObject({ label: 'Morning stand-up', to: Date.UTC(2026, 9, 4, 5) / 1000 })
+    expect(buildPayload({ ...input, now: Date.UTC(2026, 9, 4, 18), utcOffset: 7200, activity: { entries: [], truncated: false } }).recap).toMatchObject({ label: 'Sprint retro', from: Date.UTC(2026, 9, 4, 5) / 1000, to: Date.UTC(2026, 9, 4, 17) / 1000 })
+    expect(JSON.stringify(buildPayload({ ...input, activity: { entries: [], truncated: false } }).recap)).not.toContain('Last 12 hours')
   })
 })

@@ -10,10 +10,10 @@ import { sceneFor, scenePath, type LatestEvent } from '../art/sceneKey'
 import { nextSlotAfter, slotEta, SLOT_MS } from '../sim/schedule'
 import { bold } from '../sim/core/narrative'
 import { logPresentation, type LogDeltas } from './logPresentation'
-import { activityRecap, type ActivityEntry } from './activityRecap'
+import { activityRecap, recapPeriod, type ActivityEntry } from './activityRecap'
 
-export { activityRecap, MAX_RECAP_EVENTS, RECAP_WINDOW_MS } from './activityRecap'
-export type { ActivityEntry, ActivityRecap } from './activityRecap'
+export { activityRecap, MAX_RECAP_EVENTS, RECAP_WINDOW_MS, recapPeriod } from './activityRecap'
+export type { ActivityEntry, ActivityRecap, RecapPeriod } from './activityRecap'
 
 export const STALE_AFTER_MS = 30 * 60 * 1000
 /** Ten newest stories, independent of the twelve-hour recap and visible layout count. */
@@ -64,6 +64,8 @@ export interface PayloadInput {
   readonly logs: ReadonlyArray<{ readonly at: number; readonly kind: string; readonly summary: string; readonly deltas?: LogDeltas }>
   /** Separate 12-hour read; the ten recent stories cannot imply a complete recap. */
   readonly activity?: { readonly entries: readonly ActivityEntry[]; readonly truncated: boolean }
+  /** The owner's UTC offset in seconds (TRMNL's `trmnl[user][utc_offset]`, or the browser's); null means UTC. Sets the recap period (D75). */
+  readonly utcOffset?: number | null
   readonly instanceName: string | null
   readonly content: ContentCatalog
   readonly spriteBaseUrl: string | null
@@ -218,7 +220,7 @@ export function buildPayload(input: PayloadInput) {
     stale,
     plugin_instance_name: sanitizeLabel(input.instanceName, 40, 'Desk Crawler'),
     game_as_of_label: gameAsOf ? `${gameAsOf.label} ${gameAsOf.offset}` : 'Awaiting first game tick',
-    recap: hero !== null && input.activity ? activityRecap(input.activity.entries, now, content, input.activity.truncated) : null,
+    recap: hero !== null && input.activity ? activityRecap(input.activity.entries, recapPeriod(now, input.utcOffset ?? null), content, input.activity.truncated) : null,
     ...rankingFields(input.ranking, hero === null, input.timezone),
   }
 

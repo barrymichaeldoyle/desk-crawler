@@ -12,6 +12,8 @@ import type { OutcomeDetail } from '../sim/core/types'
 export const PREVIEW_NOW = Date.UTC(2026, 9, 4, 8, 20)
 /** The sample owner is in Johannesburg (UTC+2); TRMNL renders Liquid in UTC and the screen route adds `utc_offset`. */
 export const PREVIEW_UTC_OFFSET = 2 * 3600
+/** The end of the recap period the preview clock falls in: the 07:00 stand-up in Johannesburg (D75). */
+export const PREVIEW_PERIOD_END = Date.UTC(2026, 9, 4, 5, 0)
 /** Preview-only sample of the verified device-envelope field; never an actual redeemable code. */
 export const PREVIEW_KEEPSAKE_CODE = '482 917'
 /** Screens that never show a keepsake code. */
@@ -48,6 +50,7 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
     world: { currentTick: 120, lastCompletedTick: 120, lastCompletedAt: NOW - 7 * 60_000, createdAt: NOW - 86_400_000, ticksPaused: false, maintenanceMode: false },
     ownerAlias: 'barrymichaeldoyle',
     timezone: 'Africa/Johannesburg',
+    utcOffset: PREVIEW_UTC_OFFSET,
     hero: { name: 'Baz', level: 5, xp: 210, hp: 118, gold: 640, status: 'exploring', biomeId: 'server_room', lastTick: 120, lastAdvancedAt: NOW - 7 * 60_000, quarantined: false },
     weaponName: 'Uncommon Cable Cutter',
     armorName: 'Insulated Cardigan',
@@ -133,7 +136,8 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
     coffeeBreak: { ...base, hero: hero({ biomeId: 'office_cubicles', hp: 148 }), latestEvent: { kind: 'rest' }, logs: [{ at: NOW - 7 * 60_000, kind: 'rest', summary: 'Took a coffee break anyway.', deltas: { xpEarned: 0, gold: 0, hp: 0 } }, ...base.logs] },
   }
   // Explicit recorded-outcome fixtures; these are fictional and never written to a deployment.
-  const activityEntry = (outcome: OutcomeDetail, index: number, patch: Partial<ActivityEntry> = {}): ActivityEntry => ({ at: NOW - (index + 1) * 900_000, deltas: { xpEarned: 0, gold: 0, hp: 0 }, detail: { outcome, levelsGained: 0, heldFind: false }, ...patch })
+  // Recorded outcomes sit inside the period the preview clock shows: at 10:20 Johannesburg that is the morning stand-up, the night up to 07:00 (05:00 UTC).
+  const activityEntry = (outcome: OutcomeDetail, index: number, patch: Partial<ActivityEntry> = {}): ActivityEntry => ({ at: PREVIEW_PERIOD_END - (index + 1) * 900_000, deltas: { xpEarned: 0, gold: 0, hp: 0 }, detail: { outcome, levelsGained: 0, heldFind: false }, ...patch })
   const fixtureFight: OutcomeDetail = { variant: 'combat', monsterId: 'cable_serpent', elite: false, monsterHpStart: 40, monsterHpEnd: 0, rounds: [], outcome: 'victory', xpGranted: 14, goldGranted: 5, gearDropped: false }
   const fixtureGear: OutcomeDetail = { variant: 'loot', found: 'gear', rarity: 'rare', goldGranted: 0, jackpot: false, potionFullFallback: false }
   const fixtureBreak: OutcomeDetail = { variant: 'rest', healing: 0, automatic: false, resultingStatus: 'exploring' }
@@ -153,7 +157,7 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
     milestones: { ...states.longText!, activity: { entries: milestoneEntries, truncated: false } },
     quietMorning: { ...noEffectStates.coffeeBreak!, activity: { entries: Array.from({ length: 17 }, (_, i) => activityEntry(fixtureBreak, i)), truncated: false } },
     emptyWindow: { ...states.paused!, logs: base.logs.map(log => ({ ...log, at: log.at - 13 * 3_600_000 })), activity: { entries: [], truncated: false } },
-    partial: { ...base, activity: { entries: Array.from({ length: MAX_RECAP_EVENTS }, (_, i) => activityEntry(fixtureFight, i, { at: NOW - (i + 1) * 60_000, deltas: { xpEarned: 999, gold: 999, hp: 0 } })), truncated: true } },
+    partial: { ...base, activity: { entries: Array.from({ length: MAX_RECAP_EVENTS }, (_, i) => activityEntry(fixtureFight, i, { at: PREVIEW_PERIOD_END - (i + 1) * 60_000, deltas: { xpEarned: 999, gold: 999, hp: 0 } })), truncated: true } },
     fullBagRecap: { ...states.sleeping!, activity: { entries: [activityEntry(fixtureGear, 0, { detail: { outcome: fixtureGear, levelsGained: 0, heldFind: true } }), ...overnightEntries], truncated: false } },
     knockoutRecap: { ...states.dead!, activity: { entries: [activityEntry({ ...fixtureFight, outcome: 'death', goldGranted: 0, gearDropped: false }, 0), ...overnightEntries], truncated: false } },
     recoveredRecap: { ...base, activity: { entries: [activityEntry({ variant: 'revival', previousBiomeId: 'server_room', safeBiomeId: 'office_cubicles', hpGranted: 30, reviveAtTick: 119 }, 0), activityEntry({ ...fixtureFight, outcome: 'death', goldGranted: 0, gearDropped: false }, 8), ...overnightEntries], truncated: false } },

@@ -104,7 +104,9 @@ http.route({
     const instanceName = form.get('trmnl[plugin_settings][instance_name]')
 
     const now = Date.now()
-    const args = { tokenHash, uuid, now, instanceName: instanceName === null ? null : instanceName.slice(0, 200) }
+    // TRMNL does not expose its `trmnl` metadata to third-party Liquid, so pass the owner's offset through (D42); it also picks the recap period (D75).
+    const utcOffset = parseUtcOffset(form.get('trmnl[user][utc_offset]'))
+    const args = { tokenHash, uuid, now, instanceName: instanceName === null ? null : instanceName.slice(0, 200), utcOffset }
     let result = await ctx.runQuery(internal.trmnlPayload.forInstance, args)
     if (result?.outcome === 'recoverable') {
       // Lost success callback: confirm a new instance only under a current pending attempt (V06).
@@ -112,8 +114,6 @@ http.route({
       result = await ctx.runQuery(internal.trmnlPayload.forInstance, args)
     }
     if (result === null || result.outcome !== 'payload') return notFound()
-    // TRMNL does not expose its `trmnl` metadata to third-party Liquid, so pass the owner's offset through (D42).
-    const utcOffset = parseUtcOffset(form.get('trmnl[user][utc_offset]'))
     return json(200, { ...screenMarkup, merge_variables: { ...sceneUrlsAt(result.payload, now, utcOffset), desk_keepsake_code: result.keepsakeCode, utc_offset: utcOffset } })
   }),
 })

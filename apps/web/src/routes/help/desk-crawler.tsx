@@ -39,6 +39,8 @@ export const Route = createFileRoute('/help/desk-crawler')({
       <p>Equipping gear does not free a slot. Selling gear or claiming a find does not wake your hero automatically. Bag sleep is separate from your TRMNL’s Sleep Mode; a sleeping display never stops the game.</p>
       <h2>Getting knocked out</h2>
       <p>Your hero revives automatically after eight game ticks, normally about two hours, and returns to Office Cubicles. You keep your XP and equipment; getting knocked out costs 10% of your current gold. Office Cubicles provides a safe place to recover. You do not need to keep the companion open or press a revive button.</p>
+      <h2>Stand-ups and retros</h2>
+      <p>Your screen carries a short recap of the last finished shift, in your TRMNL's local time. The morning stand-up at 07:00 reports the night, from 19:00 to 07:00, and stays up all day. The sprint retro at 19:00 reports the day, from 07:00 to 19:00, and stays up all evening. The newest stories above it are always live.</p>
       <h2>Understanding rankings</h2>
       <p>The screen shows the seven-day XP Top 5 for your level group, with your own row marked, or added below the list when you sit lower. The companion also offers a 24-hour view and a lifetime board. Rankings publish hourly, so a recent adventure or level-up can appear before your rank updates.</p>
       <p>Paused and sleeping heroes keep their progress, but their recent XP ages out. After seven days without earned XP, they leave the weekly board until they earn XP again. Lifetime progress stays recorded.</p>

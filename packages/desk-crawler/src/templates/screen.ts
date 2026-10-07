@@ -296,7 +296,7 @@ const rankCaption = `<div class="flex flex--row flex--center-y gap--xsmall stret
  * notice (D78: the merchant) takes the same slot as an outlined chip but leaves the stories and recap alone.
  */
 const attention = (classes: string, clamp: number) => `
-      {% if attention %}<span class="${classes} label--underline" data-clamp="${clamp}">{{ attention | escape }}</span>{% elsif notice %}<span class="${classes} label--outline" data-clamp="${clamp}">{{ notice | escape }}</span>{% endif %}`
+      {% if attention %}<span class="${classes} label--underline no-shrink" data-clamp="${clamp}">{{ attention | escape }}</span>{% elsif notice %}<div class="no-shrink pt--1"><span class="${classes} label--outline" data-clamp="${clamp}">{{ notice | escape }}</span></div>{% endif %}`
 
 /** Integer-scaled assets keep every QR module crisp on monochrome displays. */
 const qrImage = (scale: number, largeScale: number, field = 'qr_base') =>

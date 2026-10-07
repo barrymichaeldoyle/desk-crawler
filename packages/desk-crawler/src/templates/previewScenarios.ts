@@ -111,7 +111,7 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
     paused: { ...base, hero: hero({ status: 'paused' }), ranking: { ...base.ranking!, rank: null, rankDelta: null, status: 'dormant', score: null } },
     quarantined: { ...base, hero: hero({ quarantined: true }) },
     // D78: an open merchant visit shows the inverted notice line beside an ordinary day.
-    merchant: { ...base, hero: hero({ merchantExpiresAtTick: 124 }), logs: [{ at: NOW - 7 * 60_000, kind: 'merchant', summary: 'A [[Wandering Merchant]] set up a trestle table. Open for 4 adventures.', deltas: { xpEarned: 0, gold: 0, hp: 0 } }, ...base.logs], latestEvent: { kind: 'merchant' } },
+    merchant: { ...base, hero: hero({ merchantExpiresAtTick: 124 }), logs: [{ at: NOW - 7 * 60_000, kind: 'merchant', summary: 'A [[Wandering Merchant]] set up a trestle table. Open for 4 adventures.', deltas: { xpEarned: 0, gold: 0, hp: 0, offers: 3 } }, ...base.logs], latestEvent: { kind: 'merchant' } },
     stale: { ...base, world: { ...base.world!, lastCompletedAt: NOW - 3 * 3_600_000 } },
     longText: {
       ...base,

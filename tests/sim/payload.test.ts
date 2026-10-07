@@ -31,7 +31,7 @@ describe('merchant notice (D78)', () => {
   const notice = (p: unknown) => (p as { notice: string | null; attention: string | null }).notice
   it('announces an open visit, and stays quiet once it expired or when an attention line is showing', () => {
     expect(notice(buildPayload(input))).toBeNull()
-    expect(notice(buildPayload({ ...input, hero: { ...input.hero!, merchantExpiresAtTick: 5 } }))).toBe('A merchant is visiting. Shop in the companion within the hour.')
+    expect(notice(buildPayload({ ...input, hero: { ...input.hero!, merchantExpiresAtTick: 5 } }))).toBe('Merchant visiting. Shop in the companion soon.')
     expect(notice(buildPayload({ ...input, world: { ...input.world!, currentTick: 5 }, hero: { ...input.hero!, merchantExpiresAtTick: 5 } }))).toBeNull()
     expect(notice(buildPayload({ ...input, hero: { ...input.hero!, status: 'dead', hp: 0, reviveAtTick: 9, merchantExpiresAtTick: 5 } }))).toBeNull()
   })

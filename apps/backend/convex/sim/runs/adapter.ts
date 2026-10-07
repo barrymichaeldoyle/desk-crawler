@@ -27,6 +27,8 @@ export function toHeroState(hero: Doc<'heroes'>): HeroState {
     lastLevelUpTick: hero.lastLevelUpTick,
     counters: withCounterDefaults(hero.counters),
     ...(hero.stance === undefined ? {} : { stance: hero.stance }),
+    ...(hero.potionCap === undefined ? {} : { potionCap: hero.potionCap }),
+    ...(hero.merchant === undefined ? {} : { merchant: hero.merchant }),
   }
 }
 
@@ -76,6 +78,9 @@ export async function applyResult(
     pausedFromStatus: next.pausedFromStatus,
     wakeAtTick: next.wakeAtTick,
     bagCapacity: next.bagCapacity,
+    potionCap: next.potionCap,
+    // Convex stores mutable arrays; the core hands out readonly ones.
+    merchant: next.merchant === undefined ? undefined : { ...next.merchant, offers: next.merchant.offers.map((offer) => ({ ...offer })) },
     lastLevelUpTick: next.lastLevelUpTick,
     counters: next.counters,
   }
@@ -105,6 +110,6 @@ export function storedDetail(detail: LogDetail, changes: readonly ItemChange[] =
     ...detail.outcome,
     rounds: [...detail.outcome.rounds],
     ...(detail.outcome.gearDropped && gear?.type === 'create' ? { gearRarity: gear.item.rarity } : {}),
-  } : detail.outcome
+  } : detail.outcome.variant === 'merchant' ? { ...detail.outcome, offers: detail.outcome.offers.map((offer) => ({ ...offer })) } : detail.outcome
   return { ...detail, outcome }
 }

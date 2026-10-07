@@ -43,6 +43,8 @@ export interface PayloadHero {
   readonly lastTick: number
   readonly lastAdvancedAt?: number
   readonly quarantined: boolean
+  /** D78: an open merchant visit ends at this tick. */
+  readonly merchantExpiresAtTick?: number
 }
 
 export interface PayloadInput {
@@ -288,6 +290,7 @@ export function buildPayload(input: PayloadInput) {
       log: [],
       celebration: null,
       attention: servicePaused ? 'Desk Crawler is down for maintenance.' : 'Sign in to the companion, then save this plugin in TRMNL.',
+      notice: null,
     }
   }
 
@@ -338,6 +341,8 @@ export function buildPayload(input: PayloadInput) {
   else if (stale) attention = 'Updates delayed. Nothing is lost.'
   else if (hero.status === 'dead') attention = 'Revives automatically with all XP and gear.'
   else if (hero.status === 'sleeping' && hero.wakeAtTick === undefined) attention = 'Make room in your bag in the companion, then resume.'
+  // D78: a merchant visit is a cheerful notice, never an attention line (attention collapses the stories), and only while its offers are open.
+  const notice = attention === null && hero.merchantExpiresAtTick !== undefined && hero.merchantExpiresAtTick > (world?.currentTick ?? hero.lastTick) ? 'A merchant is visiting. Shop in the companion within the hour.' : null
 
   const needsBag = hero.status === 'sleeping' && hero.wakeAtTick === undefined && !hero.quarantined && !servicePaused
   // A brand-new hero has no adventures yet: the screen welcomes them and links the companion.
@@ -391,6 +396,7 @@ export function buildPayload(input: PayloadInput) {
     log: logs,
     celebration: attention === null && logs.length > 0 ? celebrationFor(input.newestEvent === undefined ? input.latestEvent : input.newestEvent, hero.level) : null,
     attention,
+    notice,
   }
 }
 

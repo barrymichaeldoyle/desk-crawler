@@ -43,7 +43,20 @@ export const heroCounters = v.object({
   itemsSold: v.optional(v.number()),
   /** D76: stance switches made in the companion. */
   stanceChanges: v.optional(v.number()),
+  /** D78: merchant offers bought, and merchant visits met. */
+  purchases: v.optional(v.number()),
+  merchantVisits: v.optional(v.number()),
 })
+
+/** D78 merchant offers: at most three, each bought at most once. */
+export const merchantOffer = v.object({
+  id: v.union(v.literal('potions'), v.literal('pouch'), v.literal('bag')),
+  name: v.string(),
+  quantity: v.number(),
+  price: v.number(),
+  tierId: v.optional(v.string()),
+})
+export const merchantVisit = v.object({ offers: v.array(merchantOffer), expiresAtTick: v.number(), biomeId: v.string() })
 
 export const logKind = v.union(
   v.literal('combat'),
@@ -55,6 +68,7 @@ export const logKind = v.union(
   v.literal('revive'),
   v.literal('levelup'),
   v.literal('achievement'),
+  v.literal('merchant'),
   v.literal('system'),
 )
 
@@ -150,6 +164,10 @@ export default defineSchema({
     bagCapacity: v.number(),
     /** D76: how carefully the hero sustains itself; absent means balanced. */
     stance: v.optional(v.union(v.literal('cautious'), v.literal('balanced'), v.literal('bold'))),
+    /** D77: potion cap from the pouch ladder; absent means the catalog's potionStackCap. */
+    potionCap: v.optional(v.number()),
+    /** D78: an open merchant visit, cleared by the simulator when it expires or by the last purchase. */
+    merchant: v.optional(merchantVisit),
     eligibleFromTick: v.number(),
     lastTick: v.number(),
     lastProgressTick: v.number(),

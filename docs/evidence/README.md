@@ -57,3 +57,5 @@ The [D56 adaptive layout](adaptive-log-layout.md) is deployed v27, verified by 2
 [Recap periods](recap-periods.md) records D75: the device recap becomes the morning stand-up (the night) and the sprint retro (the day) in the owner's local time, shown only once the period has ended, with the device offset wired through the payload query.
 
 [Balance](balance.md) gains the content v3 stance section (D76): three 300-hero, 30-day reports, one per stance, showing bold as the fast, risky stance and cautious as the safe, slow one, with balanced equal to v2.
+
+[Potion pouch and merchant](merchant-pouch.md) records D77/D78: the pouch ladder, the wandering merchant's bounded offers and expiry, the companion cards, the device notice line (template v34) and the v4 balance run.

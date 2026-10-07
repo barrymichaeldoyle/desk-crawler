@@ -31,6 +31,24 @@ export function validateCatalog(content: ContentCatalog): string[] {
     if (stance.restBelowPct > c.reviveHpPct) problems.push(`stance ${stance.id} would rest a hero straight after revival`)
   }
   if (content.stances && !(['cautious', 'balanced', 'bold'] as const).every((id) => content.stances?.[id]?.id === id)) problems.push('stances must define cautious, balanced and bold under their own ids')
+  // D77/D78: the pouch ladder mirrors the bag ladder's rules; the merchant's numbers are bounded.
+  const pouch = content.potionPouch
+  if (pouch) {
+    if (pouch.tiers.length < 2) problems.push('potion pouch needs at least two tiers')
+    if (pouch.tiers[0]?.milestone !== undefined || pouch.tiers[0]?.price !== undefined) problems.push('the starting pouch has no milestone or price')
+    if (pouch.tiers[0]?.cap !== c.potionStackCap) problems.push('the starting pouch must match potionStackCap')
+    pouch.tiers.forEach((tier, i) => {
+      if (i > 0 && (tier.milestone === undefined || tier.price === undefined)) problems.push(`pouch ${tier.id} needs a milestone and a price`)
+      if (i > 0 && tier.cap <= pouch.tiers[i - 1]!.cap) problems.push(`pouch ${tier.id} must be larger than the previous tier`)
+      if (i > 1 && (tier.milestone?.level ?? 0) <= (pouch.tiers[i - 1]!.milestone?.level ?? 0)) problems.push(`pouch ${tier.id} milestone must come after the previous tier's`)
+    })
+    if (!Number.isSafeInteger(pouch.findPermille) || pouch.findPermille < 0 || pouch.findPermille > 1000) problems.push('pouch find chance must be a permille')
+  }
+  if (c.lootWeights.merchant !== undefined && !content.merchant) problems.push('a merchant loot weight needs merchant rules')
+  if (content.merchant) {
+    if (!(content.merchant.potionPrice >= 1 && content.merchant.maxPotionsOffered >= 1 && content.merchant.maxPotionsOffered <= 10)) problems.push('merchant potion offer out of bounds')
+    if (!(content.merchant.staysForTicks >= 1 && content.merchant.staysForTicks <= 8)) problems.push('merchant must stay between 1 and 8 ticks')
+  }
   if (content.stances && (content.stances.balanced.autoPotionBelowPct !== c.autoPotionBelowPct || content.stances.balanced.restBelowPct !== c.restBelowPct || content.stances.balanced.resumeExploringAtPct !== c.resumeExploringAtPct || content.stances.balanced.victoryXpPct !== 100)) problems.push('the balanced stance must mirror the catalog constants')
   percent('jackpot.chancePct', c.jackpot.chancePct)
 

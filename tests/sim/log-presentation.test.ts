@@ -76,3 +76,14 @@ describe('story and stat changes', () => {
     }
   })
 })
+
+describe('merchant and pouch chips (D77/D78)', () => {
+  it('names open offers, bought potions and a bigger pouch instead of No effect', () => {
+    const visit = displayLogDeltas({ deltas: { xpEarned: 0, gold: 0, hp: 0 }, detail: { outcome: { variant: 'merchant', offers: [{}, {}] } } })
+    expect(logPresentation({ summary: 'A [[Wandering Merchant]] set up a trestle table. Open for 4 adventures.', kind: 'merchant', deltas: visit }).changes).toEqual(['2 offers open'])
+    const bought = displayLogDeltas({ deltas: { xpEarned: 0, gold: -48, hp: 0 }, detail: { operation: 'buy_offer', potionsBought: 2 } })
+    expect(logPresentation({ summary: 'Bought 2 healing potions from the merchant.', kind: 'system', deltas: bought }).changes).toEqual(['−48 gold', '+2 healing potions'])
+    const pouch = displayLogDeltas({ deltas: { xpEarned: 14, gold: 5, hp: -4 }, detail: { outcome: { variant: 'combat' }, pouchUpgrade: { from: 20, to: 30 } } })
+    expect(logPresentation({ summary: 'Beat a [[Paper Imp]]. +14 XP, +5 gold. Found a [[Lunchbox]]! Holds 30 potions.', kind: 'combat', deltas: pouch }).changes).toEqual(['+14 XP', '+5 gold', '−4 HP', 'Pouch holds 30'])
+  })
+})

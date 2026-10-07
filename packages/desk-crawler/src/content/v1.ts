@@ -256,6 +256,12 @@ const shared: SharedNarrative = {
     'A healing potion rolled out from under a desk.',
   ],
   potionFullGold: ['Potion pouch full; sold a spare for {gold} gold.', 'No room for another potion; sold it for {gold} gold.'],
+  pouchFind: ['Found a {item}. The pouch now holds {capacity} potions.', 'Someone left a {item} in the kitchen. It holds {capacity} potions.'],
+  merchant: [
+    'A [[Wandering Merchant]] set up a trestle table. Open for {ticks} adventures.',
+    'Met a [[Wandering Merchant]] by the lifts. Offers stand for {ticks} adventures.',
+    'A [[Wandering Merchant]] wheeled a cart past. Shop in the companion within {ticks} adventures.',
+  ],
   restingHeal: [
     'Resting to recover. +{heal} HP.',
     'Caught a power nap. +{heal} HP.',

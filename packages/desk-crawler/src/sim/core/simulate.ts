@@ -1,5 +1,6 @@
 import { applyItemChanges } from './apply'
 import { isBagFull, milestoneUpgrade, nextEarlyTier } from './bag'
+import { nextEarlyPouchTier, potionCap, pouchMilestoneUpgrade } from './pouch'
 import { assertHeroInvariants, SimulationInvariantError } from './invariants'
 import { codePoints, composeSummary, fill, rarityLabel, variant, withArticle, type NarrativeVars } from './narrative'
 import { createRng, pickOne, pickWeighted, type Rng } from './rng'
@@ -23,6 +24,9 @@ import type {
   SimulationInput,
   SimulationResult,
   TickMetrics,
+  MerchantOffer,
+  MerchantVisit,
+  PouchTier,
 } from './types'
 
 export const SIMULATION_VERSION = 1
@@ -44,6 +48,8 @@ const ZERO_METRICS: TickMetrics = {
   wakes: 0,
   elites: 0,
   jackpots: 0,
+  merchantVisits: 0,
+  pouchUpgrades: 0,
 }
 
 interface Streams {
@@ -98,6 +104,8 @@ class TickRun {
 
   run(): SimulationResult {
     const { h, input } = this
+    // D78: an expired merchant leaves quietly, whatever the hero is doing; no event, no draw.
+    if (h.merchant !== undefined && input.tick >= h.merchant.expiresAtTick) delete h.merchant
     switch (h.status) {
       case 'paused':
         return this.finish('paused')
@@ -244,6 +252,7 @@ class TickRun {
     let gear: NewItem | undefined
     let lethal = false
     let upgrade: BagUpgrade | undefined
+    let pouchUpgrade: BagUpgrade | undefined
     let outcome: OutcomeDetail
     let primary: string
     let compact: string
@@ -334,11 +343,38 @@ class TickRun {
           outcome = { variant: 'loot', found: 'bag', goldGranted: 0, jackpot: false, potionFullFallback: false }
           break
         }
-        const found = pickWeighted<'gear' | 'potion' | 'gold'>(this.rng.encounter, [
+        // D77: one pouch draw per loot encounter under a catalog with a ladder, at a fixed position after the bag draw.
+        if (content.potionPouch !== undefined) {
+          const pouchRoll = this.rng.reward.int(1, 1000)
+          const pouch = pouchRoll <= content.potionPouch.findPermille ? nextEarlyPouchTier(content, h) : undefined
+          if (pouch !== undefined) {
+            pouchUpgrade = { from: potionCap(content, h), to: pouch.cap, tierId: pouch.id, source: 'find' }
+            h.potionCap = pouch.cap
+            vars.item = pouch.name
+            vars.capacity = pouch.cap
+            primary = this.narrate(shared.pouchFind, vars)
+            compact = fill('Found a {item}. Holds {capacity} potions.', vars)
+            outcome = { variant: 'loot', found: 'pouch', goldGranted: 0, jackpot: false, potionFullFallback: false }
+            break
+          }
+        }
+        const found = pickWeighted<'gear' | 'potion' | 'gold' | 'merchant'>(this.rng.encounter, [
           ['gear', c.lootWeights.gear],
           ['potion', c.lootWeights.potion],
           ['gold', c.lootWeights.gold],
+          ...(c.lootWeights.merchant === undefined ? [] : [['merchant', c.lootWeights.merchant] as const]),
         ])
+        if (found === 'merchant') {
+          const visit = this.merchantVisit(biome.tier)
+          h.merchant = visit
+          h.counters.merchantVisits += 1
+          this.metrics.merchantVisits = 1
+          vars.ticks = content.merchant!.staysForTicks
+          primary = this.narrate(shared.merchant, vars)
+          compact = fill('A merchant is passing through. {ticks} adventures to shop.', vars)
+          outcome = { variant: 'merchant', offers: visit.offers, expiresAtTick: visit.expiresAtTick }
+          break
+        }
         let jackpot = false
         let potionFullFallback = false
         const rollGold = () => {
@@ -355,7 +391,7 @@ class TickRun {
           gear = this.generateGear(biome.tier)
           primary = ''
           compact = ''
-        } else if (found === 'potion' && potionQty >= c.potionStackCap) {
+        } else if (found === 'potion' && potionQty >= potionCap(content, h)) {
           potionFullFallback = true
           rollGold()
           primary = this.narrate(jackpot ? narrative.jackpot : shared.potionFullGold, vars)
@@ -403,7 +439,7 @@ class TickRun {
     }
 
     // Death and safe-biome protection come before level-up.
-    let logKind: LogKind = kind
+    let logKind: LogKind = outcome.variant === 'merchant' ? 'merchant' : kind
     const consequences: string[] = []
     if (lethal) {
       const ticks = c.reviveAfterTicks
@@ -467,6 +503,14 @@ class TickRun {
       consequences.push(`Found ${withArticle(milestone.name)}! Bag holds ${milestone.capacity}.`)
     }
     if (upgrade !== undefined) this.metrics.bagUpgrades = 1
+    // D77: pouch milestones land the same way, so the new cap is usable at once.
+    const pouchMilestone: PouchTier | undefined = pouchMilestoneUpgrade(content, h)
+    if (pouchMilestone !== undefined) {
+      pouchUpgrade = { from: pouchUpgrade?.from ?? potionCap(content, h), to: pouchMilestone.cap, tierId: pouchMilestone.id, source: 'milestone' }
+      h.potionCap = pouchMilestone.cap
+      consequences.push(`Found ${withArticle(pouchMilestone.name)}! Holds ${pouchMilestone.cap} potions.`)
+    }
+    if (pouchUpgrade !== undefined) this.metrics.pouchUpgrades = 1
 
     let heldFind = false
     let disposition: Disposition = 'advanced'
@@ -496,8 +540,24 @@ class TickRun {
     return this.finish(
       disposition,
       { kind: logKind, summary: composeSummary(primary, compact, consequences, c.summaryMaxCodePoints), outcome, encounterKind: kind },
-      { potionsUsed, potionHealing, levelsGained, goldPenalty, heldFind, xpGranted, ...(upgrade === undefined ? {} : { bagUpgrade: upgrade }) },
+      { potionsUsed, potionHealing, levelsGained, goldPenalty, heldFind, xpGranted, ...(upgrade === undefined ? {} : { bagUpgrade: upgrade }), ...(pouchUpgrade === undefined ? {} : { pouchUpgrade }) },
     )
+  }
+
+  /**
+   * The merchant's offers (D78), drawn from the reward stream so a visit replays exactly: a potion bundle priced by
+   * the biome tier, plus the next pouch and the next bag when the hero may take them early. Bounded: at most three.
+   */
+  private merchantVisit(biomeTier: number): MerchantVisit {
+    const { h, content } = this
+    const rule = content.merchant!
+    const quantity = this.rng.reward.int(1, rule.maxPotionsOffered)
+    const offers: MerchantOffer[] = [{ id: 'potions', name: quantity === 1 ? 'Healing potion' : `${quantity} healing potions`, quantity, price: rule.potionPrice * biomeTier * quantity }]
+    const pouch = nextEarlyPouchTier(content, h)
+    if (pouch?.price !== undefined) offers.push({ id: 'pouch', name: pouch.name, quantity: 1, price: pouch.price, tierId: pouch.id })
+    const bag = nextEarlyTier(content, h)
+    if (bag?.price !== undefined) offers.push({ id: 'bag', name: bag.name, quantity: 1, price: bag.price, tierId: bag.id })
+    return { offers, expiresAtTick: this.input.tick + rule.staysForTicks, biomeId: h.biomeId }
   }
 
   // ------------------------------------------------------------ helpers
@@ -564,7 +624,7 @@ class TickRun {
   private finish(
     disposition: Disposition,
     event?: { kind: LogKind; summary: string; outcome: OutcomeDetail; encounterKind?: EncounterKind },
-    extra: { potionsUsed?: number; potionHealing?: number; levelsGained?: number; goldPenalty?: number; heldFind?: boolean; xpGranted?: number; bagUpgrade?: BagUpgrade } = {},
+    extra: { potionsUsed?: number; potionHealing?: number; levelsGained?: number; goldPenalty?: number; heldFind?: boolean; xpGranted?: number; bagUpgrade?: BagUpgrade; pouchUpgrade?: BagUpgrade } = {},
   ): SimulationResult {
     const { h, input } = this
     const nextHero = toHeroState(h)
@@ -582,6 +642,7 @@ class TickRun {
       goldPenalty: extra.goldPenalty ?? 0,
       heldFind: extra.heldFind ?? false,
       ...(extra.bagUpgrade === undefined ? {} : { bagUpgrade: extra.bagUpgrade }),
+      ...(extra.pouchUpgrade === undefined ? {} : { pouchUpgrade: extra.pouchUpgrade }),
       outcome: event.outcome,
     }
     return {
@@ -619,6 +680,8 @@ function validateOutput(input: SimulationInput, result: SimulationResult): void 
   if (out.lifetimeXp - hero.lifetimeXp !== xpEarned) fail('XP_CONSERVATION', 'lifetime XP delta differs from granted XP')
   if (out.level < hero.level) fail('LEVEL_DOWN', 'level decreased')
   if (out.bagCapacity < hero.bagCapacity) fail('BAG_SHRANK', 'bag capacity decreased')
+  if ((out.potionCap ?? 0) < (hero.potionCap ?? 0)) fail('POUCH_SHRANK', 'potion cap decreased')
+  if (out.merchant !== undefined && (out.merchant.offers.length === 0 || out.merchant.offers.length > 3 || out.merchant.expiresAtTick <= input.tick)) fail('MERCHANT', 'merchant offers must be one to three and still open')
   if (result.event && codePoints(result.event.summary) > input.content.constants.summaryMaxCodePoints) {
     fail('SUMMARY_LENGTH', result.event.summary)
   }

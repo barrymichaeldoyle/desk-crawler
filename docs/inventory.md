@@ -16,7 +16,7 @@ Cadence: frequent visits in the first days, settling to about every three to fou
 
 Under the ladder, unequipping needs a free bag slot; swapping is always possible, and equipping into an empty slot frees one. Rows stay bounded: 20 bag + 2 equipped + 1 held + 1 potion = 24, within the 32-row read.
 
-Separate potion stack: quantity 1–20, with no empty stack row. Loot selects a documented gold outcome before generation when the stack is full; it never creates and discards/sells an excess potion. Do not force inventory sleep for potion capacity. Potions never take bag slots; the cap is proposed to become a pouch ladder (P29) and strengths to become additional stack rows (P30), see [decisions](decisions.md).
+Separate potion stack: quantity 1 to the hero's pouch cap (D77: 20, 30, 40 or 60; 20 before content v4), with no empty stack row. Loot selects a documented gold outcome before generation when the stack is full; it never creates and discards/sells an excess potion. Do not force inventory sleep for potion capacity. Potions never take bag slots; the cap is proposed to become a pouch ladder (P29) and strengths to become additional stack rows (P30), see [decisions](decisions.md).
 
 ## First overflow and held find
 

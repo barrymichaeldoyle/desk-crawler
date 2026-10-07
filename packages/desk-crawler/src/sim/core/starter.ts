@@ -19,6 +19,7 @@ export function starterHero(id: string, content: ContentCatalog, tick: number): 
     bagCapacity: content.bagLadder.tiers[0]!.capacity,
     lastLevelUpTick: tick,
     counters: zeroCounters(),
+    ...(content.potionPouch === undefined ? {} : { potionCap: content.potionPouch.tiers[0]!.cap }),
   }
 }
 
@@ -42,6 +43,8 @@ export function zeroCounters(): HeroCounters {
     trips: 0,
     itemsSold: 0,
   stanceChanges: 0,
+  purchases: 0,
+  merchantVisits: 0,
   }
 }
 

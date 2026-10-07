@@ -23,6 +23,7 @@ export type LogKind =
   | 'revive'
   | 'levelup'
   | 'achievement'
+  | 'merchant'
   | 'system'
 
 // ---------------------------------------------------------------- content
@@ -120,6 +121,10 @@ export interface SharedNarrative {
   readonly unlock: readonly string[]
   /** Finding a bigger bag ({item}, {capacity}). */
   readonly bagFind: readonly string[]
+  /** Finding a bigger potion pouch ({item}, {capacity}). */
+  readonly pouchFind: readonly string[]
+  /** The merchant setting up shop ({ticks} until it leaves). */
+  readonly merchant: readonly string[]
 }
 
 /** One stance: the sustain thresholds it replaces (D76). The balanced stance mirrors the catalog constants. */
@@ -145,7 +150,8 @@ export interface SimulationConstants {
   readonly maxCombatRounds: number
   readonly damageVariance: Range
   readonly combatGearDropPct: number
-  readonly lootWeights: Readonly<{ gear: number; potion: number; gold: number }>
+  /** `merchant` is the D78 visit; absent before v4. */
+  readonly lootWeights: Readonly<{ gear: number; potion: number; gold: number; merchant?: number }>
   readonly trapAvoidPct: number
   readonly retreatGoldLossPct: number
   readonly deathGoldLossPct: number
@@ -165,6 +171,49 @@ export interface BagTier {
   readonly milestone?: Readonly<{ ticksExplored?: number; level?: number }>
   /** Gold to buy this tier in the companion; absent for the starting tier. */
   readonly price?: number
+}
+
+/** One rung of the potion pouch ladder (D77): the potion stack's cap. */
+export interface PouchTier {
+  readonly id: string
+  readonly name: string
+  readonly cap: number
+  /** Guaranteed at this level; the first tier has none. */
+  readonly milestone?: Readonly<{ level: number }>
+  /** Gold to buy this tier; absent for the starting tier. */
+  readonly price?: number
+}
+
+/** Per-hero potion cap that grows (D77); absent in catalogs before v4, where `constants.potionStackCap` applies. */
+export interface PotionPouch {
+  /** Ordered by strictly increasing cap; tiers[0] is a new hero's pouch. */
+  readonly tiers: readonly PouchTier[]
+  /** Chance per loot encounter, in permille, that an eligible hero finds the next pouch. */
+  readonly findPermille: number
+}
+
+/** The wandering merchant (D78): a loot encounter that opens bounded offers in the companion for a few ticks. */
+export interface MerchantRule {
+  /** Gold per potion, scaled by the biome tier. */
+  readonly potionPrice: number
+  readonly maxPotionsOffered: number
+  /** Offers stay open for this many ticks after the visit. */
+  readonly staysForTicks: number
+}
+
+export interface MerchantOffer {
+  readonly id: 'potions' | 'pouch' | 'bag'
+  readonly name: string
+  readonly quantity: number
+  readonly price: number
+  /** The pouch or bag tier this offer grants. */
+  readonly tierId?: string
+}
+
+export interface MerchantVisit {
+  readonly offers: readonly MerchantOffer[]
+  readonly expiresAtTick: number
+  readonly biomeId: string
 }
 
 /** Per-hero bag capacity that grows (D61). */
@@ -189,6 +238,9 @@ export interface ContentCatalog {
   readonly bagLadder: BagLadder
   /** Absent in catalogs before v3: every hero then behaves as balanced. */
   readonly stances?: Readonly<Record<StanceId, StanceRule>>
+  /** Absent before v4 (D77/D78). */
+  readonly potionPouch?: PotionPouch
+  readonly merchant?: MerchantRule
   readonly narrative: Readonly<{ biomes: Readonly<Record<string, BiomeNarrative>>; shared: SharedNarrative; monsters: Readonly<Record<string, MonsterNarrative>> }>
 }
 
@@ -223,6 +275,10 @@ export interface HeroCounters {
   readonly itemsSold: number
   /** Stance switches made in the companion (D76), written by the intent. */
   readonly stanceChanges: number
+  /** Merchant offers bought in the companion (D78), written by the intent. */
+  readonly purchases: number
+  /** Merchant visits met while exploring (D78). */
+  readonly merchantVisits: number
 }
 
 /** Counter names that hold one number (everything except `monsterWins`). */
@@ -253,6 +309,10 @@ export interface HeroState {
   readonly counters: HeroCounters
   /** Chosen in the companion; absent means balanced (D76). */
   readonly stance?: StanceId
+  /** Potion cap from the pouch ladder (D77); absent means the catalog's `potionStackCap`. */
+  readonly potionCap?: number
+  /** An open merchant visit (D78); the simulator clears it once it expires. */
+  readonly merchant?: MerchantVisit
 }
 
 export interface ItemSnapshot {
@@ -327,7 +387,7 @@ export type OutcomeDetail =
     }
   | {
       readonly variant: 'loot'
-      readonly found: 'gear' | 'potion' | 'gold' | 'bag'
+      readonly found: 'gear' | 'potion' | 'gold' | 'bag' | 'pouch'
       readonly templateId?: string
       readonly rarity?: Rarity
       readonly destination?: 'bag' | 'held'
@@ -344,6 +404,7 @@ export type OutcomeDetail =
   | { readonly variant: 'rest'; readonly healing: number; readonly automatic: boolean; readonly resultingStatus: HeroStatus }
   | { readonly variant: 'travel'; readonly phase: 'depart' | 'arrive'; readonly fromBiomeId: string; readonly toBiomeId: string; readonly arrivalTick: number }
   | { readonly variant: 'revival'; readonly previousBiomeId: string; readonly safeBiomeId: string; readonly hpGranted: number; readonly reviveAtTick: number }
+  | { readonly variant: 'merchant'; readonly offers: readonly MerchantOffer[]; readonly expiresAtTick: number }
 
 export interface LogDetail {
   readonly v: 1
@@ -359,6 +420,8 @@ export interface LogDetail {
   readonly heldFind: boolean
   /** The bag grew this tick (D61). */
   readonly bagUpgrade?: BagUpgrade
+  /** The potion pouch grew this tick (D77). */
+  readonly pouchUpgrade?: BagUpgrade
   readonly outcome: OutcomeDetail
 }
 
@@ -390,6 +453,8 @@ export interface TickMetrics {
   readonly wakes: number
   readonly elites: number
   readonly jackpots: number
+  readonly merchantVisits: number
+  readonly pouchUpgrades: number
 }
 
 export interface SimulationResult {

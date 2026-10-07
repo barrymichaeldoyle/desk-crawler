@@ -298,6 +298,19 @@ describe('next adventure clock (D72)', () => {
   })
 })
 
+describe('merchant notice (D78)', () => {
+  it('shows the notice as an inverted line without collapsing the stories, and never beside an attention line', async () => {
+    const vars = { ...payload(), notice: 'A merchant is visiting. Shop in the companion within the hour.', log: [{ n: 'One', s: 'One', k: 'loot', u: NOW / 1000, d: '' }, { n: 'Two', s: 'Two', k: 'rest', u: NOW / 1000 - 900, d: '' }] }
+    for (const markup of Object.values(screenMarkup)) {
+      const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, vars)
+      expect(html).toMatch(/label--outline" data-clamp="\d">A merchant is visiting\. Shop in the companion within the hour\.</)
+      expect(html).toContain('>Two<')
+      const withAttention = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...vars, attention: 'Updates delayed. Nothing is lost.' })
+      expect(withAttention).not.toContain('A merchant is visiting')
+    }
+  })
+})
+
 describe('HUD hearts and counters (D72)', () => {
   const full = hudMarkUri('heartFull', 36, 32)
   const half = hudMarkUri('heartHalf', 36, 32)

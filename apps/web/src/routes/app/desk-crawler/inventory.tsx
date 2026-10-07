@@ -47,6 +47,8 @@ function Inventory() {
   const claim = useIntent(api.inventory.claimHeld)
   const resume = useIntent(api.inventory.resumeAdventures)
   const buyBag = useIntent(api.inventory.buyBag)
+  const buyPouch = useIntent(api.inventory.buyPouch)
+  const buyOffer = useIntent(api.inventory.buyOffer)
   const [gearAction, setGearAction] = useState<'equip' | 'unequip' | null>(null)
   const [sleepAction, setSleepAction] = useState<'claim' | 'resume' | null>(null)
   useEffect(() => {
@@ -67,7 +69,7 @@ function Inventory() {
   const gearFeedback = gearAction ? { equip, unequip }[gearAction] : null
   const sleepFeedback = sleepAction ? { claim, resume }[sleepAction] : null
   const equippedOf = (kind: Gear['kind']) => gear.find((item) => item.equipped && item.kind === kind)
-  const busy = equip.pending || unequip.pending || sellMany.pending || claim.pending || resume.pending || buyBag.pending
+  const busy = equip.pending || unequip.pending || sellMany.pending || claim.pending || resume.pending || buyBag.pending || buyPouch.pending || buyOffer.pending
   // Quiet warning at 80% of the current bag (D61).
   const filling = bag.used >= Math.ceil(bag.capacity * 0.8)
   const locked = busy || sale !== null
@@ -117,7 +119,9 @@ function Inventory() {
         </Card>
       ) : null}
       {!manageable ? <p className="text-sm">{hero.simulationState === 'quarantined' ? 'Gear changes are paused during a service check.' : hero.status === 'paused' ? <>Adventures are paused. <Link to="/app/desk-crawler" className="underline underline-offset-4">Resume from Hero</Link> to change or sell gear.</> : 'Gear changes open again once your hero is back from travelling or recovering.'}</p> : null}
+      {bag.merchant ? <Merchant visit={bag.merchant} gold={hero.gold} potions={bag.potions} cap={bag.pouch.cap} disabled={!manageable || locked} intent={buyOffer} /> : null}
       <BagLadder ladder={bag.ladder} capacity={bag.capacity} gold={hero.gold} disabled={!manageable || locked} intent={buyBag} />
+      <PotionPouch pouch={bag.pouch} potions={bag.potions} gold={hero.gold} disabled={!manageable || locked} intent={buyPouch} />
       <Card title="Equipped">
         <div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
           {(['weapon', 'armor'] as const).map((kind) => {
@@ -190,6 +194,47 @@ function Inventory() {
 type Ladder = {
   name: string
   next: { id: string; name: string; capacity: number; price: number | null; milestoneLevel: number | null; milestoneAdventures: number | null; buyable: boolean; lockedUntilLevel: number | null } | null
+}
+type Pouch = { name: string; cap: number; next: { id: string; name: string; cap: number; price: number | null; milestoneLevel: number | null; buyable: boolean; lockedUntilLevel: number | null } | null }
+type Offer = { id: 'potions' | 'pouch' | 'bag'; name: string; quantity: number; price: number; tierId?: string }
+type Visit = { offers: Offer[]; expiresAtTick: number; ticksLeft: number; biomeId: string }
+type PurchaseIntent<A> = { pending: boolean; error: string | null; message: string | null; run: (args: A, message?: string) => Promise<boolean> }
+
+/** D77: the potion pouch, its next tier and the three ways to get it, beside the bag ladder. */
+function PotionPouch({ pouch, potions, gold, disabled, intent }: { pouch: Pouch; potions: number; gold: number; disabled: boolean; intent: PurchaseIntent<{ tierId: string }> }) {
+  const next = pouch.next
+  const affordable = next?.price != null && gold >= next.price
+  return <Card title={pouch.name}>
+    <p className="tabular-nums">Holds <strong>{pouch.cap}</strong> potions. You have <strong>{potions}</strong>.</p>
+    {next ? <>
+      <p className="mt-3"><strong>Next: {next.name}</strong>, {next.cap} potions</p>
+      <p className="mt-1 text-sm text-muted">Yours at level {next.milestoneLevel}, or sooner if your hero finds one or the merchant has one.</p>
+      {next.price !== null ? next.buyable ? <>
+        <Button className="mt-3" variant={affordable ? 'primary' : 'secondary'} disabled={disabled || !affordable} pending={intent.pending} busyLabel="Buying…" onClick={() => intent.run({ tierId: next.id }, `${next.name} bought. It holds ${next.cap} potions.`)}>Buy for {next.price} gold</Button>
+        {!affordable ? <p className="mt-2 text-sm tabular-nums">You have <span className="text-gold-ink">{gold} gold</span>.</p> : null}
+      </> : <p className="mt-2 text-sm">{next.lockedUntilLevel !== null ? `You can buy it from level ${next.lockedUntilLevel}.` : 'You can buy it after your next pouch milestone.'}</p> : null}
+    </> : <p className="mt-3 text-sm text-muted">This is the biggest pouch for now.</p>}
+    <ActionFeedback error={intent.error} message={intent.message} />
+  </Card>
+}
+
+/** D78: the visiting merchant's offers, each sold once, open for a few adventures. */
+function Merchant({ visit, gold, potions, cap, disabled, intent }: { visit: Visit; gold: number; potions: number; cap: number; disabled: boolean; intent: PurchaseIntent<{ offerId: Offer['id'] }> }) {
+  return <Card title="Wandering Merchant">
+    <p className="text-sm">Leaves in {visit.ticksLeft === 1 ? 'one adventure' : `${visit.ticksLeft} adventures`}. Each offer sells once.</p>
+    <ul className="mt-3 flex flex-col gap-3">
+      {visit.offers.map((offer) => {
+        const affordable = gold >= offer.price
+        const overflow = offer.id === 'potions' && potions + offer.quantity > cap
+        return <li key={offer.id} className="flex flex-wrap items-center justify-between gap-2 border-t-2 border-faint pt-3 first:border-t-0 first:pt-0">
+          <span><strong>{offer.name}</strong>{overflow ? <span className="block text-sm text-muted">Your pouch holds {cap}; make room first.</span> : null}</span>
+          <Button variant={affordable && !overflow ? 'primary' : 'secondary'} disabled={disabled || !affordable || overflow} pending={intent.pending} busyLabel="Buying…" onClick={() => intent.run({ offerId: offer.id }, `${offer.name} bought.`)}>Buy for {offer.price} gold</Button>
+        </li>
+      })}
+    </ul>
+    {visit.offers.some((offer) => gold < offer.price) ? <p className="mt-2 text-sm tabular-nums">You have <span className="text-gold-ink">{gold} gold</span>.</p> : null}
+    <ActionFeedback error={intent.error} message={intent.message} />
+  </Card>
 }
 
 /** D61: the current bag, the next one and the three ways to get it. */

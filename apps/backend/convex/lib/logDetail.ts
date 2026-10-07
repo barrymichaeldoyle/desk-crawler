@@ -40,7 +40,7 @@ const outcome = v.union(
   }),
   v.object({
     variant: v.literal('loot'),
-    found: v.union(v.literal('gear'), v.literal('potion'), v.literal('gold'), v.literal('bag')),
+    found: v.union(v.literal('gear'), v.literal('potion'), v.literal('gold'), v.literal('bag'), v.literal('pouch')),
     templateId: v.optional(v.string()),
     rarity: v.optional(rarity),
     destination: v.optional(v.union(v.literal('bag'), v.literal('held'))),
@@ -69,6 +69,11 @@ const outcome = v.union(
     hpGranted: v.number(),
     reviveAtTick: v.number(),
   }),
+  v.object({
+    variant: v.literal('merchant'),
+    offers: v.array(v.object({ id: v.union(v.literal('potions'), v.literal('pouch'), v.literal('bag')), name: v.string(), quantity: v.number(), price: v.number(), tierId: v.optional(v.string()) })),
+    expiresAtTick: v.number(),
+  }),
 )
 
 export const simulationDetail = v.object({
@@ -84,6 +89,8 @@ export const simulationDetail = v.object({
   goldPenalty: v.number(),
   heldFind: v.boolean(),
   bagUpgrade: v.optional(v.object({ from: v.number(), to: v.number(), tierId: v.string(), source: v.union(v.literal('milestone'), v.literal('find')) })),
+  /** The potion pouch grew (D77). */
+  pouchUpgrade: v.optional(v.object({ from: v.number(), to: v.number(), tierId: v.string(), source: v.union(v.literal('milestone'), v.literal('find')) })),
   outcome,
 })
 
@@ -93,6 +100,8 @@ export const commandDetail = v.object({
   result: v.optional(v.string()),
   /** Bag slots a purchase added (D61). */
   bagSlots: v.optional(v.number()),
+  /** Potions a merchant purchase added (D78). */
+  potionsBought: v.optional(v.number()),
 })
 
 /** One earned achievement (D65); the name is copied so reads never need the catalog. */

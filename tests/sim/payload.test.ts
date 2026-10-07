@@ -27,6 +27,16 @@ const input: PayloadInput = {
 }
 const pick = (p: unknown) => p as { first_run: boolean; qr_base: string; qr_label: string; companion_qr_base: string; status: string }
 
+describe('merchant notice (D78)', () => {
+  const notice = (p: unknown) => (p as { notice: string | null; attention: string | null }).notice
+  it('announces an open visit, and stays quiet once it expired or when an attention line is showing', () => {
+    expect(notice(buildPayload(input))).toBeNull()
+    expect(notice(buildPayload({ ...input, hero: { ...input.hero!, merchantExpiresAtTick: 5 } }))).toBe('A merchant is visiting. Shop in the companion within the hour.')
+    expect(notice(buildPayload({ ...input, world: { ...input.world!, currentTick: 5 }, hero: { ...input.hero!, merchantExpiresAtTick: 5 } }))).toBeNull()
+    expect(notice(buildPayload({ ...input, hero: { ...input.hero!, status: 'dead', hp: 0, reviveAtTick: 9, merchantExpiresAtTick: 5 } }))).toBeNull()
+  })
+})
+
 describe('derived combat stats', () => {
   it('adds the equipped gear bonus to the level base, and is null when unlinked', () => {
     const stats = (p: unknown) => p as { attack: number | null; defense: number | null }

@@ -58,8 +58,8 @@ Core batch: stances, configurable rest/potion thresholds, a small set of event c
 | --- | --- |
 | Stances/policies | Shipped 2026-10-07 (D76): content v3 stances replace the sustain thresholds; the companion offers three presets. Versioned resolver modifiers; validate thresholds and avoid infinite rest/potion loops |
 | Narrative choices | Pending-choice table, expiry/default resolution, transactionally idempotent selection; passive players continue |
-| Merchant | Bounded offers/price validation, four-tick expiry, purchase receipts; no push spam. Prices sit beside the D61 bag prices (40/150/600/2,000), the first gold sink |
-| Potion pouch (P29) | The potion stack cap becomes a content ladder (one additive tier field on the hero, cap from content like `bagCapacity`); milestones, a rare find and a `buyBag`-shaped purchase advance it. Potions stay outside the bag and the 32-row read. Second gold sink; tune with the merchant and the configurable potion threshold |
+| Merchant | Shipped 2026-10-07 (D78): six of a hundred loot draws, up to three offers, four-tick expiry, receipted purchases, a device notice line and no push. Bounded offers/price validation, four-tick expiry, purchase receipts; no push spam. Prices sit beside the D61 bag prices (40/150/600/2,000), the first gold sink |
+| Potion pouch (P29) | Shipped 2026-10-07 (D77): Thermos 20 → Lunchbox 30 → Cooler Bag 40 → Vending Cart 60 by milestone, find, purchase or the merchant. The potion stack cap becomes a content ladder (one additive tier field on the hero, cap from content like `bagCapacity`); milestones, a rare find and a `buyBag`-shaped purchase advance it. Potions stay outside the bag and the 32-row read. Second gold sink; tune with the merchant and the configurable potion threshold |
 | Effects | Typed duration/modifier rules; death ordering and rest cleansing explicitly designed |
 | Affixes/Epic | Versioned generation and owned-item compatibility; extend inventory UI |
 | Achievements (D65) | Shipped early, in v1.0 (2026-10-06). v1.1 appends families for merchant purchases, stance changes and event choices under a new catalog version. See [achievements](achievements.md) |

@@ -132,6 +132,7 @@ type HeroView = {
   biomes: Biome[]
   stance: StanceId
   stances: Stance[]
+  merchantTicksLeft: number | null
 }
 
 type StanceId = 'cautious' | 'balanced' | 'bold'
@@ -181,6 +182,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
             ) : null}
           </div>
         ) : null}
+        {hero.merchantTicksLeft !== null ? <p className="text-sm"><strong>A merchant is visiting.</strong> <Link to="/app/desk-crawler/inventory" className="underline underline-offset-4">See the offers in your bag</Link> within {hero.merchantTicksLeft === 1 ? 'one adventure' : `${hero.merchantTicksLeft} adventures`}.</p> : null}
         {!healthy ? <p className="text-sm">Paused for a service check. <Link to="/support" className="underline underline-offset-4">Contact support</Link> if it lasts.</p> : null}
         <ActionFeedback error={feedback?.error ?? null} message={feedback?.message ?? null} />
       </section>

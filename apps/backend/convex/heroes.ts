@@ -68,6 +68,7 @@ export const mine = query({
       lastTick: hero.lastTick,
       counters: withCounterDefaults(hero.counters),
       // D76: the chosen stance and every stance's thresholds, so the companion can show what each one does.
+      merchantTicksLeft: hero.merchant && world && hero.merchant.expiresAtTick > world.currentTick ? hero.merchant.expiresAtTick - world.currentTick : null,
       stance: hero.stance ?? 'balanced',
       stances: Object.values(content.stances ?? {}).map((rule) => ({ id: rule.id, name: rule.name, blurb: rule.blurb, potionBelowPct: rule.autoPotionBelowPct, restBelowPct: rule.restBelowPct, resumeAtPct: rule.resumeExploringAtPct, victoryXpPct: rule.victoryXpPct })),
       biomes: content.biomes.map((biome) => ({ id: biome.id, name: biome.name, unlockLevel: biome.unlockLevel, unlocked: biome.unlockLevel <= hero.level })),

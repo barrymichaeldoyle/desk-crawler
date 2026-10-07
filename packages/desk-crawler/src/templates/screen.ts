@@ -1,5 +1,6 @@
 /**
- * Four self-contained TRMNL layouts. Template v33 completes the HUD: XP as ten
+ * Four self-contained TRMNL layouts. Template v34 adds the merchant notice (an inverted line in the attention slot that
+ * keeps the stories). v33 completes the HUD: XP as ten
  * half-step ticks under the hearts with the numbers at the end, attack and
  * defense marks in the counter line, a shorter full header so the scene and
  * stories move up, and a leaderboard that marks the hero's own row instead of
@@ -11,7 +12,7 @@
 import { GLYPHS, glyphRows } from '../art/glyphs'
 import { hudMarkUri } from '../art/hud'
 
-export const TEMPLATE_VERSION = 33
+export const TEMPLATE_VERSION = 34
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -290,9 +291,12 @@ const rankPanel = (heading: boolean) => `
 /** Period and group caption in the divider row, flanked by rules like the bag caption; the OG shortens "Levels" to "Lv". */
 const rankCaption = `<div class="flex flex--row flex--center-y gap--xsmall stretch-x"><div class="border--h-30 grow"></div><span class="label lg:title--small no-shrink lg:hidden">This week{% if leaderboard_cohort_label != "" %} · {{ leaderboard_cohort_label | replace: "Levels ", "Lv " | escape }}{% endif %}</span><span class="hidden lg:inline-block label lg:title--small no-shrink">${rankHeading}</span><div class="border--h-30 grow"></div></div>`
 
-/** The one quiet attention message (service, delay, death, inventory sleep): never clipped, shown in every size. */
+/**
+ * The one quiet attention message (service, delay, death, inventory sleep): never clipped, shown in every size. A
+ * notice (D78: the merchant) takes the same slot as an outlined chip but leaves the stories and recap alone.
+ */
 const attention = (classes: string, clamp: number) => `
-      {% if attention %}<span class="${classes} label--underline" data-clamp="${clamp}">{{ attention | escape }}</span>{% endif %}`
+      {% if attention %}<span class="${classes} label--underline" data-clamp="${clamp}">{{ attention | escape }}</span>{% elsif notice %}<span class="${classes} label--outline" data-clamp="${clamp}">{{ notice | escape }}</span>{% endif %}`
 
 /** Integer-scaled assets keep every QR module crisp on monochrome displays. */
 const qrImage = (scale: number, largeScale: number, field = 'qr_base') =>
@@ -422,7 +426,7 @@ const halfVerticalPortrait = `
   </div>
   <div class="no-shrink stretch-x"><div class="hidden lg:block">${scene('scene_url_small')}</div>${divider}</div>
   <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--small stretch-x">
-    {% if attention %}${attention('label lg:title--small', 4)}{% else %}${recapBlock(true)}{% endif %}
+    {% if attention %}${attention('label lg:title--small', 4)}{% else %}${attention('label lg:title--small', 4)}${recapBlock(true)}{% endif %}
     {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(3, 'label lg:title--small', 16, 26, true)}
   </div>
   ${qrFooter()}
@@ -437,7 +441,7 @@ const quadrantPortrait = `
     ${hearts(false)}
   </div>
   <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small stretch-x">
-    {% if attention %}${attention('label lg:title--small', 3)}{% else %}${recapBlock(true)}{% endif %}
+    {% if attention %}${attention('label lg:title--small', 3)}{% else %}${attention('label lg:title--small', 3)}${recapBlock(true)}{% endif %}
     ${storyList(3, 'label lg:title--small', 16, 24, true)}
   </div>
   ${qrFooter()}
@@ -461,7 +465,7 @@ const halfVerticalBody = (withScene: boolean) => `
   </div>
   <div class="no-shrink stretch-x">${withScene ? `<div class="hidden lg:block">${scene('scene_url_small')}</div>` : ''}${divider}</div>
   <div class="grow h--full h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--small pt--2">
-    {% if attention %}${attention('label lg:title--small', 3)}{% else %}${recapBlock(!withScene)}{% endif %}
+    {% if attention %}${attention('label lg:title--small', 3)}{% else %}${attention('label lg:title--small', 3)}${recapBlock(!withScene)}{% endif %}
     {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(2, 'title title--small lg:title', 24, 50)}
   </div>
   {% endif %}
@@ -537,7 +541,7 @@ export const markupQuadrant = `${glyphAssigns([16])}${HUD_ASSIGNS}${oriented('la
     </div>
     <div class="grid grow h--full h--min-0 stretch-x gap--small">
       <div class="col--span-8 h--full flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
-        {% if attention %}${attention('label lg:title--small', 3)}{% else %}${recapBlock(true)}{% endif %}
+        {% if attention %}${attention('label lg:title--small', 3)}{% else %}${attention('label lg:title--small', 3)}${recapBlock(true)}{% endif %}
         ${storyList(2, 'label lg:title--small', 16, 40)}
       </div>
       <div class="col--span-4 flex flex--col flex--center-x flex--top gap--small">${bagQr()}

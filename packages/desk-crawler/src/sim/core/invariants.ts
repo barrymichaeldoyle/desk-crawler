@@ -1,4 +1,5 @@
 import { bagUsed } from './bag'
+import { potionCap } from './pouch'
 import { maxHp, xpToLeave } from './stats'
 import type { ContentCatalog, HeroState, ItemSnapshot } from './types'
 
@@ -42,6 +43,8 @@ export function assertHeroInvariants(hero: HeroState, inventory: readonly ItemSn
   }
 
   if (hero.stance !== undefined && !['cautious', 'balanced', 'bold'].includes(hero.stance)) fail('STANCE', `unknown stance ${hero.stance}`)
+  if (hero.potionCap !== undefined && content.potionPouch !== undefined && !content.potionPouch.tiers.some((tier) => tier.cap === hero.potionCap)) fail('POUCH', `potion cap ${hero.potionCap} is not a pouch tier`)
+  if (hero.potionCap !== undefined && !isCount(hero.potionCap)) fail('POUCH', 'invalid potion cap')
   const biomeIds = new Set(content.biomes.map((biome) => biome.id))
   if (!biomeIds.has(hero.biomeId)) fail('BIOME', `unknown biome ${hero.biomeId}`)
   if (hero.targetBiomeId !== undefined && !biomeIds.has(hero.targetBiomeId)) fail('TARGET', `unknown target ${hero.targetBiomeId}`)
@@ -85,7 +88,7 @@ export function assertHeroInvariants(hero: HeroState, inventory: readonly ItemSn
     }
     if (item.kind === 'potion') {
       potionRows += 1
-      if (item.quantity < 1 || item.quantity > constants.potionStackCap) fail('POTION_QTY', `potion quantity ${item.quantity}`)
+      if (item.quantity < 1 || item.quantity > potionCap(content, hero)) fail('POTION_QTY', `potion quantity ${item.quantity}`)
     } else if (item.quantity !== 1) {
       fail('GEAR_QTY', `gear ${item.id} quantity ${item.quantity}`)
     }

@@ -6,6 +6,8 @@ import { appError } from './lib/errors'
 import { commandLog, currentUser, requirePlayableHero, runIntent } from './lib/intent'
 import { maxHp, pctOf } from '@trmnl-games/desk-crawler/sim/core/stats'
 import { bagUsed, currentTier, guaranteedTierIndex, isBagFull, nextEarlyTier, nextTier } from '@trmnl-games/desk-crawler/sim/core/bag'
+import { currentPouchTier, guaranteedPouchIndex, nextEarlyPouchTier, nextPouchTier, potionCap } from '@trmnl-games/desk-crawler/sim/core/pouch'
+import { starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
 import type { ContentCatalog, HeroState } from '@trmnl-games/desk-crawler/sim/core/types'
 import { readWorld, worldContent } from './world'
 import { awardAfterIntent } from './lib/achievements'
@@ -68,6 +70,38 @@ function bagLadderView(content: ContentCatalog, hero: Doc<'heroes'>) {
       : null,
   }
 }
+/** The potion pouch ladder as the companion shows it (D77): cap, next pouch and how to get it. */
+function pouchView(content: ContentCatalog, hero: Doc<'heroes'>) {
+  const state = { level: hero.level, ...(hero.potionCap === undefined ? {} : { potionCap: hero.potionCap }) }
+  const cap = potionCap(content, state)
+  const ladder = content.potionPouch
+  if (!ladder) return { name: 'Potion pouch', cap, next: null }
+  const next = nextPouchTier(content, state)
+  const early = nextEarlyPouchTier(content, state)
+  const guaranteed = ladder.tiers[guaranteedPouchIndex(content, state)]!
+  return {
+    name: currentPouchTier(content, state)?.name ?? 'Potion pouch',
+    cap,
+    next: next
+      ? {
+          id: next.id,
+          name: next.name,
+          cap: next.cap,
+          price: next.price ?? null,
+          milestoneLevel: next.milestone?.level ?? null,
+          buyable: early?.id === next.id,
+          lockedUntilLevel: early?.id === next.id ? null : (ladder.tiers.find((tier) => tier.cap > guaranteed.cap)?.milestone?.level ?? null),
+        }
+      : null,
+  }
+}
+
+/** The open merchant visit (D78) with the ticks it has left, or null. */
+function merchantView(hero: Doc<'heroes'>, tick: number) {
+  if (!hero.merchant || tick >= hero.merchant.expiresAtTick) return null
+  return { offers: hero.merchant.offers, expiresAtTick: hero.merchant.expiresAtTick, ticksLeft: hero.merchant.expiresAtTick - tick, biomeId: hero.merchant.biomeId }
+}
+
 const itemLabel = (item: Doc<'items'>) => `${item.rarity === 'common' ? '' : item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1) + ' '}${item.name}`
 
 /** Bag, held find, potions and capacity for the owner's hero. */
@@ -86,6 +120,8 @@ export const mine = query({
       capacity,
       used,
       ladder: bagLadderView(content, hero),
+      pouch: pouchView(content, hero),
+      merchant: merchantView(hero, await currentTick(ctx)),
       weaponId: hero.weaponId ?? null,
       armorId: hero.armorId ?? null,
       heldItemId: hero.heldItemId ?? null,
@@ -282,5 +318,78 @@ export const buyBag = mutation({
       await commandLog(ctx, (await ctx.db.get(hero._id))!, 'buy_bag', `Bought a [[${tier.name}]]. Bag holds ${tier.capacity}.`, { xpEarned: 0, gold: -tier.price, hp: 0 }, { bagSlots: tier.capacity - from })
       await awardAfterIntent(ctx, hero, content, await currentTick(ctx))
       return { changed: true, gold: -tier.price, count: tier.capacity }
+    }),
+})
+
+/** D77: buy the next potion pouch tier for gold, the same shape as `buyBag`. */
+export const buyPouch = mutation({
+  args: { operationId: v.string(), tierId: v.string() },
+  returns: intentResult,
+  handler: async (ctx, args) =>
+    await runIntent(ctx, args.operationId, 'inventory.buyPouch', { tierId: args.tierId }, async (user) => {
+      const hero = await requirePlayableHero(ctx, user)
+      if (!MANAGEABLE.has(hero.status)) throw appError('INVALID_STATE', 'Pouches can be bought while exploring, resting or taking a break.')
+      const content = await contentOf(ctx)
+      const state = { level: hero.level, ...(hero.potionCap === undefined ? {} : { potionCap: hero.potionCap }) }
+      const tier = nextEarlyPouchTier(content, state)
+      if (tier === undefined || tier.price === undefined || tier.id !== args.tierId) throw appError('POUCH_UNAVAILABLE', 'That pouch is not available right now.')
+      if (hero.gold < tier.price) throw appError('NOT_ENOUGH_GOLD', `The ${tier.name} costs ${tier.price} gold.`)
+      await ctx.db.patch(hero._id, { gold: hero.gold - tier.price, potionCap: tier.cap })
+      await commandLog(ctx, (await ctx.db.get(hero._id))!, 'buy_pouch', `Bought a [[${tier.name}]]. Holds ${tier.cap} potions.`, { xpEarned: 0, gold: -tier.price, hp: 0 })
+      await awardAfterIntent(ctx, hero, content, await currentTick(ctx))
+      return { changed: true, gold: -tier.price, count: tier.cap }
+    }),
+})
+
+/**
+ * D78: buy one of the visiting merchant's offers. Each offer sells once; the visit closes when its last offer is
+ * bought or when its tick expires. A potion bundle that would overflow the pouch is refused rather than trimmed.
+ */
+export const buyOffer = mutation({
+  args: { operationId: v.string(), offerId: v.union(v.literal('potions'), v.literal('pouch'), v.literal('bag')) },
+  returns: intentResult,
+  handler: async (ctx, args) =>
+    await runIntent(ctx, args.operationId, 'inventory.buyOffer', { offerId: args.offerId }, async (user) => {
+      const hero = await requirePlayableHero(ctx, user)
+      if (!MANAGEABLE.has(hero.status)) throw appError('INVALID_STATE', 'Shopping is for exploring, resting or taking a break.')
+      const tick = await currentTick(ctx)
+      const visit = hero.merchant
+      if (!visit || tick >= visit.expiresAtTick) throw appError('MERCHANT_GONE', 'The merchant has moved on.')
+      const offer = visit.offers.find((candidate) => candidate.id === args.offerId)
+      if (!offer) throw appError('OFFER_UNAVAILABLE', 'That offer is no longer on the table.')
+      if (hero.gold < offer.price) throw appError('NOT_ENOUGH_GOLD', `That costs ${offer.price} gold.`)
+      const content = await contentOf(ctx)
+      const state = { level: hero.level, ...(hero.potionCap === undefined ? {} : { potionCap: hero.potionCap }) }
+      const remaining = visit.offers.filter((candidate) => candidate.id !== offer.id)
+      const closing = remaining.length === 0 ? undefined : { ...visit, offers: remaining }
+      const counters = withCounterDefaults(hero.counters)
+      const patch: Partial<Doc<'heroes'>> = { gold: hero.gold - offer.price, merchant: closing, counters: { ...counters, purchases: counters.purchases + 1 } }
+      let summary: string
+      let count = offer.quantity
+      if (offer.id === 'potions') {
+        const potion = (await heroItems(ctx, hero._id)).find((item) => item.kind === 'potion')
+        const have = potion?.quantity ?? 0
+        const cap = potionCap(content, state)
+        if (have + offer.quantity > cap) throw appError('POUCH_FULL', `Your pouch holds ${cap} potions; ${cap - have} more would fit.`)
+        if (potion) await ctx.db.patch(potion._id, { quantity: have + offer.quantity })
+        else await ctx.db.insert('items', { ...starterKit(content).potions, quantity: offer.quantity, heroId: hero._id, createdAt: Date.now() })
+        summary = `Bought ${offer.quantity === 1 ? 'a healing potion' : `${offer.quantity} healing potions`} from the merchant.`
+      } else if (offer.id === 'pouch') {
+        const tier = nextEarlyPouchTier(content, state)
+        if (tier === undefined || tier.id !== offer.tierId) throw appError('OFFER_UNAVAILABLE', 'That pouch is no longer available.')
+        patch.potionCap = tier.cap
+        count = tier.cap
+        summary = `Bought a [[${tier.name}]] from the merchant. Holds ${tier.cap} potions.`
+      } else {
+        const tier = nextEarlyTier(content, asBagHero(hero))
+        if (tier === undefined || tier.id !== offer.tierId) throw appError('OFFER_UNAVAILABLE', 'That bag is no longer available.')
+        patch.bagCapacity = tier.capacity
+        count = tier.capacity
+        summary = `Bought a [[${tier.name}]] from the merchant. Bag holds ${tier.capacity}.`
+      }
+      await ctx.db.patch(hero._id, patch)
+      await commandLog(ctx, (await ctx.db.get(hero._id))!, 'buy_offer', summary, { xpEarned: 0, gold: -offer.price, hp: 0 }, offer.id === 'potions' ? { potionsBought: offer.quantity } : offer.id === 'bag' ? { bagSlots: count - hero.bagCapacity } : {})
+      await awardAfterIntent(ctx, hero, content, tick)
+      return { changed: true, gold: -offer.price, count }
     }),
 })

@@ -72,6 +72,8 @@ Approved return recap (D25): show level/earned-XP gains since the previous ackno
 
 Stance (D76): three cards under the commands, Cautious, Balanced and Bold, each naming its potion, rest and back-out thresholds and its victory XP share (90 / 100 / 115%); the chosen card is inverted. Switching is allowed in any status and applies from the next adventure; it never advances or rewards anything.
 
+Bag page (D77/D78): a Potion pouch card beside the bag ladder (cap, potions held, next pouch and how to get it, buy button) and, while a merchant visit is open, a Wandering Merchant card listing each offer with its price and a buy button, the adventures left, and a note when a potion bundle would not fit. The hero page shows one line with a link to the offers while a visit is open.
+
 Biome control shows unlocked choices and locked requirements. Explain travel arrives on the following logical world tick, with no reward on arrival; an already running evaluation may also observe waiting travel. Selection while already travelling/dead/paused/sleeping is disabled with explanation. A boundary-race rejection re-reads state and explains the updated status.
 
 Use potion shows available count and projected heal. The Bag page states the heal rule (40% of max HP) with the hero's own HP figure, and the help page explains the rule and the automatic drink threshold (Barry noted on 2026-10-07 that the amount was not stated anywhere). Hide or explain unavailable/full-HP cases. Manual actions affect live web state promptly; e-ink will reflect them on its next scheduled render.

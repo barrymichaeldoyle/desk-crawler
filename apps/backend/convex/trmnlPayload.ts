@@ -137,6 +137,7 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
           lastTick: hero.lastTick,
           ...(hero.lastAdvancedAt === undefined ? {} : { lastAdvancedAt: hero.lastAdvancedAt }),
           quarantined: hero.simulationState === 'quarantined',
+          ...(hero.merchant === undefined ? {} : { merchantExpiresAtTick: hero.merchant.expiresAtTick }),
         }
       : null,
     weaponName,

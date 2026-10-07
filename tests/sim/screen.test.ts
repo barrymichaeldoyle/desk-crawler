@@ -52,17 +52,21 @@ describe('keepsake footer', () => {
 })
 
 describe('device catch-up summary (D54)', () => {
-  const recap = { label: 'Last 12 hours', gains: '+184 XP · 52 gold earned', activity: '9 fights won · 2 gear finds · 4 breaks', highlights: 'Gained 1 level', compact: 'Gained 1 level · +184 XP' }
+  const recap = { label: 'Last 12 hours', gains: '+184 XP · 52 gold earned', activity: '9 fights won · 2 gear finds · 4 breaks', highlights: 'Gained 1 level', compact: 'Gained 1 level · +184 XP', span: '19:00-07:00', items: [{ k: 'levelup', t: '+1 level' }, { k: 'xp', t: '+184 XP' }, { k: 'coin', t: '52 gold' }, { k: 'none', t: 'Quiet' }] }
 
   it('includes the recap and latest outcome in every size while escaping all recap text', async () => {
     for (const markup of Object.values(screenMarkup)) {
       const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...payload(), recap })
       const text = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ')
       expect(text).toContain('Last 12 hours')
-      expect(text).toContain('Gained 1 level')
+      // Each fact behind its own mark (v35); a 'none' item has text but no mark.
+      for (const item of recap.items) expect(text).toContain(item.t)
+      // Landscape and portrait arrangements each carry the recap: three marks apiece.
+      expect(html.match(/data-recap-item="true"><img /g)).toHaveLength(6)
       expect(text).toContain('Unplugged a Cable Serpent.')
       for (const change of ['+14\u00a0XP', '+5\u00a0gold', '−12\u00a0HP']) expect(html).toContain(`label--outline">${change}<`)
-      const escaped = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...payload(), recap: { ...recap, label: '<script>unsafe</script>' } })
+      const escaped = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...payload(), recap: { ...recap, label: '<script>unsafe</script>', items: [{ k: 'xp', t: '<b>x</b>' }] } })
+      expect(escaped).toContain('&lt;b&gt;x&lt;/b&gt;')
       expect(escaped).toContain('&lt;script&gt;unsafe&lt;/script&gt;')
       expect(escaped).not.toContain('<script>unsafe</script>')
     }
@@ -361,14 +365,16 @@ describe('HUD hearts and counters (D72)', () => {
     expect(await new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup.markup_quadrant, payload())).not.toContain('data-xp-ticks')
   })
 
-  it('shows attack and defense with their marks beside the HP count, and gold and potions beside the XP count', async () => {
+  it('shows attack, defense and the bag with their marks beside the HP count, and gold and potions beside the XP count', async () => {
     const vars = { ...payload(), gold: 640, potions: 1, weapon: 'Uncommon Cable Cutter' }
     const escape = (uri: string) => uri.replace(/[.*+?^$(){}|[\]\\]/g, '\\$&')
     const fullView = await render(vars)
-    expect(fullView).toMatch(new RegExp(`data-hp-count="true">118/148 HP</span><div[^>]*><img[^>]*src="${escape(hudMarkUri('sword', 24, 24))}" alt=""><span class="label lg:title--small">18</span></div><div[^>]*><img[^>]*src="${escape(hudMarkUri('shield', 24, 24))}" alt=""><span class="label lg:title--small">7</span></div></div>`))
+    expect(fullView).toMatch(new RegExp(`data-hp-count="true">118/148 HP</span><div[^>]*><img[^>]*src="${escape(hudMarkUri('sword', 24, 24))}" alt=""><span class="label lg:title--small">18</span></div><div[^>]*><img[^>]*src="${escape(hudMarkUri('shield', 24, 24))}" alt=""><span class="label lg:title--small">7</span></div><div data-bag-count="true"[^>]*><img[^>]*src="${escape(hudMarkUri('bag', 24, 24))}" alt=""><span class="label lg:title--small">3/30</span></div></div>`))
     expect(fullView).toMatch(new RegExp(`data-xp-count="true">210/656 XP</span><div[^>]*><img[^>]*src="${escape(hudMarkUri('coin', 24, 24))}" alt=""><span class="label lg:title--small">640</span></div><div[^>]*><img[^>]*src="${escape(hudMarkUri('potion', 24, 24))}" alt=""><span class="label lg:title--small">1</span></div></div>`))
     // The X full names the counts beside the hero (the OG rows above are lg:hidden) and puts the gear on one line.
     expect(fullView).toMatch(/<div class="hidden lg:flex[^"]*" data-counters="words">(?:<div[^>]*><img[^>]*><span class="label lg:title--small">(?:18 attack|7 defense|640 gold|1 potion)<\/span><\/div>){4}<\/div>/)
+    // Unlinked payloads carry no bag, so no count is drawn.
+    expect(await render({ ...vars, bag_capacity: null })).not.toContain('data-bag-count')
     expect(await render({ ...vars, potions: 2 })).toContain('>2 potions<')
     expect(fullView).toMatch(/data-gear-line="true"><span class="title--small text--regular" data-clamp="0" data-clamp-lg="0">Weapon <span class="text--bold inline-block">Uncommon Cable Cutter<\/span> · Armor <span class="text--bold inline-block">None<\/span><\/span>/)
     expect(fullView.split('landscape:hidden')[0]).toMatch(/data-hp-count="true">118\/148 HP<\/span><div class="lg:hidden flex/)

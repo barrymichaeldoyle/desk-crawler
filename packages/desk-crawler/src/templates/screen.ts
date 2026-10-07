@@ -1,5 +1,5 @@
 /**
- * Four self-contained TRMNL layouts. Template v34 adds the merchant notice (an inverted line in the attention slot that
+ * Four self-contained TRMNL layouts. Template v35 draws the recap as icon-led facts under its name and hours. v34 adds the merchant notice (an inverted line in the attention slot that
  * keeps the stories). v33 completes the HUD: XP as ten
  * half-step ticks under the hearts with the numbers at the end, attack and
  * defense marks in the counter line, a shorter full header so the scene and
@@ -12,7 +12,7 @@
 import { GLYPHS, glyphRows } from '../art/glyphs'
 import { hudMarkUri } from '../art/hud'
 
-export const TEMPLATE_VERSION = 34
+export const TEMPLATE_VERSION = 35
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -83,7 +83,7 @@ const HUD_ASSIGNS =
   `{% assign hud_heart_full = "${hudMarkUri('heartFull', 36, 32)}" %}{% assign hud_heart_half = "${hudMarkUri('heartHalf', 36, 32)}" %}{% assign hud_heart_empty = "${hudMarkUri('heartEmpty', 36, 32)}" %}` +
   `{% assign hud_tick_full = "${hudMarkUri('tickFull', 36, 16)}" %}{% assign hud_tick_half = "${hudMarkUri('tickHalf', 36, 16)}" %}{% assign hud_tick_empty = "${hudMarkUri('tickEmpty', 36, 16)}" %}` +
   `{% assign hud_sword = "${hudMarkUri('sword', 24, 24)}" %}{% assign hud_shield = "${hudMarkUri('shield', 24, 24)}" %}` +
-  `{% assign hud_coin = "${hudMarkUri('coin', 24, 24)}" %}{% assign hud_potion = "${hudMarkUri('potion', 24, 24)}" %}`
+  `{% assign hud_coin = "${hudMarkUri('coin', 24, 24)}" %}{% assign hud_potion = "${hudMarkUri('potion', 24, 24)}" %}{% assign hud_star = "${hudMarkUri('star', 24, 24)}" %}{% assign hud_bag = "${hudMarkUri('bag', 24, 24)}" %}`
 
 /**
  * A HUD row: marks and counts that wrap where a column is too narrow for all of them. It never shrinks, so beside a
@@ -96,6 +96,8 @@ const COUNTER_ICON = 'w--[16px] h--[16px] no-shrink'
 const counter = (icon: string, text: string, classes = '') => `<div class="${classes}flex flex--row flex--center-y gap--xsmall no-shrink"><img class="${COUNTER_ICON}" src="{{ ${icon} }}" alt=""><span class="label lg:title--small">${text}</span></div>`
 /** Attack and defense (the companion's ATK/DEF, D60): the level base plus the equipped gear. */
 const attackDefense = (classes = '') => counter('hud_sword', '{{ attack }}', classes) + counter('hud_shield', '{{ defense }}', classes)
+/** Bag slots in use: the top-right end of the wide HUD (the X full too), beside the potions in narrow columns. Null (unlinked) shows nothing. */
+const bagCount = (classes = '') => `{% if bag_capacity %}${counter('hud_bag', '{{ bag_used }}/{{ bag_capacity }}', classes).replace('<div class="', '<div data-bag-count="true" class="')}{% endif %}`
 const goldPotions = (classes = '') => counter('hud_coin', '{{ gold }}', classes) + counter('hud_potion', '{{ potions }}', classes)
 /** The X full has the width for the words beside the hero: the same marks, with their counts named. */
 const heroCounters = hudRow('data-counters="words"', counter('hud_sword', '{{ attack }} attack') + counter('hud_shield', '{{ defense }} defense') + counter('hud_coin', '{{ gold }} gold') + counter('hud_potion', '{{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}')).replace('class="flex', 'class="hidden lg:flex')
@@ -126,14 +128,14 @@ const xpTicks = (extra = '') =>
  * The wide HUD (full landscape and portrait): hearts, HP count, attack and defense on one row; XP ticks, XP count,
  * coins and potions on the next. Two rows, so the scene and the stories sit higher than under the v32 bar.
  */
-const hudWide = (wordsOnX = false) => `${hearts(true, attackDefense(wordsOnX ? 'lg:hidden ' : ''))}
+const hudWide = (wordsOnX = false) => `${hearts(true, attackDefense(wordsOnX ? 'lg:hidden ' : '') + bagCount())}
     ${xpTicks(goldPotions(wordsOnX ? 'lg:hidden ' : ''))}`
 
 /**
  * Narrow columns (side, half, their portrait forms): the hearts alone fill the width, so the HP count leads a combat
  * row with attack and defense (a full heart marks it), and coins and potions take a row of their own.
  */
-const counters = () => `${hudRow('data-counters="true"', counter('hud_heart_full', '{{ hp }}/{{ max_hp }}') + attackDefense())}${hudRow('data-counters="2"', goldPotions())}`
+const counters = () => `${hudRow('data-counters="true"', counter('hud_heart_full', '{{ hp }}/{{ max_hp }}') + attackDefense())}${hudRow('data-counters="2"', goldPotions() + bagCount())}`
 
 /** One glyph as a compact URL-encoded SVG: a single path of horizontal runs keeps each icon to a few hundred bytes. */
 export const glyphUri = (kind: string, size: number) => {
@@ -227,6 +229,21 @@ const fitStories = `<script>
     const layout = Array.from(view.querySelectorAll('.layout')).find(el => el.getClientRects().length > 0);
     const footer = Array.from(view.querySelectorAll('.title_bar')).find(el => el.getClientRects().length > 0);
     if (!layout || !footer) return;
+    // Recap rows first, since the story budget subtracts their height: drop trailing facts past the row's line cap.
+    view.querySelectorAll('[data-recap-items]').forEach(row => {
+      if (!row.getClientRects().length) return;
+      const items = Array.from(row.querySelectorAll('[data-recap-item]'));
+      items.forEach(item => item.classList.remove('hidden'));
+      const lines = Number(row.dataset.recapItems) || 1;
+      const lineHeight = (items[0] || row.firstElementChild).getBoundingClientRect().height;
+      const gap = parseFloat(getComputedStyle(row).rowGap) || 0;
+      const limit = lines * lineHeight + (lines - 1) * gap + 0.5;
+      let count = items.length;
+      while (count > 1 && row.getBoundingClientRect().height > limit) items[--count].classList.add('hidden');
+      row.dataset.recapCount = String(count);
+      // The most notable fact always stays, even where the name and hours already take the rows on their own.
+      row.dataset.recapFit = count === 1 || row.getBoundingClientRect().height <= limit ? 'complete' : 'over';
+    });
     const layoutBottom = Math.min(footer.getBoundingClientRect().top, layout.getBoundingClientRect().bottom - (parseFloat(getComputedStyle(layout).paddingBottom) || 0));
     view.querySelectorAll('[data-story-list]').forEach(list => {
       if (!list.getClientRects().length) return;
@@ -251,14 +268,25 @@ const fitStories = `<script>
 })();
 </script>`
 
-/** Device recap is read-only and uses its own window, independent of the recent-story list. */
-const recapBlock = (compact = false) => `
+/** The mark for one recap item (`item.k`): HUD marks for XP, gold, wins and potions, log glyphs for the rest. */
+const recapIcon = `{% case item.k %}{% when "xp" %}{% assign recap_icon = hud_star %}{% when "coin" %}{% assign recap_icon = hud_coin %}{% when "sword" %}{% assign recap_icon = hud_sword %}{% when "potion" %}{% assign recap_icon = hud_potion %}${GLYPH_KINDS.filter((k) => k !== 'system')
+  .map((k) => `{% when "${k}" %}{% assign recap_icon = glyph16_${k} %}`)
+  .join('')}{% else %}{% assign recap_icon = "" %}{% endcase %}{% if recap_icon != "" %}<img class="${COUNTER_ICON}" src="{{ recap_icon }}" alt="">{% endif %}`
+
+/**
+ * The recap as one wrapping row: its name and hours ("Morning stand-up 19:00-07:00"), then each fact behind its icon.
+ * Each piece is unbreakable, so narrow columns wrap between pieces rather than inside "19:00-07:00". `lines` caps the
+ * rows it may take; the fitter hides the trailing (least notable) facts that would need more.
+ */
+const recapRow = (lines: number, text: string, headingClasses = 'text--bold') =>
+  `<div class="flex flex--row flex--wrap flex--left flex--center-y gap--small stretch-x" data-recap-items="${lines}">` +
+  `<span class="${text} ${headingClasses} no-shrink">{{ recap.label | escape }}</span>{% if recap.span %}<span class="${text} ${headingClasses} no-shrink" data-recap-span="true">{{ recap.span | escape }}</span>{% endif %}` +
+  `{% for item in recap.items %}<div class="flex flex--row flex--center-y gap--xsmall no-shrink" data-recap-item="true">${recapIcon}<span class="${text}">{{ item.t | escape }}</span></div>{% endfor %}</div>`
+
+/** Device recap is read-only and uses its own window, independent of the recent-story list. Quarter views allow two rows. */
+const recapBlock = (lines = 3) => `
   {% if recap %}<div class="flex flex--col flex--left flex--stretch-x gap--xsmall stretch-x">
-    ${compact ? `<span class="label lg:title--small" data-clamp="2">{{ recap.label | escape }}: {{ recap.compact | escape }}</span>` : `<span class="label lg:title--small text--bold">{{ recap.label | escape }}</span>
-    <span class="label lg:hidden" data-clamp="1">{{ recap.compact | escape }}</span>
-    {% if recap.gains != "" %}<span class="hidden lg:block label lg:title--small">{{ recap.gains | escape }}</span>{% endif %}
-    <span class="hidden lg:block label lg:title--small">{{ recap.activity | escape }}</span>
-    {% if recap.highlights != "" %}<span class="hidden lg:block label lg:title--small text--bold">{{ recap.highlights | escape }}</span>{% endif %}`}
+    ${recapRow(lines, 'label lg:title--small')}
     <div class="border--h-30 stretch-x"></div>
   </div>{% endif %}`
 
@@ -266,7 +294,7 @@ const recapBlock = (compact = false) => `
 const recapRibbon = `
   {% if recap %}<div class="no-shrink stretch-x" data-recap-ribbon="true">
     <div class="border--h-30 stretch-x"></div>
-    <div class="pt--2"><span class="label text--regular inline-block lg:hidden" data-fit-value="true">{{ recap.label | escape }}: {{ recap.compact | escape }}</span><span class="hidden lg:inline-block title title--small text--regular" data-fit-value="true">{{ recap.label | escape }}: {% if recap.gains != "" %}{{ recap.gains | escape }} · {% endif %}{{ recap.activity | escape }}{% if recap.highlights != "" %} · {{ recap.highlights | escape }}{% endif %}</span></div>
+    <div class="pt--2">${recapRow(1, 'label lg:title--small')}</div>
   </div>{% endif %}`
 
 /**
@@ -426,7 +454,7 @@ const halfVerticalPortrait = `
   </div>
   <div class="no-shrink stretch-x"><div class="hidden lg:block">${scene('scene_url_small')}</div>${divider}</div>
   <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--small stretch-x">
-    {% if attention %}${attention('label lg:title--small', 4)}{% else %}${attention('label lg:title--small', 4)}${recapBlock(true)}{% endif %}
+    {% if attention %}${attention('label lg:title--small', 4)}{% else %}${attention('label lg:title--small', 4)}${recapBlock()}{% endif %}
     {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(3, 'label lg:title--small', 16, 26, true)}
   </div>
   ${qrFooter()}
@@ -441,7 +469,7 @@ const quadrantPortrait = `
     ${hearts(false)}
   </div>
   <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small stretch-x">
-    {% if attention %}${attention('label lg:title--small', 3)}{% else %}${attention('label lg:title--small', 3)}${recapBlock(true)}{% endif %}
+    {% if attention %}${attention('label lg:title--small', 3)}{% else %}${attention('label lg:title--small', 3)}${recapBlock(2)}{% endif %}
     ${storyList(3, 'label lg:title--small', 16, 24, true)}
   </div>
   ${qrFooter()}
@@ -465,7 +493,7 @@ const halfVerticalBody = (withScene: boolean) => `
   </div>
   <div class="no-shrink stretch-x">${withScene ? `<div class="hidden lg:block">${scene('scene_url_small')}</div>` : ''}${divider}</div>
   <div class="grow h--full h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--small pt--2">
-    {% if attention %}${attention('label lg:title--small', 3)}{% else %}${attention('label lg:title--small', 3)}${recapBlock(!withScene)}{% endif %}
+    {% if attention %}${attention('label lg:title--small', 3)}{% else %}${attention('label lg:title--small', 3)}${recapBlock()}{% endif %}
     {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(2, 'title title--small lg:title', 24, 50)}
   </div>
   {% endif %}
@@ -541,7 +569,7 @@ export const markupQuadrant = `${glyphAssigns([16])}${HUD_ASSIGNS}${oriented('la
     </div>
     <div class="grid grow h--full h--min-0 stretch-x gap--small">
       <div class="col--span-8 h--full flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
-        {% if attention %}${attention('label lg:title--small', 3)}{% else %}${attention('label lg:title--small', 3)}${recapBlock(true)}{% endif %}
+        {% if attention %}${attention('label lg:title--small', 3)}{% else %}${attention('label lg:title--small', 3)}${recapBlock(2)}{% endif %}
         ${storyList(2, 'label lg:title--small', 16, 40)}
       </div>
       <div class="col--span-4 flex flex--col flex--center-x flex--top gap--small">${bagQr()}

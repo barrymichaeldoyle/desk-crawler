@@ -18,6 +18,8 @@ const DAY_MS = 24 * HOUR_MS
 export interface RecapPeriod {
   /** 'Morning stand-up' (the night just ended) or 'Sprint retro' (the day just ended). */
   readonly label: string
+  /** The period's local clock span, '19:00-07:00' or '07:00-19:00', so the screen says which hours it covers. */
+  readonly span: string
   /** UTC milliseconds; the window is half-open, (from, to]. */
   readonly from: number
   readonly to: number
@@ -32,7 +34,9 @@ export function recapPeriod(now: number, utcOffsetSeconds: number | null): Recap
   const retro = dayStart + RETRO_HOUR * HOUR_MS
   const end = local >= retro ? retro : local >= standUp ? standUp : retro - DAY_MS
   const label = end === standUp ? 'Morning stand-up' : 'Sprint retro'
-  return { label, from: end - RECAP_WINDOW_MS - offset, to: end - offset }
+  const clock = (hour: number) => `${String(hour).padStart(2, '0')}:00`
+  const span = end === standUp ? `${clock(RETRO_HOUR)}-${clock(STAND_UP_HOUR)}` : `${clock(STAND_UP_HOUR)}-${clock(RETRO_HOUR)}`
+  return { label, span, from: end - RECAP_WINDOW_MS - offset, to: end - offset }
 }
 
 export interface ActivityEntry {
@@ -98,10 +102,32 @@ export function activityRecap(entries: readonly ActivityEntry[], period: RecapPe
     totals.jackpots ? plural(totals.jackpots, 'jackpot') : null,
   ].filter((value): value is string => value !== null)
   const partial = truncated || entries.length > MAX_RECAP_EVENTS
+  /**
+   * The same facts as short icon-led items for the device (`k` names its mark), most notable first so a line that
+   * cannot hold them all drops the routine ones. 'none' carries the quiet-period text without a mark.
+   */
+  const items: RecapItem[] = [
+    totals.levels ? { k: 'levelup', t: `+${plural(totals.levels, 'level')}` } : null,
+    ...[...arrivals].map((id): RecapItem => ({ k: 'travel', t: `Reached ${content.biomes.find(biome => biome.id === id)?.name ?? 'a new area'}` })),
+    totals.rareFinds ? { k: 'achievement', t: plural(totals.rareFinds, 'rare find') } : null,
+    totals.elites ? { k: 'combat', t: plural(totals.elites, 'elite') } : null,
+    totals.jackpots ? { k: 'coin', t: plural(totals.jackpots, 'jackpot') } : null,
+    heldFind ? { k: 'loot', t: 'Bag full' } : null,
+    totals.knockouts ? { k: 'death', t: plural(totals.knockouts, 'knockout') } : null,
+    totals.revivals ? { k: 'revive', t: plural(totals.revivals, 'revival') } : null,
+    totals.xp ? { k: 'xp', t: `+${totals.xp} XP` } : null,
+    totals.gold ? { k: 'coin', t: `${totals.gold} gold` } : null,
+    totals.wins ? { k: 'sword', t: plural(totals.wins, 'win') } : null,
+    totals.gear ? { k: 'loot', t: plural(totals.gear, 'gear find') } : null,
+    totals.potions ? { k: 'potion', t: plural(totals.potions, 'potion') } : null,
+    totals.breaks ? { k: 'rest', t: plural(totals.breaks, 'break') } : null,
+  ].filter((value): value is RecapItem => value !== null)
+  const label = partial ? `${period.label} · partial` : period.label
   // Compact screens get one useful fact about progress and one about activity.
   const compact = (highlights[0] ? [highlights[0], gains[0]] : [gains[0], activity[0]]).filter(Boolean).join(' · ') || (events ? 'Adventures continued' : partial ? 'No adventures in sample' : 'No new adventures')
   return {
-    label: partial ? `${period.label} · partial` : period.label,
+    label,
+    span: period.span,
     partial,
     from: Math.floor(period.from / 1000),
     to: Math.floor(period.to / 1000),
@@ -111,7 +137,14 @@ export function activityRecap(entries: readonly ActivityEntry[], period: RecapPe
     gains: gains.join(' · '),
     highlights: highlights.slice(0, 2).join(' · '),
     compact,
+    items: items.length ? items : [{ k: 'none', t: events ? 'Adventures continued' : partial ? 'No adventures in sample' : 'No new adventures' }],
   }
+}
+
+export interface RecapItem {
+  /** Icon key: a log glyph, or 'xp', 'coin', 'sword', 'potion' from the HUD marks, or 'none'. */
+  readonly k: string
+  readonly t: string
 }
 
 export type ActivityRecap = ReturnType<typeof activityRecap>

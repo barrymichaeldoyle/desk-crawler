@@ -13,14 +13,14 @@ const fight: OutcomeDetail = { variant: 'combat', monsterId: 'paper_imp', elite:
 
 describe('recap periods (D75)', () => {
   it('reports the most recently completed stand-up or retro period in the owner\'s local time', () => {
-    expect(PERIOD).toEqual({ label: 'Morning stand-up', from: END - RECAP_WINDOW_MS, to: END })
+    expect(PERIOD).toEqual({ label: 'Morning stand-up', span: '19:00-07:00', from: END - RECAP_WINDOW_MS, to: END })
     // 06:59 UTC: the stand-up has not happened yet, so the previous evening's retro (07:00 to 19:00 yesterday) stands.
-    expect(recapPeriod(Date.UTC(2026, 9, 6, 6, 59), null)).toEqual({ label: 'Sprint retro', from: Date.UTC(2026, 9, 5, 7), to: Date.UTC(2026, 9, 5, 19) })
-    expect(recapPeriod(Date.UTC(2026, 9, 6, 19), null)).toEqual({ label: 'Sprint retro', from: Date.UTC(2026, 9, 6, 7), to: Date.UTC(2026, 9, 6, 19) })
+    expect(recapPeriod(Date.UTC(2026, 9, 6, 6, 59), null)).toEqual({ label: 'Sprint retro', span: '07:00-19:00', from: Date.UTC(2026, 9, 5, 7), to: Date.UTC(2026, 9, 5, 19) })
+    expect(recapPeriod(Date.UTC(2026, 9, 6, 19), null)).toEqual({ label: 'Sprint retro', span: '07:00-19:00', from: Date.UTC(2026, 9, 6, 7), to: Date.UTC(2026, 9, 6, 19) })
     // Johannesburg (UTC+2) at 08:20 UTC is 10:20 local: the stand-up at 07:00 local, which is 05:00 UTC.
-    expect(recapPeriod(Date.UTC(2026, 9, 4, 8, 20), 7200)).toEqual({ label: 'Morning stand-up', from: Date.UTC(2026, 9, 3, 17), to: Date.UTC(2026, 9, 4, 5) })
+    expect(recapPeriod(Date.UTC(2026, 9, 4, 8, 20), 7200)).toEqual({ label: 'Morning stand-up', span: '19:00-07:00', from: Date.UTC(2026, 9, 3, 17), to: Date.UTC(2026, 9, 4, 5) })
     // Honolulu (UTC−10) at 04:30 UTC is 18:30 the previous local day: still the stand-up of that local morning.
-    expect(recapPeriod(Date.UTC(2026, 9, 6, 4, 30), -36000)).toEqual({ label: 'Morning stand-up', from: Date.UTC(2026, 9, 5, 5), to: Date.UTC(2026, 9, 5, 17) })
+    expect(recapPeriod(Date.UTC(2026, 9, 6, 4, 30), -36000)).toEqual({ label: 'Morning stand-up', span: '19:00-07:00', from: Date.UTC(2026, 9, 5, 5), to: Date.UTC(2026, 9, 5, 17) })
     expect(recapPeriod(Date.UTC(2026, 9, 6, 5), -36000).label).toBe('Sprint retro')
   })
 })
@@ -38,6 +38,19 @@ describe('12-hour device recap', () => {
     expect(recap.activity).toBe('1 fight won · 2 gear finds · 1 potion found · 1 break')
     expect(recap.gains).toBe('+9 XP · 8 gold earned')
     expect(recap.highlights).toContain('1 rare find')
+    expect(recap.span).toBe('19:00-07:00')
+    // Icon-led items, most notable first, so a short line keeps the rare find and drops the break.
+    expect(recap.items).toEqual([
+      { k: 'achievement', t: '1 rare find' },
+      { k: 'combat', t: '1 elite' },
+      { k: 'xp', t: '+9 XP' },
+      { k: 'coin', t: '8 gold' },
+      { k: 'sword', t: '1 win' },
+      { k: 'loot', t: '2 gear finds' },
+      { k: 'potion', t: '1 potion' },
+      { k: 'rest', t: '1 break' },
+    ])
+    expect(activityRecap([], PERIOD, contentV1, true)).toMatchObject({ label: 'Morning stand-up · partial', span: '19:00-07:00', items: [{ k: 'none', t: 'No adventures in sample' }] })
   })
 
   it('retains older milestones even when the newest event is an uneventful break', () => {

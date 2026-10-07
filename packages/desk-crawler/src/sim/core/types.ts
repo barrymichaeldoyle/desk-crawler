@@ -10,7 +10,7 @@ export type HeroStatus = 'exploring' | 'resting' | 'travelling' | 'dead' | 'paus
 export type EncounterKind = 'combat' | 'loot' | 'trap' | 'rest'
 export type GearKind = 'weapon' | 'armor'
 export type ItemKind = GearKind | 'potion'
-export type Rarity = 'common' | 'uncommon' | 'rare'
+export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic'
 /** How carefully the hero looks after itself between fights (D76). */
 export type StanceId = 'cautious' | 'balanced' | 'bold'
 export type LogKind =
@@ -231,6 +231,8 @@ export interface ChoiceEffect {
   readonly hpPct?: number
   /** Potions added, within the pouch cap (overflow is lost, never sold). */
   readonly potions?: number
+  /** A temporary effect granted (D80). */
+  readonly effectId?: string
 }
 
 export interface ChoiceOption {
@@ -264,6 +266,48 @@ export interface PendingChoice {
   readonly biomeTier: number
 }
 
+/**
+ * Typed modifiers (D80/D81) that affixes and effects contribute; every field is additive percentage points and
+ * absent means zero. The resolver sums them and applies each at one fixed place.
+ */
+export interface Modifiers {
+  readonly attackPct?: number
+  readonly defensePct?: number
+  readonly xpPct?: number
+  readonly goldPct?: number
+  /** Trap damage reduced by this share. */
+  readonly trapDamagePct?: number
+  /** Maximum HP healed after each victory. */
+  readonly healOnVictoryPct?: number
+  /** Percentage points taken off retreat and knockout gold losses. */
+  readonly goldLossPct?: number
+}
+
+/** An affix: a named modifier rolled onto rare and epic gear at generation (D81). */
+export interface AffixRule {
+  readonly id: string
+  /** Adjective shown before the rarity: "Vampiric Rare Keyboard Mace". */
+  readonly name: string
+  readonly blurb: string
+  readonly modifiers: Modifiers
+}
+
+/** A temporary effect on the hero (D80): a boon or a bane with a duration in ticks. */
+export interface EffectRule {
+  readonly id: string
+  readonly name: string
+  readonly blurb: string
+  readonly kind: 'boon' | 'bane'
+  readonly durationTicks: number
+  readonly modifiers: Modifiers
+}
+
+export interface ActiveEffect {
+  readonly id: string
+  /** The effect is gone from this tick on. */
+  readonly untilTick: number
+}
+
 /** Per-hero bag capacity that grows (D61). */
 export interface BagLadder {
   /** Ordered by strictly increasing capacity; tiers[0] is a new hero's bag. */
@@ -291,6 +335,13 @@ export interface ContentCatalog {
   readonly merchant?: MerchantRule
   /** Absent before v5 (D79). */
   readonly choices?: ChoiceRule
+  /** Absent before v6 (D80/D81). */
+  readonly affixes?: readonly AffixRule[]
+  /** Rarities that roll an affix at generation. */
+  readonly affixRarities?: readonly Rarity[]
+  readonly effects?: readonly EffectRule[]
+  /** Which effect each source grants; a source may be absent. */
+  readonly effectSources?: Readonly<{ trapHit?: string; eliteVictory?: string }>
   readonly narrative: Readonly<{ biomes: Readonly<Record<string, BiomeNarrative>>; shared: SharedNarrative; monsters: Readonly<Record<string, MonsterNarrative>> }>
 }
 
@@ -333,6 +384,8 @@ export interface HeroCounters {
   readonly choicesMade: number
   /** Choices that resolved by their default at expiry (D79). */
   readonly choicesDefaulted: number
+  /** Epic gear found (D81). */
+  readonly epicFinds: number
 }
 
 /** Counter names that hold one number (everything except `monsterWins`). */
@@ -369,6 +422,8 @@ export interface HeroState {
   readonly merchant?: MerchantVisit
   /** A pending narrative choice (D79); answered by the intent or resolved by the simulator at expiry. */
   readonly choice?: PendingChoice
+  /** Active temporary effects (D80), at most three; expired ones are dropped on the next evaluation. */
+  readonly effects?: readonly ActiveEffect[]
 }
 
 export interface ItemSnapshot {
@@ -383,6 +438,8 @@ export interface ItemSnapshot {
   readonly defense: number
   readonly saleValue: number
   readonly quantity: number
+  /** Affix rolled at generation (D81); absent on common and uncommon gear and on gear from earlier catalogs. */
+  readonly affixId?: string
 }
 
 /** A new item before the adapter allocates its database ID. */
@@ -479,6 +536,8 @@ export interface LogDetail {
   readonly bagUpgrade?: BagUpgrade
   /** The potion pouch grew this tick (D77). */
   readonly pouchUpgrade?: BagUpgrade
+  /** An effect this tick granted (D80). */
+  readonly effectGained?: string
   readonly outcome: OutcomeDetail
 }
 
@@ -514,6 +573,7 @@ export interface TickMetrics {
   readonly pouchUpgrades: number
   readonly choicesOffered: number
   readonly choicesDefaulted: number
+  readonly effectsGained: number
 }
 
 export interface SimulationResult {

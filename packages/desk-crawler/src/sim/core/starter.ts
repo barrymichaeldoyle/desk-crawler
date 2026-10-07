@@ -47,6 +47,7 @@ export function zeroCounters(): HeroCounters {
   merchantVisits: 0,
   choicesMade: 0,
   choicesDefaulted: 0,
+  epicFinds: 0,
   }
 }
 

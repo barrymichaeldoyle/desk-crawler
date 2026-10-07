@@ -11,6 +11,7 @@ import { readDeviceRanking } from './lib/rankingRead'
 import { keepsakeCode, keepsakeGrant } from './lib/keepsakes'
 import { keepsakeWeek } from '@trmnl-games/desk-crawler/content/keepsakes'
 import { displayLogDeltas } from '@trmnl-games/desk-crawler/log'
+import { affixById } from '@trmnl-games/desk-crawler/sim/core/modifiers'
 
 /**
  * Fixed-cost canonical payload for one authorized instance (trmnl.md "Query
@@ -74,7 +75,7 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
       .take(40)
     const named = (id: string | undefined) => items.find((item) => item._id === id)
     const label = (item: (typeof items)[number] | undefined) =>
-      item ? `${item.rarity === 'common' ? '' : item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1) + ' '}${item.name}` : null
+      item ? `${affixById(content, item.affixId)?.name ?? ''} ${item.rarity === 'common' ? '' : item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1)} ${item.name}`.replace(/\s+/g, ' ').trim() : null
     weaponName = label(named(hero.weaponId))
     armorName = label(named(hero.armorId))
     weaponAttack = named(hero.weaponId)?.attack ?? 0

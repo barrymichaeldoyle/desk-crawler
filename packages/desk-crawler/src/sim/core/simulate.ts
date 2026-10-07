@@ -1,6 +1,7 @@
 import { applyItemChanges } from './apply'
 import { isBagFull, milestoneUpgrade, nextEarlyTier } from './bag'
 import { eventById, optionOf, resolveEffect } from './choice'
+import { affixById, effectById, effectiveStats, liveEffects, scaled, withEffect } from './modifiers'
 import { nextEarlyPouchTier, potionCap, pouchMilestoneUpgrade } from './pouch'
 import { assertHeroInvariants, SimulationInvariantError } from './invariants'
 import { codePoints, composeSummary, fill, rarityLabel, variant, withArticle, type NarrativeVars } from './narrative'
@@ -25,6 +26,7 @@ import type {
   SimulationInput,
   SimulationResult,
   TickMetrics,
+  EffectRule,
   MerchantOffer,
   MerchantVisit,
   PendingChoice,
@@ -54,6 +56,7 @@ const ZERO_METRICS: TickMetrics = {
   pouchUpgrades: 0,
   choicesOffered: 0,
   choicesDefaulted: 0,
+  effectsGained: 0,
 }
 
 interface Streams {
@@ -110,6 +113,12 @@ class TickRun {
     const { h, input } = this
     // D78: an expired merchant leaves quietly, whatever the hero is doing; no event, no draw.
     if (h.merchant !== undefined && input.tick >= h.merchant.expiresAtTick) delete h.merchant
+    // D80: expired effects drop the same way.
+    if (h.effects !== undefined) {
+      const live = liveEffects(h.effects, input.tick)
+      if (live.length === 0) delete h.effects
+      else if (live.length !== h.effects.length) h.effects = live
+    }
     switch (h.status) {
       case 'paused':
         return this.finish('paused')
@@ -189,6 +198,24 @@ class TickRun {
     })
   }
 
+  /** D80: grants an effect (refreshing a running one); returns its rule for the story, or undefined when the catalog lacks it. */
+  private grantEffect(id: string | undefined): EffectRule | undefined {
+    const rule = id === undefined ? undefined : effectById(this.content, id)
+    if (rule === undefined) return undefined
+    this.h.effects = withEffect(this.h.effects, rule, this.input.tick)
+    this.metrics.effectsGained = 1
+    return rule
+  }
+
+  /** D80 rest cleansing: a rest, automatic or not, shakes off every bane. */
+  private cleanseBanes(): void {
+    const { h, content } = this
+    if (h.effects === undefined) return
+    const kept = h.effects.filter((active) => effectById(content, active.id)?.kind !== 'bane')
+    if (kept.length === 0) delete h.effects
+    else if (kept.length !== h.effects.length) h.effects = kept
+  }
+
   /**
    * D79: a choice the player let expire resolves by its default option, as this tick's whole event, so the player
    * reads what happened and the encounter rhythm resumes next tick. Only an exploring or resting hero resolves it;
@@ -208,10 +235,11 @@ class TickRun {
     if (change.gold > 0) h.counters.goldEarned += change.gold
     h.hp += change.hp
     for (let i = 0; i < change.potions; i += 1) this.gainPotion(potionRow?.id)
+    const granted = this.grantEffect(option.effect.effectId)
     h.counters.choicesDefaulted += 1
     this.metrics.choicesDefaulted = 1
-    const summary = composeSummary(option.story, option.story, ['Decided by itself.'], content.constants.summaryMaxCodePoints)
-    return this.finish('advanced', { kind: 'choice', summary, outcome: { variant: 'choice', phase: 'defaulted', eventId: event.id, optionId: option.id, expiresAtTick: pending.expiresAtTick } })
+    const summary = composeSummary(option.story, option.story, ['Decided by itself.', ...(granted ? [`${granted.name} for ${granted.durationTicks} adventures.`] : [])], content.constants.summaryMaxCodePoints)
+    return this.finish('advanced', { kind: 'choice', summary, outcome: { variant: 'choice', phase: 'defaulted', eventId: event.id, optionId: option.id, expiresAtTick: pending.expiresAtTick } }, granted ? { effectGained: granted.id } : {})
   }
 
   private restingTick(): SimulationResult {
@@ -222,6 +250,7 @@ class TickRun {
     const healing = Math.min(max - h.hp, pctOf(max, content.constants.restingHealPct))
     h.hp += healing
     h.counters.restTicks += 1
+    this.cleanseBanes()
     if (h.hp * 100 >= max * this.sustain().resumeExploringAtPct) h.status = 'exploring'
     const text = this.narrate(content.narrative.shared.restingHeal, { heal: healing })
     return this.finish('rested', {
@@ -261,6 +290,7 @@ class TickRun {
       const healing = Math.min(max - h.hp, pctOf(max, c.restingHealPct))
       h.hp += healing
       h.counters.restTicks += 1
+      this.cleanseBanes()
       const text = this.narrate(content.narrative.shared.restingHeal, { heal: healing })
       return this.finish(
         'rested',
@@ -286,6 +316,7 @@ class TickRun {
     let lethal = false
     let upgrade: BagUpgrade | undefined
     let pouchUpgrade: BagUpgrade | undefined
+    let effectGained: EffectRule | undefined
     let outcome: OutcomeDetail
     let primary: string
     let compact: string
@@ -297,7 +328,8 @@ class TickRun {
       case 'combat': {
         const monster = this.monster(pickOne(this.rng.encounter, biome.monsterIds))
         const elite = this.rng.encounter.chance(c.elite.chancePct)
-        const stats = deriveStats(h, input.inventory)
+        const stats = effectiveStats(content, h, input.inventory, input.tick)
+        const mods = stats.modifiers
         let monsterHp = elite ? Math.floor((monster.hp * c.elite.hpMultiplierPct) / 100) : monster.hp
         const monsterHpStart = monsterHp
         const rounds: CombatRound[] = []
@@ -321,9 +353,9 @@ class TickRun {
         vars.monster = monster.name
         let gearDropped = false
         if (result === 'victory') {
-          // Rolled exactly as before; the stance scales the roll afterwards, so the reward stream is unchanged (D76).
-          xpGranted = Math.max(1, Math.floor((this.rng.reward.int(monster.xp.min, monster.xp.max) * (elite ? c.elite.xpMultiplier : 1) * this.sustain().victoryXpPct) / 100))
-          goldGranted = this.rng.reward.int(monster.gold.min, monster.gold.max) * (elite ? c.elite.goldMultiplier : 1)
+          // Rolled exactly as before; the stance and the modifiers scale the roll afterwards, so the reward stream is unchanged (D76, D80).
+          xpGranted = scaled(Math.max(1, Math.floor((this.rng.reward.int(monster.xp.min, monster.xp.max) * (elite ? c.elite.xpMultiplier : 1) * this.sustain().victoryXpPct) / 100)), mods.xpPct)
+          goldGranted = scaled(this.rng.reward.int(monster.gold.min, monster.gold.max) * (elite ? c.elite.goldMultiplier : 1), mods.goldPct)
           gearDropped = this.rng.reward.chance(c.combatGearDropPct)
           if (gearDropped) gear = this.generateGear(biome.tier)
           h.counters.combatWins += 1
@@ -331,12 +363,15 @@ class TickRun {
           if (elite) h.counters.eliteWins += 1
           this.metrics.victories = 1
           if (elite) this.metrics.elites = 1
+          // D81 vampiric: a little health after every win; D80: an elite win fires the hero up.
+          if (mods.healOnVictoryPct > 0 && h.hp > 0) h.hp = Math.min(maxHp(h.level), h.hp + pctOf(maxHp(h.level), mods.healOnVictoryPct))
+          if (elite) effectGained = this.grantEffect(content.effectSources?.eliteVictory)
           Object.assign(vars, { xp: xpGranted, gold: goldGranted })
           const victories = [...narrative.victory, ...(content.narrative.monsters[monster.id]?.victory ?? [])]
           primary = this.narrate(elite ? narrative.eliteVictory : victories, vars)
           compact = fill('Beat {monster}. +{xp} XP, +{gold} gold.', vars)
         } else if (result === 'retreat') {
-          goldPenalty = Math.floor((h.gold * c.retreatGoldLossPct) / 100)
+          goldPenalty = Math.floor((h.gold * Math.max(0, c.retreatGoldLossPct - mods.goldLossPct)) / 100)
           h.gold -= goldPenalty
           h.counters.retreats += 1
           this.metrics.retreats = 1
@@ -431,6 +466,7 @@ class TickRun {
             this.metrics.jackpots = 1
             h.counters.jackpots += 1
           }
+          goldGranted = scaled(goldGranted, effectiveStats(content, h, input.inventory, input.tick).modifiers.goldPct)
           vars.gold = goldGranted
         }
         if (found === 'gear') {
@@ -463,8 +499,11 @@ class TickRun {
           compact = 'Avoided a trap.'
         } else {
           damage = this.rng.combat.int(biome.trapDamage.min, biome.trapDamage.max)
+          const trapMods = effectiveStats(content, h, input.inventory, input.tick).modifiers
+          if (trapMods.trapDamagePct > 0) damage = Math.max(1, Math.floor((damage * (100 - trapMods.trapDamagePct)) / 100))
           h.hp = Math.max(0, h.hp - damage)
           lethal = h.hp === 0
+          if (!lethal) effectGained = this.grantEffect(content.effectSources?.trapHit)
           vars.damage = damage
           primary = lethal ? '' : this.narrate(narrative.trapHit, vars, narrative.trapHitCallbacks)
           compact = fill('A trap hit for {damage} HP.', vars)
@@ -476,6 +515,7 @@ class TickRun {
         const healing = Math.min(max - h.hp, pctOf(max, c.restEncounterHealPct))
         h.hp += healing
         h.counters.restTicks += 1
+        this.cleanseBanes()
         vars.heal = healing
         primary = this.narrate(healing > 0 ? narrative.rest : shared.restFull, vars)
         compact = fill('Rested. +{heal} HP.', vars)
@@ -499,9 +539,11 @@ class TickRun {
         compact = 'A narrow escape; resting now.'
         outcome = { ...outcome, outcome: 'rescue' } as OutcomeDetail
       } else {
-        goldPenalty = Math.floor((h.gold * c.deathGoldLossPct) / 100)
+        goldPenalty = Math.floor((h.gold * Math.max(0, c.deathGoldLossPct - effectiveStats(content, h, input.inventory, input.tick).modifiers.goldLossPct)) / 100)
         h.gold -= goldPenalty
         h.status = 'dead'
+        // D80 death ordering: a knockout clears every effect, boon or bane; revival starts clean.
+        delete h.effects
         h.reviveAtTick = input.tick + ticks
         delete h.targetBiomeId
         delete h.arriveAtTick
@@ -562,8 +604,10 @@ class TickRun {
     let disposition: Disposition = 'advanced'
     if (gear !== undefined) {
       h.counters.itemsFound += 1
-      if (gear.rarity === 'rare') h.counters.rareFinds += 1
-      const item = `${rarityLabel(gear.rarity)} ${gear.name}`
+      if (gear.rarity === 'rare' || gear.rarity === 'epic') h.counters.rareFinds += 1
+      if (gear.rarity === 'epic') h.counters.epicFinds += 1
+      const affix = affixById(content, gear.affixId)
+      const item = `${affix ? `${affix.name} ` : ''}${rarityLabel(gear.rarity)} ${gear.name}`
       heldFind = isBagFull(h, input.inventory)
       this.changes.push({ type: 'create', destination: heldFind ? 'held' : 'bag', item: gear })
       if (heldFind) {
@@ -582,11 +626,12 @@ class TickRun {
       }
     }
     consequences.push(...potionSuffix)
+    if (effectGained !== undefined) consequences.push(`${effectGained.name} for ${effectGained.durationTicks} adventures.`)
 
     return this.finish(
       disposition,
       { kind: logKind, summary: composeSummary(primary, compact, consequences, c.summaryMaxCodePoints), outcome, encounterKind: kind },
-      { potionsUsed, potionHealing, levelsGained, goldPenalty, heldFind, xpGranted, ...(upgrade === undefined ? {} : { bagUpgrade: upgrade }), ...(pouchUpgrade === undefined ? {} : { pouchUpgrade }) },
+      { potionsUsed, potionHealing, levelsGained, goldPenalty, heldFind, xpGranted, ...(upgrade === undefined ? {} : { bagUpgrade: upgrade }), ...(pouchUpgrade === undefined ? {} : { pouchUpgrade }), ...(effectGained === undefined ? {} : { effectGained: effectGained.id }) },
     )
   }
 
@@ -641,7 +686,10 @@ class TickRun {
     const template = pickOne(rng, content.gearTemplates.filter((t) => t.tier === tier && t.kind === kind))
     const stats = content.gearTiers[tier]
     if (stats === undefined) throw new SimulationInvariantError('GEAR_TIER', `no gear tier ${tier}`)
+    // D81: rare and epic gear roll one affix, a draw that exists only under a catalog with affixes.
+    const affix = content.affixes !== undefined && content.affixRarities?.includes(rarity.rarity) ? pickOne(rng, content.affixes) : undefined
     return {
+      ...(affix === undefined ? {} : { affixId: affix.id }),
       templateId: template.id,
       contentVersion: content.contentVersion,
       kind,
@@ -670,7 +718,7 @@ class TickRun {
   private finish(
     disposition: Disposition,
     event?: { kind: LogKind; summary: string; outcome: OutcomeDetail; encounterKind?: EncounterKind },
-    extra: { potionsUsed?: number; potionHealing?: number; levelsGained?: number; goldPenalty?: number; heldFind?: boolean; xpGranted?: number; bagUpgrade?: BagUpgrade; pouchUpgrade?: BagUpgrade } = {},
+    extra: { potionsUsed?: number; potionHealing?: number; levelsGained?: number; goldPenalty?: number; heldFind?: boolean; xpGranted?: number; bagUpgrade?: BagUpgrade; pouchUpgrade?: BagUpgrade; effectGained?: string } = {},
   ): SimulationResult {
     const { h, input } = this
     const nextHero = toHeroState(h)
@@ -689,6 +737,7 @@ class TickRun {
       heldFind: extra.heldFind ?? false,
       ...(extra.bagUpgrade === undefined ? {} : { bagUpgrade: extra.bagUpgrade }),
       ...(extra.pouchUpgrade === undefined ? {} : { pouchUpgrade: extra.pouchUpgrade }),
+      ...(extra.effectGained === undefined ? {} : { effectGained: extra.effectGained }),
       outcome: event.outcome,
     }
     return {
@@ -729,6 +778,7 @@ function validateOutput(input: SimulationInput, result: SimulationResult): void 
   if ((out.potionCap ?? 0) < (hero.potionCap ?? 0)) fail('POUCH_SHRANK', 'potion cap decreased')
   if (out.merchant !== undefined && (out.merchant.offers.length === 0 || out.merchant.offers.length > 3 || out.merchant.expiresAtTick <= input.tick)) fail('MERCHANT', 'merchant offers must be one to three and still open')
   if (out.choice !== undefined && hero.choice === undefined && out.choice.offeredAtTick !== input.tick) fail('CHOICE', 'a new choice must be offered this tick')
+  if (out.effects !== undefined && (out.effects.length === 0 || out.effects.length > 3 || out.effects.some((effect) => effect.untilTick <= input.tick))) fail('EFFECTS', 'effects must be one to three live entries')
   if (result.event && codePoints(result.event.summary) > input.content.constants.summaryMaxCodePoints) {
     fail('SUMMARY_LENGTH', result.event.summary)
   }

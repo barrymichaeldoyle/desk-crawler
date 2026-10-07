@@ -45,6 +45,7 @@ export function assertHeroInvariants(hero: HeroState, inventory: readonly ItemSn
   if (hero.stance !== undefined && !['cautious', 'balanced', 'bold'].includes(hero.stance)) fail('STANCE', `unknown stance ${hero.stance}`)
   if (hero.potionCap !== undefined && content.potionPouch !== undefined && !content.potionPouch.tiers.some((tier) => tier.cap === hero.potionCap)) fail('POUCH', `potion cap ${hero.potionCap} is not a pouch tier`)
   if (hero.potionCap !== undefined && !isCount(hero.potionCap)) fail('POUCH', 'invalid potion cap')
+  if (hero.effects !== undefined && (hero.effects.length > 3 || hero.effects.some((effect) => typeof effect.id !== 'string' || !Number.isSafeInteger(effect.untilTick)))) fail('EFFECTS', 'invalid effects')
   if (hero.choice !== undefined && content.choices !== undefined && !content.choices.events.some((event) => event.id === hero.choice?.eventId)) fail('CHOICE', `unknown event ${hero.choice.eventId}`)
   const biomeIds = new Set(content.biomes.map((biome) => biome.id))
   if (!biomeIds.has(hero.biomeId)) fail('BIOME', `unknown biome ${hero.biomeId}`)

@@ -14,7 +14,7 @@ const disposition = v.union(
   v.literal('inventory_sleep_started'),
 )
 const encounterKind = v.union(v.literal('combat'), v.literal('loot'), v.literal('trap'), v.literal('rest'))
-const rarity = v.union(v.literal('common'), v.literal('uncommon'), v.literal('rare'))
+const rarity = v.union(v.literal('common'), v.literal('uncommon'), v.literal('rare'), v.literal('epic'))
 const status = v.union(
   v.literal('exploring'),
   v.literal('resting'),
@@ -98,6 +98,8 @@ export const simulationDetail = v.object({
   bagUpgrade: v.optional(v.object({ from: v.number(), to: v.number(), tierId: v.string(), source: v.union(v.literal('milestone'), v.literal('find')) })),
   /** The potion pouch grew (D77). */
   pouchUpgrade: v.optional(v.object({ from: v.number(), to: v.number(), tierId: v.string(), source: v.union(v.literal('milestone'), v.literal('find')) })),
+  /** An effect this tick granted (D80). */
+  effectGained: v.optional(v.string()),
   outcome,
 })
 
@@ -112,6 +114,8 @@ export const commandDetail = v.object({
   /** The event and option a `heroes.choose` command resolved (D79). */
   eventId: v.optional(v.string()),
   optionId: v.optional(v.string()),
+  /** An effect a choice granted (D80). */
+  effectGained: v.optional(v.string()),
 })
 
 /** One earned achievement (D65); the name is copied so reads never need the catalog. */

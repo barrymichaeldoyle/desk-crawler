@@ -38,13 +38,14 @@ Fields:
 - Stance (D76): `stance?: cautious | balanced | bold`, absent means balanced; written only by `heroes.setStance`, read by the simulator adapter.
 - Pouch (D77): `potionCap?`, a cap from the content pouch ladder; absent means the catalog constant. Raised by simulator milestones/finds, `inventory.buyPouch` and merchant purchases; never lowered.
 - Merchant (D78): `merchant?: { offers[≤3], expiresAtTick, biomeId }`, written by the simulator on a visit, trimmed by `inventory.buyOffer` and cleared by the simulator at expiry or by the last sale.
+- Effects (D80): `effects?: [{ id, untilTick }]` (at most three), written by the simulator and the choose intent, dropped on expiry, cleared by a knockout, banes removed by rest.
 - Choice (D79): `choice?: { eventId, offeredAtTick, expiresAtTick, biomeTier }`, written by the simulator on an event draw, cleared by `heroes.choose` or by the simulator's default at expiry. The resolution is the log entry (`choose` command or a `choice` tick with `phase: defaulted`); there is no separate pending-choice table.
 - Bag (D61): `bagCapacity`, a capacity from the content ladder, set at creation from the world's pinned catalog and raised only by simulator milestones/finds or `inventory.buyBag`. Simulation logs record `detail.bagUpgrade { from, to, tierId, source }`, loot outcomes may be `found: 'bag'`, and purchase command logs record `detail.bagSlots`.
 - Score accumulator (D31): `scoreHour?` (UTC hour start) and `scoreHourXp` (granted XP credited in that hour, not yet folded into `heroScoreWindows`).
 - Inventory count (P23 candidate): `bagGearCount`, maintained transactionally with every gear insert/delete/claim, if V05 shows the narrow tick read is worthwhile.
 - Tick markers: `eligibleFromTick`, `lastTick` (last evaluated tick; dormant heroes skipped between publications do not advance it), `lastProgressTick` (last successful gameplay evaluation), `lastAdvancedAt?`, `logSequence` (transactionally incremented for each new log).
 - Safety: `simulationState: healthy | quarantined`, `quarantineReasonCode?`.
-- Lifetime counters (grow-only safe integers): `combatWins`, `retreats`, `deaths`, `rescues`, `goldEarned`, `itemsFound`, `ticksExplored`, and from D65/O14 `monsterWins` (object keyed by catalog monster id), `eliteWins`, `jackpots`, `rareFinds`, `stanceChanges` (D76, the stance intent), `purchases` and `merchantVisits` (D78), `choicesMade` (the choose intent) and `choicesDefaulted` (D79), `potionsUsed` (simulator and the drink intent), `trapsAvoided`, `restTicks`, `trips`, `itemsSold` (sell intents). The nine D65 counters are optional in storage until the one-off `achievements.backfillCounters` has visited every hero; every read path fills a missing counter with zero (`withCounterDefaults`), and every write stores the full set. Achievement predicates read only these plus level, bag capacity and the keepsake total.
+- Lifetime counters (grow-only safe integers): `combatWins`, `retreats`, `deaths`, `rescues`, `goldEarned`, `itemsFound`, `ticksExplored`, and from D65/O14 `monsterWins` (object keyed by catalog monster id), `eliteWins`, `jackpots`, `rareFinds`, `stanceChanges` (D76, the stance intent), `purchases` and `merchantVisits` (D78), `choicesMade` (the choose intent) and `choicesDefaulted` (D79), `epicFinds` (D81), `potionsUsed` (simulator and the drink intent), `trapsAvoided`, `restTicks`, `trips`, `itemsSold` (sell intents). The nine D65 counters are optional in storage until the one-off `achievements.backfillCounters` has visited every hero; every read path fills a missing counter with zero (`withCounterDefaults`), and every write stores the full set. Achievement predicates read only these plus level, bag capacity and the keepsake total.
 - Achievements (D65): `achievementsVersion?`, the last catalog version evaluated; absent means a full pass is due on the next tick.
 - Companion: `companionVisitBaseline?` containing server-captured `{ at, level, lifetimeXp, logSequence }`. One checkpoint, no visit history; never changed by TRMNL polling. See [return-summary contract](build-readiness.md#a-compact-return-summary).
 
@@ -58,7 +59,7 @@ An authenticated creation transaction validates the owned TRMNL install attempt 
 
 ### `items`
 
-Fields: `heroId`, `templateId`, `contentVersion`, `kind: weapon | armor | potion`, `name`, `rarity: common | uncommon | rare`, `requiredLevel`, `attack`, `defense`, `saleValue`, `quantity`, `createdAt`.
+Fields: `heroId`, `templateId`, `contentVersion`, `kind: weapon | armor | potion`, `name`, `rarity: common | uncommon | rare | epic`, `requiredLevel`, `attack`, `defense`, `saleValue`, `quantity`, `createdAt`, `affixId?` (D81: rolled at generation on rare and epic gear; the adjective and modifiers come from the active catalog, so an unknown id is harmless).
 
 Indexes: `by_hero[heroId]`, `by_hero_kind[heroId,kind]`.
 

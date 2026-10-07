@@ -26,6 +26,7 @@ type Gear = {
   attack: number
   defense: number
   saleValue: number
+  affix: { name: string; blurb: string } | null
   equipped: boolean
   held: boolean
 }
@@ -160,7 +161,7 @@ function Inventory() {
               <div className="min-w-0">
                 <ItemName label={item.label} rarity={item.rarity} />
                 <p className="mt-1 text-sm"><StatChange item={item} /><span className={`font-semibold ${delta > 0 ? 'text-xp-ink' : delta < 0 ? 'text-hp-ink' : 'text-muted'}`}>{delta > 0 ? `, +${delta} upgrade` : delta < 0 ? `, ${delta} vs equipped` : ', same as equipped'}</span></p>
-                <p className="mt-1 text-sm text-muted">{item.rarity}, level {item.requiredLevel}, sells for <span className="text-gold-ink">{item.saleValue} gold</span></p>
+                <p className="mt-1 text-sm text-muted">{item.rarity}, level {item.requiredLevel}, sells for <span className="text-gold-ink">{item.saleValue} gold</span>{item.affix ? <>. <span className="text-ink">{item.affix.name}</span>: {item.affix.blurb}</> : null}</p>
               </div>
               <Button variant={delta > 0 && canEquip ? 'primary' : 'secondary'} className="col-start-2 mt-2 justify-self-start sm:col-start-3 sm:row-start-1 sm:mt-0 sm:self-center" aria-label={`Equip ${item.label}`} disabled={!manageable || locked || !canEquip} pending={equip.pending} busyLabel="Equipping…" onClick={async () => {
                 setGearAction('equip')
@@ -256,11 +257,11 @@ function BagLadder({ ladder, capacity, gold, disabled, intent }: { ladder: Ladde
 }
 
 /** A rarity gem: one facet for common, two for uncommon, three for rare, so rarity never rests on colour alone. */
-const GEM: Record<string, string> = { common: 'M1 0h1v1H1zM0 1h3v1H0zM1 2h1v1H1z', uncommon: 'M1 0h3v1H1zM0 1h5v1H0zM1 2h3v1H1zM2 3h1v1H2z', rare: 'M1 0h5v1H1zM0 1h7v1H0zM1 2h5v1H1zM2 3h3v1H2zM3 4h1v1H3z' }
+const GEM: Record<string, string> = { common: 'M1 0h1v1H1zM0 1h3v1H0zM1 2h1v1H1z', uncommon: 'M1 0h3v1H1zM0 1h5v1H0zM1 2h3v1H1zM2 3h1v1H2z', rare: 'M1 0h5v1H1zM0 1h7v1H0zM1 2h5v1H1zM2 3h3v1H2zM3 4h1v1H3z', epic: 'M1 0h7v1H1zM0 1h9v1H0zM1 2h7v1H1zM2 3h5v1H2zM3 4h3v1H3z' }
 
 function ItemName({ label, rarity, className = '' }: { label: string; rarity: string; className?: string }) {
   const path = GEM[rarity] ?? GEM.common!
-  const width = rarity === 'rare' ? 7 : rarity === 'uncommon' ? 5 : 3
+  const width = rarity === 'epic' ? 9 : rarity === 'rare' ? 7 : rarity === 'uncommon' ? 5 : 3
   return <p className={`flex min-w-0 items-center gap-2 font-semibold ${RARITY_TONE[rarity] ?? ''} ${className}`}>
     <svg viewBox={`0 0 ${width} 5`} width={width * 3} height={15} aria-hidden="true" shapeRendering="crispEdges" className="shrink-0 fill-current"><path d={path} /></svg>
     <span className="min-w-0">{label}</span>

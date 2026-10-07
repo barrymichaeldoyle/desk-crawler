@@ -30,6 +30,7 @@ export function toHeroState(hero: Doc<'heroes'>): HeroState {
     ...(hero.potionCap === undefined ? {} : { potionCap: hero.potionCap }),
     ...(hero.merchant === undefined ? {} : { merchant: hero.merchant }),
     ...(hero.choice === undefined ? {} : { choice: hero.choice }),
+    ...(hero.effects === undefined ? {} : { effects: hero.effects }),
   }
 }
 
@@ -48,6 +49,7 @@ export function toInventory(items: readonly Doc<'items'>[]): ItemSnapshot[] {
       defense: item.defense,
       saleValue: item.saleValue,
       quantity: item.quantity,
+      ...(item.affixId === undefined ? {} : { affixId: item.affixId }),
     }))
     .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
 }
@@ -83,6 +85,7 @@ export async function applyResult(
     // Convex stores mutable arrays; the core hands out readonly ones.
     merchant: next.merchant === undefined ? undefined : { ...next.merchant, offers: next.merchant.offers.map((offer) => ({ ...offer })) },
     choice: next.choice,
+    effects: next.effects === undefined ? undefined : next.effects.map((effect) => ({ ...effect })),
     lastLevelUpTick: next.lastLevelUpTick,
     counters: next.counters,
   }

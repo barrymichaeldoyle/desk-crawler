@@ -1,4 +1,4 @@
-import type { ContentCatalog } from '../sim/core/types'
+import type { ContentCatalog, Modifiers } from '../sim/core/types'
 
 /** Content limits from the specs: name budgets (domain-contracts.md) and the D26 content floor. */
 export const CONTENT_LIMITS = {
@@ -47,6 +47,27 @@ export function validateCatalog(content: ContentCatalog): string[] {
   if (c.lootWeights.merchant !== undefined && !content.merchant) problems.push('a merchant loot weight needs merchant rules')
   // D79: every event has two or three options with distinct ids, a default among them, and bounded effects.
   if (c.lootWeights.event !== undefined && !content.choices) problems.push('an event loot weight needs choice rules')
+  // D80/D81: affixes and effects are small, distinct and bounded; every source names a known effect.
+  const modifierBounds = (owner: string, m: Modifiers) => {
+    for (const [name, value] of Object.entries(m) as Array<[string, number | undefined]>) if (value !== undefined && (!Number.isSafeInteger(value) || value < -50 || value > 50)) problems.push(`${owner} modifier ${name} out of bounds`)
+  }
+  const affixIds = new Set<string>()
+  for (const affix of content.affixes ?? []) {
+    if (affixIds.has(affix.id)) problems.push(`duplicate affix ${affix.id}`)
+    affixIds.add(affix.id)
+    modifierBounds(`affix ${affix.id}`, affix.modifiers)
+  }
+  for (const rarity of content.affixRarities ?? []) if (!content.rarities.some((rule) => rule.rarity === rarity)) problems.push(`affix rarity ${rarity} is not in the rarity table`)
+  if ((content.affixRarities?.length ?? 0) > 0 && (content.affixes?.length ?? 0) === 0) problems.push('affix rarities need affixes')
+  const effectIds = new Set<string>()
+  for (const effect of content.effects ?? []) {
+    if (effectIds.has(effect.id)) problems.push(`duplicate effect ${effect.id}`)
+    effectIds.add(effect.id)
+    if (!(effect.durationTicks >= 1 && effect.durationTicks <= 96)) problems.push(`effect ${effect.id} must last 1 to 96 ticks`)
+    modifierBounds(`effect ${effect.id}`, effect.modifiers)
+  }
+  for (const [source, id] of Object.entries(content.effectSources ?? {})) if (id !== undefined && !effectIds.has(id)) problems.push(`effect source ${source} names unknown effect ${id}`)
+  for (const event of content.choices?.events ?? []) for (const option of event.options) if (option.effect.effectId !== undefined && !effectIds.has(option.effect.effectId)) problems.push(`option ${event.id}/${option.id} names unknown effect ${option.effect.effectId}`)
   if (content.choices) {
     if (!(content.choices.expiresAfterTicks >= 4 && content.choices.expiresAfterTicks <= 192)) problems.push('choices must expire between 4 and 192 ticks')
     if (content.choices.events.length === 0) problems.push('choices need at least one event')

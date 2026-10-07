@@ -61,3 +61,5 @@ The [D56 adaptive layout](adaptive-log-layout.md) is deployed v27, verified by 2
 [Potion pouch and merchant](merchant-pouch.md) records D77/D78: the pouch ladder, the wandering merchant's bounded offers and expiry, the companion cards, the device notice line (template v34) and the v4 balance run.
 
 [Narrative choices](choices.md) records D79: six authored events, one pending choice per hero with a day's expiry, the receipted choose intent and the simulator's default, and the decision notice.
+
+[Effects and affixes](effects-affixes.md) records D80/D81: the epic rarity, four affixes on rare and epic gear, three temporary effects with their order of operations, and the v6 balance run.

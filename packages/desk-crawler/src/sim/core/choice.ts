@@ -20,6 +20,8 @@ export interface ChoiceResolution {
   readonly gold: number
   readonly hp: number
   readonly potions: number
+  /** The effect to grant, when the catalog knows it (D80). */
+  readonly effectId?: string
 }
 
 /** The concrete change an effect makes to this hero: gold clamped at zero, HP within 1..max, potions within the pouch. */
@@ -29,5 +31,6 @@ export function resolveEffect(content: ContentCatalog, hero: Pick<HeroState, 'le
   const gold = Math.max(-hero.gold, goldChange)
   const hpChange = effect.hpPct === undefined ? 0 : effect.hpPct > 0 ? Math.min(max - hero.hp, pctOf(max, effect.hpPct)) : -Math.min(hero.hp - 1, pctOf(max, -effect.hpPct))
   const potions = Math.max(0, Math.min(effect.potions ?? 0, potionCap(content, hero) - potionsHeld))
-  return { gold, hp: hpChange, potions }
+  const effectId = effect.effectId !== undefined && content.effects?.some((rule) => rule.id === effect.effectId) ? effect.effectId : undefined
+  return { gold, hp: hpChange, potions, ...(effectId === undefined ? {} : { effectId }) }
 }

@@ -85,6 +85,8 @@ Potion pouch (D77, content v4): the potion cap is a per-hero ladder, Thermos 20 
 
 Wandering merchant (D78, content v4): 6 of 100 loot draws are a merchant visit instead of gear, a potion or gold. The visit opens one to three offers (a potion bundle of one to three at 12 gold × biome tier each, the next pouch and the next bag at ladder prices when the hero may take them early) for four ticks, stored on the hero and sold once each through `inventory.buyOffer`. Nothing is bought automatically; an expired visit is cleared on the hero's next evaluation in any status, with no event.
 
+Effects (D80, content v6): a hero carries up to three temporary effects, each a catalog rule with a duration and typed modifiers. A trap hit leaves it Bruised (−15% defense, 4 ticks), an elite win makes it Fired up (+10% attack, 8 ticks), the cake choice makes it Well fed (+10% XP, 8 ticks). Expired effects drop at the start of any evaluation, a knockout clears all of them, and any rest cleanses banes and keeps boons. Affix and effect modifiers are summed once per tick: attack and defense before combat, XP and gold on the rolled reward, trap damage on the roll, a heal after each victory, gold-loss points on retreat and knockout.
+
 Narrative choices (D79, content v5): 4 of 100 loot draws offer one of six office situations with two options, logged as the tick's story and kept on the hero for 96 ticks (one pending at a time; another draw falls through to gold). Answering in the companion applies the option's authored effect (gold, a share of maximum HP or potions, never XP) at once; letting it expire applies the default option as the whole event of the next exploring or resting tick. The same pure resolver serves both, clamped to what the hero has, so neither path can award twice and no choice ever needs intervention.
 
 Manual potions are allowed only when exploring/resting and below full HP. A potion can help a resting hero resume when its HP reaches 75%. Manual use cannot revive or heal while travelling/paused/sleeping. Repeated calls consume finite items and never advance encounters.
@@ -106,7 +108,7 @@ There is no persistent fighting status in MVP. Retry inputs and random draws mus
 
 Proposed loot weights: 15% one gear, 20% one potion, 65% gold (template-authored range, initially the biome tier's combat-gold range). Combat drops generate gear directly. If the potion stack is full after sustain, the potion branch yields its documented gold outcome before generating an item. No excess potion is created or auto-sold. These weights replace the old 20%-potion/otherwise-gear sketch and target about five gear/day; measure before final tuning.
 
-Gear rarity: common 70%, uncommon 25%, rare 5%. Choose weapon/armor evenly, then a template belonging to the biome's tier. No affixes or level-scaled random stat bonuses.
+Gear rarity: common 70%, uncommon 25%, rare 4%, epic 1% (D66, D81; epic +7 stat and ×8 sale value). Choose weapon/armor evenly, then a template belonging to the biome's tier. Rare and epic gear roll one affix (D81, content v6): Vampiric, Lucky, Sturdy or Thrifty, a typed modifier applied at one place in the rules. No level-scaled random stat bonuses.
 
 | Tier | Weapon base ATK | Armor base DEF | Required level | Base sale value |
 | --- | ---: | ---: | ---: | ---: |

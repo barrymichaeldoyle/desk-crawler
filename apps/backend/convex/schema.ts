@@ -16,7 +16,7 @@ export const heroStatus = v.union(
   v.literal('sleeping'),
 )
 
-export const rarity = v.union(v.literal('common'), v.literal('uncommon'), v.literal('rare'))
+export const rarity = v.union(v.literal('common'), v.literal('uncommon'), v.literal('rare'), v.literal('epic'))
 export const itemKind = v.union(v.literal('weapon'), v.literal('armor'), v.literal('potion'))
 
 /**
@@ -49,6 +49,8 @@ export const heroCounters = v.object({
   /** D79: choices answered in the companion, and choices that defaulted at expiry. */
   choicesMade: v.optional(v.number()),
   choicesDefaulted: v.optional(v.number()),
+  /** D81: epic gear found. */
+  epicFinds: v.optional(v.number()),
 })
 
 /** D78 merchant offers: at most three, each bought at most once. */
@@ -174,6 +176,8 @@ export default defineSchema({
     merchant: v.optional(merchantVisit),
     /** D79: a pending narrative choice, answered by `heroes.choose` or defaulted by the simulator at expiry. */
     choice: v.optional(v.object({ eventId: v.string(), offeredAtTick: v.number(), expiresAtTick: v.number(), biomeTier: v.number() })),
+    /** D80: active temporary effects, at most three. */
+    effects: v.optional(v.array(v.object({ id: v.string(), untilTick: v.number() }))),
     eligibleFromTick: v.number(),
     lastTick: v.number(),
     lastProgressTick: v.number(),
@@ -205,6 +209,8 @@ export default defineSchema({
     saleValue: v.number(),
     quantity: v.number(),
     createdAt: v.number(),
+    /** D81: affix rolled at generation; absent on common, uncommon and older gear. */
+    affixId: v.optional(v.string()),
   })
     .index('by_heroId', ['heroId'])
     .index('by_heroId_and_kind', ['heroId', 'kind']),

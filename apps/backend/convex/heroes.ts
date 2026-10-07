@@ -9,6 +9,7 @@ import { commandLog, currentUser, requirePlayableHero, runIntent } from './lib/i
 import { deriveStats } from '@trmnl-games/desk-crawler/sim/core/stats'
 import { withCounterDefaults } from '@trmnl-games/desk-crawler/sim/core/starter'
 import { eventById, optionOf, resolveEffect } from '@trmnl-games/desk-crawler/sim/core/choice'
+import { effectById, effectiveStats, liveEffects, withEffect } from '@trmnl-games/desk-crawler/sim/core/modifiers'
 import type { ContentCatalog } from '@trmnl-games/desk-crawler/sim/core/types'
 import { starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
 import { awardAfterIntent } from './lib/achievements'
@@ -39,8 +40,9 @@ export const mine = query({
       .query('items')
       .withIndex('by_heroId', (q) => q.eq('heroId', hero._id))
       .take(40)
-    const stats = deriveStats(hero, items.map((item) => ({ ...item, id: item._id })))
     const world = await readWorld(ctx)
+    // D80/D81: the stats the hero fights with, affixes and live effects included.
+    const stats = effectiveStats(content, { ...hero, ...(hero.effects === undefined ? {} : { effects: hero.effects }) }, items.map((item) => ({ ...item, id: item._id })), world?.currentTick ?? 0)
     // Achievement logs follow their gameplay event (D65); the scene keeps showing that event.
     const newest = (await ctx.db
       .query('tickLogs')
@@ -63,6 +65,9 @@ export const mine = query({
       maxHp: stats.maxHp,
       attack: stats.attack,
       defense: stats.defense,
+      baseAttack: deriveStats(hero, items.map((item) => ({ ...item, id: item._id }))).attack,
+      baseDefense: deriveStats(hero, items.map((item) => ({ ...item, id: item._id }))).defense,
+      effects: liveEffects(hero.effects, world?.currentTick ?? 0).map((active) => ({ id: active.id, name: effectById(content, active.id)?.name ?? active.id, blurb: effectById(content, active.id)?.blurb ?? '', kind: effectById(content, active.id)?.kind ?? 'boon', ticksLeft: active.untilTick - (world?.currentTick ?? 0) })),
       gold: hero.gold,
       status: hero.status,
       biomeId: hero.biomeId,
@@ -170,12 +175,13 @@ export const choose = mutation({
       const state = { level: hero.level, hp: hero.hp, gold: hero.gold, ...(hero.potionCap === undefined ? {} : { potionCap: hero.potionCap }) }
       const change = resolveEffect(content, state, potion?.quantity ?? 0, option.effect, pending.biomeTier)
       const counters = withCounterDefaults(hero.counters)
-      await ctx.db.patch(hero._id, { choice: undefined, gold: hero.gold + change.gold, hp: hero.hp + change.hp, counters: { ...counters, choicesMade: counters.choicesMade + 1, goldEarned: counters.goldEarned + Math.max(0, change.gold) } })
+      const granted = change.effectId === undefined ? undefined : effectById(content, change.effectId)
+      await ctx.db.patch(hero._id, { choice: undefined, gold: hero.gold + change.gold, hp: hero.hp + change.hp, counters: { ...counters, choicesMade: counters.choicesMade + 1, goldEarned: counters.goldEarned + Math.max(0, change.gold) }, ...(granted ? { effects: withEffect(hero.effects, granted, tick).map((effect) => ({ ...effect })) } : {}) })
       if (change.potions > 0) {
         if (potion) await ctx.db.patch(potion._id, { quantity: potion.quantity + change.potions })
         else await ctx.db.insert('items', { ...starterKit(content).potions, quantity: change.potions, heroId: hero._id, createdAt: Date.now() })
       }
-      await commandLog(ctx, (await ctx.db.get(hero._id))!, 'choose', option.story, { xpEarned: 0, gold: change.gold, hp: change.hp }, { eventId: event.id, optionId: option.id, ...(change.potions ? { potionsBought: change.potions } : {}) })
+      await commandLog(ctx, (await ctx.db.get(hero._id))!, 'choose', option.story, { xpEarned: 0, gold: change.gold, hp: change.hp }, { eventId: event.id, optionId: option.id, ...(change.potions ? { potionsBought: change.potions } : {}), ...(granted ? { effectGained: granted.id } : {}) })
       await awardAfterIntent(ctx, hero, content, tick)
       return { changed: true, gold: change.gold, hp: hero.hp + change.hp }
     }),

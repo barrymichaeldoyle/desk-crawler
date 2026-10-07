@@ -8,6 +8,8 @@ import { maxHp, pctOf } from '@trmnl-games/desk-crawler/sim/core/stats'
 import { bagUsed, currentTier, guaranteedTierIndex, isBagFull, nextEarlyTier, nextTier } from '@trmnl-games/desk-crawler/sim/core/bag'
 import { currentPouchTier, guaranteedPouchIndex, nextEarlyPouchTier, nextPouchTier, potionCap } from '@trmnl-games/desk-crawler/sim/core/pouch'
 import { starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
+import { affixById } from '@trmnl-games/desk-crawler/sim/core/modifiers'
+import { ACTIVE_CONTENT, catalogs } from '@trmnl-games/desk-crawler/content'
 import type { ContentCatalog, HeroState } from '@trmnl-games/desk-crawler/sim/core/types'
 import { readWorld, worldContent } from './world'
 import { awardAfterIntent } from './lib/achievements'
@@ -102,7 +104,8 @@ function merchantView(hero: Doc<'heroes'>, tick: number) {
   return { offers: hero.merchant.offers, expiresAtTick: hero.merchant.expiresAtTick, ticksLeft: hero.merchant.expiresAtTick - tick, biomeId: hero.merchant.biomeId }
 }
 
-const itemLabel = (item: Doc<'items'>) => `${item.rarity === 'common' ? '' : item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1) + ' '}${item.name}`
+/** "Vampiric Rare Keyboard Mace": the affix adjective (looked up in the active catalog), the rarity, the name. */
+const itemLabel = (item: Doc<'items'>) => `${affixById(catalogs[ACTIVE_CONTENT], item.affixId)?.name ?? ''} ${item.rarity === 'common' ? '' : item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1)} ${item.name}`.replace(/\s+/g, ' ').trim()
 
 /** Bag, held find, potions and capacity for the owner's hero. */
 export const mine = query({
@@ -139,6 +142,7 @@ export const mine = query({
           attack: item.attack,
           defense: item.defense,
           saleValue: item.saleValue,
+          affix: ((affix) => (affix ? { name: affix.name, blurb: affix.blurb } : null))(affixById(catalogs[ACTIVE_CONTENT], item.affixId)),
           equipped: item._id === hero.weaponId || item._id === hero.armorId,
           held: item._id === hero.heldItemId,
         }))

@@ -134,6 +134,7 @@ type HeroView = {
   stances: Stance[]
   merchantTicksLeft: number | null
   choice: Choice | null
+  effects: Array<{ id: string; name: string; blurb: string; kind: 'boon' | 'bane'; ticksLeft: number }>
 }
 
 type Choice = { eventId: string; title: string; prompt: string; expiresAtTick: number; ticksLeft: number; defaultOptionId: string; options: Array<{ id: string; label: string; change: { gold: number; hp: number; potions: number } }> }
@@ -186,6 +187,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
             ) : null}
           </div>
         ) : null}
+        {hero.effects.length > 0 ? <ul aria-label="Effects" className="flex flex-wrap gap-2 text-sm">{hero.effects.map((effect) => <li key={effect.id} className={`border-[3px] px-2 py-1 ${effect.kind === 'bane' ? 'border-hp-ink' : 'border-night'}`}><strong>{effect.name}</strong> · {effect.blurb} · {effect.ticksLeft === 1 ? 'one adventure' : `${effect.ticksLeft} adventures`} left</li>)}</ul> : null}
         {hero.merchantTicksLeft !== null ? <p className="text-sm"><strong>A merchant is visiting.</strong> <Link to="/app/desk-crawler/inventory" className="underline underline-offset-4">See the offers in your bag</Link> within {hero.merchantTicksLeft === 1 ? 'one adventure' : `${hero.merchantTicksLeft} adventures`}.</p> : null}
         {!healthy ? <p className="text-sm">Paused for a service check. <Link to="/support" className="underline underline-offset-4">Contact support</Link> if it lasts.</p> : null}
         <ActionFeedback error={feedback?.error ?? null} message={feedback?.message ?? null} />

@@ -191,6 +191,7 @@ export function celebrationFor(latest: LatestEvent | null, level: number): strin
   const outcome = latest.outcome
   if (outcome?.variant === 'combat' && outcome.elite === true && outcome.outcome === 'victory') return 'Elite defeated!'
   if (outcome?.variant === 'loot' && outcome.jackpot === true) return 'Jackpot!'
+  if (outcome?.variant === 'loot' && outcome.found === 'gear' && outcome.rarity === 'epic') return 'Epic find!'
   if (outcome?.variant === 'loot' && outcome.found === 'gear' && outcome.rarity === 'rare') return 'Rare find!'
   return null
 }

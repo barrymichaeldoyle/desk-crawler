@@ -28,6 +28,7 @@ export const RARITY_TONE: Record<string, string> = {
   common: 'text-ink',
   uncommon: 'text-xp-ink',
   rare: 'text-rare-ink',
+  epic: 'text-gold-ink',
 }
 
 /** Log badge fills: the glyph sits in night ink on its game colour. */

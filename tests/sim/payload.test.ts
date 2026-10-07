@@ -101,6 +101,7 @@ describe('log lines and celebrations (D44)', () => {
   it('stays quiet behind an attention message', () => {
     const celebration = (p: unknown) => (p as { celebration: string | null }).celebration
     expect(celebration(buildPayload({ ...played, latestEvent: { kind: 'levelup' } }))).toBe('Level up! Now level 1')
+    expect(celebration(buildPayload({ ...played, latestEvent: { kind: 'loot', outcome: { variant: 'loot', found: 'gear', rarity: 'epic' } } }))).toBe('Epic find!')
     expect(celebration(buildPayload({ ...played, latestEvent: { kind: 'levelup' }, world: { ...input.world!, maintenanceMode: true } }))).toBeNull()
   })
 })

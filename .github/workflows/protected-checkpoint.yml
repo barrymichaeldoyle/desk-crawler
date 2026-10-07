@@ -1,0 +1,55 @@
+# Protected recovery checkpoint (recovery-runbook.md): an hourly read-only Convex export of production, sealed with
+# a key that only the owner holds, kept as a 14-day workflow artifact. Captures start only once the two secrets exist
+# in the `recovery-checkpoints` environment; until then the job ends with a warning instead of failing every hour.
+# The artifact holds only the encrypted checkpoint, never the raw export or the key.
+name: Protected recovery checkpoint
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: protected-recovery-checkpoint
+  cancel-in-progress: false
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: recovery-checkpoints
+    env:
+      CONVEX_DEPLOY_KEY: ${{ secrets.RECOVERY_CONVEX_DEPLOY_KEY }}
+      RECOVERY_CHECKPOINT_KEY: ${{ secrets.RECOVERY_CHECKPOINT_KEY }}
+    steps:
+      - name: Check the secrets exist
+        id: configured
+        run: |
+          if [ -z "$CONVEX_DEPLOY_KEY" ] || [ -z "$RECOVERY_CHECKPOINT_KEY" ]; then
+            echo "::warning::RECOVERY_CONVEX_DEPLOY_KEY and RECOVERY_CHECKPOINT_KEY are not both set in the recovery-checkpoints environment; no checkpoint captured."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.configured.outputs.ready == 'true'
+      - uses: pnpm/action-setup@v4
+        if: steps.configured.outputs.ready == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.configured.outputs.ready == 'true'
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        if: steps.configured.outputs.ready == 'true'
+      - name: Capture and encrypt
+        if: steps.configured.outputs.ready == 'true'
+        run: |
+          mkdir -m 700 "$RUNNER_TEMP/protected-checkpoint"
+          pnpm tsx tools/recovery/capture-export.ts --source exciting-cormorant-948 --out "$RUNNER_TEMP/protected-checkpoint/checkpoint.dcr"
+      - uses: actions/upload-artifact@v4
+        if: steps.configured.outputs.ready == 'true'
+        with:
+          name: protected-checkpoint-${{ github.run_id }}
+          path: ${{ runner.temp }}/protected-checkpoint/checkpoint.dcr
+          retention-days: 14
+          if-no-files-found: error

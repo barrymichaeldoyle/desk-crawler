@@ -1,6 +1,6 @@
 # TRMNL marketplace review package (draft)
 
-**Status: plugin 564 submitted for review by Barry on 2026-10-07; the email is his final draft, not yet confirmed sent.** Barry authorized the listing update and companion deployment; those actions are complete ([evidence](../evidence/listing-polish-deploy.md)). Submission and reviewer contact still need explicit authorization.
+**Status: plugin 564 submitted for review by Barry on 2026-10-07 and the review email sent by him the same day.** Barry authorized the listing update and companion deployment; those actions are complete ([evidence](../evidence/listing-polish-deploy.md)). Submission and reviewer contact still need explicit authorization.
 
 ## Listing
 

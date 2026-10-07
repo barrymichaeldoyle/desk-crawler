@@ -27,7 +27,7 @@ Scope still to deploy (all local, approved):
 | Platformer HUD companion | D60 | The reviewed companion |
 | Achievements | D65/O14 | Deployed 2026-10-06 at Barry's request as an additive system: optional counters with a one-off backfill, new tables, companion section and device celebration. No payload meaning changed |
 
-Done: the reset-first deployment ([runbook](release/pre-launch-reset.md)), the install recording, the review package and Submit for Review (2026-10-07). Barry sends the review email himself. Each further external action needs its own authorization.
+Done: the reset-first deployment ([runbook](release/pre-launch-reset.md)), the install recording, the review package, Submit for Review and the review email, sent by Barry (2026-10-07). Also done on 2026-10-07 under v1.0.x: template v33 (D74: XP ticks, attack and defense, shorter header, marked leaderboard row) and the stand-up and retro recap periods (D75). Barry sent the review email himself. Each further external action needs its own authorization.
 
 **After submission (D70).** There is no scope freeze. The D63 reset is the last moment stored meaning changes without a migration; from that deployment on, every change ships under the post-launch preservation rule (progress preserved, old payload fields and templates keep their meaning, balance under a new content version). Review may take a while, so v1.1 work starts immediately and additive systems deploy as they pass their checks. The one courtesy to reviewers: keep the submitted listing, recording and help accurate, and refresh the review package when a deployed change alters what they see.
 
@@ -39,7 +39,7 @@ Gate: [product acceptance](product.md), [quality checks](quality.md), recorded d
 
 Runs from submission through the first weeks of public play. Patch releases only.
 
-- Live monitoring and protected capture (the inactive [hourly capture template](../tools/recovery/checkpoint-workflow.yml.txt)), real-provider deletion/expiry/reinstall proof, funding decision O11 from measured costs.
+- Live monitoring and protected capture: the [hourly capture workflow](../.github/workflows/protected-checkpoint.yml) and its watchdog are checked in and scheduled (2026-10-07); captures start when Barry adds the two environment secrets ([runbook](release/recovery-runbook.md)). Still open: real-provider deletion/expiry/reinstall proof, funding decision O11 from measured costs.
 - Measured balance passes under a new content version. First one prepared 2026-10-07: content v2 (D71) raises the auto-potion threshold to 50% and the rest threshold to 35% so a level-8 hero stops walking into the Cafeteria one hit from a knockout; late upgrade saturation is accepted until v1.1 affixes and v2.0 upgrades. D61 numbers are measurement starting points: watch three-day/seven-day sleep share and the level-8 date for weekly managers (harness: day 17).
 - Physical checks that were waived or unverified: portrait display, keepsake claim path.
 - Listing, help and companion copy from reviewer and first-player feedback. Done 2026-10-07: potion heal amount on the help and Bag pages. Also done: the tick detail records `potionHealing` and the change row shows `+N HP from potion`, so an automatic drink is no longer hidden inside net HP (additive optional field, same simulation version; older logs simply omit it).

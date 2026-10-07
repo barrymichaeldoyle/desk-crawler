@@ -1,0 +1,31 @@
+# Missing-checkpoint alert (recovery-runbook.md): every half hour, fails when the newest successful protected
+# checkpoint is older than 90 minutes, which emails the workflow's committer. Quiet until the first capture has ever
+# succeeded, so an unconfigured environment does not page anyone.
+name: Checkpoint watchdog
+on:
+  schedule:
+    - cron: '47,17 * * * *'
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Age of the newest successful checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          latest=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/protected-checkpoint.yml/runs?status=success&per_page=1" --jq '.workflow_runs[0].updated_at // empty')
+          if [ -z "$latest" ]; then
+            echo "No successful checkpoint yet; nothing to guard."
+            exit 0
+          fi
+          age=$(( $(date -u +%s) - $(date -u -d "$latest" +%s) ))
+          echo "Newest successful checkpoint: $latest ($((age / 60)) minutes ago)"
+          if [ "$age" -gt 5400 ]; then
+            echo "::error::No successful protected checkpoint in the last 90 minutes."
+            exit 1
+          fi

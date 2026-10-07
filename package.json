@@ -19,6 +19,7 @@
     "lint:trmnl:setup": "tsx tools/trmnl/lint.ts --install",
     "lint:trmnl": "tsx tools/trmnl/lint.ts",
     "crosscheck:trmnl": "tsx tools/trmnl/crosscheck.ts",
+    "sweep:trmnl": "node tools/trmnl/sweep.mjs",
     "check": "pnpm typecheck && pnpm test",
     "build:deploy": "node tools/deploy/check-target.mjs && pnpm check && convex deploy -y --cmd 'pnpm build'",
     "deploy:web": "pnpm --filter @trmnl-games/web run deploy"
@@ -34,6 +35,7 @@
     "convex-test": "^0.0.60",
     "jsqr": "^1.4.0",
     "liquidjs": "^10.30.0",
+    "playwright-core": "1.63.0",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3",
@@ -49,13 +51,13 @@
     "@tanstack/react-router": "^1.170.41",
     "@tanstack/react-router-ssr-query": "^1.167.3",
     "@tanstack/react-start": "^1.168.60",
+    "@trmnl-games/backend": "workspace:*",
+    "@trmnl-games/desk-crawler": "workspace:*",
+    "@trmnl-games/platform": "workspace:*",
     "convex": "^1.46.0",
     "jose": "^6.2.12",
     "qrcode-generator": "^2.0.4",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0",
-    "@trmnl-games/backend": "workspace:*",
-    "@trmnl-games/desk-crawler": "workspace:*",
-    "@trmnl-games/platform": "workspace:*"
+    "react-dom": "^19.3.0"
   }
 }

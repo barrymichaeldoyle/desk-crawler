@@ -1,6 +1,6 @@
 # Release preparation — 2026-10-05
 
-**Plugin 564 was submitted for review by Barry on 2026-10-07; the review email is his to send.** Listing updates, companion deployment and author-entitlement verification are complete. Barry recorded and hosted the install video and has put its link in the email he is drafting (2026-10-07). Owner/sender is confirmed, and Barry plans to promote TRMNL at launch. [Engineering checks](engineering-readiness.md) now prove synthetic cloud recovery, interrupted work, failed-notice exhaustion and lifecycle edges; four fixes and `No effect` were [deployed on October 6](engineering-deploy.md). Ongoing production capture, real-provider verification and funding decisions remain launch gates. No review submission, media publication or reviewer contact was performed.
+**Plugin 564 was submitted for review by Barry on 2026-10-07 and he sent the review email the same day.** Listing updates, companion deployment and author-entitlement verification are complete. Barry recorded and hosted the install video and has put its link in the email he is drafting (2026-10-07). Owner/sender is confirmed, and Barry plans to promote TRMNL at launch. [Engineering checks](engineering-readiness.md) now prove synthetic cloud recovery, interrupted work, failed-notice exhaustion and lifecycle edges; four fixes and `No effect` were [deployed on October 6](engineering-deploy.md). Ongoing production capture, real-provider verification and funding decisions remain launch gates. No review submission, media publication or reviewer contact was performed.
 
 ## Release identity
 
@@ -39,7 +39,7 @@ The approved D54 recap release passed 202 tests, all 200 OG/X previews, the actu
 | Reviewer testing | Supported reviewer-owned email/Google/GitHub signup documented; no owner credentials or auth bypass |
 | Review email | Done 2026-10-07: Barry is finishing the final email himself, video link included; owner/sender barry@barrymichaeldoyle.com. Not yet sent |
 | Author entitlement | Complete: registered TRMNL X, Developer Perks available and lifetime TRMNL+ observed in the signed-in account ([evidence](author-entitlement.md)) |
-| Submit for Review and email | Barry submitted plugin 564 for review on 2026-10-07. The review email is Barry's own final draft, video link included; not yet confirmed sent |
+| Submit for Review and email | Barry submitted plugin 564 for review on 2026-10-07. Barry sent the review email, video link included, on 2026-10-07 (confirmed by him); sent |
 | Creator Fund | Current public rules and zero-payout assessment recorded; ask TRMNL to confirm this Third Party game's eligibility/onboarding in the submission email |
 
 TRMNL's [current Going Live instructions](https://docs.trmnl.com/go/plugin-marketplace/going-live) require Submit for Review followed by an email with plugin ID, matching owner/sender, public benefit, installation video, testing access and promotion answer. [Plugin Creation](https://docs.trmnl.com/go/plugin-marketplace/plugin-creation) specifies a 35-character description.

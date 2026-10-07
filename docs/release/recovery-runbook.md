@@ -63,7 +63,17 @@ pnpm tsx tools/recovery/capture-export.ts \
   --out /private/protected/checkpoint-TIMESTAMP.dcr
 ```
 
-That production command needs authorization. The [hourly workflow template](../../tools/recovery/checkpoint-workflow.yml.txt) is inactive outside `.github/workflows`. It proposes a protected GitHub environment and encrypted artifacts retained for 14 days, with the key also held in a separate password manager. Destination/access, secrets, notifications and a >90-minute missing-checkpoint alert must be configured before activation. Workflow failure notification alone does not detect a disabled schedule. No production capture or secrets setup occurred.
+That production command needs authorization. Since 2026-10-07 the [hourly capture workflow](../../.github/workflows/protected-checkpoint.yml) is checked in and scheduled (minute 17 of every hour, plus manual dispatch) against the `recovery-checkpoints` GitHub environment, with encrypted artifacts retained for 14 days and the [watchdog workflow](../../.github/workflows/checkpoint-watchdog.yml) failing (which emails the committer) when no successful capture is newer than 90 minutes. Captures start only once the owner adds both environment secrets, which is the approval step; until then the capture job ends with a warning and the watchdog stays quiet.
+
+Owner setup, once: create a production deploy key for `exciting-cormorant-948` in the Convex dashboard (Settings → Deploy keys, name it `recovery-checkpoints`), generate the sealing key and keep it in the password manager, then store both as environment secrets:
+
+```sh
+openssl rand -hex 32   # save this in the password manager first
+gh secret set RECOVERY_CHECKPOINT_KEY --env recovery-checkpoints   # paste the 64 hex characters
+gh secret set RECOVERY_CONVEX_DEPLOY_KEY --env recovery-checkpoints   # paste the Convex deploy key
+```
+
+The repository is public, so anyone can download a workflow artifact; the artifact is only the AES-256-GCM sealed checkpoint and is useless without the key, which never enters GitHub except as the environment secret. Rotate the sealing key by replacing the secret; older artifacts stay readable with the key they were sealed with. Destination/access, secrets, notifications and a >90-minute missing-checkpoint alert must be configured before activation. Workflow failure notification alone does not detect a disabled schedule. No production capture or secrets setup occurred.
 
 Full exports include unrelated gameplay data temporarily. At the measured synthetic size, an archive is about 2.6 MB, or roughly 1.9 GB transferred over 720 hourly captures; full table reads, snapshot/storage charges and other traffic are additional. The 700-byte encrypted preview checkpoint is not evidence that producing it costs only 700 bytes. Prefer a consistent minimal export or streaming capture if full-export cost becomes material.
 

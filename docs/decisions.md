@@ -155,11 +155,11 @@ O01, O06 and O07–O10 are resolved; their technical verification gates remain o
 | O14 | Add the achievement counters to the hero before the D63 reset? | Resolved 2026-10-06: Barry asked for every implementation gap and then for deployment. Production had already been reset and held one post-reset hero, so the nine counters (`monsterWins`, `eliteWins`, `jackpots`, `rareFinds`, `potionsUsed`, `trapsAvoided`, `restTicks`, `trips`, `itemsSold`) shipped as optional additive fields with a resumable backfill (`achievements.backfillCounters`) rather than as a schema break; reads normalize a missing counter to zero. Logs are retained 72 hours, so the few adventures that hero took before the deploy are not reflected in the new counters |
 | O15 | Potion pouch tiers and strengths: do strengths share one pouch cap or each have their own? | Working assumption: shared cap (one pouch number on the device and companion), which keeps the pouch a single visible object; affects P29/P30 |
 | O13 | One generic salvage material or one per rarity/tier? | Working assumption: one per rarity (three stack rows), simple enough for the companion and enough to make rare salvage feel distinct; affects P26/P27 |
-| O11 | Launch/funding decision if measured costs exceed payouts or fund eligibility fails? | Barry chose to decide after measured costs; no subsidy or eligibility-only launch rule is approved. Preserve zero-revenue measurements and V10 |
+| O11 — resolved | Launch/funding decision if measured costs exceed payouts or fund eligibility fails? | Resolved 2026-10-07: Barry reports Creator Fund payouts well above operating costs, so there is no funding decision to make. Keep recording costs in the capacity evidence as ordinary operations |
 
 Gameplay constants are tuning proposals except explicitly confirmed rules/numbers (including death/revival and level-group boundaries). Bag size/acquisition rates are approved measurement starting points, not tuned results. Record tuning changes in balance evidence and affected contracts.
 
-D24–D28 resolve final pacing/content/recap/incident/recovery-policy recommendations. Exact operational address, backup entitlement and independent deletion/revocation recovery source remain setup/verification work. O11 remains deferred until measured costs.
+D24–D28 resolve final pacing/content/recap/incident/recovery-policy recommendations. Exact operational address, backup entitlement and independent deletion/revocation recovery source remain setup/verification work. O11 is resolved: payouts exceed costs (2026-10-07).
 
 ## Corrections to the earlier rough design
 
@@ -263,3 +263,5 @@ D24–D28 resolve final pacing/content/recap/incident/recovery-policy recommenda
 2026-10-07, deletion rehearsal: Barry ran the full real-provider account deletion rehearsal (confirmation email, deletion, reinstall) and reported it worked fine; the D68/D69 live-provider gate is closed on his report.
 
 2026-10-07, protected capture live: Barry stored the Convex deploy key and the sealing key in the `recovery-checkpoints` environment. The first two runs failed (a hex key pasted as the deploy key, then the CLI's dashboard lookup under `--deployment`); the export tool now reports the CLI's message and lets the deploy key pick the deployment. Hourly sealed checkpoints run from 14:23 UTC with the 90-minute watchdog guarding them.
+
+2026-10-07, O11 closed: Barry stated that Creator Fund payouts are well above operating costs, so no launch or funding decision remains; costs stay in the capacity evidence as routine measurement.

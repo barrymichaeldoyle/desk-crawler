@@ -1,30 +1,36 @@
-# HUD layout — template v32 (D72)
+# HUD layout: hearts, counters and story chips — 2026-10-07
 
-Barry requested the companion's HUD elements on TRMNL, removal of the next-adventure clock, and clearer adventure logs on 2026-10-07. The finished template uses ten half-heart health marks, coin and potion counters, and outlined stat chips. Story times remain in the installation's timezone; narrow portrait columns place the time beside the chips. `next_tick_at` remains in the payload for the companion.
+Barry asked for the TRMNL layout to look better using the companion's HUD elements (hearts for HP), to drop the next-adventure time, and to polish the logs. Template **v32** (D72) was verified locally and then committed and pushed with Barry's authorization from a parallel session (`4a12184`), which also added the companion footer credits; its lint and Workers build passed. **Live server render and physical readability are not yet verified.**
 
-This follow-up finishes the partial template included in `35c85a6`: explicit Liquid `floor` filters make health rounding agree between liquidjs and Ruby Liquid, stretched image wrappers keep the divider within narrow portrait columns, and full portrait uses the medium scene asset. The XP bar, recap, rank and QR rules retain their existing behavior.
+## Behavior
 
-## Checks rerun before commit and push
+Every view draws health as ten half-heart hearts, floored in Liquid from the real `hp`/`max_hp` so liquidjs and Ruby Liquid agree; the row is never empty while the hero lives and fully empty when knocked out. Wide rows (full landscape and portrait) carry the `hp/max_hp HP` count beside the hearts; the side, half, quarter and portrait columns show the count in the counter line instead, since ten hearts fill their width. Coin and potion marks replace the "gold · potions" words, with bare numbers in narrow columns. The XP bar, scene, divider, recap, rank panel, attention rules and QR codes are unchanged. Half horizontal uses 4/6/2 hero/history/QR columns.
 
-- `pnpm check`: all typechecks and **288 tests in 43 files** pass, including half-heart boundaries, zero/living health, narrow counters, story times and chips, and absence of the device clock.
-- `pnpm lint:trmnl`: all official markup checks pass.
-- `pnpm crosscheck:trmnl`: **276 renders identical** in liquidjs and Ruby Liquid through the pinned `trmnlp` environment.
-- `pnpm build`: production client and Workers server builds pass. Existing TanStack `inputValidator` deprecation notices remain.
-- `git diff --check`: passes.
-- The committed OG full, OG side and X full screenshots below were visually inspected: health, counters and complete visible story/change pairs fit above the footer; recap, rank and QR remain readable.
+Each story keeps its HH:MM at the end of its line; its nonzero changes follow as outlined chips (one per ` · `-separated change, `No effect` included) in a block that wraps like words, indented to the story's edge. The 240-pixel portrait side and quarter columns place the time among the chips. Whole-entry fitting is unchanged.
 
-The earlier layout session recorded a **504-preview sweep** across scenarios, OG/X/BWRY, four layouts and both orientations in D72 and the integration docs. That sweep was not repeated for this commit; its raw aggregate report is not retained in this repository. The screenshots and the rerun checks above are the retained evidence for this follow-up.
+No layout shows the next-adventure clock. `next_tick_at` stays in the payload for the companion and `utc_offset` still drives story and pending-status times. The help page explains the quarter-hour schedule instead of the clock.
 
-## Retained screenshots
+Two pre-existing portrait defects were fixed on the way: the full portrait's scene and rune divider rows now stretch so the framework's image max-width keeps the 600-pixel rule inside the OG panel, and the X full portrait uses the medium scene instead of clipping the large one.
 
-- [OG full](layouts/v32-og-full.png)
-- [OG side](layouts/v32-og-side.png)
-- [X full](layouts/v32-x-full.png)
+## Local verification
 
-The screenshots use illustrative fixture names and game state. They are local framework previews, not proof of server rendering or physical device delivery.
+- Typechecks and **288 tests / 43 files** pass. The template suite covers half-heart rounding (16 of 20 at 118/148, a half at 75/100), the one-half floor at 1 HP, all empty at 0 HP, the HP count placement, counter words versus bare numbers, chips for every change including potion finds, the time position in landscape versus the narrow portrait columns, and that no layout renders the clock even with an offset.
+- Official TRMNL markup lint passes. **276 renders identical** in liquidjs and Ruby Liquid (trmnlp), after flooring the heart arithmetic; the first local cut differed (`data-hearts="16.44"` versus `16`), which is what failed the CI lint on `35c85a6`.
+- **504 settled previews**: 21 states × four layouts × OG/X/BWRY × landscape/portrait, pinned framework 3.4.0. No element outside its view or below the title bar, no broken image, no unclamped text overflow, every story list fitted completely, and 432 heart rows each holding ten hearts. 2,551 chips rendered; 299 chip rows wrapped onto more than one line without leaving their column.
 
-## Rollout
+Fitted story counts for the ordinary fixture (not guaranteed row counts):
 
-Barry authorized committing and pushing all outstanding work to `main` on 2026-10-07. That push triggers the production pipeline for Convex `exciting-cormorant-948` and the companion at `trmnlgames.com`. Deployment completion, a live TRMNL server render and physical readability remain separate evidence; this document does not claim they have passed.
+| Device | Full | Half | Side | Quarter |
+| --- | ---: | ---: | ---: | ---: |
+| OG | 3 | 2 | 4 | 2 |
+| X | 5 | 6 | 6 | 4 |
+| OG portrait | 6 | 4 | 6 | 2 |
+| X portrait | 6 | 5 | 6 | 5 |
 
-The same commit adds the shared companion footer: unofficial-site wording with a normal link to TRMNL, plus Barry Michael Doyle's website, LinkedIn and X links. The footer was inspected on desktop and at a 375-pixel phone width with no horizontal overflow; its external destinations have no `nofollow` attribute.
+Captures: [OG full](layouts/v32-og-full.png), [OG side](layouts/v32-og-side.png), [X full](layouts/v32-x-full.png). [Sanitized results](hud-layout-results.json) keep counts and bounds only.
+
+## Rollout state
+
+A review-submission commit from a parallel session (`35c85a6`, 02:02 UTC+2) swept up the half-finished template and `hud.ts`. Its TRMNL lint (cross-check mismatch) and Workers build both failed, so production kept the previous build. Barry authorized that session to commit and push all outstanding work: `4a12184` (02:22) carries the finished v32, the flooring fix, the portrait scene/divider fix, tests, help copy and docs, and passed the lint workflow and the Workers build for Convex `exciting-cormorant-948` and `trmnlgames.com`. The 504-preview sweep above was rerun on that exact template state after the portrait fix; the results file was added afterwards. A live TRMNL server render and physical readability remain separate evidence; this document does not claim they have passed.
+
+The same commit adds the shared companion footer: unofficial-site wording with a normal link to TRMNL, plus Barry Michael Doyle's website, LinkedIn and X links, inspected on desktop and at a 375-pixel phone width with no horizontal overflow.

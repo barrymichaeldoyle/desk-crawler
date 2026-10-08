@@ -2,7 +2,7 @@ import { currentHero, gameProfile } from './lib/gameProfile'
 import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import type { Doc } from './_generated/dataModel'
-import { mutation, query, type MutationCtx, type QueryCtx } from './_generated/server'
+import { internalQuery, mutation, query, type MutationCtx, type QueryCtx } from './_generated/server'
 import { appError } from './lib/errors'
 import { sha256Hex } from './lib/hash'
 import { normalizeAlias } from './lib/names'
@@ -57,6 +57,42 @@ export const health = query({
       openIncidents: openIncidents.map((i) => ({ id: i._id, openedAt: i.openedAt, alert: i.alert.state })),
       blockedDeletions: blockedDeletions.map((j) => ({ id: j._id, phase: j.phase, reasonCode: j.reasonCode ?? null })),
       recentAudit: recentAudit.map((a) => ({ at: a.at, action: a.action, targetRef: a.targetRef, reasonCode: a.reasonCode, outcome: a.outcome })),
+    }
+  },
+})
+
+const ENGAGEMENT_SCAN = 5000
+const DAY_MS = 24 * 60 * 60 * 1000
+
+/**
+ * Operator view of v1.1 engagement for every active hero, consent or not:
+ * `npx convex run --prod admin:engagement`. Reads lifetime counters only (no
+ * logs); stops at 5,000 heroes and says so with `truncated`.
+ */
+export const engagement = internalQuery({
+  args: {},
+  returns: v.any(),
+  handler: async (ctx) => {
+    const scanned = await ctx.db.query('heroes').withIndex('by_createdAt').take(ENGAGEMENT_SCAN)
+    const heroes = scanned.filter((h) => h.isActive && h.activationState === 'active')
+    const now = Date.now()
+    const tally = (values: (string | number)[]) => values.reduce<Record<string, number>>((acc, key) => ({ ...acc, [key]: (acc[key] ?? 0) + 1 }), {})
+    const sum = (pick: (c: Doc<'heroes'>['counters']) => number | undefined) => heroes.reduce((total, h) => total + (pick(h.counters) ?? 0), 0)
+    const reached = (pick: (c: Doc<'heroes'>['counters']) => number | undefined) => heroes.filter((h) => (pick(h.counters) ?? 0) > 0).length
+    const visitedWithin = (days: number) => heroes.filter((h) => h.companionVisitBaseline && now - h.companionVisitBaseline.at <= days * DAY_MS).length
+    const users = await ctx.db.query('users').withIndex('by_state', (q) => q.eq('state', 'active')).take(ENGAGEMENT_SCAN)
+    return {
+      truncated: scanned.length === ENGAGEMENT_SCAN,
+      activeHeroes: heroes.length,
+      companionVisits: { within1Day: visitedWithin(1), within7Days: visitedWithin(7), never: heroes.filter((h) => !h.companionVisitBaseline).length },
+      stances: tally(heroes.map((h) => h.stance ?? 'balanced')),
+      stanceChanges: { total: sum((c) => c.stanceChanges), heroes: reached((c) => c.stanceChanges) },
+      choices: { made: sum((c) => c.choicesMade), defaulted: sum((c) => c.choicesDefaulted), heroesWhoChose: reached((c) => c.choicesMade), pending: heroes.filter((h) => h.choice).length },
+      merchant: { visits: sum((c) => c.merchantVisits), purchases: sum((c) => c.purchases), heroesMet: reached((c) => c.merchantVisits), heroesBought: reached((c) => c.purchases), open: heroes.filter((h) => h.merchant).length },
+      bagCapacity: tally(heroes.map((h) => h.bagCapacity)),
+      potionCap: tally(heroes.map((h) => h.potionCap ?? 'default')),
+      epicFinds: { total: sum((c) => c.epicFinds), heroes: reached((c) => c.epicFinds) },
+      analyticsConsent: tally(users.map((u) => (u.analyticsConsent === undefined ? 'unset' : u.analyticsConsent ? 'allowed' : 'declined'))),
     }
   },
 })

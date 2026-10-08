@@ -1,7 +1,7 @@
 // @vitest-environment edge-runtime
 import { convexTest } from 'convex-test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { api } from '@trmnl-games/backend/api'
+import { api, internal } from '@trmnl-games/backend/api'
 import schema from '../../apps/backend/convex/schema'
 import { seedHero, seedWorld, type T } from './helpers'
 
@@ -49,5 +49,30 @@ describe('owner-run moderation (D23)', () => {
     await expect(player.mutation(api.heroes.pause, { operationId: 'pause-0009' })).rejects.toThrow()
     await admin.mutation(api.admin.setSuspended, { userId: user, suspended: false, reasonCode: 'appeal_ok' })
     await player.mutation(api.heroes.pause, { operationId: 'pause-0010' })
+  })
+
+  it('reports v1.1 engagement across active heroes regardless of analytics consent', async () => {
+    const chooser = await seedHero(t, { stance: 'bold', potionCap: 30 })
+    await t.run(async (ctx) => {
+      const hero = (await ctx.db.get(chooser))!
+      await ctx.db.patch(chooser, { counters: { ...hero.counters, choicesMade: 2, choicesDefaulted: 1, stanceChanges: 3, merchantVisits: 2, purchases: 1 }, companionVisitBaseline: { at: Date.now(), level: 1, lifetimeXp: 0, logSequence: 1, counters: hero.counters } })
+      await ctx.db.patch(hero.userId, { analyticsConsent: false })
+    })
+    const passive = await seedHero(t, { choice: { eventId: 'e', offeredAtTick: 1, expiresAtTick: 97, biomeTier: 1 } })
+    await t.run(async (ctx) => await ctx.db.patch(passive, { counters: { ...(await ctx.db.get(passive))!.counters, choicesDefaulted: 4 } }))
+    await seedHero(t, { activationState: 'pending_trmnl' })
+
+    const stats = await t.query(internal.admin.engagement, {})
+    expect(stats).toMatchObject({
+      truncated: false,
+      activeHeroes: 2,
+      companionVisits: { within1Day: 1, within7Days: 1, never: 1 },
+      stances: { bold: 1, balanced: 1 },
+      stanceChanges: { total: 3, heroes: 1 },
+      choices: { made: 2, defaulted: 5, heroesWhoChose: 1, pending: 1 },
+      merchant: { visits: 2, purchases: 1, heroesMet: 1, heroesBought: 1, open: 0 },
+      potionCap: { 30: 1, default: 1 },
+      analyticsConsent: { declined: 1, unset: 2 },
+    })
   })
 })

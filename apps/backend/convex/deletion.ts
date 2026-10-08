@@ -253,6 +253,9 @@ export const purgeStep = internalMutation({
         if (user) {
           const reconnect = await ctx.db.query('trmnlReconnectAttempts').withIndex('by_tokenIdentifier', q => q.eq('tokenIdentifier', user.tokenIdentifier)).unique()
           if (reconnect) await ctx.db.delete(reconnect._id)
+          // An entry the account attached to the launch list goes with it (D105); email-only entries are not linked.
+          const waitlist = await ctx.db.query('waitlist').withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', user.tokenIdentifier)).take(BATCH)
+          for (const row of waitlist) await ctx.db.delete(row._id)
           const confirmations = await ctx.db.query('accountDeletionConfirmations').withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', user.tokenIdentifier)).take(BATCH)
           if (confirmations.length) { await deleteBatch(ctx, confirmations); await again(); return null }
         }

@@ -67,6 +67,7 @@ Production deployment authorization and continuous automation rules will be esta
 | Broken layout | Revert template selection to last tested version; keep payload/game state; record screenshot evidence |
 | New sprite missing | Keep old template/assets selected until static upload exists; asset URLs are versioned |
 | Account deletion | Disable authority immediately, tombstone connections, mask copied public names, resume batched purge until verified complete |
+| Launch email (D105) | After marketplace approval and Barry's go-ahead: `npx convex run --prod waitlist:summary`, then `npx convex run --prod waitlist:sendLaunch '{"installUrl":"<marketplace URL>"}'`. It sends 50 per Resend batch call and reschedules itself until the list is empty; check `summary` again. `failed` rows mean Resend refused three times: fix the cause, run `waitlist:requeue`, then `sendLaunch` again. Afterwards remove the forms and change `RELEASE_STATUS` |
 | Cleanup backlog | Reduce page size if limits hit, resume continuation; inspect oldest row and protected active generations |
 | Usage nearing allowance | Measure dominant operation; adjust log retention/batch sizes/read shape; discuss paid capacity before imposing new gameplay restrictions |
 

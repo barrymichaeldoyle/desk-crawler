@@ -64,6 +64,9 @@ No unbounded public hero lists, arbitrary hero-ID reads, or public token lookup 
 | `heroes.resume` | none | Restore prior status; no catch-up | Exploring/resting already unpaused is no-op; sleeping uses resumeAdventures |
 | `trmnl.disconnect` | `instanceId` | Tombstone that instance, preserve hero | Own instance; repeated disconnect no-op |
 | `deletion.requestDeletionEmail` | None; authenticated action | Reserve a confirmation and email the verified primary Clerk address; no deletion | Own account; one request per 30 minutes |
+| `waitlist.join` | `email`, `source: notify \| pitch \| landing`, honeypot `website?` | D105: add a normalized address to the launch list; repeats and honeypot fills succeed without a new row | Public, no sign-in; 300 joins per 10 minutes overall |
+| `waitlist.leave` | `id`, signed `token` | Remove a launch-list entry from the email's unsubscribe page; an already-removed entry still succeeds | Public; HMAC token required |
+| `waitlist.joinWithAccount` / `waitlist.leaveWithAccount` | None | Join with, or leave from, the verified primary Clerk email; joining attaches the account to an existing entry for that address | Signed in; revoked or deleting accounts refused |
 | `deletion.requestDeletion` | `operationId`, `confirm: DELETE`, email `token` | Disable authority/mask public names; start durable whole-account deletion | Same signed-in identity, delivered/unexpired email proof and explicit POST |
 
 No manual revival, policy editing, ordinary rename, buy merchant item, spell, prestige or guild mutation in MVP. Unused controls must not appear disabled in the web UI as if they are implemented.

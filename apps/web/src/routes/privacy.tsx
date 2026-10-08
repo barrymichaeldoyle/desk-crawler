@@ -27,6 +27,7 @@ export const Route = createFileRoute('/privacy')({
         </li>
         <li>Short-lived operational records such as rate-limit counters and duplicate-request receipts.</li>
         <li>When you request account deletion: your verified primary email, a hash of the confirmation link, and delivery status. The link expires after 30 minutes; expired requests are removed by daily cleanup.</li>
+        <li>If you join the Desk Crawler launch list: your email address, where you signed up and, if you joined while signed in, a link to your account. We use it for one email when Desk Crawler reaches the TRMNL marketplace, nothing else.</li>
       </ul>
 
       <h2>What we don't do</h2>
@@ -58,7 +59,7 @@ export const Route = createFileRoute('/privacy')({
           <strong>TRMNL</strong> fetches your hero's screen from us. Your TRMNL account and device are covered by TRMNL's own privacy policy.
         </li>
         <li><strong>PostHog EU</strong> handles optional usage analytics, error reports and masked session recordings for support and product improvements.</li>
-        <li><strong>Resend</strong> delivers the account deletion confirmation email to your verified primary address. It receives that address and the email contents.</li>
+        <li><strong>Resend</strong> delivers the account deletion confirmation email to your verified primary address, and the one launch email to the launch list. It receives those addresses and the email contents.</li>
       </ul>
 
       <h2>How long we keep it</h2>
@@ -66,6 +67,7 @@ export const Route = createFileRoute('/privacy')({
         <li>Your shared account: until you delete it. Game progress: until you delete that game or your account.</li>
         <li>Detailed adventure log: three days. Run summaries: 30 days. Recent XP for rankings: seven days.</li>
         <li>Duplicate-request receipts: 24 hours. TRMNL connection attempts: under a day.</li>
+        <li>Launch list: until the launch email is sent, then deleted. You can leave earlier with the link in that email, from the companion if you joined signed in, or by emailing us. Deleting your account removes an entry you joined with it.</li>
         <li>Backups: about a week, after which deleted data is gone from them too.</li>
         <li>Masked recordings: 30 days. Analytics events and support profiles: until account deletion or an earlier removal request.</li>
       </ul>

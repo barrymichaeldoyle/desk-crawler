@@ -19,6 +19,8 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AccountDeleteRouteImport } from './routes/account_.delete'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppDeskCrawlerRouteImport } from './routes/app/desk-crawler'
+import { Route as DeskCrawlerUnsubscribeRouteImport } from './routes/desk-crawler/unsubscribe'
+import { Route as DeskCrawlerWaitingListRouteImport } from './routes/desk-crawler/waiting-list'
 import { Route as DevDeskCrawlerRouteImport } from './routes/dev/desk-crawler'
 import { Route as GamesDeskCrawlerRouteImport } from './routes/games/desk-crawler'
 import { Route as HelpDeskCrawlerRouteImport } from './routes/help/desk-crawler'
@@ -79,6 +81,16 @@ const AppDeskCrawlerRoute = AppDeskCrawlerRouteImport.update({
   path: '/desk-crawler',
   getParentRoute: () => AppRoute,
 } as any)
+const DeskCrawlerUnsubscribeRoute = DeskCrawlerUnsubscribeRouteImport.update({
+  id: '/desk-crawler/unsubscribe',
+  path: '/desk-crawler/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeskCrawlerWaitingListRoute = DeskCrawlerWaitingListRouteImport.update({
+  id: '/desk-crawler/waiting-list',
+  path: '/desk-crawler/waiting-list',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DevDeskCrawlerRoute = DevDeskCrawlerRouteImport.update({
   id: '/dev/desk-crawler',
   path: '/dev/desk-crawler',
@@ -138,6 +150,8 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/account/delete': typeof AccountDeleteRoute
   '/app/desk-crawler': typeof AppDeskCrawlerRouteWithChildren
+  '/desk-crawler/unsubscribe': typeof DeskCrawlerUnsubscribeRoute
+  '/desk-crawler/waiting-list': typeof DeskCrawlerWaitingListRoute
   '/dev/desk-crawler': typeof DevDeskCrawlerRoute
   '/games/desk-crawler': typeof GamesDeskCrawlerRoute
   '/help/desk-crawler': typeof HelpDeskCrawlerRoute
@@ -157,6 +171,8 @@ export interface FileRoutesByTo {
   '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
   '/account/delete': typeof AccountDeleteRoute
+  '/desk-crawler/unsubscribe': typeof DeskCrawlerUnsubscribeRoute
+  '/desk-crawler/waiting-list': typeof DeskCrawlerWaitingListRoute
   '/dev/desk-crawler': typeof DevDeskCrawlerRoute
   '/games/desk-crawler': typeof GamesDeskCrawlerRoute
   '/help/desk-crawler': typeof HelpDeskCrawlerRoute
@@ -179,6 +195,8 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/account_/delete': typeof AccountDeleteRoute
   '/app/desk-crawler': typeof AppDeskCrawlerRouteWithChildren
+  '/desk-crawler/unsubscribe': typeof DeskCrawlerUnsubscribeRoute
+  '/desk-crawler/waiting-list': typeof DeskCrawlerWaitingListRoute
   '/dev/desk-crawler': typeof DevDeskCrawlerRoute
   '/games/desk-crawler': typeof GamesDeskCrawlerRoute
   '/help/desk-crawler': typeof HelpDeskCrawlerRoute
@@ -202,6 +220,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/account/delete'
     | '/app/desk-crawler'
+    | '/desk-crawler/unsubscribe'
+    | '/desk-crawler/waiting-list'
     | '/dev/desk-crawler'
     | '/games/desk-crawler'
     | '/help/desk-crawler'
@@ -221,6 +241,8 @@ export interface FileRouteTypes {
     | '/support'
     | '/terms'
     | '/account/delete'
+    | '/desk-crawler/unsubscribe'
+    | '/desk-crawler/waiting-list'
     | '/dev/desk-crawler'
     | '/games/desk-crawler'
     | '/help/desk-crawler'
@@ -242,6 +264,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/account_/delete'
     | '/app/desk-crawler'
+    | '/desk-crawler/unsubscribe'
+    | '/desk-crawler/waiting-list'
     | '/dev/desk-crawler'
     | '/games/desk-crawler'
     | '/help/desk-crawler'
@@ -263,6 +287,8 @@ export interface RootRouteChildren {
   SupportRoute: typeof SupportRoute
   TermsRoute: typeof TermsRoute
   AccountDeleteRoute: typeof AccountDeleteRoute
+  DeskCrawlerUnsubscribeRoute: typeof DeskCrawlerUnsubscribeRoute
+  DeskCrawlerWaitingListRoute: typeof DeskCrawlerWaitingListRoute
   DevDeskCrawlerRoute: typeof DevDeskCrawlerRoute
   GamesDeskCrawlerRoute: typeof GamesDeskCrawlerRoute
   HelpDeskCrawlerRoute: typeof HelpDeskCrawlerRoute
@@ -341,6 +367,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/desk-crawler'
       preLoaderRoute: typeof AppDeskCrawlerRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/desk-crawler/unsubscribe': {
+      id: '/desk-crawler/unsubscribe'
+      path: '/desk-crawler/unsubscribe'
+      fullPath: '/desk-crawler/unsubscribe'
+      preLoaderRoute: typeof DeskCrawlerUnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/desk-crawler/waiting-list': {
+      id: '/desk-crawler/waiting-list'
+      path: '/desk-crawler/waiting-list'
+      fullPath: '/desk-crawler/waiting-list'
+      preLoaderRoute: typeof DeskCrawlerWaitingListRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/dev/desk-crawler': {
       id: '/dev/desk-crawler'
@@ -447,6 +487,8 @@ const rootRouteChildren: RootRouteChildren = {
   SupportRoute: SupportRoute,
   TermsRoute: TermsRoute,
   AccountDeleteRoute: AccountDeleteRoute,
+  DeskCrawlerUnsubscribeRoute: DeskCrawlerUnsubscribeRoute,
+  DeskCrawlerWaitingListRoute: DeskCrawlerWaitingListRoute,
   DevDeskCrawlerRoute: DevDeskCrawlerRoute,
   GamesDeskCrawlerRoute: GamesDeskCrawlerRoute,
   HelpDeskCrawlerRoute: HelpDeskCrawlerRoute,

@@ -1,8 +1,9 @@
 import { SignInButton } from '@clerk/tanstack-react-start'
 import { Link } from '@tanstack/react-router'
 import { RELEASE_STATUS } from './prose'
-import { BUTTON_PRIMARY, Button, LINK_BUTTON } from './ui'
+import { Button } from './ui'
 import { useAnalyticsView } from './analyticsProvider'
+import { WaitlistForm } from './waitlist'
 
 /** The labelled sample screen shared by the public landing and the signed-out companion; it never creates a hero. */
 export function SampleScreen({ caption }: { caption: string }) {
@@ -38,8 +39,9 @@ export function DeskCrawlerSignedOut() {
         <h2 id="play-heading" className="font-display text-xl font-semibold">Want your own hero?</h2>
         <p>Desk Crawler needs a <a href="https://trmnl.com" className="underline underline-offset-4">TRMNL</a> display. Install the plugin from the TRMNL marketplace and your hero sets out from there.</p>
         <p className="text-sm text-muted">{RELEASE_STATUS}</p>
+        <WaitlistForm source="pitch" />
         <div className="flex flex-wrap items-center gap-4">
-          <Link to="/games/desk-crawler" className={`${LINK_BUTTON} ${BUTTON_PRIMARY}`}>About Desk Crawler</Link>
+          <Link to="/games/desk-crawler" className="inline-flex min-h-11 items-center underline underline-offset-4">About Desk Crawler</Link>
           <Link to="/help/desk-crawler" className="inline-flex min-h-11 items-center underline underline-offset-4">Setup and TRMNL help</Link>
         </div>
       </section>

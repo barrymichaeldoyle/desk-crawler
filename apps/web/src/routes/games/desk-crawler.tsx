@@ -1,8 +1,9 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { RELEASE_STATUS, SiteLinks } from '../../lib/prose'
-import { BUTTON_PRIMARY, LINK_BUTTON } from '../../lib/ui'
+import { BUTTON_SECONDARY, LINK_BUTTON } from '../../lib/ui'
 import { seo } from '../../lib/seo'
 import { SampleScreen } from '../../lib/deskCrawlerPitch'
+import { WaitlistForm } from '../../lib/waitlist'
 
 export const Route = createFileRoute('/games/desk-crawler')({ head: () => seo({ title: 'Desk Crawler', path: '/games/desk-crawler', description: 'An office RPG that plays itself on your TRMNL e-ink display.' }), component: Landing })
 
@@ -23,8 +24,9 @@ function Landing() {
 
       <div className="flex flex-col gap-4">
         <p className="text-muted">{RELEASE_STATUS}</p>
+        <WaitlistForm source="landing" />
         <div className="flex flex-wrap items-center gap-4">
-          <Link to="/app/desk-crawler" className={`${LINK_BUTTON} ${BUTTON_PRIMARY}`}>Open the companion</Link>
+          <Link to="/app/desk-crawler" className={`${LINK_BUTTON} ${BUTTON_SECONDARY}`}>Open the companion</Link>
           <Link to="/help/desk-crawler" className="inline-flex min-h-11 items-center underline underline-offset-4">Setup and TRMNL help</Link>
         </div>
       </div>

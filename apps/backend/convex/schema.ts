@@ -7,6 +7,9 @@ import { logDetail } from './lib/logDetail'
  * package that uses them; future systems use additive migrations.
  */
 
+/** Where a launch-list signup came from: the share link, the signed-out QR pitch, the game page or a signed-in account. */
+export const waitlistSource = v.union(v.literal('notify'), v.literal('pitch'), v.literal('landing'), v.literal('account'))
+
 export const heroStatus = v.union(
   v.literal('exploring'),
   v.literal('resting'),
@@ -421,6 +424,19 @@ export default defineSchema({
     .index('by_tokenIdentifier', ['tokenIdentifier'])
     .index('by_tokenHash', ['tokenHash'])
     .index('by_expiresAt', ['expiresAt']),
+
+  /** Desk Crawler launch list (D105): one email at marketplace approval, then the row is deleted. */
+  waitlist: defineTable({
+    email: v.string(),
+    source: waitlistSource,
+    state: v.union(v.literal('waiting'), v.literal('sending'), v.literal('failed')),
+    attempts: v.number(),
+    tokenIdentifier: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index('by_email', ['email'])
+    .index('by_state', ['state'])
+    .index('by_tokenIdentifier', ['tokenIdentifier']),
 
   accountDeletionJobs: defineTable({
     heroRef: v.optional(v.string()),

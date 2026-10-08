@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { analyticsOptions, beforeAnalyticsSend, readAnalyticsConsent, scrubAnalyticsValue, setAnalyticsIdentity, setAnalyticsConsent } from '../../apps/web/src/lib/analytics'
+import { analyticsOptions, beforeAnalyticsSend, intentAnalytics, readAnalyticsConsent, scrubAnalyticsValue, setAnalyticsIdentity, setAnalyticsConsent } from '../../apps/web/src/lib/analytics'
 
 describe('support analytics privacy boundary', () => {
   const storage = new Map<string, string>()
@@ -49,5 +49,19 @@ describe('support analytics privacy boundary', () => {
     expect(analyticsOptions.session_recording?.maskCapturedNetworkRequestFn?.({ name: 'secret' } as never)).toBeNull()
     expect(analyticsOptions.session_recording?.maskAttributeFn?.('href', 'https://trmnl.com/install?code=secret', undefined)).toBe('https://trmnl.com/install')
     expect(analyticsOptions.session_recording?.maskAttributeFn?.('data-token', 'secret', undefined)).toBe('[redacted]')
+  })
+})
+
+describe('v1.1 intent analytics', () => {
+  it('names the measured choices and carries only their catalog id', () => {
+    expect(intentAnalytics('heroes:setStance', { stance: 'bold' })).toEqual(['stance changed', { stance: 'bold' }])
+    expect(intentAnalytics('heroes:choose', { optionId: 'chip_in' })).toEqual(['decision made', { option_id: 'chip_in' }])
+    expect(intentAnalytics('inventory:buyOffer', { offerId: 'potions' })).toEqual(['merchant purchase', { offer: 'potions' }])
+    expect(intentAnalytics('inventory:buyPouch', { tierId: 'lunchbox' })).toEqual(['pouch bought', { tier: 'lunchbox' }])
+    expect(intentAnalytics('inventory:buyBag', { tierId: 'tote' })).toEqual(['bag bought', { tier: 'tote' }])
+  })
+  it('ignores other intents and never forwards other arguments', () => {
+    expect(intentAnalytics('inventory:sellMany', { itemIds: ['a'] })).toBeNull()
+    expect(intentAnalytics('heroes:setStance', { stance: 'bold', operationId: 'op' })?.[1]).toEqual({ stance: 'bold' })
   })
 })

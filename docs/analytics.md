@@ -30,6 +30,11 @@ Replay is enabled at 100% of consenting production sessions, with 30-day retenti
 | `management account mismatch` | Management handoff owner differs from current account | No credential/owner IDs |
 | `account switched` | Account-switch button | No email in event arguments |
 | `intent failed` | Authenticated game intent fails | `intent` function name, `error_code`; no arguments |
+| `stance changed` | Browser, after `heroes.setStance` commits (v1.1, D76) | `stance` |
+| `decision made` | Browser, after `heroes.choose` commits (D79); defaults resolved by the simulator are counted in `choicesDefaulted`, not here | `option_id` |
+| `merchant purchase` | Browser, after `inventory.buyOffer` commits (D78) | `offer` (`potions`, `pouch` or `bag`) |
+| `pouch bought` | Browser, after `inventory.buyPouch` commits (D77) | `tier` |
+| `bag bought` | Browser, after `inventory.buyBag` commits (D61) | `tier` |
 | `$pageview`, `$exception` | Manual path-only pageviews, automatic unhandled errors/rejections and explicit route/transport reports | Scrubbed SDK properties; console errors excluded |
 
 `setup_state = installation_without_hero` directly exposes the incident that prompted this work: the pre-launch reset kept an active installation but removed the hero. The QR goes to the companion, so it cannot create a hero without a new verified install attempt. That page now explains how to start a fresh installation, shows the signed-in account with Switch account, and links to recovery instructions. `not_enrolled` means no hero/active installation; `waiting_for_save` means a prepared hero awaits TRMNL confirmation. Install landing states are `pending_install`, `missing_install_link`, and `invalid_install_link`.

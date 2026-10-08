@@ -3,7 +3,7 @@ import { ProsePage, SUPPORT_EMAIL } from '../../lib/prose'
 import { seo } from '../../lib/seo'
 
 export const Route = createFileRoute('/help/desk-crawler')({
-  head: () => seo({ title: 'TRMNL help', path: '/help/desk-crawler', description: 'Install Desk Crawler on TRMNL, understand snapshots and refresh timing, and fix a screen that looks out of date.' }),
+  head: () => seo({ title: 'TRMNL help', path: '/help/desk-crawler', description: 'Install Desk Crawler on TRMNL, choose a stance, meet the merchant, answer decisions, understand refresh timing, and fix a screen that looks out of date.' }),
   component: () => (
     <ProsePage title="Desk Crawler on TRMNL">
       <h2>Getting started</h2>
@@ -25,8 +25,30 @@ export const Route = createFileRoute('/help/desk-crawler')({
       <h2>Desk keepsakes</h2>
       <p>Keep Desk Crawler in your playlist and look for “Keepsake code” and a six-digit code, like 482 917, in the screen’s title bar (narrow portrait mashups shorten it to “Keepsake”). Enter that code in the companion’s Settings to collect a permanent office souvenir. Full-screen and mashup layouts both show it; the companion preview hides it.</p>
       <p>You can collect one keepsake each week, with a new code from Monday at 00:00 UTC. Last week’s code works too if your screen refreshes slowly. Missing weeks loses nothing: the next design waits for you. After collecting the full set, you can collect more of each. Keepsakes do not change XP, gear or rankings, and extra devices or faster refresh earn no extras.</p>
+      <h2>Stances</h2>
+      <p>Choose how careful your hero is on the Hero page. The stance applies from the next adventure, and you can change it whenever you like.</p>
+      <ul>
+        <li><strong>Cautious</strong> drinks a potion below 65% HP, rests below 50% and sets off again at 90%. It earns 90% of the usual XP from wins.</li>
+        <li><strong>Balanced</strong>, the default, drinks below 50%, rests below 35% and sets off again at 75%, with the usual XP.</li>
+        <li><strong>Bold</strong> drinks below 35%, rests below 20% and sets off again at 60%. It earns 115% XP from wins but gets knocked out more often.</li>
+      </ul>
       <h2>Potions</h2>
-      <p>A healing potion restores 40% of your hero's maximum HP, rounded up. Your hero drinks one automatically when HP falls below 50% while exploring, and the adventure log notes it. With no potions left, your hero rests whenever HP falls below 35% and sets off again at 75%. You can also drink one yourself from the Hero page whenever your hero is exploring or resting and not at full HP. Potions are found while exploring, stack up to 20, and never take up bag space.</p>
+      <p>A healing potion restores 40% of your hero's maximum HP, rounded up. Your hero drinks one automatically when HP falls below the stance's potion level while exploring, and the adventure log notes it. With no potions left, your hero rests below the stance's rest level and sets off again once recovered. You can also drink one yourself from the Hero page whenever your hero is exploring or resting and not at full HP. Potions are found while exploring and never take up bag space.</p>
+      <p>Potions are kept in a pouch. A new hero carries a Thermos that holds 20. The pouch grows to a Lunchbox (30) at level 6, a Cooler Bag (40) at level 10 and a Vending Cart (60) at level 14. Your hero might find the next pouch early, or you can buy it on the Bag page for 120, 450 or 1,500 gold, up to one pouch ahead of those levels. When the pouch is full, a potion find becomes gold instead.</p>
+      <h2>The wandering merchant</h2>
+      <p>Now and then your hero meets a wandering merchant while exploring. Your screen says “Merchant visiting. Shop in the companion soon.” and the Bag page shows up to three offers: a few potions, and sometimes the next pouch or bag early. Each offer sells once. The merchant moves on after four adventures or after your last purchase. Missing a visit costs nothing.</p>
+      <h2>Decisions</h2>
+      <p>Sometimes the office asks your hero something small, like chipping in for a cake or staying late. Your screen says “A decision is waiting in the companion.” and the Hero page shows both options with exactly what each one changes. If you don't answer within about a day, the option marked as the default happens by itself, so adventures never wait for you.</p>
+      <h2>Effects</h2>
+      <p>Some moments leave your hero with a short effect, listed on the Hero page with the adventures it has left. Beating an elite makes your hero Fired up (+10% attack for eight adventures). Chipping in for cake makes your hero Well fed (+10% XP for eight adventures). A trap leaves your hero Bruised (−15% defense for four adventures). Your hero holds at most three effects. Any rest shakes off bad effects, and a knockout clears them all.</p>
+      <h2>Rare and epic gear</h2>
+      <p>Gear comes as common, uncommon, rare or epic. Epic gear is the rarest, about one find in a hundred, and the strongest. Rare and epic gear also carry one special trait, shown in the item's name and explained on the Bag page:</p>
+      <ul>
+        <li><strong>Vampiric</strong> heals 5% of maximum HP after every win.</li>
+        <li><strong>Lucky</strong> adds 20% gold from wins and finds.</li>
+        <li><strong>Sturdy</strong> takes 40% less damage from traps.</li>
+        <li><strong>Thrifty</strong> keeps more gold when things go wrong: a retreat costs nothing and a knockout costs 5% of gold instead of 10%.</li>
+      </ul>
       <h2>When your bag fills up</h2>
       <p>A new hero starts with a small paper bag that holds 6 pieces of gear. Equipped gear and potions don’t take up space. A full bag alone does not stop adventures: the next piece you find is held safely, then your hero sleeps until you make room. The held find is never automatically sold or discarded.</p>
       <h2>Bigger bags</h2>

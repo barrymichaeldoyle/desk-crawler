@@ -8,7 +8,7 @@ export const IDENTITY_EVENT = 'tg:analytics-identity'
 /** The site footer's link asks the provider to reopen the consent panel. */
 export const PREFERENCES_EVENT = 'tg:analytics-preferences'
 export const openAnalyticsPreferences = () => window.dispatchEvent(new Event(PREFERENCES_EVENT))
-export type AnalyticsEvent = 'installation started' | 'installation submitted' | 'installation connected' | 'installation failed' | 'setup screen shown' | 'setup help opened' | 'companion ready' | 'management opened' | 'management account mismatch' | 'account switched' | 'intent failed'
+export type AnalyticsEvent = 'installation started' | 'installation submitted' | 'installation connected' | 'installation failed' | 'setup screen shown' | 'setup help opened' | 'companion ready' | 'management opened' | 'management account mismatch' | 'account switched' | 'intent failed' | 'stance changed' | 'decision made' | 'merchant purchase' | 'pouch bought' | 'bag bought'
 let volatileConsent: AnalyticsConsent = null
 
 export function readAnalyticsConsent(): AnalyticsConsent {
@@ -139,6 +139,22 @@ export function captureAnalytics(event: AnalyticsEvent, properties: Record<strin
   void analyticsClient().then((sdk) => {
     if (readAnalyticsConsent() === 'allowed' && !hasSensitiveLocation()) sdk?.capture(event, { game: 'desk-crawler', ...properties })
   }).catch(() => {})
+}
+
+/** v1.1 choices worth measuring: intent → event and the one catalog id argument it may carry. */
+const INTENT_EVENTS: Record<string, [AnalyticsEvent, string, string]> = {
+  'heroes:setStance': ['stance changed', 'stance', 'stance'],
+  'heroes:choose': ['decision made', 'optionId', 'option_id'],
+  'inventory:buyOffer': ['merchant purchase', 'offerId', 'offer'],
+  'inventory:buyPouch': ['pouch bought', 'tierId', 'tier'],
+  'inventory:buyBag': ['bag bought', 'tierId', 'tier'],
+}
+
+export function intentAnalytics(intent: string, args: Record<string, unknown>): [AnalyticsEvent, Record<string, string>] | null {
+  const entry = INTENT_EVENTS[intent]
+  if (!entry) return null
+  const [event, arg, property] = entry
+  return [event, typeof args[arg] === 'string' ? { [property]: args[arg] } : {}]
 }
 
 export function captureAnalyticsException(error: unknown, source: string) {

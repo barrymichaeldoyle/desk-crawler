@@ -62,14 +62,14 @@ Core batch: stances, configurable rest/potion thresholds, a small set of event c
 | Potion pouch (P29) | Shipped 2026-10-07 (D77): Thermos 20 → Lunchbox 30 → Cooler Bag 40 → Vending Cart 60 by milestone, find, purchase or the merchant. The potion stack cap becomes a content ladder (one additive tier field on the hero, cap from content like `bagCapacity`); milestones, a rare find and a `buyBag`-shaped purchase advance it. Potions stay outside the bag and the 32-row read. Second gold sink; tune with the merchant and the configurable potion threshold |
 | Effects | Shipped 2026-10-07 (D80): three catalog effects with typed modifiers and durations, at most three per hero, knockout clears all, rest cleanses banes. Typed duration/modifier rules; death ordering and rest cleansing explicitly designed |
 | Affixes/Epic | Shipped 2026-10-07 (D81): epic at 1%, four affixes rolled on rare and epic gear under v6 only, older gear untouched, Bag page explains them. Versioned generation and owned-item compatibility; extend inventory UI |
-| Achievements (D65) | Shipped early, in v1.0 (2026-10-06). v1.1 families shipped 2026-10-07 as catalog version 2 (D82): purchases, merchants met, stance changes, decisions made, epic finds. v1.1 appends families for merchant purchases, stance changes and event choices under a new catalog version. See [achievements](achievements.md) |
+| Achievements (D65) | Shipped early, in v1.0 (2026-10-06). v1.1 families shipped 2026-10-07 as catalog version 2 (D82): purchases, merchants met, stance changes, decisions made, epic finds. See [achievements](achievements.md) |
 | Daily quests | Stretch, not required; timezone/DST and timezone-change abuse design first |
 | Lost-and-found | Stretch; extend the single held-find/inventory-sleep system only with a bounded migration; never reintroduce silent disposal |
 | Web push/email alerts | Deferred by default; user opt-in, delivery cost and calmness review |
 
 Achievements are additive and independent of the choice systems, so they can ship first within v1.1. Prefer choices/merchant/stances as one coherent release and schedule quest/push scope separately. Salvage is not in this release: materials without a sink would be a hollow feature, so it ships with gear upgrades in v2.0.
 
-Gate: no manual intervention required to resolve expiry; choose/default cannot both award; attention remains one unobtrusive message; more app engagement is a hypothesis, not a login target.
+Gate: no manual intervention required to resolve expiry; choose/default cannot both award; attention remains one unobtrusive message; more app engagement is a hypothesis, not a login target. The help page covers every v1.1 system (2026-10-08), and the companion reports `stance changed`, `decision made`, `merchant purchase`, `pouch bought` and `bag bought` to consenting analytics so the hypothesis can be measured ([analytics](analytics.md)).
 
 ## v1.2 — Other people exist (was Month 3)
 

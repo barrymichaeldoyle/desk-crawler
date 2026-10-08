@@ -8,7 +8,7 @@
  * Then open http://127.0.0.1:4197/app/desk-crawler (or /inventory, /leaderboard, /settings). Query parameters:
  *   status=paused|sleeping|dead|travelling|resting   held=1 (held find, bag full)   slots=30 (gear count)   merchant=1
  *   choice=1 (pending decision)   effects=1   recap=1 (a return tally)   keepsake=done   long=1 (long item names)
- *   quiet=1 (empty log, no achievements)   ok=1 (mutations succeed)
+ *   quiet=1 (empty log, no achievements)   ok=1 (mutations succeed)   raids=1 (desk raids on, with a record and raid log lines)
  * The dev deployment's scene art is used when apps/web/.env.local sets VITE_CONVEX_SITE_URL.
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -65,6 +65,26 @@ if (flag('merchant')) { hero.merchantTicksLeft = 3; inventory.merchant = { offer
 if (flag('recap')) data.recap = { ...data.recap, baseline: { at: Date.now() - 36e5 * 26 }, xpGained: 212, levelsGained: 1, newEvents: 19, counters: { combatWins: 7, goldEarned: 43, itemsFound: 2, deaths: 1 } };
 if (params.get('keepsake') === 'done') { data.keepsakes.lastClaimWeek = 9999; data.keepsakes.nextAvailableAt = Date.now() + 86400000 * 3 }
 if (flag('quiet')) { data.log = []; data.achievements.families.forEach((f) => { f.earned = null }); data.achievements.unlocked = [] }
+const raidsOn = flag('raids');
+data.raids = { record: { launched: 0, won: 0, repelled: 0, lost: 0 }, raids: [] };
+if (raidsOn) {
+  hero.raidsEnabled = true;
+  const pace = { cautious: [0.48, 60], balanced: [0.96, 50], bold: [1.92, 45] };
+  hero.stances.forEach((s) => { s.raidsPerDay = pace[s.id][0]; s.raidWinPct = pace[s.id][1] });
+  const now = Date.now();
+  data.raids = { record: { launched: 9, won: 5, repelled: 4, lost: 3 }, raids: [
+    { tick: 905, at: now - 9e5, role: 'target', rivalName: 'Quillfeather_Longname', won: false, gold: 14, hpLost: null, pending: true },
+    { tick: 880, at: now - 36e5 * 7, role: 'raider', rivalName: 'Quill', won: true, gold: 14, hpLost: 9, pending: false },
+    { tick: 860, at: now - 36e5 * 12, role: 'target', rivalName: 'Hidden player', won: true, gold: 6, hpLost: 3, pending: false },
+    { tick: 790, at: now - 36e5 * 30, role: 'raider', rivalName: 'Mo', won: false, gold: 22, hpLost: 27, pending: false },
+    { tick: 760, at: now - 36e5 * 40, role: 'target', rivalName: 'Bea', won: false, gold: 1240, hpLost: 30, pending: false },
+  ] };
+  data.log.unshift(
+    { id: 'raid1', at: now - 6e5, tick: 906, kind: 'raid', summary: "Raided [[Quill]]'s desk while they were at lunch.", source: 'tick', deltas: { xpEarned: 0, gold: 14, hp: -9 } },
+    { id: 'raid2', at: now - 9e5, tick: 905, kind: 'raid', summary: 'Came back to find [[Quillfeather_Longname]] had been through the drawers.', source: 'tick', deltas: { xpEarned: 0, gold: -1240, hp: -30 } },
+    { id: 'raid3', at: now - 12e5, tick: 904, kind: 'death', summary: '[[Mo]] made off with the petty cash. Knocked out for 8 ticks. Lost 30 gold.', source: 'tick', deltas: { xpEarned: 0, gold: -52, hp: -18 } },
+  );
+}
 if (long) inventory.gear.filter((g) => !g.equipped).slice(0, 2).forEach((g) => { g.label = 'Rare Microwave-Slaying ' + g.name + ' of the Cafeteria Depths'; g.rarity = 'rare' });
 const templates = ['letter_opener', 'ruler_blade', 'cable_cutter', 'keyboard_mace', 'ladle_of_ruin', 'spork_halberd', 'cardigan', 'lanyard_mail', 'insulated_cardigan', 'anti_static_vest', 'apron_of_warding', 'oven_mitt_plate'];
 if (many > 0) {
@@ -84,6 +104,7 @@ const queries = {
   'leaderboard:view': (args) => { const board = data.leaderboard[args.board ?? 'recent_7d']; return args.cohortKey && args.cohortKey !== board.cohortKey ? { ...board, cohortKey: args.cohortKey, own: null, entries: board.entries.slice(0, 6), totalPlayers: 6 } : board },
   'heroes:recentLog': (args) => ({ page: data.log.slice(0, args.paginationOpts.numItems), isDone: true, continueCursor: '' }),
   'trmnlPayload:mine': () => undefined,
+  'raids:recent': () => data.raids,
 };
 export const api = new Proxy({}, { get: (_, module) => new Proxy({}, { get: (_, fn) => module + ':' + fn }) });
 export const convexQuery = (fn, args = {}) => ({ queryKey: ['convexQuery', fn, args] });

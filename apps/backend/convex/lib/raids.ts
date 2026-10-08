@@ -11,8 +11,8 @@ import type { ContentCatalog, IncomingRaid, RaidTarget, SimulationResult } from 
  * under a catalog with raids takes its oldest pending ledger row. Nothing here changes a hero the tick does not own.
  */
 
-/** Shown instead of a public name that is gone, suspended or awaiting repair. */
-export const HIDDEN_RIVAL = 'A coworker'
+/** Shown instead of a public name that is gone, suspended or awaiting repair, as the leaderboards do. */
+export const HIDDEN_RIVAL = 'Hidden player'
 
 const visibleName = (owner: Doc<'users'> | null): string => (owner !== null && owner.state === 'active' && !owner.nameRepairRequired ? owner.publicAlias : HIDDEN_RIVAL)
 
@@ -164,6 +164,7 @@ export async function recentRaids(ctx: QueryCtx, heroId: Id<'heroes'>, limit: nu
       const won = role === 'raider' ? row.raiderWon : !row.raiderWon
       return {
         tick: row.tick,
+        at: row._creationTime,
         role,
         rivalName: name,
         won,
@@ -174,4 +175,26 @@ export async function recentRaids(ctx: QueryCtx, heroId: Id<'heroes'>, limit: nu
       }
     }),
   )
+}
+
+/**
+ * Stored raid summaries name the rival. A log line read after that rival's owner is gone, suspended, under name
+ * repair or renamed shows "A coworker" instead, the way rank rows mask copied names. One owner read per distinct
+ * rival on the page; every other log passes through untouched.
+ */
+export async function maskRaidSummaries<L extends Pick<Doc<'tickLogs'>, 'summary' | 'detail'>>(ctx: QueryCtx, logs: readonly L[]): Promise<string[]> {
+  const owners = new Map<string, Doc<'users'> | null>()
+  const summaries: string[] = []
+  for (const log of logs) {
+    const outcome = 'outcome' in log.detail ? log.detail.outcome : undefined
+    if (outcome?.variant !== 'raid' || outcome.rivalUserId === undefined) {
+      summaries.push(log.summary)
+      continue
+    }
+    if (!owners.has(outcome.rivalUserId)) owners.set(outcome.rivalUserId, await ctx.db.get(outcome.rivalUserId as Id<'users'>))
+    const owner = owners.get(outcome.rivalUserId) ?? null
+    const visible = owner !== null && owner.state === 'active' && !owner.nameRepairRequired && owner.publicNameVersion === outcome.rivalNameVersion
+    summaries.push(visible ? log.summary : log.summary.replaceAll(`[[${outcome.rivalName}]]`, `[[${HIDDEN_RIVAL}]]`))
+  }
+  return summaries
 }

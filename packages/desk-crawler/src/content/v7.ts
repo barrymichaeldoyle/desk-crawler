@@ -19,25 +19,26 @@ export const contentV7: ContentCatalog = {
     winnerHpPct: 10,
     targetCooldownTicks: 24,
     narrative: {
+      // The amounts travel as change chips beside the story (D48), so the lines carry none.
       raidWon: [
-        "Raided {rival}'s desk while they were at lunch. Left with {gold} gold.",
-        "Slipped into {rival}'s cubicle and came back {gold} gold richer.",
-        "Emptied {rival}'s petty-cash drawer of {gold} gold.",
+        "Raided {rival}'s desk while they were at lunch.",
+        "Slipped into {rival}'s cubicle and helped itself to the petty cash.",
+        "Emptied {rival}'s desk drawer of loose change.",
       ],
       raidLost: [
-        "Caught red-handed at {rival}'s desk. Dropped {gold} gold.",
-        "The raid on {rival}'s desk went badly. Dropped {gold} gold on the way out.",
-        '{rival} was at their desk after all. Fled, {gold} gold lighter.',
+        "Caught red-handed at {rival}'s desk and chased off.",
+        "The raid on {rival}'s desk went badly. Dropped the loot on the way out.",
+        '{rival} was at their desk after all. Fled empty-handed.',
       ],
       raided: [
-        '{rival} raided the desk while nobody was looking. {gold} gold gone.',
-        'Came back to find {rival} had been through the drawers. {gold} gold missing.',
-        '{rival} made off with {gold} gold from the desk.',
+        '{rival} raided the desk while nobody was looking.',
+        'Came back to find {rival} had been through the drawers.',
+        '{rival} made off with the petty cash.',
       ],
       repelled: [
-        'Caught {rival} raiding the desk and sent them packing. +{gold} gold.',
-        'Caught {rival} at the drawers. They fled and dropped {gold} gold.',
-        'Found {rival} under the desk, showed them out and kept {gold} gold.',
+        'Caught {rival} raiding the desk and sent them packing.',
+        'Caught {rival} at the drawers. They fled and dropped their loot.',
+        'Found {rival} under the desk and showed them out.',
       ],
       rescue: ['A narrow escape; resting now.', 'Barely made it out of the scuffle; resting now.'],
     },

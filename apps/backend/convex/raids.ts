@@ -8,6 +8,8 @@ const RECENT_RAIDS = 5
 
 const raidRow = v.object({
   tick: v.number(),
+  /** When the raider's tick wrote it. */
+  at: v.number(),
   role: v.union(v.literal('raider'), v.literal('target')),
   rivalName: v.string(),
   won: v.boolean(),

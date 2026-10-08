@@ -284,20 +284,20 @@ export interface RaidRule {
   readonly winnerHpPct: number
   /** A target picked in the last this-many ticks cannot be picked again (enforced by the adapter's pool). */
   readonly targetCooldownTicks: number
-  /** Placeholders: {rival} {gold}. A knockout adds a fixed "Knocked out for N ticks." */
+  /** Placeholder: {rival}; amounts travel as change chips. A knockout adds a fixed "Knocked out for N ticks." */
   readonly narrative: RaidNarrative
 }
 
 export interface RaidNarrative {
-  /** The raider won ({rival}, {gold}). */
+  /** The raider won. */
   readonly raidWon: readonly string[]
-  /** The raider was caught ({rival}). */
+  /** The raider was caught. */
   readonly raidLost: readonly string[]
-  /** The target was raided ({rival}). */
+  /** The target was raided. */
   readonly raided: readonly string[]
-  /** The target caught the raider ({rival}, {gold}). */
+  /** The target caught the raider. */
   readonly repelled: readonly string[]
-  /** Either side rescued by Office Cubicles ({rival}). */
+  /** Either side rescued by Office Cubicles. */
   readonly rescue: readonly string[]
 }
 

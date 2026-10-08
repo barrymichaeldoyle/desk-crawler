@@ -40,6 +40,8 @@ export function sceneFor(status: string, hasWake: boolean, latest: LatestEvent |
   }
   if (outcome?.variant === 'trap') return { pose: 'idle', subject: { kind: 'prop', id: 'trap' } }
   if (outcome?.variant === 'rest') return { pose: 'rest', subject: { kind: 'prop', id: 'campfire' } }
+  // D110: a raid this hero won shows the gold it came away with; a lost one leaves the desk empty.
+  if (outcome?.variant === 'raid') return { pose: 'idle', subject: outcome.won === true ? { kind: 'prop', id: 'gold' } : { kind: 'none' } }
   return { pose: 'idle', subject: { kind: 'none' } }
 }
 

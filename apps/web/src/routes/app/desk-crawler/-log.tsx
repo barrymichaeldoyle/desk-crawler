@@ -13,6 +13,7 @@ const FILTERS = [
   { key: 'finds', label: 'Finds', kinds: ['loot'] },
   { key: 'milestones', label: 'Milestones', kinds: ['levelup', 'achievement', 'death', 'revive', 'travel'] },
   { key: 'rest', label: 'Rest & traps', kinds: ['rest', 'trap'] },
+  { key: 'raids', label: 'Raids', kinds: ['raid'] },
 ] as const
 
 type FilterKey = (typeof FILTERS)[number]['key']

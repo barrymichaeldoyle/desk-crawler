@@ -718,7 +718,7 @@ class TickRun {
     const lines = content.raids!.narrative
     const vars = { rival: rivalName, gold }
     const pool = role === 'raider' ? (won ? lines.raidWon : lines.raidLost) : won ? lines.repelled : lines.raided
-    const compactTemplate = role === 'raider' ? (won ? 'Raided {rival}. +{gold} gold.' : 'Caught raiding {rival}. Lost {gold} gold.') : won ? 'Caught {rival} raiding. +{gold} gold.' : 'Raided by {rival}. Lost {gold} gold.'
+    const compactTemplate = role === 'raider' ? (won ? 'Raided {rival}.' : 'Caught raiding {rival}.') : won ? 'Caught {rival} raiding.' : 'Raided by {rival}.'
     const primary = this.narrate(pool, vars)
     const compact = fill(compactTemplate, vars)
     let kind: LogKind = 'raid'

@@ -89,3 +89,11 @@ Tests (`tests/convex/raids.test.ts`, 7):
 - Retention keeps pending raids and recent applied ones.
 
 The production switch to v7 is held until R3 (companion) and R4 (device) can show raids. Until then a raid log would render with the generic system glyph.
+
+## R3 companion (2026-10-08)
+
+- `heroes.mine` adds `raidsEnabled` and, under a catalog with raids, each stance's `raidsPerDay` (launch permille × 96 / 1000) and `raidWinPct` against a Balanced hero. `heroes.recentLog` masks raid rivals through `maskRaidSummaries`, with one owner read per distinct rival on the page.
+- The hero page gets the Raids card (`-raids.tsx`), the raid line on the stance picker, a `raid` glyph and badge colour, and a Raids log filter.
+- Raid lines no longer carry amounts. The first phone capture showed the log's change mapper (D48) cutting "Left with 14 gold." down to "Left with gold.", so the v7 lines were rewritten without numbers and the amounts appear only as change chips. Masked rivals now read "Hidden player", the leaderboards' wording, because "A coworker" read as a name in mid-sentence.
+- Phone check at 390×844 with the companion fixtures harness (`?raids=1` adds a record, five raids and raid log lines, including a 21-character name and a four-digit loss): the card, stance line and filtered log fit without horizontal overflow and the page logs no errors. Without raids the card stays hidden.
+- Tests: a Convex test checks that a raid line keeps the rival's bold name until that rival renames, then reads "Hidden player"; the simulator test checks that raid summaries carry no digits.

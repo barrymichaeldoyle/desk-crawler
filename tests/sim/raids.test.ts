@@ -82,6 +82,7 @@ describe('desk raids (D110)', () => {
         expect(launch.targetHpPct).toBe(30)
         expect(result.nextHero.counters.raidsWon).toBe(1)
         expect(result.event!.summary).toContain('[[Quill]]')
+        expect(result.event!.summary).not.toMatch(/\d/)
       } else {
         expect(launch.gold).toBe(10)
         expect(result.nextHero.gold).toBe(190)

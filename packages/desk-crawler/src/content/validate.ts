@@ -109,7 +109,7 @@ export function validateCatalog(content: ContentCatalog): string[] {
     for (const [key, lines] of Object.entries(raids.narrative)) {
       if (lines.length < 1) problems.push(`raid narrative ${key} is empty`)
       for (const line of lines) {
-        const allowed = key === 'rescue' ? ['rival'] : ['rival', 'gold']
+        const allowed = ['rival']
         for (const [, name] of line.matchAll(/\{(\w+)\}/g)) if (!allowed.includes(name!)) problems.push(`raid narrative ${key} uses {${name}}: ${line}`)
       }
     }

@@ -14,6 +14,7 @@ import { ReturnRecap } from './-recap'
 import { GameScreen, latestLogQuery } from './-gameScreen'
 import { AdventureLog } from './-log'
 import { Records } from './-records'
+import { Raids } from './-raids'
 import { Achievements } from './-achievements'
 import { KeepsakeCallout } from './-keepsakes'
 
@@ -22,7 +23,7 @@ const DevicePreview = lazy(() => import('./-devicePreview').then((module) => ({ 
 export const Route = createFileRoute('/app/desk-crawler/')({
   head: () => seo({ title: 'Hero', index: false }),
   loader: ({ context }) =>
-    preload(context, convexQuery(api.heroes.mine, {}), convexQuery(api.inventory.mine, {}), convexQuery(api.heroes.returnSummary, {}), convexQuery(api.leaderboard.view, {}), convexQuery(api.achievements.mine, {}), convexQuery(api.keepsakes.mine, {}), latestLogQuery()),
+    preload(context, convexQuery(api.heroes.mine, {}), convexQuery(api.inventory.mine, {}), convexQuery(api.heroes.returnSummary, {}), convexQuery(api.leaderboard.view, {}), convexQuery(api.achievements.mine, {}), convexQuery(api.keepsakes.mine, {}), convexQuery(api.raids.recent, {}), latestLogQuery()),
   component: HeroHome,
 })
 
@@ -58,6 +59,7 @@ function HeroHome() {
         </div>
         <div className="flex min-w-0 flex-col gap-8">
           <Records counters={hero.counters} lifetimeXp={hero.lifetimeXp} stopped={hero.status === 'paused' || (hero.status === 'sleeping' && hero.wakeAtTick === null)} />
+          <Raids enabled={hero.raidsEnabled === true} />
           <Achievements />
           <section aria-labelledby="trmnl-title" className="flex flex-col gap-3">
             <h2 id="trmnl-title" className="font-display text-3xl font-bold">On your TRMNL</h2>
@@ -137,6 +139,7 @@ type HeroView = {
   biomes: Biome[]
   stance: StanceId
   stances: Stance[]
+  raidsEnabled?: boolean
   merchantTicksLeft: number | null
   choice: Choice | null
   effects: Array<{ id: string; name: string; blurb: string; kind: 'boon' | 'bane'; ticksLeft: number }>
@@ -145,7 +148,10 @@ type HeroView = {
 type Choice = { eventId: string; title: string; prompt: string; expiresAtTick: number; ticksLeft: number; defaultOptionId: string; options: Array<{ id: string; label: string; change: { gold: number; hp: number; potions: number } }> }
 
 type StanceId = 'cautious' | 'balanced' | 'bold'
-type Stance = { id: StanceId; name: string; blurb: string; potionBelowPct: number; restBelowPct: number; resumeAtPct: number; victoryXpPct: number }
+type Stance = { id: StanceId; name: string; blurb: string; potionBelowPct: number; restBelowPct: number; resumeAtPct: number; victoryXpPct: number; raidsPerDay?: number; raidWinPct?: number }
+
+/** D110: how often a stance raids, in words a player can picture (launches per exploring day). */
+const raidPace = (perDay: number) => (perDay < 0.75 ? 'raids about every other day' : perDay < 1.5 ? 'raids about once a day' : `raids about ${perDay < 2.5 ? 'twice' : Math.round(perDay) + ' times'} a day`)
 
 function HeroSheet({ hero }: { hero: HeroView }) {
   const { data: bag } = useQuery(convexQuery(api.inventory.mine, {}))
@@ -241,7 +247,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
           {chosenStance ? (
             <p className="min-h-10 text-sm" aria-live="polite">
               <strong>{chosenStance.name}.</strong> {chosenStance.blurb}{' '}
-              <span className="text-muted tabular-nums">Potion below {chosenStance.potionBelowPct}% · rest below {chosenStance.restBelowPct}% · back out at {chosenStance.resumeAtPct}% · {chosenStance.victoryXpPct}% XP from wins.</span>
+              <span className="text-muted tabular-nums">Potion below {chosenStance.potionBelowPct}% · rest below {chosenStance.restBelowPct}% · back out at {chosenStance.resumeAtPct}% · {chosenStance.victoryXpPct}% XP from wins{chosenStance.raidsPerDay !== undefined && chosenStance.raidWinPct !== undefined ? ` · ${raidPace(chosenStance.raidsPerDay)}, wins ${chosenStance.raidWinPct}% of raids against Balanced` : ''}.</span>
             </p>
           ) : null}
         </section>

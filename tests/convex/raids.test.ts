@@ -156,7 +156,7 @@ describe('desk raids backend (D110 R2)', () => {
         const user = await ctx.db.query('users').withIndex('by_normalizedAlias', (q) => q.eq('normalizedAlias', rival.toLowerCase())).unique()
         await ctx.db.patch(user!._id, { publicAlias: 'Renamed', normalizedAlias: 'renamed', publicNameVersion: 2 })
       })
-      expect((await ana.query(api.raids.recent, {}))!.raids[0]!.rivalName).toBe('A coworker')
+      expect((await ana.query(api.raids.recent, {}))!.raids[0]!.rivalName).toBe('Hidden player')
     }
     expect(await t.withIdentity({ issuer: 'issuer', subject: 'Nobody' }).query(api.raids.recent, {})).toBeNull()
   })
@@ -191,5 +191,22 @@ describe('desk raids backend (D110 R2)', () => {
     await t.finishAllScheduledFunctions(vi.runAllTimers)
     const left = (await all(t)).raids.map((raid) => [raid.tick, raid.state])
     expect(left).toEqual([[20, 'pending'], [3990, 'applied']])
+  })
+
+  it('masks a raid rival in the quest log once the rival renames, and leaves other lines alone', async () => {
+    await seedWorld(t, { activeContentVersion: 'v7', currentTick: 10, lastPublishedAt: SLOT - 30 * 60_000 })
+    for (const alias of ['Ana', 'Bo']) await seedHero(t, { level: 5, hp: 60, gold: 400 }, alias)
+    for (let slot = 0; slot <= 3; slot += 1) await tickAt(t, slot)
+    const ana = t.withIdentity({ issuer: 'issuer', subject: 'Ana' })
+    const page = async () => (await ana.query(api.heroes.recentLog, { paginationOpts: { numItems: 40, cursor: null } })).page as Array<{ kind: string; summary: string }>
+    const raidLines = (await page()).filter((entry) => entry.summary.includes('[[Bo]]'))
+    expect(raidLines.length).toBeGreaterThan(0)
+    await t.run(async (ctx) => {
+      const bo = await ctx.db.query('users').withIndex('by_normalizedAlias', (q) => q.eq('normalizedAlias', 'bo')).unique()
+      await ctx.db.patch(bo!._id, { publicAlias: 'Robert', normalizedAlias: 'robert', publicNameVersion: 2 })
+    })
+    const after = await page()
+    expect(after.some((entry) => entry.summary.includes('[[Bo]]'))).toBe(false)
+    expect(after.filter((entry) => entry.summary.includes('[[Hidden player]]'))).toHaveLength(raidLines.length)
   })
 })

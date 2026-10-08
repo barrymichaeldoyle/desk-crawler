@@ -17,6 +17,8 @@ import { readWorld } from './world'
 import { FULL_SCALE } from '@trmnl-games/desk-crawler/art/scene'
 import { sceneFor, scenePath } from '@trmnl-games/desk-crawler/art/sceneKey'
 import { displayLogDeltas } from '@trmnl-games/desk-crawler/log'
+import { raidWinChance } from '@trmnl-games/desk-crawler/sim/core/raid'
+import { maskRaidSummaries } from './lib/raids'
 
 const intentResult = v.object({
   operationId: v.string(),
@@ -83,7 +85,9 @@ export const mine = query({
       choice: choiceView(content, hero, items.find((item) => item.kind === 'potion')?.quantity ?? 0, world?.currentTick ?? 0),
       stance: hero.stance ?? 'balanced',
       publicProfile: hero.publicProfile ?? false,
-      stances: Object.values(content.stances ?? {}).map((rule) => ({ id: rule.id, name: rule.name, blurb: rule.blurb, potionBelowPct: rule.autoPotionBelowPct, restBelowPct: rule.restBelowPct, resumeAtPct: rule.resumeExploringAtPct, victoryXpPct: rule.victoryXpPct })),
+      // D110: under a catalog with raids, each stance also says how often it raids and how often it wins against a balanced hero.
+      stances: Object.values(content.stances ?? {}).map((rule) => ({ id: rule.id, name: rule.name, blurb: rule.blurb, potionBelowPct: rule.autoPotionBelowPct, restBelowPct: rule.restBelowPct, resumeAtPct: rule.resumeExploringAtPct, victoryXpPct: rule.victoryXpPct, ...(content.raids ? { raidsPerDay: Math.round(content.raids.launchPermille[rule.id] * 96) / 1000, raidWinPct: raidWinChance(content, rule.id, 'balanced') } : {}) })),
+      raidsEnabled: content.raids !== undefined,
       biomes: content.biomes.map((biome) => ({ id: biome.id, name: biome.name, unlockLevel: biome.unlockLevel, unlocked: biome.unlockLevel <= hero.level })),
       world: world
         ? {
@@ -111,7 +115,8 @@ export const recentLog = query({
       .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id))
       .order('desc')
       .paginate(paginationOpts)
-    return { ...result, page: result.page.map((log) => ({ id: log._id, at: log.at, tick: log.tick ?? null, kind: log.kind, summary: log.summary, source: log.source, deltas: displayLogDeltas(log) })) }
+    const summaries = await maskRaidSummaries(ctx, result.page)
+    return { ...result, page: result.page.map((log, index) => ({ id: log._id, at: log.at, tick: log.tick ?? null, kind: log.kind, summary: summaries[index]!, source: log.source, deltas: displayLogDeltas(log) })) }
   },
 })
 

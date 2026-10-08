@@ -54,7 +54,7 @@ The [current release checklist](evidence/release.md) is the gate source. Install
 
 Submission work:
 
-- Listing image regenerated from the original installation and verified on the actual install page. The fictional [sample](release/featured-image.png) is deployed on the landing page ([evidence](evidence/listing-polish-deploy.md)).
+- Listing image regenerated from the original installation and verified on the actual install page. The public pages' fictional sample (`apps/web/public/games/desk-crawler/screen-sample.png`, shown on the game page, the waiting list and the QR pitch) was re-rendered on 2026-10-08 from the `--marketing` preview at template v46, replacing the v26-era [original](release/featured-image.png) ([evidence](evidence/listing-polish-deploy.md)).
 - Install video: done 2026-10-07. Barry recorded and hosted it; the link went in the review email.
 - [Review package](release/review-package.md): 33-character description and games/entertainment categories saved and verified; accurate bag-sleep/keepsake help is deployed.
 - [Review email](review-email.md): owner/sender barry@barrymichaeldoyle.com confirmed; Barry plans to promote TRMNL at launch, with channels/timing unspecified. Author-entitlement check complete ([evidence](evidence/author-entitlement.md)); the final draft with the video link is done (2026-10-07) and Barry submitted plugin 564 for review and sent the email on 2026-10-07.

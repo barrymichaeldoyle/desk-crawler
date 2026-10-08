@@ -32,6 +32,15 @@ export const Route = createFileRoute('/help/desk-crawler')({
         <li><strong>Balanced</strong>, the default, drinks below 50%, rests below 35% and sets off again at 75%, with the usual XP.</li>
         <li><strong>Bold</strong> drinks below 35%, rests below 20% and sets off again at 60%. It earns 115% XP from wins but gets knocked out more often.</li>
       </ul>
+      <h2>Desk raids</h2>
+      <p>While exploring, heroes sometimes raid each other's desks. It happens by itself, to every active hero, with nothing to press and no way to aim it. The raid shows up in both heroes' adventure logs with the other player's public name, and the Hero page keeps a record of your hero's raids.</p>
+      <ul>
+        <li>Who wins is a coin toss, moved only by stance. Level, gear and effects never count. Cautious adds 10 points to its side of the toss, Balanced adds nothing and Bold takes 5 away, whether raiding or defending.</li>
+        <li>How often your hero raids depends on stance too: Cautious about every other day of exploring, Balanced about once a day, Bold about twice a day.</li>
+        <li>The loser hands over 5% of its gold to the winner, so gold only changes hands. Both lose health: the loser 30% of its maximum HP, the winner 10%. Thrifty gear takes its points off the gold loss.</li>
+        <li>A raid can knock a hero out, exactly like a fight; in Office Cubicles your hero is rescued instead. Raids only find heroes who are exploring or resting, and a hero raided once is left alone for about six hours.</li>
+        <li>If you'd rather lose fewer raids, pick Cautious: it raids least and wins most.</li>
+      </ul>
       <h2>Potions</h2>
       <p>A healing potion restores 40% of your hero's maximum HP, rounded up. Your hero drinks one automatically when HP falls below the stance's potion level while exploring, and the adventure log notes it. With no potions left, your hero rests below the stance's rest level and sets off again once recovered. You can also drink one yourself from the Hero page whenever your hero is exploring or resting and not at full HP. Potions are found while exploring and never take up bag space.</p>
       <p>Potions are kept in a pouch. A new hero carries a Thermos that holds 20. The pouch grows to a Lunchbox (30) at level 6, a Cooler Bag (40) at level 10 and a Vending Cart (60) at level 14. Your hero might find the next pouch early, or you can buy it on the Bag page for 120, 450 or 1,500 gold, up to one pouch ahead of those levels. When the pouch is full, a potion find becomes gold instead.</p>

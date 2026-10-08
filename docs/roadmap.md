@@ -13,9 +13,9 @@ Release order is a commitment; the dates are not. A release ends when its gate p
 ## Where we are (2026-10-08)
 
 - **v1.0** is deployed and submitted: plugin 564 went to TRMNL review on 2026-10-07 and the review email is sent. Marketplace approval is the one open gate.
-- **v1.0.x** live polish continues while review runs: device templates are at v47, and companion and layout polish ships through main.
-- **v1.1 Decisions** shipped in full on 2026-10-07, with help and analytics coverage added on 2026-10-08 (D101). Production runs content v6 and achievement catalog version 2. Its stretch items (daily quests, lost-and-found, push/email) are not scheduled.
-- **Next:** v1.2 Other people, unless the v1.0.x reorder trigger pulls v2.0 Depth ahead once live retention data exists. Public profiles started on 2026-10-08 (D109) and desk raids are the committed next slice (D110, [design](raids.md)); its rules and harness slice (R1) is done and R2, the backend, is next.
+- **v1.0.x** live polish continues while review runs: device templates are at v48, and companion and layout polish ships through main.
+- **v1.1 Decisions** shipped in full on 2026-10-07, with help and analytics coverage added on 2026-10-08 (D101). Production now runs content v7 and achievement catalog version 3 (D110). Its stretch items (daily quests, lost-and-found, push/email) are not scheduled.
+- **Next:** v1.2 Other people, unless the v1.0.x reorder trigger pulls v2.0 Depth ahead once live retention data exists. Public profiles (D109) and desk raids (D110, [design](raids.md)) are live; raids switched on with content v7 on 2026-10-09 after all five slices.
 
 ## v1.0 — Submission (submitted 2026-10-07, awaiting marketplace approval)
 
@@ -88,7 +88,7 @@ Core batch: player meetings, friends/rivals, world-event banner, shareable publi
 
 | Feature | Dependencies and limits |
 | --- | --- |
-| Desk raids | Committed 2026-10-08 (D110, [design](raids.md)): passive chance-driven raids between any two active heroes, no opt-out, launch odds and win odds set by stance alone (level and gear never count), gold moved from loser to winner, both sides lose HP (loser more) and a raid can kill. Raider applies in its tick, target applies a ledger row once at its next evaluation. Slices R1 rules and harness → R2 backend → R3 companion and R4 device → R5 achievements and profile; R1 is done (2026-10-08, [evidence](evidence/raids.md)): content v7 and the pure core passed the harness gate with the starting numbers; R2 is next and ends with the production switch to v7. The first meeting kind |
+| Desk raids | Live 2026-10-09 (D110, [design](raids.md)): passive chance-driven raids between any two active heroes, no opt-out, launch odds and win odds set by stance alone (level and gear never count), gold moved from loser to winner, both sides lose HP (loser more) and a raid can kill. Raider applies in its tick, target applies a ledger row once at its next evaluation. Slices R1 rules and harness → R2 backend → R3 companion and R4 device → R5 achievements and profile; All five slices shipped on 2026-10-08 and 2026-10-09 ([evidence](evidence/raids.md)) and production switched to content v7 on 2026-10-09. The first meeting kind |
 | Meetings | Later row: friendly meetings select from a completed immutable biome cohort and reuse the raid ledger shape (canonical pair/tick key prevents duplicate rewards/logs); no trading initially |
 | Friends/rivals | Public-profile privacy and moderation; no friend requirement to progress |
 | World events | Versioned typed modifiers, UTC activation, snapshot per tick; admin permissions and rollback |

@@ -57,3 +57,5 @@ export const SUPPORT_EMAIL = 'barry@barrymichaeldoyle.com'
 export const RELEASE_STATUS = 'Free. Awaiting TRMNL marketplace review.'
 /** Shown on the privacy and terms pages; bump whenever either changes. */
 export const POLICY_UPDATED = '8 October 2026'
+/** The privacy policy alone changed on 9 October 2026 (D110: public names in other players' raid stories). */
+export const PRIVACY_UPDATED = '9 October 2026'

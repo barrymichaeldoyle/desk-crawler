@@ -116,6 +116,8 @@ export const commandDetail = v.object({
   optionId: v.optional(v.string()),
   /** An effect a choice granted (D80). */
   effectGained: v.optional(v.string()),
+  /** The stance a `set_stance` line switched away from (D103): switches with nothing logged between them merge into it. */
+  stanceFrom: v.optional(v.union(v.literal('cautious'), v.literal('balanced'), v.literal('bold'))),
 })
 
 /** One earned achievement (D65); the name is copied so reads never need the catalog. */

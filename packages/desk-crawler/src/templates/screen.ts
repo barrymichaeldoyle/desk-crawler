@@ -1,5 +1,6 @@
 /**
- * Four self-contained TRMNL layouts. Template v43 stands the rune rule on end between the X landscape half's columns
+ * Four self-contained TRMNL layouts. Template v44 shows the stance beside the bag count under a gauge mark (D103).
+ * Template v43 stands the rune rule on end between the X landscape half's columns
  * and puts a thin rule under its scene (D97). Template v42 sets the X landscape half's scene at 3x (D97). Template v41 rearranges the X's landscape half (D97): a details column (hero, HUD,
  * gear on two lines, board) beside a vertical rule, then the scene and code over the rune rule and the ledger. Template v40 gives the X its own half, side and quarter arrangements (D95): the
  * half views take the full layout's header, scene, board and one-line ledger; the side stacks the header over the scene
@@ -29,7 +30,7 @@
 import { GLYPHS, glyphRows } from '../art/glyphs'
 import { hudMarkUri } from '../art/hud'
 
-export const TEMPLATE_VERSION = 43
+export const TEMPLATE_VERSION = 44
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -133,7 +134,8 @@ const HUD_ASSIGNS =
  `{% assign hud_heart_full_ink = "${hudMarkUri('heartFull', 36, 32, '#ff0000')}" %}{% assign hud_heart_half_ink = "${hudMarkUri('heartHalf', 36, 32, '#ff0000')}" %}{% assign hud_heart_empty_ink = "${hudMarkUri('heartEmpty', 36, 32, '#ff0000')}" %}` +
   `{% assign hud_tick_full = "${hudMarkUri('tickFull', 36, 16)}" %}{% assign hud_tick_half = "${hudMarkUri('tickHalf', 36, 16)}" %}{% assign hud_tick_empty = "${hudMarkUri('tickEmpty', 36, 16)}" %}` +
   `{% assign hud_sword = "${hudMarkUri('sword', 24, 24)}" %}{% assign hud_shield = "${hudMarkUri('shield', 24, 24)}" %}` +
-  `{% assign hud_coin = "${hudMarkUri('coin', 24, 24)}" %}{% assign hud_potion = "${hudMarkUri('potion', 24, 24)}" %}{% assign hud_star = "${hudMarkUri('star', 24, 24)}" %}{% assign hud_bag = "${hudMarkUri('bag', 24, 24)}" %}`
+  `{% assign hud_coin = "${hudMarkUri('coin', 24, 24)}" %}{% assign hud_potion = "${hudMarkUri('potion', 24, 24)}" %}{% assign hud_star = "${hudMarkUri('star', 24, 24)}" %}{% assign hud_bag = "${hudMarkUri('bag', 24, 24)}" %}` +
+  `{% assign hud_stance_cautious = "${hudMarkUri('stanceCautious', 24, 24)}" %}{% assign hud_stance_balanced = "${hudMarkUri('stanceBalanced', 24, 24)}" %}{% assign hud_stance_bold = "${hudMarkUri('stanceBold', 24, 24)}" %}`
 
 /**
  * A HUD row: marks and counts that wrap where a column is too narrow for all of them. It never shrinks, so beside a
@@ -153,13 +155,20 @@ const counter = (icon: string, text: string, classes = '') => `<div class="${cla
 const attackDefense = (classes = '') => counter('hud_sword', '{{ attack }}', classes) + counter('hud_shield', '{{ defense }}', classes)
 /** Bag slots in use, always beside the potions (D88). Null (unlinked) shows nothing. */
 const bagCount = (classes = '') => `{% if bag_capacity %}${counter('hud_bag', '{{ bag_used }}/{{ bag_capacity }}', classes).replace('<div class="', '<div data-bag-count="true" class="')}{% endif %}`
+/**
+ * The stance under its gauge mark, needle low, centred or high (D103), after the bag count. A setting rather than a
+ * count, it outlasts the log line that changed it. Empty (unlinked, or a catalog without stances) shows nothing.
+ */
+const stanceCount = (classes = '') =>
+  `{% if stance_name and stance_name != "" %}{% case stance %}{% when "cautious" %}{% assign hud_stance = hud_stance_cautious %}{% when "bold" %}{% assign hud_stance = hud_stance_bold %}{% else %}{% assign hud_stance = hud_stance_balanced %}{% endcase %}` +
+  `${counter('hud_stance', '{{ stance_name | escape }}', classes).replace('<div class="', '<div data-stance="{{ stance | escape }}" class="')}{% endif %}`
 const goldPotions = (classes = '') => counter('hud_coin', '{{ gold }}', classes) + counter('hud_potion', '{{ potions }}', classes)
 /**
- * Gold, potions and bag slots under the hero in the full layouts (D88), each count named: the OG's full header has the
+ * Gold, potions, bag slots and the stance under the hero in the full layouts (D88, D103), each count named: the OG's full header has the
  * width for the words too. `lg:flex` keeps the X's wider default gap.
  */
 const heroCounters =
-  hudRow('data-counters="words"', counter('hud_coin', '{{ gold }} gold') + counter('hud_potion', '{{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}') + bagCount(), COUNTER_GAP).replace('class="flex', 'class="flex lg:flex')
+  hudRow('data-counters="words"', counter('hud_coin', '{{ gold }} gold') + counter('hud_potion', '{{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}') + bagCount() + stanceCount(), COUNTER_GAP).replace('class="flex', 'class="flex lg:flex')
 
 /**
  * The full layouts' name line (D88): the hero and level, then the attack and defense marks. On the OG a long name
@@ -214,7 +223,7 @@ const hudWide = (withCounters: boolean) => `${hearts(true)}
  * Narrow columns (side, half, their portrait forms): the hearts alone fill the width, so the HP count leads a combat
  * row with attack and defense (a full heart marks it), and coins and potions take a row of their own.
  */
-const counters = () => `${hudRow('data-counters="true"', counter('hud_heart_full', '{{ hp }}/{{ max_hp }}') + attackDefense(), COUNTER_GAP)}${hudRow('data-counters="2"', goldPotions() + bagCount(), COUNTER_GAP)}`
+const counters = () => `${hudRow('data-counters="true"', counter('hud_heart_full', '{{ hp }}/{{ max_hp }}') + attackDefense(), COUNTER_GAP)}${hudRow('data-counters="2"', goldPotions() + bagCount() + stanceCount(), COUNTER_GAP)}`
 
 /** One glyph as a compact URL-encoded SVG: a single path of horizontal runs keeps each icon to a few hundred bytes. */
 export const glyphUri = (kind: string, size: number) => {
@@ -718,15 +727,17 @@ const xLedger = (inline: boolean, recapLines: number) => `<div class="grow w--mi
 
 /**
  * Half, landscape on the X (D97): a details column (the hero, status and named counters over the hearts, XP and gear,
- * then a board fitted to what is left of the column) beside the rune rule stood on end; to its right the 3x scene and the
- * code over a thin rule (horizontal room is spare, height is not), then a one-line ledger. The board shows up to three rows, which the recap ribbon or a long name can shorten.
+ * then a board fitted to what is left of the column; its counts go by their marks alone, so the stance shares their row, D103) beside the rune rule stood on end; to its right the 3x scene and the
+ * code over a thin rule (horizontal room is spare, height is not), then a one-line ledger. The hero block sits tight (D103), so the board shows up to four rows, which the recap ribbon or a long name can shorten.
  */
 const xHalfWide = `
   ${xBlock(`<div class="grid h--full stretch-x gap--large">
     <div class="col--span-4 h--full w--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--medium" data-fit-bound="true" data-details-column="x">
-      <div class="flex flex--col flex--left gap--xsmall stretch-x" data-hero-header="x">${xName(12, 'title', true)}${statusLine(2, 56)}${heroCounters}</div>
-      <div class="flex flex--col flex--left gap--xsmall stretch-x" data-hud-block="true">${hudWide(false)}${gearLines}</div>
-      ${xBoard(3, true)}
+      <div class="flex flex--col flex--left gap--xsmall stretch-x">
+        <div class="flex flex--col flex--left gap--xsmall stretch-x" data-hero-header="x">${xName(12, 'title', true)}${statusLine(2, 56)}${hudRow('data-counters="2"', goldPotions() + bagCount() + stanceCount(), COUNTER_GAP)}</div>
+        <div class="flex flex--col flex--left gap--xsmall stretch-x" data-hud-block="true">${hudWide(false)}${gearLines}</div>
+      </div>
+      ${xBoard(4, true)}
     </div>
     <div class="col--span-8 h--full w--min-0 flex flex--row flex--stretch-y gap--large">
       ${runeRuleV}

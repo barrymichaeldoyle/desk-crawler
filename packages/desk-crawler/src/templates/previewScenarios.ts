@@ -5,7 +5,7 @@
  * both render the same cases. Never written to a deployment, and never carries
  * a redeemable keepsake code.
  */
-import { contentV1 } from '../content/v1'
+import { ACTIVE_CONTENT, catalogs } from '../content'
 import { MAX_LOGS, MAX_RECAP_EVENTS, type ActivityEntry, type PayloadInput } from '../lib/payload'
 import type { OutcomeDetail } from '../sim/core/types'
 
@@ -81,7 +81,8 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
       ...olderLogs,
     ],
     instanceName: 'Desk Crawler',
-    content: contentV1,
+    // The live catalog, so the screens show what devices show (its stances name the status line, D103).
+    content: catalogs[ACTIVE_CONTENT],
     spriteBaseUrl: null,
     artBaseUrl,
     latestEvent: { kind: 'combat', outcome: { variant: 'combat', monsterId: 'cable_serpent', elite: false } },
@@ -134,7 +135,9 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
     stale: { ...base, world: { ...base.world!, lastCompletedAt: NOW - 3 * 3_600_000 } },
     longText: {
       ...base,
-      hero: hero({ name: 'Sir Staplington' }),
+      // The widest status line too: the longest area under the longest stance name (D103).
+      hero: hero({ name: 'Sir Staplington', biomeId: 'cafeteria_depths', stance: 'cautious' }),
+      latestEvent: { kind: 'combat', outcome: { variant: 'combat', monsterId: 'microwave_wraith', elite: true, outcome: 'victory' } },
       ownerAlias: 'A_Very_Long_Alias__',
       // Widest case for the unclamped rank rows: a 20-character public name with a five-digit score.
       ranking: { ...base.ranking!, rank: 1, score: 12840, top: [{ rank: 1, name: 'Maximilian_Wolfgangs', hero_name: 'Sir Staplington', level: 12, score: 12840 }, ...base.ranking!.top.slice(1)] },

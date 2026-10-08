@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { contentV1 } from '@trmnl-games/desk-crawler/content/v1'
+import { contentV3 } from '@trmnl-games/desk-crawler/content/v3'
 import { aboutDuration, buildPayload, celebrationFor, MAX_LOGS, TOP_ROWS, type PayloadInput } from '@trmnl-games/desk-crawler/payload'
 
 const NOW = Date.UTC(2026, 9, 4, 8, 20)
@@ -138,6 +139,14 @@ describe('status times (D45)', () => {
     expect(status(buildPayload(input))).toMatchObject({ status_label: 'Exploring the [[Office Cubicles]]', status_eta_at: null, status_eta_label: '' })
     const travelling = status(buildPayload({ ...input, hero: { ...input.hero!, status: 'travelling', lastTick: 1, targetBiomeId: 'server_room', arriveAtTick: 2 } }))
     expect(travelling).toMatchObject({ status_eta_label: 'To the [[Server Room]], arriving', status_eta_at: Date.UTC(2026, 9, 4, 8, 30) / 1000 })
+  })
+
+  it('carries the stance for the HUD under a catalog that has stances, and leaves the status alone (D103)', () => {
+    const withStances = { ...input, content: contentV3 }
+    expect(buildPayload(withStances)).toMatchObject({ stance: 'balanced', stance_name: 'Balanced', status_label: 'Exploring the [[Office Cubicles]]' })
+    expect(buildPayload({ ...withStances, hero: { ...input.hero!, status: 'paused', stance: 'bold' } })).toMatchObject({ stance: 'bold', stance_name: 'Bold' })
+    expect(buildPayload(input)).toMatchObject({ stance: '', stance_name: '' })
+    expect(buildPayload({ ...input, hero: null })).toMatchObject({ stance: '', stance_name: '' })
   })
 
   it('leads the story list with the destination and arrival while travelling', () => {

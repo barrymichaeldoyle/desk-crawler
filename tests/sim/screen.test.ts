@@ -294,10 +294,12 @@ describe('X half, side and quarter arrangements (D95)', () => {
       expect(view).toContain('data-hero-header="x"')
       expect(view).toContain('data-scene-row="x"')
       expect(view).toContain('data-story-chips-inline="true"')
-      expect(view).toMatch(/data-counters="words"/)
     }
-    // Three rows in the landscape details column, five beside the portrait scene.
-    expect(landscape.split('data-board-column="x"')[1]!.match(/data-rank-row=/g)).toHaveLength(3)
+    // The landscape's narrow details column counts by marks alone (D103); the portrait header names them.
+    expect(landscape).toMatch(/data-hero-header="x">.*data-counters="2"/s)
+    expect(portrait).toMatch(/data-counters="words"/)
+    // Four rows in the landscape details column, five beside the portrait scene.
+    expect(landscape.split('data-board-column="x"')[1]!.match(/data-rank-row=/g)).toHaveLength(4)
     // The landscape (D97): the details column holds the hero, the HUD with the gear on two lines and the board; the
     // rune rule stood on end, then the scene and code over a thin rule and the ledger.
     const x = landscape.slice(landscape.indexOf('data-details-column="x"'))
@@ -564,6 +566,12 @@ describe('HUD hearts and counters (D72)', () => {
     }
     // Unlinked payloads carry no bag, so no count is drawn.
     expect(await render({ ...vars, bag_capacity: null })).not.toContain('data-bag-count')
+    // D103: the stance follows the bag under its own gauge, in the full header and the narrow counter rows; none without stances.
+    expect(await render(vars)).not.toContain('data-stance')
+    for (const markup of [screenMarkup.markup, screenMarkup.markup_half_vertical, screenMarkup.markup_half_horizontal]) {
+      const stanced = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...vars, stance: 'bold', stance_name: 'Bold' })
+      expect(stanced).toMatch(new RegExp(`data-stance="bold"[^>]*><img[^>]*src="${escape(hudMarkUri('stanceBold', 24, 24))}" alt=""><span class="label lg:title--small">Bold</span>`))
+    }
     expect(await render({ ...vars, potions: 2 })).toContain('>2 potions<')
     expect(fullView).toMatch(/data-gear-line="true"><span class="title--small text--regular" data-clamp="0" data-clamp-lg="0">Weapon <span class="text--bold inline-block">Uncommon Cable Cutter<\/span> · Armor <span class="text--bold inline-block">None<\/span><\/span>/)
     // Narrow columns: the HP count leads the combat row, and coins and potions take their own row.

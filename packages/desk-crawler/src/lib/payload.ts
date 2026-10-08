@@ -2,7 +2,7 @@
  * Canonical TRMNL payload v1 (trmnl.md). Pure mapping: no reads, clocks, RNG or
  * writes. The caller supplies `now` and already-authorized, bounded inputs.
  */
-import type { ContentCatalog } from '../sim/core/types'
+import type { ContentCatalog, StanceId } from '../sim/core/types'
 import { baseAttack, baseDefense, maxHp, xpToLeave } from '../sim/core/stats'
 import { FULL_SCALE, LARGE_SCALE, MEDIUM_SCALE, SMALL_SCALE } from '../art/scene'
 import { QR_LARGE_SCALE, QR_SCALE, qrBasePath, qrPath, type QrTarget } from '../art/qr'
@@ -49,6 +49,8 @@ export interface PayloadHero {
   readonly merchantExpiresAtTick?: number
   /** D79: a pending choice resolves by itself at this tick. */
   readonly choiceExpiresAtTick?: number
+  /** D76: absent means balanced. */
+  readonly stance?: StanceId
 }
 
 export interface PayloadInput {
@@ -294,6 +296,8 @@ export function buildPayload(input: PayloadInput) {
       potions: 0,
       bag_used: null,
       bag_capacity: null,
+      stance: '' as const,
+      stance_name: '',
       held_item: '',
       wake_at_tick: null,
       log: [],
@@ -303,6 +307,7 @@ export function buildPayload(input: PayloadInput) {
     }
   }
 
+  const stance = content.stances?.[hero.stance ?? 'balanced']
   const max = maxHp(hero.level)
   const xpToNext = xpToLeave(hero.level)
   const eta = (deadline: number | undefined) => (deadline === undefined ? 0 : Math.max(0, deadline - hero.lastTick))
@@ -416,6 +421,9 @@ export function buildPayload(input: PayloadInput) {
     potions: input.potions,
     bag_used: input.bagUsed,
     bag_capacity: input.bagCapacity,
+    // D103: the stance outlasts its log line, so the HUD shows it under its gauge mark; empty under a catalog without stances.
+    stance: stance ? stance.id : ('' as const),
+    stance_name: stance?.name ?? '',
     held_item: input.heldItemName ?? '',
     wake_at_tick: hero.wakeAtTick ?? null,
     log: travelLine === null ? logs : [travelLine, ...logs].slice(0, MAX_LOGS),

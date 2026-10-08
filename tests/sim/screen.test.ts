@@ -169,8 +169,8 @@ describe('full layout', () => {
     expect(html).toMatch(/data-xp-count="true">210\/656 XP</)
     expect(html).not.toContain('progress-bar')
     expect(html).not.toContain('style=')
-    expect(html).toMatch(/>Weapon<\/span><\/div><div><span[^>]*>Uncommon Cable Cutter</)
-    expect(html).toMatch(/>Armor<\/span><\/div><div><span[^>]*>None</)
+    // Both arrangements name the slots in one gear line under the HUD rows.
+    expect(html.match(/data-gear-line="true"><span[^>]*>Weapon <span class="text--bold inline-block">Uncommon Cable Cutter<\/span> · Armor <span class="text--bold inline-block">None</g)).toHaveLength(2)
   })
 
   const top5 = [
@@ -463,12 +463,12 @@ describe('HUD hearts and counters (D72)', () => {
       expect(view).toMatch(/data-hp-count="true">118\/148 HP<\/span><\/div>/)
     }
     const goldPotionsBag = new RegExp(`<div[^>]*><img[^>]*src="${escape(hudMarkUri('coin', 24, 24))}" alt=""><span class="label lg:title--small">640</span></div><div[^>]*><img[^>]*src="${escape(hudMarkUri('potion', 24, 24))}" alt=""><span class="label lg:title--small">1</span></div><div data-bag-count="true"[^>]*><img[^>]*src="${escape(hudMarkUri('bag', 24, 24))}" alt=""><span class="label lg:title--small">3/30</span></div></div>`)
-    // Landscape: under the hero, marks on the OG and named counts on the X; the XP row ends at its count.
-    expect(landscape).toMatch(new RegExp(`data-counters="marks">${goldPotionsBag.source}`))
-    expect(landscape).toMatch(/<div class="hidden lg:flex[^"]*" data-counters="words">(?:<div[^>]*><img[^>]*><span class="label lg:title--small">(?:640 gold|1 potion|3\/30)<\/span><\/div>){3}<\/div>/)
-    expect(landscape).toMatch(/data-xp-count="true">210\/656 XP<\/span><\/div>/)
-    // Portrait: after the XP count.
-    expect(portrait).toMatch(new RegExp(`data-xp-count="true">210/656 XP</span>${goldPotionsBag.source}`))
+    // Both arrangements: under the hero, marks on the OG and named counts on the X; the XP row ends at its count.
+    for (const view of [landscape, portrait]) {
+      expect(view).toMatch(new RegExp(`data-counters="marks">${goldPotionsBag.source}`))
+      expect(view).toMatch(/<div class="hidden lg:flex[^"]*" data-counters="words">(?:<div[^>]*><img[^>]*><span class="label lg:title--small">(?:640 gold|1 potion|3\/30)<\/span><\/div>){3}<\/div>/)
+      expect(view).toMatch(/data-xp-count="true">210\/656 XP<\/span><\/div>/)
+    }
     // Unlinked payloads carry no bag, so no count is drawn.
     expect(await render({ ...vars, bag_capacity: null })).not.toContain('data-bag-count')
     expect(await render({ ...vars, potions: 2 })).toContain('>2 potions<')

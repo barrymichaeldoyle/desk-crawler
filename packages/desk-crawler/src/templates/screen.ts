@@ -1,5 +1,8 @@
 /**
- * Four self-contained TRMNL layouts. Template v37 polishes the X's full layout: each story is one line, its XP, gold
+ * Four self-contained TRMNL layouts. Template v38 reworks the full portrait: the landscape's header (the HUD block
+ * beside the hero on the X, under it on the OG), the scene across the full width with the standing QR hung in its
+ * corner, and a captioned rule between the stories and the ranking; the celebration badge keeps its size in stretching
+ * columns. Template v37 polishes the X's full layout: each story is one line, its XP, gold
  * and HP in fixed columns before the time; the stories and the ranking get a wider gutter and a full-width rune; the
  * ranking shows up to ten ruled rows (`top10`), in two columns in portrait. Template v36 reworks the full layout: attack and defense beside the name, the bag
  * count beside the potions, a small companion QR in the top-right corner, a bag-full panel over the stories, and wider
@@ -17,7 +20,7 @@
 import { GLYPHS, glyphRows } from '../art/glyphs'
 import { hudMarkUri } from '../art/hud'
 
-export const TEMPLATE_VERSION = 37
+export const TEMPLATE_VERSION = 38
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -259,9 +262,12 @@ const logLine = (entry: string, classes: string, clamp: number, size: number, fi
 const statusLine = (clamp: number, fit: number) =>
   `{% if status_eta_at and utc_offset != nil %}{% assign status_plain = ${plainOf('status_eta_label')} | append: " 00:00" %}{% else %}{% assign status_plain = ${plainOf('status_label')} %}{% endif %}<span class="label lg:title--small" ${fitClamp('status_plain', clamp, fit)}>${statusText}</span>`
 
-/** A big moment (level-up, elite win, jackpot, rare find) gets an inverted badge above the newest story. */
+/**
+ * A big moment (level-up, elite win, jackpot, rare find) gets an inverted badge above the newest story. Its own row keeps
+ * it at its text's size where the column stretches its children (the portrait's `flex--stretch-x`).
+ */
 const celebrationBadge = (classes: string) => `
-      {% if celebration %}<span class="${classes} label--inverted">{{ celebration | escape }}</span>{% endif %}`
+      {% if celebration %}<div class="no-shrink flex flex--row flex--left" data-celebration="true"><span class="${classes} label--inverted">{{ celebration | escape }}</span></div>{% endif %}`
 
 /** Whole story/stat pairs; the fitter keeps the longest newest-first prefix that fits. */
 const storyList = (clamp: number, classes: string, size = 16, fit = 60, timeBelow = false, chipsInline = false) => `
@@ -358,7 +364,8 @@ const recapRibbon = `
  * when it sits below the rows a device shows. The OG keeps three rows so every row stays at a readable size; the X
  * shows up to ten (`top10`, or `top5` from a payload that predates it), ruled like the story ledger. In the landscape
  * a hero below a full board takes the tenth row's place, so the column never holds more than ten rows.
- * `heading` puts the period and group line inside the panel; the full landscape carries it in the divider row instead.
+ * `heading` (the portrait) opens the panel with the period and group set into a rule, the separator from the stories;
+ * the full landscape carries it in the divider row instead.
  */
 /** The row itself is the label, so an inverted own row keeps its text white: a `.label` child would set its own colour. */
 const rankRow = (text: string, score: string, classes: string, own: string) =>
@@ -383,16 +390,16 @@ const boardRow = rankRow('row.rank', 'row.score', '{% if forloop.index > 3 %}hid
 const rankColumns = `<div class="grid grid--cols-1 lg:grid--cols-2 gap--none lg:gap--large stretch-x">` +
   `<div class="flex flex--col flex--top flex--stretch-x gap--xsmall">{% for row in board_rows limit: 5 %}{% unless forloop.first %}${rankRule}{% endunless %}${boardRow}{% endfor %}</div>` +
   `<div class="flex flex--col flex--top flex--stretch-x gap--xsmall">{% for row in board_rows offset: 5 %}{% unless forloop.first %}${rankRule}{% endunless %}${boardRow.replace('{% if forloop.index > 3 %}hidden lg:flex {% endif %}', 'hidden lg:flex ')}{% endfor %}</div></div>`
+/** Period and group caption set into the rune rule above the ranking (D92); the OG shortens "Levels" to "Lv". */
+const rankCaption = `<div class="flex flex--row flex--center-y gap--xsmall stretch-x">${ruleFill}<span class="label lg:title--small no-shrink lg:hidden">This week{% if leaderboard_cohort_label != "" %} · {{ leaderboard_cohort_label | replace: "Levels ", "Lv " | escape }}{% endif %}</span><span class="hidden lg:inline-block label lg:title--small no-shrink">${rankHeading}</span>${ruleFill}</div>`
 const rankPanel = (heading: boolean) => `
-      ${heading ? `<span class="label lg:title--small text--bold" data-clamp="1">${rankHeading}</span>` : ''}
+      ${heading ? rankCaption : ''}
       {% unless rank %}{% if rank_status == "dormant" %}<span class="label lg:title--small">Not ranked while paused</span>{% else %}<span class="label lg:title--small">Ranking within the hour</span>{% endif %}{% endunless %}
       {% assign board_rows = top10 | default: top5 %}
       ${heading ? rankColumns : `{% assign board_limit = board_rows.size %}{% if rank and rank > board_rows.size and board_rows.size >= 10 %}{% assign board_limit = 9 %}{% endif %}{% for row in board_rows limit: board_limit %}{% unless forloop.first %}${rankRule}{% endunless %}${boardRow}{% endfor %}`}
       {% if rank and rank > 3 %}${rankRow('rank', 'leaderboard_score', 'lg:hidden ', 'true')}{% endif %}
       {% if rank and rank > board_rows.size %}${rankRule}${rankRow('rank', 'leaderboard_score', 'hidden lg:flex ', 'true')}{% endif %}`
 
-/** Period and group caption set into the rune rule above the ranking (D92); the OG shortens "Levels" to "Lv". */
-const rankCaption = `<div class="flex flex--row flex--center-y gap--xsmall stretch-x">${ruleFill}<span class="label lg:title--small no-shrink lg:hidden">This week{% if leaderboard_cohort_label != "" %} · {{ leaderboard_cohort_label | replace: "Levels ", "Lv " | escape }}{% endif %}</span><span class="hidden lg:inline-block label lg:title--small no-shrink">${rankHeading}</span>${ruleFill}</div>`
 
 /**
  * The one quiet attention message (service, delay, death, inventory sleep): never clipped, shown in every size. A
@@ -434,11 +441,8 @@ const bagQr = (scale = 3, largeScale = 4, caption = true) => `
 
 /**
  * Equipped gear with its slot named, so a find reads as a weapon or armor at a glance (X only: the OG has no spare line).
- * One line under the HUD rows in the full landscape, so the header stays three rows; the portrait keeps the two
- * stacked slots. Plain blocks, not a flex column: the framework's flex gap outranks gap--none and left the caption floating.
+ * One line under the HUD rows in both full arrangements, wrapping where the HUD block is short.
  */
-const gearSlot = (slot: string, field: string) => `
-      <div class="hidden lg:block text--center"><div><span class="label">${slot}</span></div><div><span class="title--small" data-clamp="2">{% if ${field} != "" %}{{ ${field} | escape }}{% else %}None{% endif %}</span></div></div>`
 const gearName = (field: string) => `<span class="text--bold inline-block">{% if ${field} != "" %}{{ ${field} | escape }}{% else %}None{% endif %}</span>`
 const gearLine = `{% assign gear_plain = weapon | default: "None" | append: armor | default: "None" %}<div class="hidden lg:block stretch-x" data-gear-line="true"><span class="title--small text--regular" ${fitClamp('gear_plain', 1, 44)}>Weapon ${gearName('weapon')} · Armor ${gearName('armor')}</span></div>`
 
@@ -511,33 +515,46 @@ const qrFooter = (scale = 3, largeScale = 4) => `
     {% else %}<div class="no-shrink">${qrImage(scale, largeScale, 'companion_qr_base')}</div><span class="label lg:title--small grow">Your bag</span>{% endif %}
   </div>{% endif %}`
 
+/** The portrait's standing link set into the top-right corner of the scene, its quiet zone framing it. */
+const sceneQr = homeQr.replace('class="no-shrink" data-home-qr="true"', 'class="absolute top--0 right--0 flex bg--black p--1" data-home-qr="true"')
+
 /**
- * Full, portrait: name, attack and defense and status beside the corner QR, HP and XP, the scene, then the stories
- * take the height with the ranking below them; a full bag replaces both with its panel.
+ * Full, portrait: the landscape's header (hero, status and counters, then the HUD block with the gear line), then the
+ * scene across the full width with the standing QR hung in its top-right corner, then the stories take the height with
+ * the ranking below a captioned rule; a full bag replaces both with its panel. The OG stacks the HUD under the hero.
+ * On the X the HUD slot grows from no basis with a minimum that holds a full hearts row and XP count, so the row breaks
+ * only beside the longest names, where the HUD moves under the hero; otherwise it sits against the right edge and its
+ * gear line wraps if the slot is short. The framework stretches a wrapping row to the layout's height, so the header
+ * sits in a plain block.
  */
 const fullPortrait = `
   {% if status == "unlinked" or first_run %}${welcome('halfVertical')}
   {% else %}
-  <div class="no-shrink flex flex--row flex--top gap--small stretch-x">
-    <div class="grow w--min-0 flex flex--col flex--left gap--xsmall">
+  <div class="no-shrink stretch-x"><div class="flex flex--col lg:flex--row lg:flex--wrap flex--top flex--left lg:flex--between gap--small lg:gap--large" data-hero-header="true">
+    <div class="no-shrink flex flex--col flex--left gap--xsmall">
       ${nameRow(`<span class="title lg:hidden w--min-0" data-clamp="1">{{ hero_name | truncate: 16 | escape }}, level {{ level }}</span>
-      <span class="hidden lg:inline-block title lg:title--large no-shrink">{{ hero_name | escape }}, level {{ level }}</span>`)}
+      <span class="hidden lg:inline-block title no-shrink">{{ hero_name | escape }}, level {{ level }}</span>`)}
       ${statusLine(2, 40)}
+      ${heroCounters}
     </div>
-    ${homeQr}
+    <div class="lg:grow lg:basis--0 lg:w--min-96 flex flex--col flex--left lg:flex--right" data-hud-slot="true">
+      <div class="pt--2 flex flex--col flex--left gap--xsmall" data-hud-block="true">
+        ${hudWide(false)}
+        ${gearLine}
+      </div>
+    </div>
+  </div></div>
+  <div class="no-shrink flex flex--col gap--small stretch-x">
+    <div class="relative stretch-x lg:pt--2" data-scene-row="true">${scene('scene_url_small', 'scene_url')}${sceneQr}</div>
+    ${divider}
   </div>
-  <div class="no-shrink flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small stretch-x">
-    ${hudWide(true)}
-  </div>
-  <div class="hidden lg:block no-shrink stretch-x"><div class="grid grid--cols-2 gap--large">${gearSlot('Weapon', 'weapon')}${gearSlot('Armor', 'armor')}</div></div>
-  <div class="no-shrink flex flex--col gap--small stretch-x">${scene('scene_url_small', 'scene_url_medium')}${divider}</div>
   {% if qr_base != "" %}${bagFullPanel(true)}
   {% else %}
   <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small stretch-x">
     ${attention('label lg:title--small', 3)}
     {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(2, 'title lg:title', 24, 40, false, true)}
   </div>
-  <div class="no-shrink flex flex--col flex--left flex--stretch-x gap--xsmall stretch-x">${rankPanel(true)}</div>
+  <div class="no-shrink flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small stretch-x pt--1 lg:pt--2" data-rank-panel="true">${rankPanel(true)}</div>
   {% endif %}
   {% unless attention %}${recapRibbon}{% endunless %}
   {% endif %}`

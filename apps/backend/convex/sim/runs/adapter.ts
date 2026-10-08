@@ -109,12 +109,15 @@ export async function applyResult(
 }
 
 /** Copy core detail and annotate combat gear from the actual transactional award. No simulator/RNG change. */
-export function storedDetail(detail: LogDetail, changes: readonly ItemChange[] = []): Doc<'tickLogs'>['detail'] {
+export function storedDetail(detail: LogDetail, changes: readonly ItemChange[] = [], rival?: { userId: Id<'users'>; nameVersion: number }): Doc<'tickLogs'>['detail'] {
   const gear = changes.find(change => change.type === 'create' && change.item.kind !== 'potion')
   const outcome = detail.outcome.variant === 'combat' ? {
     ...detail.outcome,
     rounds: [...detail.outcome.rounds],
     ...(detail.outcome.gearDropped && gear?.type === 'create' ? { gearRarity: gear.item.rarity } : {}),
-  } : detail.outcome.variant === 'merchant' ? { ...detail.outcome, offers: detail.outcome.offers.map((offer) => ({ ...offer })) } : detail.outcome
+  } : detail.outcome.variant === 'merchant' ? { ...detail.outcome, offers: detail.outcome.offers.map((offer) => ({ ...offer })) }
+    // D110: the rival's owner and name version let reads mask a name repaired after the raid.
+    : detail.outcome.variant === 'raid' && rival !== undefined ? { ...detail.outcome, rivalUserId: rival.userId, rivalNameVersion: rival.nameVersion }
+    : detail.outcome
   return { ...detail, outcome }
 }

@@ -15,10 +15,12 @@ export const RETENTION = {
   failuresMs: 7 * DAY,
   runsMs: 30 * DAY,
   installAttemptsMs: DAY,
+  /** D110: applied raids, in world ticks (96 a day); pending ones wait for their target. */
+  appliedRaidTicks: 30 * 96,
 } as const
 
-type Job = 'tickLogs' | 'receipts' | 'rateLimits' | 'deletionConfirmations' | 'reconnectAttempts' | 'installAttempts' | 'failures' | 'runs'
-const ORDER: readonly Job[] = ['tickLogs', 'receipts', 'rateLimits', 'deletionConfirmations', 'reconnectAttempts', 'installAttempts', 'failures', 'runs']
+type Job = 'tickLogs' | 'receipts' | 'rateLimits' | 'deletionConfirmations' | 'reconnectAttempts' | 'installAttempts' | 'failures' | 'runs' | 'raids'
+const ORDER: readonly Job[] = ['tickLogs', 'receipts', 'rateLimits', 'deletionConfirmations', 'reconnectAttempts', 'installAttempts', 'failures', 'runs', 'raids']
 
 export const cleanup = internalMutation({
   args: { job: v.optional(v.union(...ORDER.map((j) => v.literal(j)))) },
@@ -67,6 +69,14 @@ export const cleanup = internalMutation({
       }
       case 'failures': {
         const rows = await ctx.db.query('simulationFailures').withIndex('by_createdAt', (q) => q.lt('createdAt', now - RETENTION.failuresMs)).take(BATCH)
+        for (const row of rows) await ctx.db.delete(row._id)
+        deleted = rows.length
+        break
+      }
+      case 'raids': {
+        const world = await ctx.db.query('worldState').withIndex('by_key', (q) => q.eq('key', 'world')).unique()
+        const before = (world?.currentTick ?? 0) - RETENTION.appliedRaidTicks
+        const rows = await ctx.db.query('raids').withIndex('by_state_and_tick', (q) => q.eq('state', 'applied').lt('tick', before)).take(BATCH)
         for (const row of rows) await ctx.db.delete(row._id)
         deleted = rows.length
         break

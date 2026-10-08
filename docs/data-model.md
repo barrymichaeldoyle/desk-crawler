@@ -57,6 +57,14 @@ An authenticated creation transaction validates the owned TRMNL install attempt 
 
 `createdAt` is assigned by the server. A run uses the stable creation index and cutoff; it does not iterate an index whose sort key it changes while simulating.
 
+### `raidPool` (D110)
+
+Fields: `heroId`, `shard` (a random uint32), `raidedAtTick?`. Indexes: `by_shard[shard]`, `by_heroId[heroId]`. One row per hero, created at the hero's first evaluation under a catalog with raid rules (the hero stores `raidPoolId?`), so switching content needs no backfill. A raider takes the first row at or after its plan's shard, wrapping once, and checks that one hero live (active, activated, healthy, exploring or resting, owner active and still pointing at it, not picked in the cooldown). A raid moves the picked row to the plan's second shard and sets `raidedAtTick`. A row whose hero is gone or retired is removed when picked. Deletion removes the row.
+
+### `raids` (D110)
+
+Fields: `raiderHeroId`, `raiderUserId`, `raiderName`, `raiderNameVersion`, `targetHeroId`, `targetUserId`, `targetName`, `targetNameVersion`, `tick`, `raiderWon`, `gold`, `raiderHpLost`, `targetHpPct`, `state: pending | applied`, `appliedTick?`, `targetGold?`, `targetHpLost?`. Indexes: `by_raiderHeroId_and_tick`, `by_targetHeroId_and_state_and_tick`, `by_targetHeroId_and_tick`, `by_state_and_tick`. The raider inserts its row in its own tick (raider and tick identify it, so a replayed evaluation cannot insert twice); the target's evaluation reads its oldest pending row, and the same transaction marks it applied with what landed. Raid logs store the rival's owner and name version in their detail, and `raids.recent` masks a name whose owner is gone, suspended, under repair or renamed. Deletion removes every row the hero is party to; the other hero keeps its own log line. Applied rows are kept for 30 days of ticks.
+
 ### `items`
 
 Fields: `heroId`, `templateId`, `contentVersion`, `kind: weapon | armor | potion`, `name`, `rarity: common | uncommon | rare | epic`, `requiredLevel`, `attack`, `defense`, `saleValue`, `quantity`, `createdAt`, `affixId?` (D81: rolled at generation on rare and epic gear; the adjective and modifiers come from the active catalog, so an unknown id is harmless).
@@ -244,6 +252,7 @@ Fields: `incidentKey` (run + stall kind), `runId`, `state: open | recovered`, `o
 | Hero / owned items | Persistent until account deletion | No TTL |
 | Companion visit checkpoint | One per current hero | Replace only from guarded rendered-view acknowledgement; purge with hero |
 | Tick/command logs | 72 hours | Indexed batches, oldest first |
+| Raid ledger (D110) | Pending until the target applies it; applied rows 30 days of ticks | Indexed batches by state and tick; pool and ledger rows purge with the hero |
 | Runs | 30 days | Completed/old only; never delete active/blocked run |
 | Failure replay inputs | 7 days | Redacted input domain only |
 | Publication/generation/rank rows | Current + previous + building sets | Protect publication pointer and all associated rows |

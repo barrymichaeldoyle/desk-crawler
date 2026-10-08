@@ -68,3 +68,24 @@ Other measures: no hero was knocked out by a raid within its revival window of a
 ## Limits
 
 These are policy simulations, not player forecasts. The harness evaluates heroes in a fixed order inside one world, and production batches by its own order. A real world has far fewer heroes than 300, which raises the share of launch draws that find nobody raidable without changing the odds once a raid happens. The production seed derivation (SHA-256) isn't reproduced. Thrifty gear on the target is read from its equipped items here; R2 decides how the adapter reads it within the bounded-read budget.
+
+## R2 backend (2026-10-08)
+
+Built and deployed while production stays on content v6. Under v6, no tick reads or writes anything raid-related, and a test checks that.
+
+- **Tables:** `raidPool` and `raids` ([data model](../data-model.md#raidpool-d110)), plus the optional hero field `raidPoolId`. A hero joins the pool at its first evaluation under v7, so the switch needs no backfill.
+- **Tick adapter** ([lib/raids.ts](../../apps/backend/convex/lib/raids.ts)). Every hero takes one indexed read for its oldest pending raid. A hero whose launch draw hits (about 1% of exploring ticks) also reads one pool row (two when the pick wraps), the target hero, its owner and the owner's profile, and the target's two equipped items for thrifty, then checks the ledger key before inserting. A pick that fails a live check costs only those reads and the tick plays its ordinary encounter.
+- **Exactly once:** the raider's side commits inside its own evaluation under the `lastTick` guard, and the ledger row is keyed by raider and tick. The target's side commits when the row is marked applied in the target's own evaluation. A replayed batch worker changes nothing.
+- **Names:** the ledger copies both public names with their versions, and raid log details carry the rival's owner and name version. `raids.recent` shows "A coworker" for a rival who is gone, suspended, under name repair or renamed since the raid.
+- **Deletion and retention:** account deletion and game deletion both remove the hero's pool row and every ledger row it is party to, a batch at a time. The daily retention job removes applied raids older than 30 days of ticks.
+
+Tests (`tests/convex/raids.test.ts`, 7):
+- v6 writes nothing.
+- Under v7, heroes join the pool and raid each other, with no target picked twice inside the cooldown. Counters on both sides match the ledger, each applied raid is logged once on each side, and gold only moves.
+- A stale batch replay commits nothing.
+- Paused, suspended and retired heroes are never picked, and a retired hero leaves the pool.
+- `raids.recent` reports the record, masks a renamed rival and returns null without a hero.
+- Game deletion purges the hero's rows.
+- Retention keeps pending raids and recent applied ones.
+
+The production switch to v7 is held until R3 (companion) and R4 (device) can show raids. Until then a raid log would render with the generic system glyph.

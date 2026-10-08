@@ -189,6 +189,8 @@ export default defineSchema({
     effects: v.optional(v.array(v.object({ id: v.string(), untilTick: v.number() }))),
     /** v1.2: the owner chose to show this hero on a public profile page; absent means private. */
     publicProfile: v.optional(v.boolean()),
+    /** D110: this hero's row in the raid pool, created at its first evaluation under a catalog with raids. */
+    raidPoolId: v.optional(v.id('raidPool')),
     eligibleFromTick: v.number(),
     lastTick: v.number(),
     lastProgressTick: v.number(),
@@ -225,6 +227,49 @@ export default defineSchema({
   })
     .index('by_heroId', ['heroId'])
     .index('by_heroId_and_kind', ['heroId', 'kind']),
+
+  /**
+   * D110: one row per hero that can be raided, at a random shard. A raider takes the first row at or after its
+   * shard; a picked row moves to a new shard and records when it was picked, so nobody is everyone's target.
+   */
+  raidPool: defineTable({
+    heroId: v.id('heroes'),
+    shard: v.number(),
+    raidedAtTick: v.optional(v.number()),
+  })
+    .index('by_shard', ['shard'])
+    .index('by_heroId', ['heroId']),
+
+  /**
+   * D110 raid ledger: the raider writes one row in its own tick; the target applies it once at its next exploring
+   * or resting evaluation. Names are copied with their public-name versions so reads can mask a repaired name.
+   */
+  raids: defineTable({
+    raiderHeroId: v.id('heroes'),
+    raiderUserId: v.id('users'),
+    raiderName: v.string(),
+    raiderNameVersion: v.number(),
+    targetHeroId: v.id('heroes'),
+    targetUserId: v.id('users'),
+    targetName: v.string(),
+    targetNameVersion: v.number(),
+    tick: v.number(),
+    raiderWon: v.boolean(),
+    /** Gold the loser loses and the winner gains, as the raider resolved it. */
+    gold: v.number(),
+    raiderHpLost: v.number(),
+    /** The target's HP loss as a share of its maximum HP. */
+    targetHpPct: v.number(),
+    state: v.union(v.literal('pending'), v.literal('applied')),
+    appliedTick: v.optional(v.number()),
+    /** What the target actually lost or gained once applied (a loss is clamped to the gold it held). */
+    targetGold: v.optional(v.number()),
+    targetHpLost: v.optional(v.number()),
+  })
+    .index('by_raiderHeroId_and_tick', ['raiderHeroId', 'tick'])
+    .index('by_targetHeroId_and_state_and_tick', ['targetHeroId', 'state', 'tick'])
+    .index('by_targetHeroId_and_tick', ['targetHeroId', 'tick'])
+    .index('by_state_and_tick', ['state', 'tick']),
 
   worldState: defineTable({
     key: v.literal('world'),

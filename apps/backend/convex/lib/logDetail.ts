@@ -92,6 +92,9 @@ const outcome = v.union(
     hpLost: v.number(),
     raidTick: v.number(),
     outcome: v.union(v.literal('survived'), v.literal('death'), v.literal('rescue')),
+    /** Adapter annotation: the rival's owner and public-name version, so reads can mask a repaired name. */
+    rivalUserId: v.optional(v.string()),
+    rivalNameVersion: v.optional(v.number()),
   }),
 )
 

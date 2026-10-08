@@ -1,4 +1,5 @@
 import { gameProfile, DESK_CRAWLER } from './lib/gameProfile'
+import { purgeRaidRows } from './lib/raids'
 import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import type { Doc, Id, TableNames } from './_generated/dataModel'
@@ -109,7 +110,7 @@ export const purgeGameStep = internalMutation({
       const items = await ctx.db.query('items').withIndex('by_heroId', (q) => q.eq('heroId', heroId)).take(BATCH)
       const logs = await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', heroId)).take(BATCH)
       const windows = await ctx.db.query('heroScoreWindows').withIndex('by_heroId', (q) => q.eq('heroId', heroId)).take(BATCH)
-      if (await deleteBatch(ctx, items) + await deleteBatch(ctx, logs) + await deleteBatch(ctx, windows) > 0) return await again()
+      if (await deleteBatch(ctx, items) + await deleteBatch(ctx, logs) + await deleteBatch(ctx, windows) + await purgeRaidRows(ctx, heroId, BATCH) > 0) return await again()
       if (await ctx.db.get(heroId)) await ctx.db.delete(heroId)
       await ctx.db.patch(profile._id, { activeHeroId: undefined })
     }
@@ -237,7 +238,8 @@ export const purgeStep = internalMutation({
           const items = await ctx.db.query('items').withIndex('by_heroId', (q) => q.eq('heroId', heroId)).take(BATCH)
           const logs = await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', heroId)).take(BATCH)
           const windows = await ctx.db.query('heroScoreWindows').withIndex('by_heroId', (q) => q.eq('heroId', heroId)).take(BATCH)
-          const removed = (await deleteBatch(ctx, items)) + (await deleteBatch(ctx, logs)) + (await deleteBatch(ctx, windows))
+          // D110: the hero's raid pool row and ledger rows; the other party keeps its own log line.
+          const removed = (await deleteBatch(ctx, items)) + (await deleteBatch(ctx, logs)) + (await deleteBatch(ctx, windows)) + (await purgeRaidRows(ctx, heroId, BATCH))
           if (removed > 0) return await again()
           // Copied names in published boards are masked by owner state and rotate out within two publications.
           if (await ctx.db.get(heroId)) await ctx.db.delete(heroId)

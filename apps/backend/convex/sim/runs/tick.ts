@@ -12,6 +12,8 @@ import { creditTick, projectAtPublication, type ScoreAccumulator, type ScoreBuck
 import { deriveStreamSeeds, SEED_VERSION } from '@trmnl-games/desk-crawler/sim/seed'
 import { getOrCreateWorld } from '../../world'
 import { applyResult, storedDetail, toHeroState, toInventory } from './adapter'
+import { joinRaidPool, nextIncomingRaid, pickRaidTarget, raidRival, settleRaids, type PendingRaid, type RaidPick } from '../../lib/raids'
+import { planRaid, type RaidPlan } from '@trmnl-games/desk-crawler/sim/core/raid'
 import { beginBuild, writeRankInput } from '../../leaderboard'
 import { openIncident, recoverIncidents } from '../../incidents'
 import { achievementState, awardAchievements, keepsakeTotal, mergeCounts, tallyUnlocks } from '../../lib/achievements'
@@ -142,6 +144,16 @@ export const simulateBatch = internalMutation({
         .query('items')
         .withIndex('by_heroId', (q) => q.eq('heroId', hero._id))
         .take(40)
+      // D110: under a catalog with raids, the oldest raid waiting to land, and a target when the launch draw hits.
+      const streams = deriveStreamSeeds(world.worldSeed, hero._id, run.tick, run.simulationVersion)
+      let plan: RaidPlan | undefined
+      let pick: RaidPick | undefined
+      let pending: PendingRaid | undefined
+      if (content.raids !== undefined) {
+        plan = planRaid(streams, hero.stance, content)
+        if (plan !== undefined) pick = await pickRaidTarget(ctx, hero, plan, run.tick, content)
+        pending = await nextIncomingRaid(ctx, hero._id)
+      }
       let result
       const recentLogs = (await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id)).order('desc').take(4))
         .filter((log) => log.kind !== 'achievement')
@@ -153,8 +165,10 @@ export const simulateBatch = internalMutation({
           tick: run.tick,
           content,
           simulationVersion: run.simulationVersion,
-          streams: deriveStreamSeeds(world.worldSeed, hero._id, run.tick, run.simulationVersion),
+          streams,
           recentSummaries: recentLogs.map((log) => log.summary),
+          ...(pick === undefined ? {} : { raidTarget: pick.target }),
+          ...(pending === undefined ? {} : { incomingRaid: pending.incoming }),
         })
       } catch (error) {
         // Only recognized pure-core failures are isolated; anything else rolls back the page.
@@ -181,8 +195,9 @@ export const simulateBatch = internalMutation({
       }
 
       await applyResult(ctx, hero, items, result, now)
+      if (content.raids !== undefined) await settleRaids(ctx, { hero, owner, result, plan, pick, pending, tick: run.tick })
       const progressed = !['waiting_dead', 'waiting_travel', 'paused', 'sleeping'].includes(result.disposition)
-      const markers: Partial<Doc<'heroes'>> = { lastTick: run.tick }
+      const markers: Partial<Doc<'heroes'>> = { lastTick: run.tick, ...(content.raids === undefined ? {} : await joinRaidPool(ctx, hero)) }
       if (progressed) {
         markers.lastProgressTick = run.tick
         markers.lastAdvancedAt = now
@@ -199,7 +214,7 @@ export const simulateBatch = internalMutation({
           at: now,
           kind: result.event.kind,
           summary: result.event.summary,
-          detail: storedDetail(result.event.detail, result.itemChanges),
+          detail: storedDetail(result.event.detail, result.itemChanges, raidRival(result, pick, pending)),
           deltas: result.event.deltas,
         })
       }

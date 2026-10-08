@@ -37,9 +37,9 @@ export type HudMark = keyof typeof HUD_MARKS
 const markPath = (rows: readonly string[]) =>
   rows.flatMap((row, y) => [...row.matchAll(/#+/g)].map((run) => `M${run.index} ${y}h${run[0].length}v1h-${run[0].length}z`)).join('')
 
-/** A crisp-edged SVG of one mark at the given pixel size, as a URL-encoded data URI. */
-export function hudMarkUri(mark: HudMark, width: number, height: number): string {
+/** A crisp-edged SVG of one mark at the given pixel size, as a URL-encoded data URI; `fill` inks it (red hearts, D94). */
+export function hudMarkUri(mark: HudMark, width: number, height: number, fill?: string): string {
   const rows = HUD_MARKS[mark]
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}' viewBox='0 0 ${rows[0].length} ${rows.length}' shape-rendering='crispEdges'><path d='${markPath(rows)}'/></svg>`
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}' viewBox='0 0 ${rows[0].length} ${rows.length}' shape-rendering='crispEdges'><path${fill ? ` fill='${fill}'` : ''} d='${markPath(rows)}'/></svg>`
   return `data:image/svg+xml,${encodeURIComponent(svg)}`
 }

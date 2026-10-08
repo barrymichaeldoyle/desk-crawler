@@ -81,3 +81,27 @@ export function encodePng1Bit(width: number, height: number, ink: Uint8Array): U
   }
   return out
 }
+
+/**
+ * Indexed 2-bit PNG for the four-ink panels (D94): `index[y * width + x]` picks one of up to four `palette` colours.
+ * The palette holds the panel's exact inks, so TRMNL's renderer maps every pixel to an ink without dithering; the
+ * `transparent` entry lets the screen's own paper show through.
+ */
+export function encodePngPalette(width: number, height: number, index: Uint8Array, palette: ReadonlyArray<readonly [number, number, number]>, transparent?: number): Uint8Array {
+  const rowBytes = Math.ceil(width / 4)
+  const raw = new Uint8Array((rowBytes + 1) * height)
+  for (let y = 0; y < height; y += 1) {
+    const row = y * (rowBytes + 1)
+    for (let x = 0; x < width; x += 1) raw[row + 1 + (x >> 2)]! |= (index[y * width + x]! & 3) << (6 - 2 * (x & 3))
+  }
+  const ihdr = new Uint8Array([...u32(width), ...u32(height), 2, 3, 0, 0, 0])
+  const signature = Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10])
+  const parts = [signature, chunk('IHDR', ihdr), chunk('PLTE', Uint8Array.from(palette.flat())), ...(transparent === undefined ? [] : [chunk('tRNS', Uint8Array.from(palette.map((_, i) => (i === transparent ? 0 : 255))))]), chunk('IDAT', zlibStored(raw)), chunk('IEND', new Uint8Array())]
+  const out = new Uint8Array(parts.reduce((sum, p) => sum + p.length, 0))
+  let at = 0
+  for (const part of parts) {
+    out.set(part, at)
+    at += part.length
+  }
+  return out
+}

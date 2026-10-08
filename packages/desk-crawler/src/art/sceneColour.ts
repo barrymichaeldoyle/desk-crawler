@@ -122,3 +122,24 @@ export function sceneColourUri(path: string): string | null {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${STAGE_WIDTH} ${STAGE_HEIGHT}" width="${STAGE_WIDTH * 5}" height="${STAGE_HEIGHT * 5}" preserveAspectRatio="none" shape-rendering="crispEdges">${rects}</svg>`
   return `data:image/svg+xml,${encodeURIComponent(svg)}`
 }
+
+/** The four-ink panels' palette (D94), in index order: ink, paper, red, yellow. */
+export const BWRY_PALETTE = [[0, 0, 0], [255, 255, 255], [255, 0, 0], [255, 255, 0]] as const
+export const BwryInk = { Black: 0, White: 1, Red: 2, Yellow: 3 } as const
+export type BwryInk = (typeof BwryInk)[keyof typeof BwryInk]
+
+/**
+ * A companion fill reduced to a four-ink panel (D94): pale and grey fills (skin, paper, steel) stay paper, so the ink
+ * outlines carry them; warm golds, ambers and greens print yellow; reds, browns and purples print red; blues stay paper.
+ */
+export function bwryInk(hex: string): BwryInk {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255) as [number, number, number]
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  if (max === 0 || (max - min) / max < 0.4) return BwryInk.White
+  const d = max - min
+  const hue = (max === r ? ((g - b) / d + 6) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4) * 60
+  if (hue >= 30 && hue < 170) return BwryInk.Yellow
+  if (hue >= 170 && hue < 250) return BwryInk.White
+  return BwryInk.Red
+}

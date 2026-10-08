@@ -1,5 +1,9 @@
 /**
- * Four self-contained TRMNL layouts. Template v38 reworks the full portrait: the landscape's header (the HUD block
+ * Four self-contained TRMNL layouts. Template v39 lifts the OG-sized panels (D94): the full landscape sets a 3x scene
+ * beside a five-row board and runs a screen-wide ledger of one-line stories with stat columns; the full portrait takes
+ * the 3x scene across its width with the QR hung in its corner and a six-row board in two columns; both name the
+ * counters and show the gear by its marks. On BWRY ink panels the scene prints its four-ink twin and the hearts, lost
+ * HP, found gold, the own rank row, the celebration badge and attention lines take red and yellow. Template v38 reworks the full portrait: the landscape's header (the HUD block
  * beside the hero on the X, under it on the OG), the scene across the full width with the standing QR hung in its
  * corner, and a captioned rule between the stories and the ranking; the celebration badge keeps its size in stretching
  * columns. Template v37 polishes the X's full layout: each story is one line, its XP, gold
@@ -20,7 +24,7 @@
 import { GLYPHS, glyphRows } from '../art/glyphs'
 import { hudMarkUri } from '../art/hud'
 
-export const TEMPLATE_VERSION = 38
+export const TEMPLATE_VERSION = 39
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -78,11 +82,28 @@ const titleBarNarrow = titleBar
   .replace(`${KEEPSAKE_LABEL} {{`, 'Keepsake {{')
 
 
-type SceneField = 'scene_url' | 'scene_url_small'
+type SceneField = 'scene_url' | 'scene_url_small' | 'scene_url_medium'
+/**
+ * Grayscale tiers carry a bit-depth class and ink panels a palette class instead, so `1bit:`/`2bit:`/`4bit:` variants
+ * reach every panel except the ink ones (D94). `inkOnly` shows an element on ink panels alone; `ink` paints red or
+ * yellow there and keeps black (or white) everywhere else.
+ */
+const inkOnly = '1bit:hidden 2bit:hidden 4bit:hidden'
+const ink = (property: 'text' | 'bg', colour: 'red' | 'yellow', fallback = 'black') =>
+  `${property}--${colour} 1bit:${property}--${fallback} 2bit:${property}--${fallback} 4bit:${property}--${fallback}`
+/**
+ * A scene image below the X's breakpoint: the 1-bit art on every grayscale tier, and on ink panels its four-ink twin
+ * (the same path with `-bwry`, D94), where the hero's cardigan and the monsters print in red and yellow and the paper
+ * shows through. The wrapper carries the breakpoint so the bit-depth classes never meet `lg:` ones on one element, and
+ * lays the image out as a flex item that may shrink, so a narrow column fits it to its width as before the wrapper.
+ */
+const grayOnly = 'hidden 1bit:block 2bit:block 4bit:block'
+const sceneImage = (field: SceneField, classes = 'lg:hidden') =>
+  `<div class="${classes} flex w--min-0"><img class="image ${grayOnly}" src="{{ ${field} }}" alt=""><img class="image ${inkOnly}" src="{{ ${field} | replace: ".png", "-bwry.png" }}" alt=""></div>`
 /** Base scene everywhere, swapped for an integer-scaled larger image on screen--lg (TRMNL X). */
 const scene = (field: SceneField, large = field === 'scene_url' ? 'scene_url_large' : 'scene_url_medium') => {
   return `
-  {% if ${field} != "" %}<div class="flex flex--row flex--center-x stretch-x"><img class="image lg:hidden" src="{{ ${field} }}" alt=""><img class="image hidden lg:block" src="{{ ${large} }}" alt=""></div>{% endif %}`
+  {% if ${field} != "" %}<div class="flex flex--row flex--center-x stretch-x">${sceneImage(field)}<img class="image hidden lg:block" src="{{ ${large} }}" alt=""></div>{% endif %}`
 }
 
 /** The rune rule across the full width of its column. */
@@ -95,6 +116,7 @@ const divider = `
  */
 const HUD_ASSIGNS =
   `{% assign hud_heart_full = "${hudMarkUri('heartFull', 36, 32)}" %}{% assign hud_heart_half = "${hudMarkUri('heartHalf', 36, 32)}" %}{% assign hud_heart_empty = "${hudMarkUri('heartEmpty', 36, 32)}" %}` +
+ `{% assign hud_heart_full_ink = "${hudMarkUri('heartFull', 36, 32, '#ff0000')}" %}{% assign hud_heart_half_ink = "${hudMarkUri('heartHalf', 36, 32, '#ff0000')}" %}{% assign hud_heart_empty_ink = "${hudMarkUri('heartEmpty', 36, 32, '#ff0000')}" %}` +
   `{% assign hud_tick_full = "${hudMarkUri('tickFull', 36, 16)}" %}{% assign hud_tick_half = "${hudMarkUri('tickHalf', 36, 16)}" %}{% assign hud_tick_empty = "${hudMarkUri('tickEmpty', 36, 16)}" %}` +
   `{% assign hud_sword = "${hudMarkUri('sword', 24, 24)}" %}{% assign hud_shield = "${hudMarkUri('shield', 24, 24)}" %}` +
   `{% assign hud_coin = "${hudMarkUri('coin', 24, 24)}" %}{% assign hud_potion = "${hudMarkUri('potion', 24, 24)}" %}{% assign hud_star = "${hudMarkUri('star', 24, 24)}" %}{% assign hud_bag = "${hudMarkUri('bag', 24, 24)}" %}`
@@ -119,12 +141,11 @@ const attackDefense = (classes = '') => counter('hud_sword', '{{ attack }}', cla
 const bagCount = (classes = '') => `{% if bag_capacity %}${counter('hud_bag', '{{ bag_used }}/{{ bag_capacity }}', classes).replace('<div class="', '<div data-bag-count="true" class="')}{% endif %}`
 const goldPotions = (classes = '') => counter('hud_coin', '{{ gold }}', classes) + counter('hud_potion', '{{ potions }}', classes)
 /**
- * Gold, potions and bag slots under the hero in the full landscape (D88): marks and counts on the OG, the counts named
- * on the X, which has the width for the words.
+ * Gold, potions and bag slots under the hero in the full layouts (D88), each count named: the OG's full header has the
+ * width for the words too. `lg:flex` keeps the X's wider default gap.
  */
 const heroCounters =
-  hudRow('data-counters="marks"', goldPotions() + bagCount(), COUNTER_GAP).replace('class="flex', 'class="lg:hidden flex') +
-  hudRow('data-counters="words"', counter('hud_coin', '{{ gold }} gold') + counter('hud_potion', '{{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}') + bagCount(), COUNTER_GAP).replace('class="flex', 'class="hidden lg:flex')
+  hudRow('data-counters="words"', counter('hud_coin', '{{ gold }} gold') + counter('hud_potion', '{{ potions }} {% if potions == 1 %}potion{% else %}potions{% endif %}') + bagCount(), COUNTER_GAP).replace('class="flex', 'class="flex lg:flex')
 
 /**
  * The full layouts' name line (D88): the hero and level, then the attack and defense marks. On the OG a long name
@@ -147,7 +168,13 @@ const HEART_CLASSES = 'w--[18px] h--[16px] no-shrink'
 const hpCount = '<span class="label lg:title--small no-shrink" data-hp-count="true">{{ hp }}/{{ max_hp }} HP</span>'
 const hearts = (count = true, extra = '') =>
   `{% if max_hp > 0 %}{% assign heart_halves = max_hp | divided_by: 2 | floor %}{% assign heart_halves = hp | default: 0 | times: 20 | plus: heart_halves | divided_by: max_hp | floor %}{% else %}{% assign heart_halves = 0 %}{% endif %}{% if hp > 0 and heart_halves < 1 %}{% assign heart_halves = 1 %}{% endif %}` +
-  hudRow(`data-hearts="{{ heart_halves }}"`, `<div class="flex flex--row gap--[2px] no-shrink">{% for i in (1..10) %}{% assign heart_right = i | times: 2 %}{% assign heart_left = heart_right | minus: 1 %}<img class="${HEART_CLASSES}" src="{% if heart_halves >= heart_right %}{{ hud_heart_full }}{% elsif heart_halves >= heart_left %}{{ hud_heart_half }}{% else %}{{ hud_heart_empty }}{% endif %}" alt="">{% endfor %}</div>${count ? hpCount : ''}${extra}`)
+  hudRow(`data-hearts="{{ heart_halves }}"`, `${heartRow('', grayOnly)}${heartRow('_ink', inkOnly)}${count ? hpCount : ''}${extra}`)
+/**
+ * One row of the ten hearts: black on grayscale tiers, red on ink panels (`_ink` marks, D94). The visibility sits on a
+ * wrapper, since the bit-depth `flex` variants bring the framework's default gap with them.
+ */
+const heartRow = (suffix: string, visibility: string) =>
+  `<div class="${visibility} no-shrink"><div class="flex flex--row gap--[2px] no-shrink">{% for i in (1..10) %}{% assign heart_right = i | times: 2 %}{% assign heart_left = heart_right | minus: 1 %}<img class="${HEART_CLASSES}" src="{% if heart_halves >= heart_right %}{{ hud_heart_full${suffix} }}{% elsif heart_halves >= heart_left %}{{ hud_heart_half${suffix} }}{% else %}{{ hud_heart_empty${suffix} }}{% endif %}" alt="">{% endfor %}</div></div>`
 
 /**
  * XP as ten half-step ticks the width of the hearts, the thin bar directly under them with the numbers at the end
@@ -223,8 +250,10 @@ const fitClamp = (plain: string, clamp: number, fit: number) =>
 
 const plainOf = (expr: string) => `${expr} | replace: "[[", "" | replace: "]]", ""`
 
+/** On ink panels a lost HP reads red and found gold sits on yellow (D94); units follow a no-break space. */
+const chipInk = (text: string) => `{% if ${text} contains "\u00a0HP" and ${text} contains "−" %} ${ink('text', 'red')}{% elsif ${text} contains "\u00a0gold" and ${text} contains "+" %} ${ink('bg', 'yellow', 'white')}{% endif %}`
 /** One change as an outlined chip. */
-const chip = (text: string) => `<span class="label lg:title--small label--outline">{{ ${text} | escape }}</span>`
+const chip = (text: string) => `<span class="label lg:title--small label--outline${chipInk(text)}">{{ ${text} | escape }}</span>`
 /** A fixed-width, right-aligned cell, so the same stat sits in the same place on every line. */
 const chipCell = (field: string, kind: string, width: string) => `<span class="flex flex--row flex--right no-shrink ${width}" data-chip-cell="${kind}">{% if ${field} != "" %}${chip(field)}{% endif %}</span>`
 /**
@@ -233,29 +262,38 @@ const chipCell = (field: string, kind: string, width: string) => `<span class="f
  * A story without changes keeps the whole line, and one with only other changes ("No effect") reserves no stat columns.
  * Units arrive joined by a no-break space, so the last word after it names the stat.
  */
-const chipColumns = `{% assign chip_xp = "" %}{% assign chip_gold = "" %}{% assign chip_hp = "" %}{% assign chip_other = "" %}{% for change in line_changes %}{% assign chip_unit = change | split: "\u00a0" | last %}{% if chip_unit == "XP" %}{% assign chip_xp = change %}{% elsif chip_unit == "gold" %}{% assign chip_gold = change %}{% elsif chip_unit == "HP" %}{% assign chip_hp = change %}{% else %}{% capture chip_other %}{{ chip_other }}${chip('change')}{% endcapture %}{% endif %}{% endfor %}<span class="hidden lg:flex flex--row flex--center-y flex--right gap--xsmall no-shrink" data-story-chips-inline="true">{{ chip_other }}{% if chip_xp != "" or chip_gold != "" or chip_hp != "" %}${chipCell('chip_xp', 'xp', 'w--[66px]')}${chipCell('chip_gold', 'gold', 'w--[78px]')}${chipCell('chip_hp', 'hp', 'w--[66px]')}{% endif %}</span>`
+const chipColumns = (visibility = 'hidden lg:flex') => `{% assign chip_xp = "" %}{% assign chip_gold = "" %}{% assign chip_hp = "" %}{% assign chip_other = "" %}{% for change in line_changes %}{% assign chip_unit = change | split: "\u00a0" | last %}{% if chip_unit == "XP" %}{% assign chip_xp = change %}{% elsif chip_unit == "gold" %}{% assign chip_gold = change %}{% elsif chip_unit == "HP" %}{% assign chip_hp = change %}{% else %}{% capture chip_other %}{{ chip_other }}${chip('change')}{% endcapture %}{% endif %}{% endfor %}<span class="${visibility} flex--row flex--center-y flex--right gap--xsmall no-shrink" data-story-chips-inline="true">{{ chip_other }}{% if chip_xp != "" or chip_gold != "" or chip_hp != "" %}${chipCell('chip_xp', 'xp', 'w--[66px]')}${chipCell('chip_gold', 'gold', 'w--[78px]')}${chipCell('chip_hp', 'hp', 'w--[66px]')}{% endif %}</span>`
 
 /**
  * One story as a ledger line: the glyph, the story, and its HH:MM at the end of the line; the stat changes follow as
  * outlined chips, one per change, indented to the story's edge. The glyph sits two pixels down so it centres on the
  * letters rather than hugging the rule above the entry. The chips sit in a block so they wrap like words when
  * a narrow column cannot hold them all; the 240-pixel portrait columns put the time there too (`timeBelow`), where the
- * story line has no room for it. A zero-gap grid keeps the chips directly beneath the story. `chipsInline` (the full
- * layouts) moves the chips onto the story's own line on the X, right-aligned before the time, so each entry is one
- * line there and the chips line up as a column.
+ * story line has no room for it. A zero-gap grid keeps the chips directly beneath the story. `inline` moves the chips
+ * onto the story's own line, right-aligned before the time, so each entry is one line and the chips line up as a
+ * column: on the X only (`'lg'`, the full portrait) or everywhere (`'all'`, the full landscape, whose OG ledger spans
+ * the screen's width).
  */
-const logLine = (entry: string, classes: string, clamp: number, size: number, fit: number, wrapper = 'block', timeBelow = false, chipsInline = false, leadMeta = false) => {
+type ChipsInline = false | 'lg' | 'all'
+const logLine = (entry: string, classes: string, clamp: number, size: number, fit: number, wrapper = 'block', timeBelow = false, inline: ChipsInline = false, leadMeta = false) => {
+  // On the X alone the inline forms swap in with `lg:` classes; everywhere, they replace the stacked forms outright.
+  // `lg:flex` brings the framework's default gap and outranks gap classes, so `'all'` pairs it with `flex` to keep the
+  // X's spacing exactly as the X-only form draws it.
+  const onlyX = (lg: string) => (inline === 'all' ? '' : lg)
+  const shown = inline === 'all' ? 'flex lg:flex' : 'hidden lg:flex'
   // A live entry (the travel line, D91) says its time in the story; the column is for when something happened.
   const timeSpan = (extra = '') => `{% if line_timed %}<span class="${extra}label lg:title--small no-shrink" data-story-time="true">{{ ${entry}.u | plus: utc_offset | date: "%H:%M" }}</span>{% endif %}`
-  // The newest story in the X full layouts (`leadMeta`) is larger: it keeps the whole width, and its changes and time
+  // The newest story in the inline ledgers (`leadMeta`) is larger: it keeps the whole width, and its changes and time
   // take the line below in the same columns as the rows beneath, rather than squeezing it into three lines.
-  const lead = chipsInline && leadMeta
-  const time = timeSpan(lead ? 'lg:hidden ' : '')
-  const changes = `{% for change in line_changes %} <span class="label lg:title--small label--outline">{{ change | escape }}</span>{% endfor %}`
+  const lead = inline !== false && leadMeta
+  const time = lead && inline === 'all' ? '' : timeSpan(lead ? 'lg:hidden ' : '')
+  const changes = `{% for change in line_changes %} ${chip('change')}{% endfor %}`
   const hasChanges = `${entry}.d != nil and ${entry}.d != ""`
-  const inlineChips = chipsInline && !lead ? `{% if ${hasChanges} %}${chipColumns}{% endif %}` : ''
-  const leadRow = lead ? `{% if line_timed or ${hasChanges} %}<div class="hidden lg:flex flex--row flex--right flex--center-y gap--xsmall" data-story-lead-meta="true">{% if ${hasChanges} %}${chipColumns}{% endif %}${timeSpan()}</div>{% endif %}` : ''
-  return `{% assign line_timed = false %}{% if utc_offset != nil and ${entry}.live != true %}{% assign line_timed = true %}{% endif %}{% assign line_changes = ${entry}.d | default: "" | split: " · " %}{% assign line_story = ${entry}.n | default: ${entry}.s %}{% assign line_plain = ${plainOf('line_story')} %}<div class="${wrapper} stretch-x"><div class="grid grid--cols-1 gap--none">${entry === 'log[0]' ? '' : '{% unless forloop.first %}<div class="border--h-30 stretch-x"></div>{% endunless %}'}<div class="flex flex--row flex--left flex--top${chipsInline && !lead ? ' lg:flex--center-y' : ''} gap--xsmall"><div class="no-shrink pt--0.5">${logIcon(`${entry}.k`, size)}</div><span class="${classes} grow" ${fitClamp('line_plain', clamp, Math.max(0, fit - (timeBelow ? 0 : 14)))}>${storyText}</span>${inlineChips}${timeBelow ? '' : time}</div>{% if ${timeBelow ? `line_timed or ${hasChanges}` : hasChanges} %}<div class="${chipsInline ? 'lg:hidden ' : ''}flex flex--row flex--left flex--top gap--xsmall pt--1" data-story-changes="true"><div class="no-shrink w--[${size}px]"></div><div class="grow w--min-0">${timeBelow ? time : ''}${changes}</div></div>{% endif %}${leadRow}</div></div>`
+  const columns = chipColumns(shown)
+  const inlineChips = inline && !lead ? `{% if ${hasChanges} %}${columns}{% endif %}` : ''
+  const leadRow = lead ? `{% if line_timed or ${hasChanges} %}<div class="${shown} flex--row flex--right flex--center-y gap--xsmall" data-story-lead-meta="true">{% if ${hasChanges} %}${columns}{% endif %}${timeSpan()}</div>{% endif %}` : ''
+  const stacked = `{% if ${timeBelow ? `line_timed or ${hasChanges}` : hasChanges} %}<div class="${inline ? 'lg:hidden ' : ''}flex flex--row flex--left flex--top gap--xsmall pt--1" data-story-changes="true"><div class="no-shrink w--[${size}px]"></div><div class="grow w--min-0">${timeBelow ? time : ''}${changes}</div></div>{% endif %}`
+  return `{% assign line_timed = false %}{% if utc_offset != nil and ${entry}.live != true %}{% assign line_timed = true %}{% endif %}{% assign line_changes = ${entry}.d | default: "" | split: " · " %}{% assign line_story = ${entry}.n | default: ${entry}.s %}{% assign line_plain = ${plainOf('line_story')} %}<div class="${wrapper} stretch-x"><div class="grid grid--cols-1 gap--none">${entry === 'log[0]' ? '' : '{% unless forloop.first %}<div class="border--h-30 stretch-x"></div>{% endunless %}'}<div class="flex flex--row flex--left flex--top${inline && !lead ? ` ${onlyX('lg:')}flex--center-y` : ''} gap--xsmall"><div class="no-shrink pt--0.5">${logIcon(`${entry}.k`, size)}</div><span class="${classes} grow" ${fitClamp('line_plain', clamp, Math.max(0, fit - (timeBelow ? 0 : 14)))}>${storyText}</span>${inlineChips}${timeBelow ? '' : time}</div>${inline === 'all' ? '' : stacked}${leadRow}</div></div>`
 }
 
 /** The status line, its clamp fitted like log lines. */
@@ -267,12 +305,15 @@ const statusLine = (clamp: number, fit: number) =>
  * it at its text's size where the column stretches its children (the portrait's `flex--stretch-x`).
  */
 const celebrationBadge = (classes: string) => `
-      {% if celebration %}<div class="no-shrink flex flex--row flex--left" data-celebration="true"><span class="${classes} label--inverted">{{ celebration | escape }}</span></div>{% endif %}`
+      {% if celebration %}<div class="no-shrink flex flex--row flex--left" data-celebration="true"><span class="${classes} label--inverted ${ink('bg', 'red')}">{{ celebration | escape }}</span></div>{% endif %}`
 
-/** Whole story/stat pairs; the fitter keeps the longest newest-first prefix that fits. */
-const storyList = (clamp: number, classes: string, size = 16, fit = 60, timeBelow = false, chipsInline = false) => `
+/**
+ * Whole story/stat pairs; the fitter keeps the longest newest-first prefix that fits. `rowFit` is the plain length the
+ * older one-line entries may reach before the OG clamps them; the full landscape's screen-wide ledger allows more.
+ */
+const storyList = (clamp: number, classes: string, size = 16, fit = 60, timeBelow = false, inline: ChipsInline = false, rowFit = 28) => `
   <div class="grow stretch-x" data-story-list="true">
-    {% for entry in log %}{% unless attention and forloop.index > 1 %}{% if forloop.first %}${logLine('entry', classes, clamp, size, fit, 'block', timeBelow, chipsInline, true)}{% else %}${logLine('entry', 'label lg:title--small', 1, 16, 28, chipsInline ? 'block pt--1 lg:pt--0.5' : 'block pt--1', timeBelow, chipsInline)}{% endif %}{% endunless %}{% endfor %}
+    {% for entry in log %}{% unless attention and forloop.index > 1 %}{% if forloop.first %}${logLine('entry', classes, clamp, size, fit, 'block', timeBelow, inline, true)}{% else %}${logLine('entry', 'label lg:title--small', 1, 16, rowFit, inline ? `block pt--1 ${inline === 'all' ? '' : 'lg:'}pt--0.5` : 'block pt--1', timeBelow, inline)}{% endif %}{% endunless %}{% endfor %}
     {% if log.size == 0 %}<span class="label lg:title--small">The first adventure starts soon.</span>{% endif %}
   </div>`
 
@@ -369,7 +410,7 @@ const recapRibbon = `
  */
 /** The row itself is the label, so an inverted own row keeps its text white: a `.label` child would set its own colour. */
 const rankRow = (text: string, score: string, classes: string, own: string) =>
-  `<div class="${classes}label lg:title--small flex flex--row flex--between flex--center-y stretch-x gap--small{% if ${own} %} label--inverted{% endif %}" data-rank-row="{{ ${text === 'rank' ? 'rank' : 'row.rank'} }}">` +
+  `<div class="${classes}label lg:title--small flex flex--row flex--between flex--center-y stretch-x gap--small{% if ${own} %} label--inverted ${ink('bg', 'red')}{% endif %}" data-rank-row="{{ ${text === 'rank' ? 'rank' : 'row.rank'} }}">` +
   `<span class="grow w--min-0" data-clamp="1">{{ ${text} }}. {{ ${text === 'rank' ? 'owner_name' : 'row.name'} | escape }}</span>` +
   `<span class="no-shrink">{{ ${score} }}&nbsp;XP</span></div>`
 /**
@@ -381,23 +422,36 @@ const columnRule = '<div class="hidden lg:block no-shrink border--v-30" data-col
 /** A ledger rule between board rows, X only. */
 const rankRule = '<div class="hidden lg:block border--h-30 stretch-x"></div>'
 const rankHeading = `This week{% if leaderboard_cohort_label != "" %} · {{ leaderboard_cohort_label | escape }}{% endif %}`
-const boardRow = rankRow('row.rank', 'row.score', '{% if forloop.index > 3 %}hidden lg:flex {% endif %}', 'rank and row.rank == rank')
+const boardRow = rankRow('row.rank', 'row.score', '', 'rank and row.rank == rank')
 /**
  * The portrait's board on the X: rows 1-5 and 6-10 side by side, so a full-width row does not leave the name and score
- * a panel apart and the stories keep their height. The OG shows the first three of the left column; the right column
- * stays a plain flex column (the framework's gaps need `flex`) with its rows hidden there, in a grid without a gap.
+ * a panel apart and the stories keep their height. The OG pairs rows 1-3 with 4-6 the same way; a hero below them
+ * takes the sixth row's place. Each column is a plain flex column (the framework's gaps need `flex`).
  */
-const rankColumns = `<div class="grid grid--cols-1 lg:grid--cols-2 gap--none lg:gap--large stretch-x">` +
-  `<div class="flex flex--col flex--top flex--stretch-x gap--xsmall">{% for row in board_rows limit: 5 %}{% unless forloop.first %}${rankRule}{% endunless %}${boardRow}{% endfor %}</div>` +
-  `<div class="flex flex--col flex--top flex--stretch-x gap--xsmall">{% for row in board_rows offset: 5 %}{% unless forloop.first %}${rankRule}{% endunless %}${boardRow.replace('{% if forloop.index > 3 %}hidden lg:flex {% endif %}', 'hidden lg:flex ')}{% endfor %}</div></div>`
+const OG_PORTRAIT_ROWS = 6
+const rankColumn = (loop: string, extra = '') => `<div class="flex flex--col flex--top flex--stretch-x gap--xsmall">{% for row in board_rows ${loop} %}{% unless forloop.first %}${rankRule}{% endunless %}${boardRow}{% endfor %}${extra}</div>`
+const rankColumns = `<div class="hidden lg:block stretch-x"><div class="grid grid--cols-1 lg:grid--cols-2 gap--none lg:gap--large stretch-x">${rankColumn('limit: 5')}${rankColumn('offset: 5')}</div></div>` +
+  `{% assign board_limit = ${OG_PORTRAIT_ROWS} %}{% if rank and rank > ${OG_PORTRAIT_ROWS} %}{% assign board_limit = ${OG_PORTRAIT_ROWS - 1} %}{% endif %}{% assign board_right = board_limit | minus: 3 %}` +
+  `<div class="lg:hidden grid grid--cols-2 gap--medium stretch-x" data-board-columns="og">${rankColumn('limit: 3')}${rankColumn('offset: 3 limit: board_right', `{% if rank and rank > ${OG_PORTRAIT_ROWS} %}${rankRow('rank', 'leaderboard_score', '', 'true')}{% endif %}`)}</div>`
 /** Period and group caption set into the rune rule above the ranking (D92); the OG shortens "Levels" to "Lv". */
 const rankCaption = `<div class="flex flex--row flex--center-y gap--xsmall stretch-x">${ruleFill}<span class="label lg:title--small no-shrink lg:hidden">This week{% if leaderboard_cohort_label != "" %} · {{ leaderboard_cohort_label | replace: "Levels ", "Lv " | escape }}{% endif %}</span><span class="hidden lg:inline-block label lg:title--small no-shrink">${rankHeading}</span>${ruleFill}</div>`
+/**
+ * The OG full landscape's board beside its scene (the X keeps its ten-row column under the rule): the caption, then up
+ * to five rows; a hero below them takes the fifth row's place, so the panel never outgrows the scene.
+ */
+const OG_BOARD_ROWS = 5
+const ogBoard = `<div class="lg:hidden grow w--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall" data-board-column="og">
+      ${rankCaption}
+      {% unless rank %}{% if rank_status == "dormant" %}<span class="label">Not ranked while paused</span>{% else %}<span class="label">Ranking within the hour</span>{% endif %}{% endunless %}
+      {% assign board_rows = top10 | default: top5 %}{% assign board_limit = ${OG_BOARD_ROWS} %}{% if rank and rank > ${OG_BOARD_ROWS} %}{% assign board_limit = ${OG_BOARD_ROWS - 1} %}{% endif %}
+      {% for row in board_rows limit: board_limit %}${rankRow('row.rank', 'row.score', '', 'rank and row.rank == rank')}{% endfor %}
+      {% if rank and rank > ${OG_BOARD_ROWS} %}${rankRow('rank', 'leaderboard_score', '', 'true')}{% endif %}
+    </div>`
 const rankPanel = (heading: boolean) => `
       ${heading ? rankCaption : ''}
       {% unless rank %}{% if rank_status == "dormant" %}<span class="label lg:title--small">Not ranked while paused</span>{% else %}<span class="label lg:title--small">Ranking within the hour</span>{% endif %}{% endunless %}
       {% assign board_rows = top10 | default: top5 %}
       ${heading ? rankColumns : `{% assign board_limit = board_rows.size %}{% if rank and rank > board_rows.size and board_rows.size >= 10 %}{% assign board_limit = 9 %}{% endif %}{% for row in board_rows limit: board_limit %}{% unless forloop.first %}${rankRule}{% endunless %}${boardRow}{% endfor %}`}
-      {% if rank and rank > 3 %}${rankRow('rank', 'leaderboard_score', 'lg:hidden ', 'true')}{% endif %}
       {% if rank and rank > board_rows.size %}${rankRule}${rankRow('rank', 'leaderboard_score', 'hidden lg:flex ', 'true')}{% endif %}`
 
 
@@ -406,7 +460,7 @@ const rankPanel = (heading: boolean) => `
  * notice (D78: the merchant) takes the same slot as an outlined chip but leaves the stories and recap alone.
  */
 const attention = (classes: string, clamp: number) => `
-      {% if attention %}<span class="${classes} label--underline no-shrink" data-clamp="${clamp}">{{ attention | escape }}</span>{% elsif notice %}<div class="no-shrink pt--1"><span class="${classes} label--outline" data-clamp="${clamp}">{{ notice | escape }}</span></div>{% endif %}`
+      {% if attention %}<span class="${classes} label--underline ${ink('text', 'red')} no-shrink" data-clamp="${clamp}">{{ attention | escape }}</span>{% elsif notice %}<div class="no-shrink pt--1"><span class="${classes} label--outline" data-clamp="${clamp}">{{ notice | escape }}</span></div>{% endif %}`
 
 /** Integer-scaled assets keep every QR module crisp on monochrome displays. */
 const qrImage = (scale: number, largeScale: number, field = 'qr_base') =>
@@ -445,6 +499,13 @@ const bagQr = (scale = 3, largeScale = 4, caption = true) => `
  */
 const gearName = (field: string) => `<span class="text--bold inline-block">{% if ${field} != "" %}{{ ${field} | escape }}{% else %}None{% endif %}</span>`
 const gearLine = `{% assign gear_plain = weapon | default: "None" | append: armor | default: "None" %}<div class="hidden lg:block stretch-x" data-gear-line="true"><span class="title--small text--regular" ${fitClamp('gear_plain', 1, 44)}>Weapon ${gearName('weapon')} · Armor ${gearName('armor')}</span></div>`
+/**
+ * The OG's gear line: the attack and defense marks name the slots, since the HUD block has no width for the words, and
+ * each name clamps on its own so a long weapon never hides the armor.
+ */
+const gearItem = (icon: string, field: string, none: string) =>
+  `<div class="flex flex--row flex--center-y gap--[3px] w--min-0"><img class="${COUNTER_ICON}" src="{{ ${icon} }}" alt=""><span class="label" data-clamp="1">{% if ${field} != "" %}{{ ${field} | escape }}{% else %}${none}{% endif %}</span></div>`
+const gearLineOg = `<div class="lg:hidden flex flex--row flex--left flex--center-y ${COUNTER_GAP} stretch-x" data-gear-line="og">${gearItem('hud_sword', 'weapon', 'No weapon')}${gearItem('hud_shield', 'armor', 'No armor')}</div>`
 
 /**
  * `shortColumn` is the column for the portrait half and `narrowColumn` for the portrait quarter. Neither slot has the
@@ -540,19 +601,19 @@ const fullPortrait = `
     <div class="lg:grow lg:basis--0 lg:w--min-96 flex flex--col flex--left lg:flex--right" data-hud-slot="true">
       <div class="pt--2 flex flex--col flex--left gap--xsmall" data-hud-block="true">
         ${hudWide(false)}
-        ${gearLine}
+        ${gearLine}${gearLineOg}
       </div>
     </div>
   </div></div>
   <div class="no-shrink flex flex--col gap--small stretch-x">
-    <div class="relative stretch-x lg:pt--2" data-scene-row="true">${scene('scene_url_small', 'scene_url')}${sceneQr}</div>
+    <div class="relative stretch-x lg:pt--2" data-scene-row="true">${scene('scene_url_medium', 'scene_url')}${sceneQr}</div>
     ${divider}
   </div>
   {% if qr_base != "" %}${bagFullPanel(true)}
   {% else %}
   <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small stretch-x">
     ${attention('label lg:title--small', 3)}
-    {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(2, 'title lg:title', 24, 40, false, true)}
+    {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(2, 'title lg:title', 24, 40, false, 'lg')}
   </div>
   <div class="no-shrink flex flex--col flex--left flex--stretch-x gap--xsmall lg:gap--small stretch-x pt--1 lg:pt--2" data-rank-panel="true">${rankPanel(true)}</div>
   {% endif %}
@@ -630,30 +691,34 @@ export const markupFull = `${glyphAssigns([16, 24])}${HUD_ASSIGNS}${oriented('la
       </div>
       <div class="w--min-0 pt--2 flex flex--col flex--left gap--xsmall" data-hud-block="true">
         ${hudWide(false)}
-        ${gearLine}
+        ${gearLine}${gearLineOg}
       </div>
     </div>
     ${homeQr}
   </div>
-  <div class="no-shrink flex flex--col gap--small stretch-x">${scene('scene_url_small', 'scene_url_large')}
+  <div class="no-shrink flex flex--col gap--small stretch-x">
+    <div class="flex flex--row flex--top lg:flex--center-x gap--medium stretch-x" data-scene-row="true">
+      {% if scene_url != "" %}<div class="no-shrink">${sceneImage('scene_url_medium')}<img class="image hidden lg:block" src="{{ scene_url_large }}" alt=""></div>{% endif %}
+      ${ogBoard}
+    </div>
     <div class="grid stretch-x gap--none" data-rune-rule="true">
-      <div class="col--span-8 flex flex--row flex--center-y gap--none">${runeRule}</div>
-      <div class="col--span-4 flex flex--row flex--center-y">{% if qr_base == "" %}${rankCaption}{% else %}${ruleFill}{% endif %}</div>
+      <div class="col--span-12 lg:col--span-8 flex flex--row flex--center-y gap--none">${runeRule}</div>
+      <div class="hidden lg:flex col--span-4 flex--row flex--center-y">{% if qr_base == "" %}${rankCaption}{% else %}${ruleFill}{% endif %}</div>
     </div>
   </div>
   {% if qr_base != "" %}${bagFullPanel(false)}
   {% else %}
   <div class="grid grow h--full h--min-0 stretch-x gap--small lg:gap--large pt--1 lg:pt--2" data-story-columns="true">
-    <div class="col--span-8 flex flex--col flex--left flex--top gap--xsmall lg:gap--small h--full">
+    <div class="col--span-12 lg:col--span-8 flex flex--col flex--left flex--top gap--xsmall lg:gap--small h--full">
       ${attention('label lg:title--small', 2)}
-      {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(2, 'title lg:title', 24, 64, false, true)}
+      {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(2, 'title lg:title', 24, 64, false, 'all', 74)}
     </div>
-    <div class="col--span-4 flex flex--row flex--stretch-y gap--medium" data-board-column="true">
+    <div class="hidden lg:block col--span-4"><div class="flex flex--row flex--stretch-y gap--medium h--full" data-board-column="true">
       ${columnRule}
       <div class="grow w--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall">
         ${rankPanel(false)}
       </div>
-    </div>
+    </div></div>
   </div>
   {% endif %}
   {% unless attention %}${recapRibbon}{% endunless %}

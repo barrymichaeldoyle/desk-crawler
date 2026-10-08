@@ -6,6 +6,7 @@
  * acceptance gate. Scenarios live in the shared previewScenarios module; for an
  * interactive gallery run `pnpm dev` and open /dev/desk-crawler.  Usage: pnpm tsx tools/trmnl/preview.ts [artBaseUrl] [--recap] [--portrait]
  * `--dump-contexts <file>` also writes each Liquid render context, for tools/trmnl/crosscheck.ts.
+ * `--inline-art` draws scenes and codes locally and inlines them, so art changes preview before any deployment serves them.
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { Liquid } from 'liquidjs'
@@ -13,10 +14,28 @@ import { buildPayload, MAX_RECAP_EVENTS, type ActivityEntry, type PayloadInput }
 import { displayLogDeltas } from '@trmnl-games/desk-crawler/log'
 import { sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
 import { screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
+import { renderScenePng } from '@trmnl-games/desk-crawler/art/route'
+import { DEFAULT_COMPANION_ORIGIN, renderQrPng } from '@trmnl-games/desk-crawler/art/qr'
 import { PREVIEW_DEVICES, PREVIEW_LAYOUTS, previewDocument, type PreviewDevice, type PreviewLayout } from '@trmnl-games/desk-crawler/templates/preview'
 import { KEEPSAKE_FREE_SCENARIOS, NO_OFFSET_SCENARIOS, PREVIEW_KEEPSAKE_CODE, PREVIEW_NOW, PREVIEW_UTC_OFFSET, previewScenarios, withOvernightRecap } from '@trmnl-games/desk-crawler/templates/previewScenarios'
 
-const artBaseUrl = process.argv[2]?.startsWith('http') ? process.argv[2] : 'https://superb-bobcat-74.convex.site'
+const LOCAL_ART_ORIGIN = 'https://local-art.invalid'
+const inlineArt = process.argv.includes('--inline-art')
+const artBaseUrl = inlineArt ? LOCAL_ART_ORIGIN : process.argv[2]?.startsWith('http') ? process.argv[2] : 'https://superb-bobcat-74.convex.site'
+const artCache = new Map<string, string>()
+/** The dev gallery's local art: each `/art/` path drawn by the same renderers the Convex route serves. */
+const withLocalArt = (html: string) =>
+  inlineArt
+    ? html.replace(/https:\/\/local-art\.invalid(\/art\/[^"'\s)]+\.png)/g, (_match, path: string) => {
+        let uri = artCache.get(path)
+        if (uri === undefined) {
+          const png = path.startsWith('/art/qr/') ? renderQrPng(path, DEFAULT_COMPANION_ORIGIN) : renderScenePng(path)
+          uri = png ? `data:image/png;base64,${Buffer.from(png).toString('base64')}` : `${LOCAL_ART_ORIGIN}${path}`
+          artCache.set(path, uri)
+        }
+        return uri
+      })
+    : html
 const NOW = PREVIEW_NOW
 /** TRMNL renders Liquid in UTC; the sample owner is in Johannesburg (UTC+2). */
 const liquid = new Liquid({ timezoneOffset: 0 })
@@ -45,7 +64,7 @@ for (const [name, input] of Object.entries(previewStates)) {
   for (const layout of Object.keys(PREVIEW_LAYOUTS) as PreviewLayout[]) {
     const context = { ...payload, desk_keepsake_code: KEEPSAKE_FREE_SCENARIOS.has(name) ? null : deskKeepsakeCode, utc_offset: NO_OFFSET_SCENARIOS.has(name) ? null : utcOffset }
     if (contextsIndex >= 0) contexts.push({ name, layout, context })
-    const inner = await liquid.parseAndRender(screenMarkup[layout], context)
+    const inner = withLocalArt(await liquid.parseAndRender(screenMarkup[layout], context))
     for (const device of Object.keys(PREVIEW_DEVICES) as PreviewDevice[]) {
       writeFileSync(`.previews/${name}--${device}--${layout}.html`, previewDocument(inner, device, layout, `${name} · ${device} · ${PREVIEW_LAYOUTS[layout].label}`))
       written++

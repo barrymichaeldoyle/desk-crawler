@@ -1,9 +1,11 @@
+import { inflateSync } from 'node:zlib'
 import { describe, expect, it } from 'vitest'
 import { parseScenePath, renderScenePng } from '@trmnl-games/desk-crawler/art/route'
 import { composeScene, FULL_SCALE, LARGE_SCALE, MEDIUM_SCALE, SCENE_VERSION, SMALL_SCALE, STAGE_HEIGHT, STAGE_WIDTH } from '@trmnl-games/desk-crawler/art/scene'
 import { sceneFor, scenePath } from '@trmnl-games/desk-crawler/art/sceneKey'
 import { sceneTimeAt, sceneUrlAt, sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
 import { monsterArt } from '@trmnl-games/desk-crawler/art/monsters'
+import { BWRY_PALETTE, bwryInk, BwryInk } from '@trmnl-games/desk-crawler/art/sceneColour'
 import { contentV1 } from '@trmnl-games/desk-crawler/content/v1'
 
 describe('scene art', () => {
@@ -63,6 +65,57 @@ describe('scene art', () => {
       expect(view.getUint32(16)).toBe(STAGE_WIDTH * scale)
       expect(view.getUint32(20)).toBe(STAGE_HEIGHT * scale)
     }
+  })
+
+  /** The PNG's chunks by type, and its pixels as palette indices (2-bit) or ink (1-bit, 1 = black). */
+  const decode = (png: Uint8Array) => {
+    const view = new DataView(png.buffer, png.byteOffset)
+    const chunks = new Map<string, Uint8Array>()
+    for (let at = 8; at < png.length; ) {
+      const length = view.getUint32(at)
+      chunks.set(String.fromCharCode(...png.slice(at + 4, at + 8)), png.slice(at + 8, at + 8 + length))
+      at += 12 + length
+    }
+    const [width, height, depth] = [view.getUint32(16), view.getUint32(20), png[24]!]
+    const raw = inflateSync(chunks.get('IDAT')!)
+    const rowBytes = Math.ceil((width * depth) / 8)
+    const pixels = new Uint8Array(width * height)
+    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+      const byte = raw[y * (rowBytes + 1) + 1 + Math.floor((x * depth) / 8)]!
+      const value = (byte >> (8 - depth - ((x * depth) % 8))) & ((1 << depth) - 1)
+      pixels[y * width + x] = depth === 1 ? 1 - value : value
+    }
+    return { chunks, depth, colourType: png[25], pixels }
+  }
+
+  it('renders four-ink twins of v4 scenes for the BWRY panel, keeping every 1-bit ink pixel (D94)', () => {
+    const path = scenePath('server_room', 'fight', { kind: 'monster', id: 'cable_serpent', elite: true }, MEDIUM_SCALE)
+    const bwryPath = path.replace('.png', '-bwry.png')
+    expect(parseScenePath(bwryPath)).toMatchObject({ scale: MEDIUM_SCALE, bwry: true })
+    expect(parseScenePath(path)?.bwry).toBe(false)
+    expect(parseScenePath('/art/scene/v3/office_cubicles/idle/none/5-bwry.png')).toBeNull()
+    expect(parseScenePath(path.replace('.png', '-bwr.png'))).toBeNull()
+    const mono = decode(renderScenePng(path)!)
+    const colour = decode(renderScenePng(bwryPath)!)
+    expect([colour.depth, colour.colourType]).toEqual([2, 3])
+    expect([...colour.chunks.get('PLTE')!]).toEqual(BWRY_PALETTE.flat())
+    // Paper is the transparent entry, so the panel's own white shows around the art.
+    expect([...colour.chunks.get('tRNS')!]).toEqual([255, 0, 255, 255])
+    mono.pixels.forEach((ink, i) => expect(ink === 1).toBe(colour.pixels[i] === BwryInk.Black))
+    // The hero's cardigan prints red, the serpent and its elite crown yellow.
+    const count = (ink: number) => colour.pixels.filter((p) => p === ink).length
+    expect(count(BwryInk.Red)).toBeGreaterThan(0)
+    expect(count(BwryInk.Yellow)).toBeGreaterThan(0)
+  })
+
+  it('reduces companion fills to the panel inks: pale fills stay paper, warm golds and greens print yellow', () => {
+    expect(bwryInk('#f2c39b')).toBe(BwryInk.White) // skin
+    expect(bwryInk('#e9dfc0')).toBe(BwryInk.White) // paper imp
+    expect(bwryInk('#9fd8e0')).toBe(BwryInk.White) // microwave wraith (blue)
+    expect(bwryInk('#e0604f')).toBe(BwryInk.Red) // cardigan
+    expect(bwryInk('#7a5cc8')).toBe(BwryInk.Red) // cloak
+    expect(bwryInk('#f2c14e')).toBe(BwryInk.Yellow) // gold
+    expect(bwryInk('#5fb35a')).toBe(BwryInk.Yellow) // cable serpent
   })
 })
 

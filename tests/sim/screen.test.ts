@@ -64,7 +64,10 @@ describe('device catch-up summary (D54)', () => {
       // Landscape and portrait arrangements each carry the recap: three marks apiece.
       expect(html.match(/data-recap-item="true"><img /g)).toHaveLength(6)
       expect(text).toContain('Unplugged a Cable Serpent.')
-      for (const change of ['+14\u00a0XP', '+5\u00a0gold', '−12\u00a0HP']) expect(html).toContain(`label--outline">${change}<`)
+      for (const change of ['+14\u00a0XP', '+5\u00a0gold', '−12\u00a0HP']) expect(html).toMatch(new RegExp(`label--outline[^"]*">${change.replace('+', '\\+')}<`))
+      // Ink panels print lost HP in red and found gold on yellow (D94).
+      expect(html).toContain('label--outline text--red 1bit:text--black 2bit:text--black 4bit:text--black">−12\u00a0HP<')
+      expect(html).toContain('label--outline bg--yellow 1bit:bg--white 2bit:bg--white 4bit:bg--white">+5\u00a0gold<')
       const escaped = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...payload(), recap: { ...recap, label: '<script>unsafe</script>', items: [{ k: 'xp', t: '<b>x</b>' }] } })
       expect(escaped).toContain('&lt;b&gt;x&lt;/b&gt;')
       expect(escaped).toContain('&lt;script&gt;unsafe&lt;/script&gt;')
@@ -181,7 +184,19 @@ describe('full layout', () => {
     { rank: 5, name: 'Dee', hero_name: 'Clip', level: 4, score: 1515 },
   ]
   const board = (rank: number | null, score = 1840) => ({ ...payload(), rank, leaderboard_score: score, total_players: 141, leaderboard_cohort_label: 'Levels 4-7', top5, owner_name: 'barrymichaeldoyle' })
-  const rows = (html: string) => [...html.matchAll(/<div class="([^"]*)" data-rank-row="(\d+)">(.*?XP<\/span>)<\/div>/g)].map((m) => ({ rank: Number(m[2]), own: m[1]!.includes('label--inverted'), hidden: m[1]!.startsWith('hidden'), ogOnly: m[1]!.startsWith('lg:hidden'), text: m[3]!.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, '\u00a0') }))
+  const rows = (html: string) => [...html.matchAll(/<div class="([^"]*)" data-rank-row="(\d+)">(.*?XP<\/span>)<\/div>/g)].map((m) => ({ rank: Number(m[2]), own: m[1]!.includes('label--inverted'), hidden: m[1]!.startsWith('hidden'), text: m[3]!.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ') }))
+  /** The boards: the OG landscape's beside the scene, the X landscape's column, and the portrait's X and OG columns. */
+  const boards = (html: string) => {
+    const [landscape, portrait] = html.split('landscape:hidden') as [string, string]
+    const from = (text: string, a: string, b?: string) => text.slice(text.indexOf(a), b ? text.indexOf(b, text.indexOf(a)) : undefined)
+    return {
+      ogLandscape: rows(from(landscape, 'data-board-column="og"', 'data-rune-rule')),
+      xLandscape: rows(from(landscape, 'data-board-column="true"')),
+      xPortrait: [...rows(from(portrait, 'data-rank-panel', 'data-board-columns="og"')), ...rows(from(portrait, 'data-board-columns="og"')).filter((r) => r.hidden)],
+      // The X portrait's appended own row follows the OG columns; it is hidden below the X's breakpoint.
+      ogPortrait: rows(from(portrait, 'data-board-columns="og"')).filter((r) => !r.hidden),
+    }
+  }
 
   it('marks the own row instead of repeating the rank, and never shows the ordinal line', async () => {
     const html = await render(board(3))
@@ -190,44 +205,51 @@ describe('full layout', () => {
     expect(text).not.toContain('3rd')
     expect(text).toContain('This week · Lv 4-7')
     expect(text).toContain('This week · Levels 4-7')
-    // The landscape and portrait arrangements each list the five rows once; only the third is inverted.
-    const landscape = rows(html.split('landscape:hidden')[0]!)
-    expect(landscape.map((r) => [r.rank, r.own])).toEqual([[1, false], [2, false], [3, true], [4, false], [5, false]])
-    expect(landscape[2]!.text).toBe('3. barrymichaeldoyle1840\u00a0XP')
-    expect(landscape.filter((r) => r.hidden).map((r) => r.rank)).toEqual([4, 5])
+    // Every board lists the five rows once; only the third is inverted.
+    const { ogLandscape, xLandscape, ogPortrait } = boards(html)
+    for (const list of [ogLandscape, xLandscape, ogPortrait]) expect(list.map((r) => [r.rank, r.own])).toEqual([[1, false], [2, false], [3, true], [4, false], [5, false]])
+    expect(xLandscape[2]!.text).toBe('3. barrymichaeldoyle1840 XP')
+    // On ink panels the own row is red rather than black (D94).
+    expect(html).toMatch(/label--inverted bg--red 1bit:bg--black 2bit:bg--black 4bit:bg--black" data-rank-row="3"/)
   })
 
   it('draws a vertical rule between the stories and the ranking on the X, in the landscape only', async () => {
     const html = await render(board(3))
     const [landscape, portrait] = html.split('landscape:hidden')
-    expect(landscape).toMatch(/<div class="col--span-4 flex flex--row flex--stretch-y gap--medium" data-board-column="true">\s*<div class="hidden lg:block no-shrink border--v-30" data-column-rule="true"><\/div>/)
+    expect(landscape).toMatch(/<div class="hidden lg:block col--span-4"><div class="flex flex--row flex--stretch-y gap--medium h--full" data-board-column="true">\s*<div class="hidden lg:block no-shrink border--v-30" data-column-rule="true"><\/div>/)
     expect(portrait).not.toContain('data-column-rule')
   })
 
   it('shows up to ten rows on the X from top10, falling back to top5', async () => {
     const ten = [...top5, ...[6, 7, 8, 9, 10].map((rank) => ({ rank, name: `P${rank}`, hero_name: `H${rank}`, level: 4, score: 1600 - rank * 100 }))]
     const html = await render({ ...board(3), top10: ten })
-    const [landscape, portrait] = html.split('landscape:hidden')
-    // Landscape: one list; rows 4-10 are X only, and nothing is appended because the hero is on the board.
-    expect(rows(landscape!).map((r) => [r.rank, r.hidden])).toEqual([[1, false], [2, false], [3, false], [4, true], [5, true], [6, true], [7, true], [8, true], [9, true], [10, true]])
-    // Portrait: rows 1-5 and 6-10 in two X-only columns; the OG keeps the first three.
-    expect(portrait).toMatch(/class="grid grid--cols-1 lg:grid--cols-2 gap--none lg:gap--large stretch-x"/)
-    expect(rows(portrait!).map((r) => [r.rank, r.hidden])).toEqual([[1, false], [2, false], [3, false], [4, true], [5, true], [6, true], [7, true], [8, true], [9, true], [10, true]])
-    // A hero below the tenth row is appended on the X, and below the third on the OG.
-    // In the landscape the hero takes the tenth row's place, so the column keeps ten rows.
-    const eleventh = rows((await render({ ...board(11, 400), top10: ten })).split('landscape:hidden')[0]!)
-    expect(eleventh.map((r) => r.rank)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 11])
-    expect(eleventh.slice(9).map((r) => [r.rank, r.own, r.ogOnly, r.hidden])).toEqual([[11, true, true, false], [11, true, false, true]])
+    const { ogLandscape, xLandscape, xPortrait, ogPortrait } = boards(html)
+    // Landscape: ten rows in the X's column, five beside the OG's scene; nothing is appended because the hero is on the board.
+    expect(xLandscape.map((r) => r.rank)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    expect(ogLandscape.map((r) => r.rank)).toEqual([1, 2, 3, 4, 5])
+    // Portrait: rows 1-5 beside 6-10 on the X, 1-3 beside 4-6 on the OG.
+    expect(html).toContain('<div class="hidden lg:block stretch-x"><div class="grid grid--cols-1 lg:grid--cols-2 gap--none lg:gap--large stretch-x">')
+    expect(xPortrait.map((r) => r.rank)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    expect(ogPortrait.map((r) => r.rank)).toEqual([1, 2, 3, 4, 5, 6])
+    // A hero below the tenth row takes the tenth row's place in the X landscape, the fifth beside the OG scene, and the
+    // sixth in the OG portrait; the X portrait appends it.
+    const eleventh = boards(await render({ ...board(11, 400), top10: ten }))
+    expect(eleventh.xLandscape.map((r) => [r.rank, r.own])).toEqual([[1, false], [2, false], [3, false], [4, false], [5, false], [6, false], [7, false], [8, false], [9, false], [11, true]])
+    expect(eleventh.ogLandscape.map((r) => [r.rank, r.own])).toEqual([[1, false], [2, false], [3, false], [4, false], [11, true]])
+    expect(eleventh.ogPortrait.map((r) => [r.rank, r.own])).toEqual([[1, false], [2, false], [3, false], [4, false], [5, false], [11, true]])
+    expect(eleventh.xPortrait.map((r) => r.rank)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
     // An older payload without top10 still draws its five rows.
-    expect(rows((await render(board(3))).split('landscape:hidden')[0]!).map((r) => r.rank)).toEqual([1, 2, 3, 4, 5])
+    expect(boards(await render(board(3))).xLandscape.map((r) => r.rank)).toEqual([1, 2, 3, 4, 5])
   })
 
   it('appends the own row below the rows a device shows', async () => {
-    const fourth = rows((await render(board(4, 1700))).split('landscape:hidden')[0]!)
-    expect(fourth.map((r) => [r.rank, r.own, r.ogOnly])).toEqual([[1, false, false], [2, false, false], [3, false, false], [4, true, false], [5, false, false], [4, true, true]])
-    const twelfth = rows((await render(board(12, 980))).split('landscape:hidden')[0]!)
-    expect(twelfth.slice(5).map((r) => [r.rank, r.own, r.ogOnly, r.hidden, r.text])).toEqual([[12, true, true, false, '12. barrymichaeldoyle980\u00a0XP'], [12, true, false, true, '12. barrymichaeldoyle980\u00a0XP']])
-    expect(twelfth.slice(0, 5).every((r) => !r.own)).toBe(true)
+    const fourth = boards(await render(board(4, 1700)))
+    expect(fourth.ogLandscape.map((r) => [r.rank, r.own])).toEqual([[1, false], [2, false], [3, false], [4, true], [5, false]])
+    const twelfth = boards(await render(board(12, 980)))
+    for (const list of [twelfth.ogLandscape, twelfth.ogPortrait]) expect(list.at(-1)).toMatchObject({ rank: 12, own: true, text: '12. barrymichaeldoyle980 XP' })
+    expect(twelfth.ogLandscape.map((r) => r.rank)).toEqual([1, 2, 3, 4, 12])
+    expect(twelfth.xLandscape.map((r) => r.rank)).toEqual([1, 2, 3, 4, 5, 12])
+    expect(twelfth.xLandscape.slice(0, 5).every((r) => !r.own)).toBe(true)
   })
 
   it('explains an absent rank without marking any row', async () => {
@@ -243,10 +265,14 @@ describe('full layout', () => {
     const base = 'https://art.test/art/qr/v3'
     const standing = await render({ ...payload(), companion_qr_base: `${base}/bag`, home_qr_base: `${base}/app` })
     expect(standing).toContain('data-home-qr="true"')
-    expect(standing).toContain('This week')
+    expect(standing).toContain('data-board-column="true"')
+    expect(standing).toContain('data-rank-panel="true"')
     const action = await render({ ...payload(), companion_qr_base: `${base}/bag`, home_qr_base: `${base}/app`, qr_base: `${base}/bag`, qr_url: `${base}/bag/3.png`, qr_url_large: `${base}/bag/5.png`, qr_label: 'Scan to open your bag' })
     expect(action).not.toContain('data-home-qr')
-    expect(action).not.toContain('This week')
+    // The stories and their ranking give way to the panel; the OG landscape keeps its board beside the scene.
+    expect(action).not.toContain('data-board-column="true"')
+    expect(action).not.toContain('data-rank-panel')
+    expect(action).toContain('data-board-column="og"')
     expect(action).toContain('Bag full')
   })
 })
@@ -303,10 +329,15 @@ describe('log lines (D44)', () => {
   it('gives the newest story the whole line on the X and puts its changes and time below it, in the columns', async () => {
     const vars = payload() as { log: Array<Record<string, unknown>> } & Record<string, unknown>
     const html = await render({ ...vars, utc_offset: 7200, log: [{ ...vars.log[0], n: 'Took down an elite [[Legacy Mainframe]]. The floor heard it.' }, ...vars.log] })
-    const lead = html.split('The floor heard it.')[1]!.split('border--h-30')[0]!
-    // On the X: no chips on the story's line, a meta row with the stat columns and the time; on the OG: the time stays on the line.
+    const [landscape, portrait] = html.split('landscape:hidden')
+    // Portrait, on the X: no chips on the story's line, a meta row with the stat columns and the time; on the OG: the time stays on the line.
+    const lead = portrait!.split('The floor heard it.')[1]!.split('border--h-30')[0]!
     expect(lead).toMatch(/<span class="lg:hidden label lg:title--small no-shrink" data-story-time="true">10:19<\/span>/)
     expect(lead).toMatch(/<div class="hidden lg:flex flex--row flex--right flex--center-y gap--xsmall" data-story-lead-meta="true"><span class="hidden lg:flex[^"]*" data-story-chips-inline="true">.*data-chip-cell="xp">.*<span class="label lg:title--small no-shrink" data-story-time="true">10:19<\/span><\/div>/)
+    // Landscape: the screen-wide ledger uses the meta row on every device, and the OG's stacked chips are gone.
+    const wide = landscape!.split('The floor heard it.')[1]!.split('border--h-30')[0]!
+    expect(wide).toMatch(/<div class="flex lg:flex flex--row flex--right flex--center-y gap--xsmall" data-story-lead-meta="true"><span class="flex lg:flex flex--row[^"]*" data-story-chips-inline="true">/)
+    expect(landscape).not.toContain('data-story-changes')
     expect(lead.indexOf('data-story-chips-inline')).toBeGreaterThan(lead.indexOf('data-story-lead-meta'))
   })
 
@@ -341,7 +372,7 @@ describe('log lines (D44)', () => {
   })
 
   it('celebrates a big moment with a badge', async () => {
-    expect(await render({ ...payload(), celebration: 'Level up! Now level 6' })).toMatch(/label--inverted">Level up! Now level 6</)
+    expect(await render({ ...payload(), celebration: 'Level up! Now level 6' })).toMatch(/label--inverted bg--red 1bit:bg--black 2bit:bg--black 4bit:bg--black">Level up! Now level 6</)
     expect(await render(payload())).not.toContain('label--inverted')
   })
 
@@ -351,7 +382,7 @@ describe('log lines (D44)', () => {
     for (const [key, markup] of Object.entries(screenMarkup)) {
       const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...vars, celebration: name, log: [{ ...vars.log[0], k: 'achievement', n: 'Achievement: [[Nine Lives (Expired)]]', d: '' }, ...vars.log] })
       // The quadrant has no room for a badge (D44); the other three show it.
-      if (key !== 'markup_quadrant') expect(html).toContain(`label--inverted">${name}<`)
+      if (key !== 'markup_quadrant') expect(html).toContain(`4bit:bg--black">${name}<`)
       expect(html.includes(glyphUri('achievement', 16)) || html.includes(glyphUri('achievement', 24))).toBe(true)
     }
   })
@@ -407,11 +438,18 @@ describe('HUD hearts and counters (D72)', () => {
   const full = hudMarkUri('heartFull', 36, 32)
   const half = hudMarkUri('heartHalf', 36, 32)
   const empty = hudMarkUri('heartEmpty', 36, 32)
-  /** Hearts inside the heart rows only; the narrow counter line also uses the full heart as its HP mark. */
+  /** Hearts inside the black heart rows only; the narrow counter line also uses the full heart as its HP mark. */
   const count = (html: string, uri: string) => {
-    const rows = [...html.matchAll(/data-hearts="\d+"><div[^>]*>((?:<img[^>]*>)+)<\/div>/g)].map((m) => m[1]).join('')
+    const rows = [...html.matchAll(/data-hearts="\d+"><div class="hidden 1bit:block[^"]*"><div[^>]*>((?:<img[^>]*>)+)<\/div>/g)].map((m) => m[1]).join('')
     return rows.split(`src="${uri}"`).length - 1
   }
+
+  it('draws the same hearts in red on ink panels (D94)', async () => {
+    const html = await render(payload())
+    const ink = [...html.matchAll(/<div class="1bit:hidden 2bit:hidden 4bit:hidden no-shrink"><div[^>]*>((?:<img[^>]*>)+)<\/div>/g)].map((m) => m[1]).join('')
+    expect(ink.split(`src="${hudMarkUri('heartFull', 36, 32, '#ff0000')}"`).length - 1).toBe(16)
+    expect(ink.split(`src="${hudMarkUri('heartEmpty', 36, 32, '#ff0000')}"`).length - 1).toBe(4)
+  })
 
   it('fills ten hearts in half steps from the real numbers in every layout', async () => {
     for (const markup of Object.values(screenMarkup)) {
@@ -462,12 +500,12 @@ describe('HUD hearts and counters (D72)', () => {
       expect(view).toMatch(new RegExp(`level 5</span>\\s*<div[^>]*data-attack-defense="true"><div[^>]*><img[^>]*src="${escape(hudMarkUri('sword', 24, 24))}" alt=""><span class="label lg:title--small">18</span></div><div[^>]*><img[^>]*src="${escape(hudMarkUri('shield', 24, 24))}" alt=""><span class="label lg:title--small">7</span></div></div></div>`))
       expect(view).toMatch(/data-hp-count="true">118\/148 HP<\/span><\/div>/)
     }
-    const goldPotionsBag = new RegExp(`<div[^>]*><img[^>]*src="${escape(hudMarkUri('coin', 24, 24))}" alt=""><span class="label lg:title--small">640</span></div><div[^>]*><img[^>]*src="${escape(hudMarkUri('potion', 24, 24))}" alt=""><span class="label lg:title--small">1</span></div><div data-bag-count="true"[^>]*><img[^>]*src="${escape(hudMarkUri('bag', 24, 24))}" alt=""><span class="label lg:title--small">3/30</span></div></div>`)
-    // Both arrangements: under the hero, marks on the OG and named counts on the X; the XP row ends at its count.
+    // Both arrangements: the named counts under the hero on every device; the XP row ends at its count.
     for (const view of [landscape, portrait]) {
-      expect(view).toMatch(new RegExp(`data-counters="marks">${goldPotionsBag.source}`))
-      expect(view).toMatch(/<div class="hidden lg:flex[^"]*" data-counters="words">(?:<div[^>]*><img[^>]*><span class="label lg:title--small">(?:640 gold|1 potion|3\/30)<\/span><\/div>){3}<\/div>/)
+      expect(view).toMatch(/<div class="flex[^"]*" data-counters="words">(?:<div[^>]*><img[^>]*><span class="label lg:title--small">(?:640 gold|1 potion|3\/30)<\/span><\/div>){3}<\/div>/)
       expect(view).toMatch(/data-xp-count="true">210\/656 XP<\/span><\/div>/)
+      // The OG names the gear by the attack and defense marks.
+      expect(view).toMatch(/data-gear-line="og">.*>Uncommon Cable Cutter<\/span><\/div>.*>No armor<\/span><\/div><\/div>/)
     }
     // Unlinked payloads carry no bag, so no count is drawn.
     expect(await render({ ...vars, bag_capacity: null })).not.toContain('data-bag-count')

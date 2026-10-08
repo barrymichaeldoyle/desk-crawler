@@ -98,6 +98,8 @@ describe('Desk Crawler launch list (D105)', () => {
     const link = new URL(first[0].text.match(/Unsubscribe: (\S+)/)[1])
     expect(link.pathname).toBe('/desk-crawler/unsubscribe')
     expect(first[0].headers['List-Unsubscribe']).toBe(`<${link.toString()}>`)
+    expect(first[0].html).toContain(`href="${INSTALL}"`)
+    expect(first[0].html).toContain(`href="${link.toString().replaceAll('&', '&#38;')}"`)
     expect(unsubscribeToken(KEY, link.searchParams.get('id')!)).toBe(link.searchParams.get('token'))
     expect(await rows()).toEqual([])
   })

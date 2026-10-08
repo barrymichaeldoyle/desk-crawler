@@ -208,7 +208,49 @@ export function launchEmail(args: { id: Id<'waitlist'>; email: string; installUr
       '',
       `Questions or problems: reply to barry@barrymichaeldoyle.com. Unsubscribe: ${unsubscribe.toString()}`,
     ].join('\n'),
+    html: launchEmailHtml({ installUrl: args.installUrl, origin: args.origin, unsubscribe: unsubscribe.toString() }),
   }
+}
+
+const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`)
+
+/** The HTML part of the launch email: table layout and inline styles, so it holds up in Outlook and Gmail; images load from the site. */
+function launchEmailHtml(args: { installUrl: string; origin: string; unsubscribe: string }) {
+  const install = escapeHtml(args.installUrl)
+  const unsubscribe = escapeHtml(args.unsubscribe)
+  const asset = (path: string) => escapeHtml(new URL(path, args.origin).toString())
+  const font = "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
+  return `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Desk Crawler is live on TRMNL</title></head>
+<body style="margin:0;padding:0;background:#f4f1ff;${font}">
+<div style="display:none;max-height:0;overflow:hidden">Desk Crawler is now in the TRMNL marketplace. Install it and your hero sets out within fifteen minutes.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f1ff"><tr><td align="center" style="padding:24px 12px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border:3px solid #0c0a1c">
+<tr><td style="background:#0c0a1c;padding:20px 24px">
+<table role="presentation" cellpadding="0" cellspacing="0"><tr>
+<td style="padding-right:14px"><img src="${asset('/games/desk-crawler/icon-192.png')}" width="48" height="48" alt="" style="display:block;image-rendering:pixelated"></td>
+<td style="${font};color:#ffd166;font-size:24px;font-weight:700;line-height:1.2">Desk Crawler is live</td>
+</tr></table>
+</td></tr>
+<tr><td style="padding:24px 24px 8px;${font};color:#0c0a1c;font-size:16px;line-height:1.55">
+<p style="margin:0 0 16px">Desk Crawler is now in the TRMNL marketplace. It is an office RPG that plays itself on your TRMNL: every fifteen minutes your hero fights, loots or gets knocked out, and the screen shows what happened.</p>
+</td></tr>
+<tr><td style="padding:0 24px"><img src="${asset('/games/desk-crawler/screen-sample.png')}" width="506" alt="Example Desk Crawler screen on a TRMNL X: Pip explores the Server Room, with health, XP, equipment, adventure stories and weekly rankings." style="display:block;width:100%;max-width:506px;height:auto;border:8px solid #3a3566;border-radius:12px;background:#ffffff"></td></tr>
+<tr><td align="center" style="padding:24px">
+<table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:#ffd166;border:3px solid #0c0a1c">
+<a href="${install}" style="display:inline-block;padding:14px 28px;${font};color:#0c0a1c;font-size:17px;font-weight:700;text-decoration:none">Install Desk Crawler</a>
+</td></tr></table>
+</td></tr>
+<tr><td style="padding:0 24px 24px;${font};color:#0c0a1c;font-size:16px;line-height:1.55">
+<p style="margin:0">Install the plugin, connect it with your TRMNL Games account, name your hero and click Save in TRMNL. The first adventure shows up within fifteen minutes.</p>
+</td></tr>
+<tr><td style="padding:16px 24px;border-top:1px solid #ddd8f0;${font};color:#5b5677;font-size:13px;line-height:1.5">
+<p style="margin:0 0 8px">You are getting this one email because you joined the Desk Crawler launch list at trmnlgames.com. Your address has now been removed from that list, and no further emails will follow.</p>
+<p style="margin:0">Questions or problems? Reply to this email. <a href="${unsubscribe}" style="color:#5b5677">Unsubscribe</a></p>
+</td></tr>
+</table>
+</td></tr></table>
+</body></html>`
 }
 
 /**

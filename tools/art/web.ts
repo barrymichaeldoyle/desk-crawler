@@ -2,7 +2,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import type { Canvas } from '@trmnl-games/desk-crawler/art/canvas'
 import { composeScene, STAGE_WIDTH } from '@trmnl-games/desk-crawler/art/scene'
-import { BRAND, Image, bandedScene, colourMark, inkImage, markSvg, pixelText, pixelTextWidth } from './colour'
+import { BRAND, Image, bandedScene, colourMark, markSvg, pixelText, pixelTextWidth } from './colour'
 import { faviconCanvas, iconCanvas } from './iconArt'
 import { platformFaviconCanvas, platformIconCanvas } from './platformArt'
 
@@ -65,8 +65,3 @@ function writeIconSet(out: string, title: string, iconArt: Canvas, faviconArt: C
 // The platform mark at the site root; Desk Crawler's Warrior under its game path.
 writeIconSet('apps/web/public', 'TRMNL Games', platformIconCanvas(), platformFaviconCanvas())
 writeIconSet('apps/web/public/games/desk-crawler', 'Desk Crawler', iconCanvas(), faviconCanvas())
-
-// The landing page's sample game screen: the device's own 1-bit fight scene, which the page multiplies over the biome bands.
-const sample = inkImage(composeScene('server_room', 'fight', { kind: 'monster', id: 'cable_serpent', elite: false })).scaled(5)
-writeFileSync('apps/web/public/games/desk-crawler/scene-sample.png', sample.png())
-console.log(`wrote apps/web/public/games/desk-crawler/scene-sample.png ${sample.width}x${sample.height}`)

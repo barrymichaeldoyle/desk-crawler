@@ -88,7 +88,7 @@ Core batch: player meetings, friends/rivals, world-event banner, shareable publi
 
 | Feature | Dependencies and limits |
 | --- | --- |
-| Desk raids | Committed 2026-10-08 (D110, [design](raids.md)): passive chance-driven raids between heroes of one level group, launch odds and win odds set by stance, gold moved from loser to winner, both sides lose HP (loser more), never a knockout. Raider applies in its tick, target applies a ledger row once at its next evaluation. Slices R1 rules and harness → R2 backend → R3 companion and R4 device → R5 achievements and profile; the R1 harness gate settles the numbers before the content v7 switch. The first meeting kind |
+| Desk raids | Committed 2026-10-08 (D110, [design](raids.md)): passive chance-driven raids between any two active heroes, no opt-out, launch odds and win odds set by stance alone (level and gear never count), gold moved from loser to winner, both sides lose HP (loser more) and a raid can kill. Raider applies in its tick, target applies a ledger row once at its next evaluation. Slices R1 rules and harness → R2 backend → R3 companion and R4 device → R5 achievements and profile; the R1 harness gate settles the numbers before the content v7 switch. The first meeting kind |
 | Meetings | Later row: friendly meetings select from a completed immutable biome cohort and reuse the raid ledger shape (canonical pair/tick key prevents duplicate rewards/logs); no trading initially |
 | Friends/rivals | Public-profile privacy and moderation; no friend requirement to progress |
 | World events | Versioned typed modifiers, UTC activation, snapshot per tick; admin permissions and rollback |

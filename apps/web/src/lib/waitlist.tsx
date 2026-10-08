@@ -20,6 +20,10 @@ export function WaitlistForm({ source }: { source: 'notify' | 'pitch' | 'landing
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [joined, setJoined] = useState<string | null>(null)
+  // The form (and the focused button) leaves the page on success: focus moves to the confirmation so it is announced.
+  const confirmation = useRef<HTMLDivElement>(null)
+  useEffect(() => { if (joined) confirmation.current?.focus() }, [joined])
+  const inputId = `waitlist-${source}`
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault()
@@ -40,7 +44,7 @@ export function WaitlistForm({ source }: { source: 'notify' | 'pitch' | 'landing
 
   if (joined) {
     return (
-      <div className="flex flex-col gap-4" role="status">
+      <div ref={confirmation} tabIndex={-1} className="flex flex-col gap-4 outline-none" role="status">
         <p><strong>You're on the list.</strong> We'll send one email to {joined} when Desk Crawler is in the TRMNL marketplace, then delete your address.</p>
         <div className="flex flex-col gap-2 border-l-4 border-rule pl-4">
           <p className="text-sm text-muted">Want to get ahead? Create your TRMNL Games account now. You'll still install Desk Crawler from TRMNL at launch, and the account signs you straight in.</p>
@@ -52,15 +56,15 @@ export function WaitlistForm({ source }: { source: 'notify' | 'pitch' | 'landing
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-2" noValidate={false}>
-      <label htmlFor={`waitlist-${source}`} className="font-semibold">Get one email when it's live</label>
+      <label htmlFor={inputId} className="font-semibold">Get one email when it's live</label>
       <div className="flex flex-wrap gap-3">
-        <input id={`waitlist-${source}`} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required maxLength={254} autoComplete="email" placeholder="you@example.com" disabled={pending} className={INPUT} />
+        <input id={inputId} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required maxLength={254} autoComplete="email" placeholder="you@example.com" readOnly={pending} aria-invalid={error ? true : undefined} aria-describedby={error ? `${inputId}-hint ${inputId}-error` : `${inputId}-hint`} className={INPUT} />
         {/* Hidden from people and assistive tech; bots that fill every field are dropped quietly. */}
         <input type="text" name="website" value={website} onChange={(e) => setWebsite(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
         <Button type="submit" pending={pending} busyLabel="Adding…">Notify me</Button>
       </div>
-      <p className="text-sm text-muted">No newsletter. One launch email, then your address is deleted.</p>
-      <ErrorNote message={error} />
+      <p id={`${inputId}-hint`} className="text-sm text-muted">No newsletter. One launch email, then your address is deleted.</p>
+      <ErrorNote id={`${inputId}-error`} message={error} />
     </form>
   )
 }

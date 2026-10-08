@@ -7,7 +7,7 @@ import { pctOf } from '@trmnl-games/desk-crawler/sim/core/stats'
 import { api } from '@trmnl-games/backend/api'
 import { seo } from '../../../lib/seo'
 import { artUrl, useIntent } from '../../../lib/intent'
-import { BUTTON_PRIMARY, Button, LoadingState, NoticeBar, useNotice } from '../../../lib/ui'
+import { BUTTON_PRIMARY, Button, LoadingState, NoticeBar, useFocusWithin, useNotice } from '../../../lib/ui'
 import { BIOME_SWATCH } from '../../../lib/palette'
 import { preload } from '../../../lib/preload'
 import { ReturnRecap } from './-recap'
@@ -42,6 +42,8 @@ function HeroHome() {
 
   return (
     <div className="flex min-w-0 flex-col gap-8">
+      {/* The page's title for assistive tech, ahead of the keepsake callout; the game screen's HUD names the hero visibly. */}
+      <h1 className="sr-only">{hero.name}, your hero</h1>
       <KeepsakeCallout />
       <GameScreen hero={{ ...hero, biomeName, targetName }} />
       <HeroSheet hero={hero} />
@@ -162,12 +164,14 @@ function HeroSheet({ hero }: { hero: HeroView }) {
   const healing = Math.min(hero.maxHp - hero.hp, pctOf(hero.maxHp, POTION_HEAL_PCT))
   const potionLabel = !bag ? 'Drink potion' : !bag.potions ? 'No potions' : hero.hp >= hero.maxHp ? `Drink potion (${bag.potions})` : `Drink potion +${healing} HP (${bag.potions})`
   const chosenStance = hero.stances.find((option) => option.id === hero.stance) ?? null
+  // Pause and Resume swap places when they succeed; focus follows to whichever command takes over.
+  const commands = useFocusWithin<HTMLElement>(hero.status)
 
   const stopNote = hero.status === 'paused' ? 'Resume adventures to travel.' : hero.status === 'sleeping' ? 'Make room in your bag to travel.' : hero.status === 'dead' ? 'Travel opens again once your hero is back on their feet.' : null
 
   return (
     <div className="flex min-w-0 flex-col gap-8">
-      <section aria-label="Commands" className="flex flex-col gap-2">
+      <section ref={commands} aria-label="Commands" className="flex flex-col gap-2">
         {canAct || hero.status === 'paused' || hero.status === 'sleeping' ? (
           <div className="flex flex-wrap gap-2">
             {hero.status === 'sleeping' ? (
@@ -222,12 +226,13 @@ function HeroSheet({ hero }: { hero: HeroView }) {
             <p className="text-sm text-muted">Applies from the next adventure.</p>
           </div>
           {/* One segmented row, like the ranking period: the chosen cell is pressed and its rule reads underneath. */}
-          <div role="radiogroup" aria-label="Stance" className="flex border-2 border-edge">
+          {/* Toggle buttons, like the ranking period: each is one Tab stop, and a busy choice keeps its focus (aria-disabled). */}
+          <div role="group" aria-label="Stance" className="flex border-2 border-edge">
             {hero.stances.map((option) => {
               const chosen = option.id === hero.stance
               const switching = stance.pending && pendingStance === option.id
               return (
-                <button key={option.id} type="button" role="radio" aria-checked={chosen} aria-busy={switching || undefined} disabled={!healthy || stance.pending} onClick={async () => { if (chosen) return; setPendingStance(option.id); await stance.run({ stance: option.id }, `${option.name} stance from the next adventure.`); setPendingStance(null) }} className={`menu-cursor flex min-h-11 flex-1 items-center justify-center px-2 py-2 label-px not-last:border-r-2 not-last:border-edge not-aria-checked:before:hidden ${chosen ? 'bg-navy text-gold' : switching ? 'bg-rule text-ink' : 'text-muted hover:bg-rule hover:text-ink active:bg-rule active:text-ink disabled:text-muted'}`}>
+                <button key={option.id} type="button" aria-pressed={chosen} aria-busy={switching || undefined} aria-disabled={stance.pending || undefined} disabled={!healthy} onClick={async () => { if (chosen || stance.pending) return; setPendingStance(option.id); await stance.run({ stance: option.id }, `${option.name} stance from the next adventure.`); setPendingStance(null) }} className={`menu-cursor flex min-h-11 flex-1 items-center justify-center px-2 py-2 label-px not-last:border-r-2 not-last:border-edge not-aria-pressed:before:hidden ${chosen ? 'bg-navy text-gold' : switching ? 'bg-rule text-ink' : 'text-muted hover:bg-rule hover:text-ink active:bg-rule active:text-ink disabled:text-muted'}`}>
                   {switching ? 'Switching…' : option.name}
                 </button>
               )
@@ -251,7 +256,8 @@ function HeroSheet({ hero }: { hero: HeroView }) {
             const onTheWay = biome.id === hero.targetBiomeId
             return (
               <li key={biome.id} aria-current={here ? 'location' : undefined} className={`relative flex min-w-0 items-center gap-3 px-3 py-2 sm:flex-col sm:items-stretch sm:gap-1 sm:p-4 sm:not-last:after:absolute sm:not-last:after:top-1/2 sm:not-last:after:-right-[15px] sm:not-last:after:w-[15px] sm:not-last:after:border-t-4 sm:not-last:after:border-dashed sm:not-last:after:border-gold sm:not-last:after:content-[''] ${biome.unlocked ? `border-[3px] border-night ${BIOME_SWATCH[biome.id] ?? 'bg-panel'}` : 'border-[3px] border-dashed border-faint bg-panel text-muted'} ${here ? 'outline-4 outline-gold' : ''}`}>
-                <span aria-label={`World ${index + 1}`} className="hud grid size-7 shrink-0 place-items-center border-[3px] border-night bg-night text-hud-sm text-gold-ink sm:hidden">{index + 1}</span>
+                <span className="sr-only">World {index + 1}: </span>
+                <span aria-hidden="true" className="hud grid size-7 shrink-0 place-items-center border-[3px] border-night bg-night text-hud-sm text-gold-ink sm:hidden">{index + 1}</span>
                 <span className="flex min-w-0 flex-1 flex-col sm:gap-1">
                   <span className="flex items-center gap-2 font-display text-xl font-bold sm:text-2xl">
                     <span aria-hidden="true" className="hud hidden size-7 shrink-0 place-items-center border-[3px] border-night bg-night text-hud-sm text-gold-ink sm:grid">{index + 1}</span>
@@ -260,7 +266,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
                   <span className="text-sm font-semibold">{biome.unlocked ? (here ? 'Exploring' : onTheWay ? 'Arriving next adventure' : 'Unlocked') : `Locked until level ${biome.unlockLevel}`}</span>
                 </span>
                 {biome.unlocked && !here && !onTheWay ? (
-                  <Button className="shrink-0 sm:mt-2 sm:self-start" pending={travel.pending} busyLabel="Travelling…" aria-label={`Travel to ${biome.name}`} disabled={!canAct} onClick={() => travel.run({ biomeId: biome.id }, `Travelling to ${biome.name}. Arrive on the next adventure.`)}>
+                  <Button className="shrink-0 sm:mt-2 sm:self-start" pending={travel.pending} busyLabel="Travelling…" aria-label={travel.pending ? undefined : `Travel to ${biome.name}`} disabled={!canAct} onClick={() => travel.run({ biomeId: biome.id }, `Travelling to ${biome.name}. Arrive on the next adventure.`)}>
                     Travel
                   </Button>
                 ) : null}

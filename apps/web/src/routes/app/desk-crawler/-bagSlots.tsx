@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useId, useRef, type ReactNode } from 'react'
 import { inked, type Sprite } from '@trmnl-games/desk-crawler/art/canvas'
 import { itemArt } from '@trmnl-games/desk-crawler/art/items'
 import { potion as potionArt } from '@trmnl-games/desk-crawler/art/props'
@@ -90,8 +90,11 @@ export function PotionSlot({ count, onClick, label }: { count: number; onClick: 
  * A native modal dialog drawn as a bottom sheet on phones and a centred window from 640px. The browser owns the focus
  * trap, Escape and focus return; focus lands on the sheet's title; the page behind never changes shape while it is open.
  */
+const SheetTitleId = createContext<string | undefined>(undefined)
+
 export function Sheet({ open, onClose, label, children }: { open: boolean; onClose: () => void; label: string; children: ReactNode }) {
   const ref = useRef<HTMLDialogElement>(null)
+  const titleId = useId()
   useEffect(() => {
     const dialog = ref.current
     if (!dialog) return
@@ -101,12 +104,13 @@ export function Sheet({ open, onClose, label, children }: { open: boolean; onClo
     } else if (!open && dialog.open) dialog.close()
   }, [open])
   return (
-    <dialog ref={ref} aria-label={label} onClose={onClose} onClick={(event) => { if (event.target === ref.current) onClose() }} className="sheet">
-      {open ? <div className="window px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-5">{children}</div> : null}
+    // Named by its title (the piece's name); `label` stands in while no title is rendered.
+    <dialog ref={ref} aria-labelledby={titleId} aria-label={label} onClose={onClose} onClick={(event) => { if (event.target === ref.current) onClose() }} className="sheet">
+      {open ? <div className="window px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-5"><SheetTitleId.Provider value={titleId}>{children}</SheetTitleId.Provider></div> : null}
     </dialog>
   )
 }
 
 export function SheetTitle({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <h2 data-sheet-title tabIndex={-1} className={`font-display text-2xl font-bold outline-none ${className}`}>{children}</h2>
+  return <h2 id={useContext(SheetTitleId)} data-sheet-title tabIndex={-1} className={`font-display text-2xl font-bold outline-none ${className}`}>{children}</h2>
 }

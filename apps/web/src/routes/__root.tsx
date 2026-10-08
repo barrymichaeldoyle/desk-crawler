@@ -26,11 +26,12 @@ export const Route = createRootRouteWithContext<{
   convexClient: ConvexReactClient
   convexQueryClient: ConvexQueryClient
 }>()({
-  head: () => ({
+  // Only the root matching means no page exists at this address: the 404 gets its own title and stays out of search.
+  head: ({ matches }: { matches: readonly unknown[] }) => ({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      ...seo({}).meta,
+      ...seo(matches.length > 1 ? {} : { title: 'Page not found', index: false }).meta,
       { property: 'og:type', content: 'website' },
       { property: 'og:site_name', content: SITE_NAME },
       { property: 'og:image', content: `${SITE_ORIGIN}/og.png?v=${OG_VERSION}` },

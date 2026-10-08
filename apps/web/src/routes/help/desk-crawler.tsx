@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { ProsePage, SUPPORT_EMAIL } from '../../lib/prose'
-import { seo } from '../../lib/seo'
+import { DESK_CRAWLER_OG, seo } from '../../lib/seo'
 
 export const Route = createFileRoute('/help/desk-crawler')({
-  head: () => seo({ title: 'TRMNL help', path: '/help/desk-crawler', description: 'Install Desk Crawler on TRMNL, choose a stance, meet the merchant, answer decisions, understand refresh timing, and fix a screen that looks out of date.' }),
+  head: () => seo({ title: 'Desk Crawler help and setup', path: '/help/desk-crawler', description: 'Install Desk Crawler on TRMNL, choose a stance, meet the merchant, answer decisions, understand refresh timing, and fix a screen that looks out of date.', image: DESK_CRAWLER_OG }),
   component: () => (
     <ProsePage title="Desk Crawler on TRMNL">
       <h2>Getting started</h2>

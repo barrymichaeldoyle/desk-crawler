@@ -11,7 +11,7 @@ export const BUTTON_SECONDARY = 'hud text-hud-sm border-[3px] border-edge text-i
 /** Layout for a Link that wears a button style. */
 export const LINK_BUTTON = 'inline-flex min-h-11 items-center px-4 py-2 no-underline'
 
-export function Button({ variant = 'primary', className = '', pending = false, busyLabel = 'Working…', allowOffline = false, children, disabled, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'quiet' | 'danger'; pending?: boolean; busyLabel?: string; allowOffline?: boolean }) {
+export function Button({ variant = 'primary', className = '', pending = false, busyLabel = 'Working…', allowOffline = false, children, disabled, onClick, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'quiet' | 'danger'; pending?: boolean; busyLabel?: string; allowOffline?: boolean }) {
   const online = useOnline()
   const styles = {
     primary: BUTTON_PRIMARY,
@@ -19,7 +19,30 @@ export function Button({ variant = 'primary', className = '', pending = false, b
     quiet: 'font-semibold text-muted underline underline-offset-4 hover:text-ink active:text-ink',
     danger: 'hud text-hud-sm border-[3px] border-hp text-hp-ink hover:bg-hp hover:text-night active:bg-hp active:text-night',
   }[variant]
-  return <button type="button" {...props} aria-busy={pending || undefined} disabled={disabled || pending || (!online && !allowOffline)} className={`min-h-11 px-4 py-2 ${styles} disabled:cursor-not-allowed disabled:border-dashed disabled:border-faint disabled:bg-transparent disabled:text-muted disabled:shadow-none disabled:no-underline disabled:active:translate-y-0 ${className}`}>{pending ? busyLabel : children}</button>
+  // A busy button stays focusable (aria-disabled, clicks swallowed): disabling it would drop keyboard focus to the page.
+  return <button type="button" {...props} aria-busy={pending || undefined} aria-disabled={pending || undefined} disabled={!pending && (disabled || (!online && !allowOffline))} onClick={(event) => { if (pending) { event.preventDefault(); return } onClick?.(event) }} className={`min-h-11 px-4 py-2 ${styles} disabled:cursor-not-allowed disabled:border-dashed disabled:border-faint disabled:bg-transparent disabled:text-muted disabled:shadow-none disabled:no-underline disabled:active:translate-y-0 aria-busy:cursor-wait aria-busy:active:translate-y-0 ${className}`}>{pending ? busyLabel : children}</button>
+}
+
+/**
+ * Keeps keyboard focus inside a group of commands when the focused control leaves the page, as Pause does when it
+ * swaps for Resume: once `swap` changes, focus that fell to the page moves to the group's first live control.
+ */
+export function useFocusWithin<T extends HTMLElement>(swap: unknown) {
+  const ref = useRef<T>(null)
+  const inside = useRef(false)
+  // Listened for on the document, so a group that mounts after a loading state is still seen. A removed control blurs
+  // without focusing anything else, so only focus landing somewhere outside the group clears the flag.
+  useEffect(() => {
+    const track = (event: FocusEvent) => { inside.current = event.target instanceof Node && Boolean(ref.current?.contains(event.target)) }
+    document.addEventListener('focusin', track)
+    return () => document.removeEventListener('focusin', track)
+  }, [])
+  useEffect(() => {
+    const active = document.activeElement
+    if (!inside.current || (active && active !== document.body && active.isConnected)) return
+    ref.current?.querySelector<HTMLElement>('button:not([disabled]), a[href]')?.focus()
+  }, [swap])
+  return ref
 }
 
 export type Notice = { kind: 'ok' | 'error'; text: string; key: number }
@@ -48,9 +71,10 @@ export function NoticeBar({ notice, lifted = false, onDismiss }: { notice: Notic
   }, [notice])
   const text = notice?.text ?? ''
   return (
-    <div className={`pointer-events-none fixed inset-x-0 z-30 flex justify-center px-4 ${lifted ? 'bottom-[calc(5.5rem+env(safe-area-inset-bottom))]' : 'bottom-[calc(1rem+env(safe-area-inset-bottom))]'}`}>
-      <div role="status" aria-live="polite" className="contents">{notice?.kind === 'ok' ? <NoticePanel key={notice.key} text={text} tone="text-xp-ink" onDismiss={onDismiss} /> : null}</div>
-      <div role="alert" className="contents">{notice?.kind === 'error' ? <NoticePanel key={notice.key} text={text} tone="text-hp-ink" onDismiss={onDismiss} /> : null}</div>
+    <div className={`pointer-events-none fixed inset-x-0 z-30 flex flex-col items-center px-4 ${lifted ? 'bottom-[calc(5.5rem+env(safe-area-inset-bottom))]' : 'bottom-[calc(1rem+env(safe-area-inset-bottom))]'}`}>
+      {/* Real boxes, not display: contents, which some browsers drop from the accessibility tree; stacked, an empty one takes no space. */}
+      <div role="status" aria-live="polite" className="flex w-full max-w-md">{notice?.kind === 'ok' ? <NoticePanel key={notice.key} text={text} tone="text-xp-ink" onDismiss={onDismiss} /> : null}</div>
+      <div role="alert" className="flex w-full max-w-md">{notice?.kind === 'error' ? <NoticePanel key={notice.key} text={text} tone="text-hp-ink" onDismiss={onDismiss} /> : null}</div>
     </div>
   )
 }
@@ -110,10 +134,10 @@ export function Meter({ label, value, max, tone = 'xp' }: { label: string; value
   )
 }
 
-export function ErrorNote({ message }: { message: string | null }) {
+export function ErrorNote({ message, id }: { message: string | null; id?: string }) {
   if (!message) return null
   return (
-    <p role="alert" className="text-sm font-semibold text-hp-ink">
+    <p id={id} role="alert" className="text-sm font-semibold text-hp-ink">
       {message}
     </p>
   )

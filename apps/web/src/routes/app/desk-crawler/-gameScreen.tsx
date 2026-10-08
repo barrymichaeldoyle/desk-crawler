@@ -69,9 +69,9 @@ export function GameScreen({ hero }: { hero: ScreenHero }) {
         <div className="flex items-center gap-3 border-[3px] border-night bg-night/85 px-3 py-2.5">
           <img src="/games/desk-crawler/icon-192.png" alt="" width={52} height={52} className="size-13 shrink-0 border-[3px] border-cream [image-rendering:pixelated]" />
           <div className="flex min-w-0 flex-col gap-1.5">
-            <h1 className="text-sm leading-none">
+            <h2 className="text-sm leading-none">
               {hero.name} <span className="text-gold-ink">Lv{hero.level}</span>
-            </h1>
+            </h2>
             <div className="flex flex-wrap items-center gap-2">
               <Hearts hp={hero.hp} maxHp={hero.maxHp} />
               <span className="label-px text-muted">{hero.hp}/{hero.maxHp}</span>
@@ -87,9 +87,9 @@ export function GameScreen({ hero }: { hero: ScreenHero }) {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <p className="flex items-center gap-2 border-[3px] border-night bg-night/85 px-3 py-2.5 text-xs text-gold-ink" aria-label={`${hero.gold.toLocaleString()} gold`}>
+          <p className="flex items-center gap-2 border-[3px] border-night bg-night/85 px-3 py-2.5 text-xs text-gold-ink">
             <svg viewBox="0 0 8 8" width={16} height={16} aria-hidden="true" shapeRendering="crispEdges"><path className="fill-gold" d="M2 0h4v1H2zM1 1h6v6H1zM0 2h8v4H0zM2 7h4v1H2z" /><path className="fill-gold-lo" d="M3 2h2v4H3z" /></svg>
-            {hero.gold.toLocaleString()}
+            {hero.gold.toLocaleString()}<span className="sr-only"> gold</span>
           </p>
           {pulse.countdown ? (
             <p className="border-[3px] border-night bg-night/85 px-3 py-2 label-px" aria-live="off">

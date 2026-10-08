@@ -1,11 +1,11 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { RELEASE_STATUS, SiteLinks } from '../../lib/prose'
 import { BUTTON_SECONDARY, LINK_BUTTON } from '../../lib/ui'
-import { DESK_CRAWLER_OG, seo } from '../../lib/seo'
+import { DESK_CRAWLER_JSON_LD, DESK_CRAWLER_OG, seo } from '../../lib/seo'
 import { SampleScreen } from '../../lib/deskCrawlerPitch'
 import { WaitlistForm } from '../../lib/waitlist'
 
-export const Route = createFileRoute('/games/desk-crawler')({ head: () => seo({ title: 'Desk Crawler', path: '/games/desk-crawler', description: 'An office RPG that plays itself on your TRMNL e-ink display.', image: DESK_CRAWLER_OG }), component: Landing })
+export const Route = createFileRoute('/games/desk-crawler')({ head: () => seo({ title: 'Desk Crawler', path: '/games/desk-crawler', description: 'An office RPG that plays itself on your TRMNL e-ink display.', image: DESK_CRAWLER_OG, jsonLd: DESK_CRAWLER_JSON_LD }), component: Landing })
 
 /** Public landing. The screen below is a static, labelled sample; it never creates a hero. */
 function Landing() {

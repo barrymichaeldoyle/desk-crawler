@@ -4,10 +4,10 @@ import { PlatformHeader } from '../lib/platformShell'
 import { RELEASE_STATUS, SiteLinks } from '../lib/prose'
 import { SampleScreen } from '../lib/sampleScreen'
 import { BUTTON_SECONDARY, LINK_BUTTON } from '../lib/ui'
-import { seo } from '../lib/seo'
+import { SITE_JSON_LD, seo } from '../lib/seo'
 import { WaitlistForm } from '../lib/waitlist'
 
-export const Route = createFileRoute('/')({ head: () => seo({ path: '/' }), component: Home })
+export const Route = createFileRoute('/')({ head: () => seo({ path: '/', jsonLd: SITE_JSON_LD }), component: Home })
 
 /** The platform front page: each game leads with its own screen. */
 function Home() {

@@ -1,5 +1,5 @@
 import { Link, useRouter, type ErrorComponentProps } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from './ui'
 import { captureAnalyticsException } from './analytics'
 
@@ -8,7 +8,10 @@ export function RouteError({ reset, error }: ErrorComponentProps) {
   const [retrying, setRetrying] = useState(false)
   const [retryFailed, setRetryFailed] = useState(false)
   useEffect(() => { captureAnalyticsException(error, 'route') }, [error])
-  return <section aria-labelledby="page-error-title" className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4 py-10">
+  // Inside a shell the error sits in its <main>; at the top level it is the page, so it takes the skip link's target.
+  const section = useRef<HTMLElement>(null)
+  useEffect(() => { if (section.current && !document.getElementById('main')) section.current.id = 'main' }, [])
+  return <section ref={section} aria-labelledby="page-error-title" className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4 py-10">
     <h1 id="page-error-title" className="font-display text-3xl font-bold">We couldn’t load this page</h1>
     <p role="alert">{retryFailed ? 'Still not loading. Try again, or get help below.' : 'Check your connection and try again.'}</p>
     <div className="flex flex-wrap gap-3">

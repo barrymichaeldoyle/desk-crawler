@@ -91,6 +91,7 @@ export const keepPreviousData = (previous) => previous;
 export const useQuery = (options) => { const [, fn, args] = options.queryKey; const data = queries[fn] ? queries[fn](args) : undefined; return { data, isPending: false, isPlaceholderData: false, isError: false, refetch: async () => ({ data }) } };
 const settle = () => new Promise((resolveIt, reject) => setTimeout(() => (flag('ok') ? resolveIt({ outcome: 'collected', totalCollected: 1 }) : reject(new Error('Synthetic QA: all server mutations are disabled'))), flag('ok') ? 800 : 1200));
 export const useMutation = () => useCallback(async () => settle(), []);
+export const useAction = () => useCallback(async () => settle(), []);
 export const usePaginatedQuery = (fn, args, { initialNumItems }) => { const [count, setCount] = useState(initialNumItems); const page = data.log.slice(0, count); return { results: page, status: page.length < data.log.length ? 'CanLoadMore' : 'Exhausted', loadMore: (n) => setCount((c) => c + n) } };
 export const getFunctionName = (fn) => String(fn);
 export class ConvexError extends Error { constructor(data) { super(typeof data === 'string' ? data : data?.message); this.data = data } }
@@ -99,6 +100,7 @@ export const paginationOptsValidator = {};
 write('clerk.jsx', `import React from 'react';
 export const Show = ({ when, children }) => (when === 'signed-in' ? <>{children}</> : null);
 export const SignInButton = ({ children }) => <>{children}</>;
+export const SignUpButton = ({ children }) => <>{children}</>;
 export const UserButton = () => <span className="inline-block size-7 rounded-full bg-raised" aria-hidden="true" />;
 export const useAuth = () => ({ isLoaded: true, isSignedIn: true });
 export const useUser = () => ({ user: null, isLoaded: true });

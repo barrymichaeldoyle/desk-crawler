@@ -4,13 +4,15 @@ import { expect, it } from 'vitest'
 import { ActionFeedback, Button, Card, Meter } from '../../apps/web/src/lib/ui'
 import { NetworkProvider } from '../../apps/web/src/lib/network'
 
-it('server-renders a pending button with a busy label and prevents submission', () => {
+it('server-renders a pending button with a busy label, unavailable but still focusable', () => {
   const markup = renderToStaticMarkup(createElement(NetworkProvider, null,
     createElement(Button, { pending: true, busyLabel: 'Selling…', 'aria-label': 'Confirm sale' }, 'Sell'),
   ))
   expect(markup).toContain('type="button"')
   expect(markup).toContain('aria-busy="true"')
-  expect(markup).toContain('disabled=""')
+  // aria-disabled, not disabled: a disabled button drops keyboard focus to the page while the action runs.
+  expect(markup).toContain('aria-disabled="true"')
+  expect(markup).not.toContain('disabled=""')
   expect(markup).toContain('aria-label="Confirm sale"')
   expect(markup).toContain('Selling…')
 })
@@ -18,7 +20,7 @@ it('server-renders a pending button with a busy label and prevents submission', 
 it('preserves the explicit submit type without inventing a pending or disabled state', () => {
   const markup = renderToStaticMarkup(createElement(Button, { type: 'submit' }, 'Save names'))
   expect(markup).toContain('type="submit"')
-  expect(markup).not.toContain('aria-busy')
+  expect(markup).not.toContain('aria-busy=')
   expect(markup).not.toContain('disabled=')
 })
 

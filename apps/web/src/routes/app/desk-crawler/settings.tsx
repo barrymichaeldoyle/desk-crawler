@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { useIntent } from '../../../lib/intent'
 import { seo } from '../../../lib/seo'
-import { Button, Card, LoadingState, NoticeBar, useNotice } from '../../../lib/ui'
+import { Button, Card, LoadingState, NoticeBar, useFocusWithin, useNotice } from '../../../lib/ui'
 import { preload } from '../../../lib/preload'
 import { DeskKeepsakes } from './-keepsakes'
 
@@ -23,6 +23,8 @@ function Settings() {
   const [confirmText, setConfirmText] = useState('')
   const [disconnectId, setDisconnectId] = useState<string | null>(null)
   const resume = useIntent(api.heroes.resume, { onFeedback: notify })
+  // Pause and Resume swap places when they succeed; focus follows to whichever control takes over.
+  const adventures = useFocusWithin<HTMLDivElement>(hero?.status)
   if (!me?.user || !hero) return <LoadingState label="Loading settings…" />
   const healthy = hero.simulationState !== 'quarantined'
   return (
@@ -31,7 +33,7 @@ function Settings() {
         <h1 className="font-display text-3xl font-bold">Settings</h1>
         <p className="mt-2">Playing as <strong>{me.user.publicAlias}</strong>, the name other players see on leaderboards and TRMNL screens.</p>
       </header>
-      <Card title="Adventures">
+      <Card title="Adventures"><div ref={adventures}>
         {hero.activationState !== 'active' ? (
           <p>Your hero is ready. Save the Desk Crawler plugin in TRMNL to start adventures.</p>
         ) : hero.status === 'paused' ? (
@@ -53,7 +55,7 @@ function Settings() {
         )}
         {hero.status === 'dead' || hero.status === 'travelling' ? <p className="mt-2 text-sm text-muted">You can pause after your hero returns from {hero.status === 'dead' ? 'recovering' : 'travelling'}.</p> : null}
         {!healthy ? <p className="mt-2 text-sm">Paused for a service check.</p> : null}
-      </Card>
+      </div></Card>
       <DeskKeepsakes />
       <Card title="TRMNL installations">
         <p className="mb-3 text-sm text-muted">TRMNL plugin installations showing your hero.</p>

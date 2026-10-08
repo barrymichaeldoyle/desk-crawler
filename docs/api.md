@@ -32,9 +32,10 @@ Failures are not receipts for successful operations. Transport retries are bound
 | `achievements.mine` | none | Catalog/evaluated versions, own unlock rows (`id`, `unlockedAt`), one progress row per family (tier, earned id/name/blurb/date, next tier, value/target) and the current publication's rarity tally (`counts`, `totalPlayers`, `scoreAt`) or null before the first publication (D65) | User + active hero + ≤1,024 unlock rows + keepsake row + publication + stats document |
 | `leaderboard.view` | board overall/recent_24h/recent_7d (default recent_7d), optional validated cohort | Scoped Top 100, own rank/score/delta if in selected group, period/cohort/group/global counts and as-of | Published set + own scoped row + selected generation + bounded privacy masking |
 | `trmnl.myConnections` | limit 1–20, cursor? | Instance page/continuation plus <=5 recent pending attempts; UUID/label/state and validated return link | Own instance page + bounded own pending-attempt index; never token/hash |
+| `profiles.view` | `alias` (2–20 after normalizing) | Unauthenticated. Opt-in hero page (D109): public name, hero name/class/level/status/floor, scene path, start date, all-time rank, five lifetime counts, highest earned tier per achievement family with rarity counts for those ids. Null for private, missing, suspended, name-repair or inactive heroes alike | Alias index, current hero, ≤5 logs, own rank row, publication tally, own unlock rows |
 | `admin.health` | none | operational run/cost/cleanup summary | Admin authority + bounded recent rows |
 
-No unbounded public hero lists, arbitrary hero-ID reads, or public token lookup function. Public shareable hero profiles are Month 3.
+No unbounded public hero lists, arbitrary hero-ID reads, or public token lookup function. Public hero pages (D109) are looked up by public name and only for heroes whose owner opted in.
 
 ## Public mutations
 
@@ -61,6 +62,7 @@ No unbounded public hero lists, arbitrary hero-ID reads, or public token lookup 
 | `heroes.pause` | none | Save exploring/resting status and pause | Already paused is no-op; dead/travelling/sleeping rejected |
 | `heroes.choose` | `optionId` | D79: answer the pending choice; the server applies the option's authored effect once and clears the choice; returns gold and HP after | Open unexpired choice; option must belong to its event; quarantined rejected |
 | `heroes.setStance` | `stance: cautious \| balanced \| bold` | Set the sustain stance (D76); counts `stanceChanges` and logs a command story. Switches with nothing logged between them share one line ("Stance set to [[Bold]] from balanced."), switching back to where it started removes the line and the count, and the first switch awards stance achievements (D103) | Any gameplay status; quarantined rejected; current stance is a no-op; unknown stance rejected |
+| `heroes.setPublicProfile` | `visible: boolean` | Show or hide the hero's public page (D109). Off until turned on | Activated hero required; same value is a no-op |
 | `heroes.resume` | none | Restore prior status; no catch-up | Exploring/resting already unpaused is no-op; sleeping uses resumeAdventures |
 | `trmnl.disconnect` | `instanceId` | Tombstone that instance, preserve hero | Own instance; repeated disconnect no-op |
 | `deletion.requestDeletionEmail` | None; authenticated action | Reserve a confirmation and email the verified primary Clerk address; no deletion | Own account; one request per 30 minutes |

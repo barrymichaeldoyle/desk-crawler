@@ -82,6 +82,7 @@ export const mine = query({
       // D79: the pending choice with its options and what each one would do to this hero right now.
       choice: choiceView(content, hero, items.find((item) => item.kind === 'potion')?.quantity ?? 0, world?.currentTick ?? 0),
       stance: hero.stance ?? 'balanced',
+      publicProfile: hero.publicProfile ?? false,
       stances: Object.values(content.stances ?? {}).map((rule) => ({ id: rule.id, name: rule.name, blurb: rule.blurb, potionBelowPct: rule.autoPotionBelowPct, restBelowPct: rule.restBelowPct, resumeAtPct: rule.resumeExploringAtPct, victoryXpPct: rule.victoryXpPct })),
       biomes: content.biomes.map((biome) => ({ id: biome.id, name: biome.name, unlockLevel: biome.unlockLevel, unlocked: biome.unlockLevel <= hero.level })),
       world: world
@@ -223,6 +224,21 @@ export const setStance = mutation({
         await ctx.db.patch(hero._id, { stance: args.stance })
         await ctx.db.patch(latest._id, { at: Date.now(), summary: stanceSummary(content, open, args.stance) })
       }
+      return { changed: true }
+    }),
+})
+
+/** v1.2: show or hide the hero's public profile page. Off until the owner turns it on. */
+export const setPublicProfile = mutation({
+  args: { operationId: v.string(), visible: v.boolean() },
+  returns: intentResult,
+  handler: async (ctx, args) =>
+    await runIntent(ctx, args.operationId, 'heroes.setPublicProfile', { visible: args.visible }, async (user) => {
+      const hero = await currentHero(ctx, user)
+      if (hero === null) throw appError('HERO_NOT_FOUND', 'No hero yet.')
+      if (hero.activationState !== 'active') throw appError('TRMNL_REQUIRED', 'Save Desk Crawler in TRMNL to start adventures.')
+      if ((hero.publicProfile ?? false) === args.visible) return { changed: false }
+      await ctx.db.patch(hero._id, { publicProfile: args.visible })
       return { changed: true }
     }),
 })

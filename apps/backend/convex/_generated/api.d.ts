@@ -35,6 +35,7 @@ import type * as lib_rankingRead from "../lib/rankingRead.js";
 import type * as lib_svix from "../lib/svix.js";
 import type * as lib_trmnlManagement from "../lib/trmnlManagement.js";
 import type * as maintenance from "../maintenance.js";
+import type * as profiles from "../profiles.js";
 import type * as sim_runs_adapter from "../sim/runs/adapter.js";
 import type * as sim_runs_tick from "../sim/runs/tick.js";
 import type * as trmnl from "../trmnl.js";
@@ -77,6 +78,7 @@ declare const fullApi: ApiFromModules<{
   "lib/svix": typeof lib_svix;
   "lib/trmnlManagement": typeof lib_trmnlManagement;
   maintenance: typeof maintenance;
+  profiles: typeof profiles;
   "sim/runs/adapter": typeof sim_runs_adapter;
   "sim/runs/tick": typeof sim_runs_tick;
   trmnl: typeof trmnl;

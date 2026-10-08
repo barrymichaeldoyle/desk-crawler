@@ -181,6 +181,8 @@ export default defineSchema({
     choice: v.optional(v.object({ eventId: v.string(), offeredAtTick: v.number(), expiresAtTick: v.number(), biomeTier: v.number() })),
     /** D80: active temporary effects, at most three. */
     effects: v.optional(v.array(v.object({ id: v.string(), untilTick: v.number() }))),
+    /** v1.2: the owner chose to show this hero on a public profile page; absent means private. */
+    publicProfile: v.optional(v.boolean()),
     eligibleFromTick: v.number(),
     lastTick: v.number(),
     lastProgressTick: v.number(),

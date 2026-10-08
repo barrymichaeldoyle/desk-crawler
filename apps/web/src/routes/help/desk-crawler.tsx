@@ -66,6 +66,8 @@ export const Route = createFileRoute('/help/desk-crawler')({
       <h2>Understanding rankings</h2>
       <p>The screen shows the seven-day XP Top 5 for your level group, with your own row marked, or added below the list when you sit lower. The companion also offers a 24-hour view and a lifetime board. Rankings publish hourly, so a recent adventure or level-up can appear before your rank updates.</p>
       <p>Paused and sleeping heroes keep their progress, but their recent XP ages out. After seven days without earned XP, they leave the weekly board until they earn XP again. Lifetime progress stays recorded.</p>
+      <h2>Sharing your hero</h2>
+      <p>In Settings you can make a public page for your hero, with its level, rank, current floor, lifetime counts and achievements. Gear, gold and the adventure log are never shown. The page is off until you turn it on, and you can make it private again at any time.</p>
       <h2>If the screen looks old</h2>
       <ul>
         <li>"Updates delayed" means the game service is running late. Nothing is lost and you don't need to do anything.</li>

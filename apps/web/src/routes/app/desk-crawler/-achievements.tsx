@@ -17,12 +17,12 @@ function rarityOf(id: string, rarity: View['rarity']): { band: RarityBand; text:
   const count = rarity.counts[id] ?? 0
   const share = count / rarity.totalPlayers
   const band = rarityBand(share)
-  if (rarity.totalPlayers < RARITY_PERCENT_MIN_POPULATION) return { band, text: `${count} of ${rarity.totalPlayers} heroes` }
+  if (rarity.totalPlayers < RARITY_PERCENT_MIN_POPULATION) return { band, text: `${count} of ${rarity.totalPlayers} ${rarity.totalPlayers === 1 ? 'hero' : 'heroes'}` }
   const pct = Math.round(share * 100)
   return { band, text: `${pct < 1 ? '<1' : pct}% of heroes` }
 }
 
-function Rarity({ id, rarity }: { id: string; rarity: View['rarity'] }) {
+export function Rarity({ id, rarity }: { id: string; rarity: View['rarity'] }) {
   const r = rarityOf(id, rarity)
   if (!r) return <span className="text-xs text-muted">Rarity after the next hourly update</span>
   return (

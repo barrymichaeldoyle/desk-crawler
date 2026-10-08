@@ -91,7 +91,7 @@ Core batch: player meetings, friends/rivals, world-event banner, shareable publi
 | Meetings | Select from a completed immutable biome cohort; canonical pair/tick key prevents duplicate rewards/logs; no trading initially |
 | Friends/rivals | Public-profile privacy and moderation; no friend requirement to progress |
 | World events | Versioned typed modifiers, UTC activation, snapshot per tick; admin permissions and rollback |
-| Profiles | Public-safe projection, alias controls, rate limits; no equipment/private-log leakage |
+| Profiles | Started 2026-10-08 (D109): opt-in page per hero at `/desk-crawler/heroes/<public name>`, public-safe projection, same not-found for private and missing names. Per-IP rate limit (Cloudflare rule) still to approve. Public-safe projection, alias controls, rate limits; no equipment/private-log leakage |
 | Additional classes | Each passive tested; MP/spells only if their economy/state design is ready |
 | Graveyard items | Stretch; only after item-transfer ownership and death-rule changes are designed |
 

@@ -31,6 +31,7 @@ import { Route as AppDeskCrawlerIndexRouteImport } from './routes/app/desk-crawl
 import { Route as AppDeskCrawlerInventoryRouteImport } from './routes/app/desk-crawler/inventory'
 import { Route as AppDeskCrawlerLeaderboardRouteImport } from './routes/app/desk-crawler/leaderboard'
 import { Route as AppDeskCrawlerSettingsRouteImport } from './routes/app/desk-crawler/settings'
+import { Route as DeskCrawlerHeroesAliasRouteImport } from './routes/desk-crawler/heroes.$alias'
 import { Route as ConnectTrmnlDeskCrawlerInstallRouteImport } from './routes/connect/trmnl/desk-crawler/install'
 import { Route as ConnectTrmnlDeskCrawlerManageRouteImport } from './routes/connect/trmnl/desk-crawler/manage'
 
@@ -145,6 +146,11 @@ const AppDeskCrawlerSettingsRoute = AppDeskCrawlerSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AppDeskCrawlerRoute,
 } as any)
+const DeskCrawlerHeroesAliasRoute = DeskCrawlerHeroesAliasRouteImport.update({
+  id: '/desk-crawler/heroes/$alias',
+  path: '/desk-crawler/heroes/$alias',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ConnectTrmnlDeskCrawlerInstallRoute =
   ConnectTrmnlDeskCrawlerInstallRouteImport.update({
     id: '/connect/trmnl/desk-crawler/install',
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/app/desk-crawler/inventory': typeof AppDeskCrawlerInventoryRoute
   '/app/desk-crawler/leaderboard': typeof AppDeskCrawlerLeaderboardRoute
   '/app/desk-crawler/settings': typeof AppDeskCrawlerSettingsRoute
+  '/desk-crawler/heroes/$alias': typeof DeskCrawlerHeroesAliasRoute
   '/app/desk-crawler/': typeof AppDeskCrawlerIndexRoute
   '/connect/trmnl/desk-crawler/install': typeof ConnectTrmnlDeskCrawlerInstallRoute
   '/connect/trmnl/desk-crawler/manage': typeof ConnectTrmnlDeskCrawlerManageRoute
@@ -204,6 +211,7 @@ export interface FileRoutesByTo {
   '/app/desk-crawler/inventory': typeof AppDeskCrawlerInventoryRoute
   '/app/desk-crawler/leaderboard': typeof AppDeskCrawlerLeaderboardRoute
   '/app/desk-crawler/settings': typeof AppDeskCrawlerSettingsRoute
+  '/desk-crawler/heroes/$alias': typeof DeskCrawlerHeroesAliasRoute
   '/app/desk-crawler': typeof AppDeskCrawlerIndexRoute
   '/connect/trmnl/desk-crawler/install': typeof ConnectTrmnlDeskCrawlerInstallRoute
   '/connect/trmnl/desk-crawler/manage': typeof ConnectTrmnlDeskCrawlerManageRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/app/desk-crawler/inventory': typeof AppDeskCrawlerInventoryRoute
   '/app/desk-crawler/leaderboard': typeof AppDeskCrawlerLeaderboardRoute
   '/app/desk-crawler/settings': typeof AppDeskCrawlerSettingsRoute
+  '/desk-crawler/heroes/$alias': typeof DeskCrawlerHeroesAliasRoute
   '/app/desk-crawler/': typeof AppDeskCrawlerIndexRoute
   '/connect/trmnl/desk-crawler/install': typeof ConnectTrmnlDeskCrawlerInstallRoute
   '/connect/trmnl/desk-crawler/manage': typeof ConnectTrmnlDeskCrawlerManageRoute
@@ -259,6 +268,7 @@ export interface FileRouteTypes {
     | '/app/desk-crawler/inventory'
     | '/app/desk-crawler/leaderboard'
     | '/app/desk-crawler/settings'
+    | '/desk-crawler/heroes/$alias'
     | '/app/desk-crawler/'
     | '/connect/trmnl/desk-crawler/install'
     | '/connect/trmnl/desk-crawler/manage'
@@ -283,6 +293,7 @@ export interface FileRouteTypes {
     | '/app/desk-crawler/inventory'
     | '/app/desk-crawler/leaderboard'
     | '/app/desk-crawler/settings'
+    | '/desk-crawler/heroes/$alias'
     | '/app/desk-crawler'
     | '/connect/trmnl/desk-crawler/install'
     | '/connect/trmnl/desk-crawler/manage'
@@ -309,6 +320,7 @@ export interface FileRouteTypes {
     | '/app/desk-crawler/inventory'
     | '/app/desk-crawler/leaderboard'
     | '/app/desk-crawler/settings'
+    | '/desk-crawler/heroes/$alias'
     | '/app/desk-crawler/'
     | '/connect/trmnl/desk-crawler/install'
     | '/connect/trmnl/desk-crawler/manage'
@@ -331,6 +343,7 @@ export interface RootRouteChildren {
   DevOgRoute: typeof DevOgRoute
   GamesDeskCrawlerRoute: typeof GamesDeskCrawlerRoute
   HelpDeskCrawlerRoute: typeof HelpDeskCrawlerRoute
+  DeskCrawlerHeroesAliasRoute: typeof DeskCrawlerHeroesAliasRoute
   ConnectTrmnlDeskCrawlerInstallRoute: typeof ConnectTrmnlDeskCrawlerInstallRoute
   ConnectTrmnlDeskCrawlerManageRoute: typeof ConnectTrmnlDeskCrawlerManageRoute
 }
@@ -491,6 +504,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDeskCrawlerSettingsRouteImport
       parentRoute: typeof AppDeskCrawlerRoute
     }
+    '/desk-crawler/heroes/$alias': {
+      id: '/desk-crawler/heroes/$alias'
+      path: '/desk-crawler/heroes/$alias'
+      fullPath: '/desk-crawler/heroes/$alias'
+      preLoaderRoute: typeof DeskCrawlerHeroesAliasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/connect/trmnl/desk-crawler/install': {
       id: '/connect/trmnl/desk-crawler/install'
       path: '/connect/trmnl/desk-crawler/install'
@@ -555,6 +575,7 @@ const rootRouteChildren: RootRouteChildren = {
   DevOgRoute: DevOgRoute,
   GamesDeskCrawlerRoute: GamesDeskCrawlerRoute,
   HelpDeskCrawlerRoute: HelpDeskCrawlerRoute,
+  DeskCrawlerHeroesAliasRoute: DeskCrawlerHeroesAliasRoute,
   ConnectTrmnlDeskCrawlerInstallRoute: ConnectTrmnlDeskCrawlerInstallRoute,
   ConnectTrmnlDeskCrawlerManageRoute: ConnectTrmnlDeskCrawlerManageRoute,
 }

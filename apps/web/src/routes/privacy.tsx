@@ -16,6 +16,9 @@ export const Route = createFileRoute('/privacy')({
         Your public name, your hero's name and level, and your ranks appear on leaderboards and on other players' TRMNL screens. Choose a public name you're
         happy to share and never include contact details in it.
       </p>
+      <p>
+        If you turn on your Desk Crawler hero page in Settings, anyone with the link can see your public name, your hero's name, level, rank, current floor and start date, a few lifetime counts and your achievements. Gear, gold, the adventure log and your account details stay private. The page is off until you turn it on, and turning it off hides it straight away.
+      </p>
 
       <h2>What we store</h2>
       <ul>

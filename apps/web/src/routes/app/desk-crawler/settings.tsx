@@ -23,8 +23,10 @@ function Settings() {
   const [confirmText, setConfirmText] = useState('')
   const [disconnectId, setDisconnectId] = useState<string | null>(null)
   const resume = useIntent(api.heroes.resume, { onFeedback: notify })
+  const profile = useIntent(api.heroes.setPublicProfile, { onFeedback: notify })
   // Pause and Resume swap places when they succeed; focus follows to whichever control takes over.
   const adventures = useFocusWithin<HTMLDivElement>(hero?.status)
+  const sharing = useFocusWithin<HTMLDivElement>(hero?.publicProfile)
   if (!me?.user || !hero) return <LoadingState label="Loading settings…" />
   const healthy = hero.simulationState !== 'quarantined'
   return (
@@ -55,6 +57,22 @@ function Settings() {
         )}
         {hero.status === 'dead' || hero.status === 'travelling' ? <p className="mt-2 text-sm text-muted">You can pause after your hero returns from {hero.status === 'dead' ? 'recovering' : 'travelling'}.</p> : null}
         {!healthy ? <p className="mt-2 text-sm">Paused for a service check.</p> : null}
+      </div></Card>
+      <Card title="Public profile"><div ref={sharing}>
+        {hero.activationState !== 'active' ? (
+          <p>Your hero can have a public page once adventures start.</p>
+        ) : hero.publicProfile ? (
+          <>
+            <p>Anyone with the link can see your hero's name, level, rank, current floor, lifetime counts and achievements. Gear, gold, the adventure log and your account stay private.</p>
+            <p className="mt-2 break-all"><Link to="/desk-crawler/heroes/$alias" params={{ alias: me.user.publicAlias }} className="underline underline-offset-4">trmnlgames.com/desk-crawler/heroes/{encodeURIComponent(me.user.publicAlias)}</Link></p>
+            <Button className="mt-3" variant="secondary" pending={profile.pending} busyLabel="Hiding…" onClick={() => profile.run({ visible: false }, 'Your hero page is private again.')}>Make private</Button>
+          </>
+        ) : (
+          <>
+            <p>Share a page showing your hero's name, level, rank, current floor, lifetime counts and achievements. Gear, gold, the adventure log and your account stay private. Off until you turn it on.</p>
+            <Button className="mt-3" variant="secondary" pending={profile.pending} busyLabel="Publishing…" onClick={() => profile.run({ visible: true }, 'Your hero page is public.')}>Make my hero page public</Button>
+          </>
+        )}
       </div></Card>
       <DeskKeepsakes />
       <Card title="TRMNL installations">

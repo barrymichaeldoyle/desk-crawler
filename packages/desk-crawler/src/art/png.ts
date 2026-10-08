@@ -105,3 +105,19 @@ export function encodePngPalette(width: number, height: number, index: Uint8Arra
   }
   return out
 }
+
+/** Indexed 8-bit PNG for the companion's colour scene: up to 256 `palette` colours, the `transparent` entry see-through. */
+export function encodePngIndexed(width: number, height: number, index: Uint8Array, palette: ReadonlyArray<readonly [number, number, number]>, transparent?: number): Uint8Array {
+  const raw = new Uint8Array((width + 1) * height)
+  for (let y = 0; y < height; y += 1) raw.set(index.subarray(y * width, (y + 1) * width), y * (width + 1) + 1)
+  const ihdr = new Uint8Array([...u32(width), ...u32(height), 8, 3, 0, 0, 0])
+  const signature = Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10])
+  const parts = [signature, chunk('IHDR', ihdr), chunk('PLTE', Uint8Array.from(palette.flat())), ...(transparent === undefined ? [] : [chunk('tRNS', Uint8Array.from(palette.map((_, i) => (i === transparent ? 0 : 255))))]), chunk('IDAT', zlibStored(raw)), chunk('IEND', new Uint8Array())]
+  const out = new Uint8Array(parts.reduce((sum, p) => sum + p.length, 0))
+  let at = 0
+  for (const part of parts) {
+    out.set(part, at)
+    at += part.length
+  }
+  return out
+}

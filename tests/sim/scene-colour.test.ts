@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { heroPoses } from '@trmnl-games/desk-crawler/art/hero'
 import { monsterArt } from '@trmnl-games/desk-crawler/art/monsters'
-import { scenePlacements } from '@trmnl-games/desk-crawler/art/scene'
-import { sceneColours, sceneColourUri } from '@trmnl-games/desk-crawler/art/sceneColour'
+import { propArt } from '@trmnl-games/desk-crawler/art/props'
+import { scenePlacements, type Subject } from '@trmnl-games/desk-crawler/art/scene'
+import { paintedScene, paintedSceneUri, sceneColours } from '@trmnl-games/desk-crawler/art/sceneColour'
 import { scenePath } from '@trmnl-games/desk-crawler/art/sceneKey'
 
 describe('companion scene colours (D87)', () => {
@@ -22,11 +23,40 @@ describe('companion scene colours (D87)', () => {
     expect(filled.length).toBeGreaterThan(30)
   })
 
-  it('covers every pose and monster and rejects unknown paths', () => {
-    for (const pose of Object.keys(heroPoses) as Array<keyof typeof heroPoses>)
-      for (const id of Object.keys(monsterArt) as Array<keyof typeof monsterArt>)
-        expect(sceneColourUri(scenePath('server_room', pose, { kind: 'monster', id, elite: true }, 5))).toMatch(/^data:image\/svg\+xml,/)
-    expect(sceneColourUri(`https://art.test${scenePath('office_cubicles', 'walk', { kind: 'prop', id: 'signpost' }, 5)}?t=1`)).not.toBeNull()
-    expect(sceneColourUri('/art/scene/v4/nowhere/day/idle/none/5.png')).toBeNull()
+})
+
+describe('companion painted scene (D96)', () => {
+  const fight: Subject = { kind: 'monster', id: 'stapler_mimic', elite: false }
+
+  it('paints the hero in parts, the backdrop in its own tones and shading as two tones rather than ink', () => {
+    const grid = paintedScene('office_cubicles', 'fight', fight, 'day')
+    const hero = scenePlacements('fight', fight).find((p) => p.role === 'hero')!
+    const at = (x: number, y: number) => grid[hero.top + y]![hero.left + x]
+    expect(at(10, 0)).toBe('#5a3a24') // hair
+    expect(at(9, 4)).toBe('#f2c39b') // face
+    expect(at(10, 10)).toBe('#f4f1ff') // shirt collar
+    expect(at(7, 19)).toBe('#2f3a5c') // trousers
+    expect(['#c94f42', '#e0604f']).toContain(at(8, 10)) // cardigan
+    // Sky through the window, by day and by night.
+    expect(grid[16]![26]).toBe('#a8d8f0')
+    expect(paintedScene('office_cubicles', 'fight', fight, 'night')[16]![26]).toBe('#2b3266')
+    // The partition's cork shade alternates two fabric tones on the device's checker.
+    expect(new Set(grid[18]!.slice(60, 80))).toEqual(new Set(['#8e9db3', '#a3b1c6']))
+  })
+
+  it('leaves the halo and untouched stage clear for the bands', () => {
+    const grid = paintedScene('server_room', 'idle', fight, 'day')
+    const hero = scenePlacements('idle', fight).find((p) => p.role === 'hero')!
+    expect(grid[hero.top + 20]![hero.left + 12]).toBeNull()
+    expect(grid[10]![110]).toBeNull()
+  })
+
+  it('covers every biome, pose and subject and rejects unknown paths', () => {
+    const subjects: Subject[] = [{ kind: 'none' }, ...(Object.keys(monsterArt) as Array<keyof typeof monsterArt>).map((id) => ({ kind: 'monster' as const, id, elite: true })), ...(Object.keys(propArt) as Array<keyof typeof propArt>).map((id) => ({ kind: 'prop' as const, id }))]
+    for (const biome of ['office_cubicles', 'server_room', 'cafeteria_depths'] as const)
+      for (const pose of Object.keys(heroPoses) as Array<keyof typeof heroPoses>)
+        for (const subject of subjects) expect(paintedSceneUri(scenePath(biome, pose, subject, 5))).toMatch(/^data:image\/png;base64,/)
+    expect(paintedSceneUri(`https://art.test${scenePath('office_cubicles', 'walk', { kind: 'prop', id: 'signpost' }, 5)}?t=1`)).not.toBeNull()
+    expect(paintedSceneUri('/art/scene/v4/nowhere/day/idle/none/5.png')).toBeNull()
   })
 })

@@ -46,8 +46,8 @@ export const KIND_BADGE: Record<string, string> = {
 }
 
 /**
- * Each biome's game-screen bands (ceiling, upper wall, wall, floor). The 1-bit
- * scene multiplies over them, so its ink stays crisp and its paper takes the colour.
+ * Each biome's game-screen bands (ceiling, upper wall, wall, floor). The hero page's painted scene
+ * leaves them showing wherever it is clear (D96); the landing sample multiplies its 1-bit art over them.
  */
 export const BIOME_BANDS: Record<string, readonly [string, string, string, string]> = {
   office_cubicles: ['#e7b96f', '#f3d394', '#fbe9c2', '#c98f5a'],

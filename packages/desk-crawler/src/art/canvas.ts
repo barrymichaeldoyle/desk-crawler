@@ -22,7 +22,28 @@ export function mirror(s: Sprite): Sprite {
   return { ...s, rows: s.rows.map((r) => [...r].reverse().join('')) }
 }
 
+/** Whether a grid character inks the canvas cell at (x, y), or null for transparent. */
+export function inked(ch: string, x: number, y: number): boolean | null {
+  switch (ch) {
+    case '#':
+      return true
+    case 'w':
+      return false
+    case ':':
+      return (x + y) % 2 === 0
+    case '.':
+      return x % 2 === 0 && y % 2 === 0 && (x + y) % 4 === 0
+    case '=':
+      return y % 2 === 0
+    default:
+      return null
+  }
+}
+
 export class Canvas {
+  /** What is being drawn, for canvases that colour the art (sceneColour.ts); the 1-bit image ignores it. */
+  region = ''
+
   readonly ink: Uint8Array
   constructor(
     readonly width: number,
@@ -38,20 +59,8 @@ export class Canvas {
 
   /** Paint a shade character at absolute (x, y); shades align to the canvas grid so patterns tile seamlessly. */
   paint(x: number, y: number, ch: string): void {
-    switch (ch) {
-      case '#':
-        return this.set(x, y, true)
-      case 'w':
-        return this.set(x, y, false)
-      case ':':
-        return this.set(x, y, (x + y) % 2 === 0)
-      case '.':
-        return this.set(x, y, x % 2 === 0 && y % 2 === 0 && (x + y) % 4 === 0)
-      case '=':
-        return this.set(x, y, y % 2 === 0)
-      default:
-        return
-    }
+    const black = inked(ch, x, y)
+    if (black !== null) this.set(x, y, black)
   }
 
   draw(s: Sprite, left: number, top: number): void {

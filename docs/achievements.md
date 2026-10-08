@@ -258,7 +258,7 @@ Each release appends families for its new system under a new catalog version; it
 | Release | Families |
 | --- | --- |
 | v1.1 Decisions | Shipped as catalog version 2 on 2026-10-07: Purchases, Merchants met, Stance changes, Decisions made, Epic finds |
-| v1.2 Other people | Meetings completed, meetings with the same hero, world events survived |
+| v1.2 Other people | Office raider (raids won) and Desk defender (raids repelled) as catalog version 3 (D110); later meetings completed, meetings with the same hero, world events survived |
 | v2.0 Depth | Archive and Parking Garage monsters (five tiers each), salvage, upgrades, persistent elite defeats, dungeon clears |
 | v2.1 Guilds | Raid contributions, hall contributions |
 | v3.0 Seasons | Prestige count, seasons completed (owner-keyed, so they survive a retired hero) |

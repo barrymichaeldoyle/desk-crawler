@@ -17,6 +17,7 @@ Implementation was authorized on 2026-10-03. This index includes the original pl
 | [Achievements](achievements.md) | Tiered, rarity-rated, release-appended achievements over bounded counters (D65) |
 | [Roadmap](roadmap.md) | Named releases: v1.0 submission scope, continuous iteration after submission, later versions, guardrails for future systems |
 | [Gameplay](gameplay.md) | State machine, simulation rules, initial balance and content |
+| [Raids](raids.md) | Desk raids: passive chance-driven hero-versus-hero raids, stance odds, ledger application, work slices (D110) |
 | [Architecture](architecture.md) | Service boundaries, planned file structure, implementation spikes |
 | [Domain contracts](domain-contracts.md) | Pure-core input/output, adapter ownership, typed event details |
 | [Data model](data-model.md) | Planned Convex tables, fields, indexes, invariants, retention |

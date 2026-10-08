@@ -89,6 +89,8 @@ Effects (D80, content v6): a hero carries up to three temporary effects, each a 
 
 Narrative choices (D79, content v5): 4 of 100 loot draws offer one of six office situations with two options, logged as the tick's story and kept on the hero for 96 ticks (one pending at a time; another draw falls through to gold). Answering in the companion applies the option's authored effect (gold, a share of maximum HP or potions, never XP) at once; letting it expire applies the default option as the whole event of the next exploring or resting tick. The same pure resolver serves both, clamped to what the hero has, so neither path can award twice and no choice ever needs intervention.
 
+Desk raids (D110, planned for content v7, [design](raids.md)): one draw from a new `raid` stream on each exploring tick, between sustain and the encounter roll, can turn the tick into a raid on another hero of the same level group. The raider's stance sets the launch chance (bold most often, cautious least); one contest roll from stats and stances (cautious the defensive edge) decides it, always clamped so either side can win; the loser loses 5% of gold and 30% of current HP, the winner gains that gold and loses 10% of current HP, both floored at 1 HP. The target applies the raid once at its next evaluation as that tick's whole event. Catalogs without raid rules take no draw.
+
 Manual potions are allowed only when exploring/resting and below full HP. A potion can help a resting hero resume when its HP reaches 75%. Manual use cannot revive or heal while travelling/paused/sleeping. Repeated calls consume finite items and never advance encounters.
 
 ## Encounters

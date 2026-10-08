@@ -1,6 +1,6 @@
 # Release roadmap
 
-Updated 2026-10-08 (D64, D70, D101). Work is planned as named releases rather than calendar months. Every passing change may still ship continuously; a release groups a coherent block of work, its release note and its gate. The earlier "Month 1–6" themes map onto the versions below and keep their feature boundaries and gates; nothing from them was dropped.
+Updated 2026-10-08 (D64, D70, D101, D110). Work is planned as named releases rather than calendar months. Every passing change may still ship continuously; a release groups a coherent block of work, its release note and its gate. The earlier "Month 1–6" themes map onto the versions below and keep their feature boundaries and gates; nothing from them was dropped.
 
 Version meaning:
 
@@ -15,7 +15,7 @@ Release order is a commitment; the dates are not. A release ends when its gate p
 - **v1.0** is deployed and submitted: plugin 564 went to TRMNL review on 2026-10-07 and the review email is sent. Marketplace approval is the one open gate.
 - **v1.0.x** live polish continues while review runs: device templates are at v43, and companion and layout polish ships through main.
 - **v1.1 Decisions** shipped in full on 2026-10-07, with help and analytics coverage added on 2026-10-08 (D101). Production runs content v6 and achievement catalog version 2. Its stretch items (daily quests, lost-and-found, push/email) are not scheduled.
-- **Next:** v1.2 Other people, unless the v1.0.x reorder trigger pulls v2.0 Depth ahead once live retention data exists.
+- **Next:** v1.2 Other people, unless the v1.0.x reorder trigger pulls v2.0 Depth ahead once live retention data exists. Public profiles started on 2026-10-08 (D109) and desk raids are the committed next slice (D110, [design](raids.md)).
 
 ## v1.0 — Submission (submitted 2026-10-07, awaiting marketplace approval)
 
@@ -88,7 +88,8 @@ Core batch: player meetings, friends/rivals, world-event banner, shareable publi
 
 | Feature | Dependencies and limits |
 | --- | --- |
-| Meetings | Select from a completed immutable biome cohort; canonical pair/tick key prevents duplicate rewards/logs; no trading initially |
+| Desk raids | Committed 2026-10-08 (D110, [design](raids.md)): passive chance-driven raids between heroes of one level group, launch odds and win odds set by stance, gold moved from loser to winner, both sides lose HP (loser more), never a knockout. Raider applies in its tick, target applies a ledger row once at its next evaluation. Slices R1 rules and harness → R2 backend → R3 companion and R4 device → R5 achievements and profile; the R1 harness gate settles the numbers before the content v7 switch. The first meeting kind |
+| Meetings | Later row: friendly meetings select from a completed immutable biome cohort and reuse the raid ledger shape (canonical pair/tick key prevents duplicate rewards/logs); no trading initially |
 | Friends/rivals | Public-profile privacy and moderation; no friend requirement to progress |
 | World events | Versioned typed modifiers, UTC activation, snapshot per tick; admin permissions and rollback |
 | Profiles | Started 2026-10-08 (D109): opt-in page per hero at `/desk-crawler/heroes/<public name>`, public-safe projection, same not-found for private and missing names. Page loads are limited to 60 a minute per IP (Workers rate-limiting binding). Public-safe projection, alias controls, rate limits; no equipment/private-log leakage |

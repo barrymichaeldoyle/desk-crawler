@@ -13,7 +13,7 @@ Release order is a commitment; the dates are not. A release ends when its gate p
 ## Where we are (2026-10-08)
 
 - **v1.0** is deployed and submitted: plugin 564 went to TRMNL review on 2026-10-07 and the review email is sent. Marketplace approval is the one open gate.
-- **v1.0.x** live polish continues while review runs: device templates are at v43, and companion and layout polish ships through main.
+- **v1.0.x** live polish continues while review runs: device templates are at v47, and companion and layout polish ships through main.
 - **v1.1 Decisions** shipped in full on 2026-10-07, with help and analytics coverage added on 2026-10-08 (D101). Production runs content v6 and achievement catalog version 2. Its stretch items (daily quests, lost-and-found, push/email) are not scheduled.
 - **Next:** v1.2 Other people, unless the v1.0.x reorder trigger pulls v2.0 Depth ahead once live retention data exists. Public profiles started on 2026-10-08 (D109) and desk raids are the committed next slice (D110, [design](raids.md)).
 
@@ -44,11 +44,11 @@ Gate: [product acceptance](product.md), [quality checks](quality.md), recorded d
 
 ## v1.0.x — Live polish (in progress)
 
-Runs from submission through the first weeks of public play. Patch releases only. Templates v33 to v43 (D74 onwards) and the companion polish up to D100 shipped under it.
+Runs from submission through the first weeks of public play. Patch releases only. Templates v33 to v47 (D74 to D108) and the companion polish shipped under it. Rendered previews are the layout check (2026-10-08), so device renders are not a gate.
 
 - Live monitoring and protected capture: the [hourly capture workflow](../.github/workflows/protected-checkpoint.yml) and its watchdog are checked in and scheduled (2026-10-07); live since 2026-10-07 14:23 UTC after Barry added the environment secrets ([runbook](release/recovery-runbook.md)). The real-provider deletion/expiry/reinstall rehearsal was done by Barry on 2026-10-07 and worked. O11 is closed: Creator Fund payouts exceed operating costs (Barry, 2026-10-07).
 - Measured balance passes under a new content version. First one prepared 2026-10-07: content v2 (D71) raises the auto-potion threshold to 50% and the rest threshold to 35% so a level-8 hero stops walking into the Cafeteria one hit from a knockout; late upgrade saturation is accepted until v1.1 affixes and v2.0 upgrades. D61 numbers are measurement starting points: watch three-day/seven-day sleep share and the level-8 date for weekly managers (harness: day 17).
-- Physical checks that were waived or unverified: portrait display, keepsake claim path.
+- Physical check that was waived: the keepsake claim path.
 - Listing, help and companion copy from reviewer and first-player feedback. Done 2026-10-07: potion heal amount on the help and Bag pages. Also done: the tick detail records `potionHealing` and the change row shows `+N HP from potion`, so an automatic drink is no longer hidden inside net HP (additive optional field, same simulation version; older logs simply omit it).
 - Colour (BWRY) device templates are a candidate here only if they are a pure template change; previews already exist (D62). Anything that changes payload meaning waits.
 - Watch retention by hero level. **Reorder trigger:** if heroes that reached best-in-slot or level 12 drop off faster than younger heroes, pull v2.0 Depth ahead of v1.2 Other people. Decide this once from live data, not from the harness.

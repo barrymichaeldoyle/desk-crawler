@@ -19,7 +19,6 @@ export function AnalyticsProvider() {
   const [preferencesOpen, setPreferencesOpen] = useState(false)
   const revision = useRef(0)
   const lastPage = useRef('')
-  const panel = useRef<HTMLElement>(null)
   useLayoutEffect(() => {
     const available = ready && isLoaded && consent === 'allowed' && (!user || (me !== undefined && me !== null)) && me?.user?.state !== 'deleting'
     setAnalyticsIdentity(!available ? undefined : user ? { id: user.id, email: user.primaryEmailAddress?.emailAddress ?? null, public_alias: me?.user?.publicAlias ?? null, hero_name: me?.hero?.name ?? null } : null)
@@ -54,13 +53,12 @@ export function AnalyticsProvider() {
     if (allowed === me.user.analyticsConsent) return
     void updateConsent({ allowed }).catch(() => {})
   }, [consent, me, ready, updateConsent])
-  // Reopened from the footer link, the panel renders under the footer: bring it into view.
-  useEffect(() => { if (preferencesOpen) panel.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }) }, [preferencesOpen])
   // The standing "Analytics preferences" link lives in the site footer (SiteLinks); this only shows the consent panel.
   if (!ready || !analyticsConfigured() || (consent !== null && !preferencesOpen)) return null
   const choose = (value: 'allowed' | 'declined') => { setAnalyticsConsent(value); setPreferencesOpen(false) }
-  return <aside ref={panel} aria-label="Analytics preferences" className="mx-auto w-full max-w-3xl px-4 py-4">
-    <div className="border-2 border-edge bg-panel p-4">
+  // Pinned to the foot of the screen, so it is seen on arrival and when reopened from the footer, not after the page.
+  return <aside aria-label="Analytics preferences" className="fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-3xl px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+    <div className="border-2 border-edge bg-panel p-4 shadow-[0_0_0_4px_var(--color-night)]">
       <p className="font-semibold">Help us find problems</p>
       <p className="mt-2 text-sm">Allow usage analytics, error reports and masked session recordings? When signed in, these link to your account and email so we can help with support. You can play either way. <Link to="/privacy" className="underline underline-offset-4">Privacy details</Link></p>
       <div className="mt-3 flex flex-wrap gap-3"><Button variant="secondary" onClick={() => choose('allowed')}>Allow analytics</Button><Button variant="secondary" onClick={() => choose('declined')}>No thanks</Button></div>

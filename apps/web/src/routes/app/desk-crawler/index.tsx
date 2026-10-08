@@ -227,7 +227,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
               const chosen = option.id === hero.stance
               const switching = stance.pending && pendingStance === option.id
               return (
-                <button key={option.id} type="button" role="radio" aria-checked={chosen} aria-busy={switching || undefined} disabled={!healthy || stance.pending} onClick={async () => { if (chosen) return; setPendingStance(option.id); await stance.run({ stance: option.id }, `${option.name} stance from the next adventure.`); setPendingStance(null) }} className={`menu-cursor flex min-h-11 flex-1 items-center justify-center px-2 py-2 label-px not-last:border-r-2 not-last:border-edge ${chosen ? 'bg-navy text-gold' : switching ? 'bg-rule text-ink' : 'text-muted hover:bg-rule hover:text-ink active:bg-rule active:text-ink disabled:text-muted'}`}>
+                <button key={option.id} type="button" role="radio" aria-checked={chosen} aria-busy={switching || undefined} disabled={!healthy || stance.pending} onClick={async () => { if (chosen) return; setPendingStance(option.id); await stance.run({ stance: option.id }, `${option.name} stance from the next adventure.`); setPendingStance(null) }} className={`menu-cursor flex min-h-11 flex-1 items-center justify-center px-2 py-2 label-px not-last:border-r-2 not-last:border-edge not-aria-checked:before:hidden ${chosen ? 'bg-navy text-gold' : switching ? 'bg-rule text-ink' : 'text-muted hover:bg-rule hover:text-ink active:bg-rule active:text-ink disabled:text-muted'}`}>
                   {switching ? 'Switching…' : option.name}
                 </button>
               )

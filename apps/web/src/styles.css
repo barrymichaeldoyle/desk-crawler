@@ -115,7 +115,8 @@
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='3' height='5' shape-rendering='crispEdges'%3E%3Cpath fill='%23ffd166' d='M0 0h1v5H0zM1 1h1v3H1zM2 2h1v1H2z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
   }
   &[aria-current="page"]::before,
-  &[aria-pressed="true"]::before {
+  &[aria-pressed="true"]::before,
+  &[aria-checked="true"]::before {
     visibility: visible;
   }
 }

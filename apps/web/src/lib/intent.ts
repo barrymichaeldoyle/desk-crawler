@@ -19,17 +19,20 @@ export function errorMessage(error: unknown): string {
  * Run a state-changing intent with a fresh operation ID per action, a pending
  * flag that blocks double clicks, and a readable error.
  */
-export function useIntent<Args extends { operationId: string }>(fn: FunctionReference<'mutation', 'public', Args>) {
+export function useIntent<Args extends { operationId: string }>(fn: FunctionReference<'mutation', 'public', Args>, options: { onFeedback?: (feedback: { error: string | null; message: string | null }) => void } = {}) {
   const mutate = useMutation(fn)
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
   const [submission] = useState(() => new Submission())
   const inFlight = useRef(false)
+  const onFeedback = useRef(options.onFeedback)
+  onFeedback.current = options.onFeedback
+  const fail = (text: string) => { setError(text); onFeedback.current?.({ error: text, message: null }) }
   async function run(args: Omit<Args, 'operationId'>, successMessage = 'Done. Your TRMNL will reflect this on its next refresh.'): Promise<boolean> {
     if (inFlight.current) return false
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
-      setError('You are offline. Reconnect, then try again. No action was queued.')
+      fail('You are offline. Reconnect, then try again. No action was queued.')
       return false
     }
     inFlight.current = true
@@ -38,13 +41,13 @@ export function useIntent<Args extends { operationId: string }>(fn: FunctionRefe
     setMessage(null)
     try {
       const done = await submission.run(args, (input) => (mutate as unknown as (input: Args) => Promise<unknown>)(input as Args), (error) => error instanceof ConvexError)
-      if (done) setMessage(successMessage)
+      if (done) { setMessage(successMessage); onFeedback.current?.({ error: null, message: successMessage }) }
       return done
     } catch (caught) {
       const code = caught instanceof ConvexError && caught.data && typeof caught.data === 'object' && 'code' in caught.data ? String(caught.data.code) : caught instanceof ExpiredSubmission ? 'SUBMISSION_EXPIRED' : 'UNKNOWN'
       captureAnalytics('intent failed', { intent: getFunctionName(fn), error_code: code })
       if (!(caught instanceof ConvexError) && !(caught instanceof ExpiredSubmission)) captureAnalyticsException(caught, 'intent')
-      setError(errorMessage(caught))
+      fail(errorMessage(caught))
       return false
     } finally {
       inFlight.current = false

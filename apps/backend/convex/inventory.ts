@@ -135,6 +135,7 @@ export const mine = query({
         .map((item) => ({
           id: item._id,
           kind: item.kind,
+          templateId: item.templateId,
           name: item.name,
           label: itemLabel(item),
           rarity: item.rarity,

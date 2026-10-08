@@ -263,7 +263,7 @@ The HUD nav is sticky at the top, 52px tall, its tabs equal-width. The hero page
 
 The hero page reads top to bottom: the full-width game screen, the command row and its note, the world map (three tiles in a row from 640px, joined by dashed gold connectors), then from 1024px two columns (1fr and 1.1fr, 32px gap): the away tally and TRMNL preview on the left, the quest log and records on the right. On phones the HUD boxes stack above the scene so they never cover the art, and the scene crops at 4x around the hero and foe; wide screens draw it at 7x between full-width bands.
 
-Windows pad 12px top, 16px sides and bottom (20px sides from 640px), 12px from title to content. Ledgers go two columns from 480px with 24px between, rows divided by 2px dashed raised-plum rules. Every standalone target is at least 44px. Day headers stick under the nav on an opaque ground. The Bag sale bar is a window pinned to the bottom with safe-area padding.
+Windows pad 12px top, 16px sides and bottom (20px sides from 640px), 12px from title to content. Ledgers go two columns from 480px with 24px between, rows divided by 2px dashed raised-plum rules. Every standalone target is at least 44px. Day headers stick under the nav on an opaque ground. The Bag's sale bar is a window pinned to the bottom with safe-area padding while gear is being selected, and the Bag's sheets and notice are pinned the same way.
 
 ## Elevation & Depth
 
@@ -333,6 +333,15 @@ Chunky arcade keys in the HUD voice.
 
 ### Quest Log Row
 - A compact window: a 32px badge (2px night edge) filled with its kind's game colour holding a night glyph, the narrative sentence beside it (bold names), then the timestamp and change chips in stat inks. Day headers are HUD Micro, sticky.
+
+### Bag Slot
+- A square night cell in a 3px edge coloured by rarity (common on Raised Plum, uncommon XP green, rare violet, epic gold), holding the piece's 16x16 icon at 3x (ink in cream, white cells in Raised Plum) with its gem at 2x in the bottom-left corner. Top-right: a green pixel arrow for an upgrade or a muted `L12` level lock on a night tab; top-left in a sale: a 2px cream checkbox that fills gold with a night tick, the edge going gold. A held find wears a gold dashed edge; an empty slot is a dithered cell in a dashed Raised Plum edge; a busy slot dims its icon under a dither. Slots sit in an auto-filling grid of 4.5rem minimum cells (four across on a phone).
+
+### Sheet
+- A native modal dialog: a window pinned to the bottom of a phone with safe-area padding, centred at 28rem from 640px, over a 75% night backdrop. Title in Pixelify Sans receives focus; actions in a two-column button grid; Escape, the backdrop and Close dismiss it. Errors raised inside it show inside it.
+
+### Notice
+- The latest action's outcome in a pinned window above the phone's bottom edge (lifted above the sale bar): a semibold small sentence in XP green or heart-red-ink with a dismiss cross. Successes clear after five seconds; errors stay.
 
 ### Device Bezel
 - Bezel Plum, 1.4rem corners, fluid padding; white 0.375rem screen at the device's aspect ratio; the scene stands in until the live template render fades in (200ms), then a six-step black-then-white flash over 420ms when a new screen loads.

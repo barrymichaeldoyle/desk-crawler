@@ -2,7 +2,7 @@
 
 A passive multiplayer office RPG for your desk. A hero explores every 15 minutes, finds equipment, survives mishaps, and climbs a global leaderboard. Built exclusively for TRMNL: install the plugin to start your hero, watch the story on e-ink, and use the companion website for occasional decisions.
 
-**Phase: review preparation.** The companion, Convex backend and TRMNL integration are live; the simulator, v4 narrative catalog, tests and balance harness are implemented. See [implementation status](docs/status.md) and [release checks](docs/evidence/release.md) for verified behavior and remaining gates. Run `pnpm install` then `pnpm check` and `pnpm balance`.
+**Phase: in marketplace review, v1.1 shipped.** Plugin 564 was submitted to TRMNL on 2026-10-07. The companion, Convex backend and TRMNL integration are live, with production on content v6 (stances, potion pouch, merchant, decisions, effects, affixes and epic gear) and device template v43. See the [roadmap](docs/roadmap.md) for what comes next. See [implementation status](docs/status.md) and [release checks](docs/evidence/release.md) for verified behavior and remaining gates. Run `pnpm install` then `pnpm check` and `pnpm balance`.
 
 Confirmed on 2026-10-03:
 

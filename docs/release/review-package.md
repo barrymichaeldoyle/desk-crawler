@@ -18,7 +18,7 @@
 | Management URL | `https://trmnlgames.com/connect/trmnl/desk-crawler/manage` |
 | Markup URL | `https://exciting-cormorant-948.convex.site/trmnl/v1/screen` |
 | Uninstall webhook | `https://exciting-cormorant-948.convex.site/trmnl/uninstall` |
-| Knowledge base | `https://trmnlgames.com/help/desk-crawler` |
+| Knowledge base | `https://trmnlgames.com/help/desk-crawler` (updated 2026-10-08 with the v1.1 systems a reviewer may see on screen: the merchant and decision notices, stances, effects and affixes) |
 
 ## Focus-first rationale
 

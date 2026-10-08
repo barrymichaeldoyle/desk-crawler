@@ -1,6 +1,6 @@
 # Release roadmap
 
-Updated 2026-10-07 (D64, D70). Work is planned as named releases rather than calendar months. Every passing change may still ship continuously; a release groups a coherent block of work, its release note and its gate. The earlier "Month 1–6" themes map onto the versions below and keep their feature boundaries and gates; nothing from them was dropped.
+Updated 2026-10-08 (D64, D70, D101). Work is planned as named releases rather than calendar months. Every passing change may still ship continuously; a release groups a coherent block of work, its release note and its gate. The earlier "Month 1–6" themes map onto the versions below and keep their feature boundaries and gates; nothing from them was dropped.
 
 Version meaning:
 
@@ -10,13 +10,20 @@ Version meaning:
 
 Release order is a commitment; the dates are not. A release ends when its gate passes. Work never pauses for a gate or a review (D70): while one release waits on an external check, the next one is designed, built and, when it preserves progress and payload meaning, deployed.
 
-## Current focus: v1.0 — Submission
+## Where we are (2026-10-08)
+
+- **v1.0** is deployed and submitted: plugin 564 went to TRMNL review on 2026-10-07 and the review email is sent. Marketplace approval is the one open gate.
+- **v1.0.x** live polish continues while review runs: device templates are at v43, and companion and layout polish ships through main.
+- **v1.1 Decisions** shipped in full on 2026-10-07, with help and analytics coverage added on 2026-10-08 (D101). Production runs content v6 and achievement catalog version 2. Its stretch items (daily quests, lost-and-found, push/email) are not scheduled.
+- **Next:** v1.2 Other people, unless the v1.0.x reorder trigger pulls v2.0 Depth ahead once live retention data exists.
+
+## v1.0 — Submission (submitted 2026-10-07, awaiting marketplace approval)
 
 Goal (unchanged from Month 1): a TRMNL user installs the public plugin, prepares a Warrior in the web companion, activates it on authenticated Save, and passive adventures plus a coherent rank keep updating independently of device connectivity.
 
-State: built and verified in production except the local candidate below. See [status](status.md) and the [release checklist](evidence/release.md).
+State: built, verified and deployed to production; submitted for review on 2026-10-07. See [status](status.md) and the [release checklist](evidence/release.md).
 
-Scope still to deploy (all local, approved):
+Late v1.0 scope, all deployed before submission:
 
 | Item | Decision | Why it belongs in v1.0 |
 | --- | --- | --- |
@@ -35,9 +42,9 @@ Content floor (unchanged): 3 biomes, 12 authored monsters, gear across 3 tiers /
 
 Gate: [product acceptance](product.md), [quality checks](quality.md), recorded deployment/cost evidence and TRMNL marketplace approval. Persistent play stays gated to verified installations until approval.
 
-## Next: v1.0.x — Live polish
+## v1.0.x — Live polish (in progress)
 
-Runs from submission through the first weeks of public play. Patch releases only.
+Runs from submission through the first weeks of public play. Patch releases only. Templates v33 to v43 (D74 onwards) and the companion polish up to D100 shipped under it.
 
 - Live monitoring and protected capture: the [hourly capture workflow](../.github/workflows/protected-checkpoint.yml) and its watchdog are checked in and scheduled (2026-10-07); live since 2026-10-07 14:23 UTC after Barry added the environment secrets ([runbook](release/recovery-runbook.md)). The real-provider deletion/expiry/reinstall rehearsal was done by Barry on 2026-10-07 and worked. O11 is closed: Creator Fund payouts exceed operating costs (Barry, 2026-10-07).
 - Measured balance passes under a new content version. First one prepared 2026-10-07: content v2 (D71) raises the auto-potion threshold to 50% and the rest threshold to 35% so a level-8 hero stops walking into the Cafeteria one hit from a knockout; late upgrade saturation is accepted until v1.1 affixes and v2.0 upgrades. D61 numbers are measurement starting points: watch three-day/seven-day sleep share and the level-8 date for weekly managers (harness: day 17).
@@ -48,9 +55,11 @@ Runs from submission through the first weeks of public play. Patch releases only
 
 Gate: no production reset, every player's progress preserved across each deploy, old templates keep valid payload meanings.
 
-## v1.1 — Decisions (was Month 2)
+## v1.1 — Decisions (was Month 2; shipped 2026-10-07)
 
 Goal: optional meaningful choices without a daily obligation.
+
+State: every core item is live (content v3 to v6, achievement catalog version 2, template v34 notice line), the help page explains each system and the companion reports the choice events (D101). The gate holds: expiry and defaults resolve without a hand, choose and default cannot both award (D79 tests), and the notice yields to any attention line. What stays open is measurement: whether the choices raise companion engagement is read from live analytics, not assumed. Stretch rows below are unscheduled.
 
 Core batch: stances, configurable rest/potion thresholds, a small set of event choices with an automatic default, a wandering merchant, prioritized device attention text. Continue gear/balance improvements.
 
@@ -63,15 +72,15 @@ Core batch: stances, configurable rest/potion thresholds, a small set of event c
 | Effects | Shipped 2026-10-07 (D80): three catalog effects with typed modifiers and durations, at most three per hero, knockout clears all, rest cleanses banes. Typed duration/modifier rules; death ordering and rest cleansing explicitly designed |
 | Affixes/Epic | Shipped 2026-10-07 (D81): epic at 1%, four affixes rolled on rare and epic gear under v6 only, older gear untouched, Bag page explains them. Versioned generation and owned-item compatibility; extend inventory UI |
 | Achievements (D65) | Shipped early, in v1.0 (2026-10-06). v1.1 families shipped 2026-10-07 as catalog version 2 (D82): purchases, merchants met, stance changes, decisions made, epic finds. See [achievements](achievements.md) |
-| Daily quests | Stretch, not required; timezone/DST and timezone-change abuse design first |
-| Lost-and-found | Stretch; extend the single held-find/inventory-sleep system only with a bounded migration; never reintroduce silent disposal |
+| Daily quests | Stretch, not scheduled; timezone/DST and timezone-change abuse design first |
+| Lost-and-found | Stretch, not scheduled; extend the single held-find/inventory-sleep system only with a bounded migration; never reintroduce silent disposal |
 | Web push/email alerts | Deferred by default; user opt-in, delivery cost and calmness review |
 
 Achievements are additive and independent of the choice systems, so they can ship first within v1.1. Prefer choices/merchant/stances as one coherent release and schedule quest/push scope separately. Salvage is not in this release: materials without a sink would be a hollow feature, so it ships with gear upgrades in v2.0.
 
 Gate: no manual intervention required to resolve expiry; choose/default cannot both award; attention remains one unobtrusive message; more app engagement is a hypothesis, not a login target. The help page covers every v1.1 system (2026-10-08), and the companion reports `stance changed`, `decision made`, `merchant purchase`, `pouch bought` and `bag bought` to consenting analytics so the hypothesis can be measured ([analytics](analytics.md)).
 
-## v1.2 — Other people exist (was Month 3)
+## v1.2 — Other people exist (was Month 3; next)
 
 Goal: charming asynchronous social evidence.
 

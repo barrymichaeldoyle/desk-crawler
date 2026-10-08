@@ -35,7 +35,7 @@ Replay is enabled at 100% of consenting production sessions, with 30-day retenti
 | `merchant purchase` | Browser, after `inventory.buyOffer` commits (D78) | `offer` (`potions`, `pouch` or `bag`) |
 | `pouch bought` | Browser, after `inventory.buyPouch` commits (D77) | `tier` |
 | `bag bought` | Browser, after `inventory.buyBag` commits (D61) | `tier` |
-| `waitlist joined` | Browser, after `waitlist.join` or `waitlist.joinWithAccount` succeeds (D105) | `source` (`notify`, `pitch`, `landing`, `account`); never the email |
+| `waitlist joined` | Browser, after `waitlist.join` or `waitlist.joinWithAccount` succeeds (D105) | `source` (`notify`, `pitch`, `landing`, `home`, `account`); never the email |
 | `$pageview`, `$exception` | Manual path-only pageviews, automatic unhandled errors/rejections and explicit route/transport reports | Scrubbed SDK properties; console errors excluded |
 
 `setup_state = installation_without_hero` directly exposes the incident that prompted this work: the pre-launch reset kept an active installation but removed the hero. The QR goes to the companion, so it cannot create a hero without a new verified install attempt. That page now explains how to start a fresh installation, shows the signed-in account with Switch account, and links to recovery instructions. `signed_out` means a signed-out visitor saw the Desk Crawler pitch on a companion route, usually after scanning a screen's QR (D102); `not_enrolled` means no hero/active installation; `waiting_for_save` means a prepared hero awaits TRMNL confirmation. Install landing states are `pending_install`, `missing_install_link`, and `invalid_install_link`.

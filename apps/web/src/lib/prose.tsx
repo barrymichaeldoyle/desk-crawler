@@ -37,6 +37,7 @@ export function SiteLinks({ className = '' }: { className?: string }) {
           <a href="https://www.linkedin.com/in/barry-michael-doyle-11369683/" className="underline underline-offset-4">LinkedIn</a>{' · '}
           <a href="https://x.com/barrymdoyle" className="underline underline-offset-4">X</a>
         </p>
+        <p><a href="https://github.com/barrymichaeldoyle/trmnl-games" className="underline underline-offset-4">Source on GitHub</a></p>
       </div>
     </footer>
   )

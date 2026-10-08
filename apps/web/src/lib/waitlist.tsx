@@ -13,7 +13,7 @@ const JOINED_KEY = 'tg_waitlist_joined_v1'
 const INPUT = 'min-h-11 min-w-0 flex-1 border-2 border-edge bg-ground px-3 text-base'
 
 /** Launch-list signup (D105). Email only; an account is offered afterwards and stays optional. */
-export function WaitlistForm({ source }: { source: 'notify' | 'pitch' | 'landing' }) {
+export function WaitlistForm({ source }: { source: 'notify' | 'pitch' | 'landing' | 'home' }) {
   const join = useMutation(api.waitlist.join)
   const [email, setEmail] = useState('')
   const [website, setWebsite] = useState('')

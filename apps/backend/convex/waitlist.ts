@@ -36,7 +36,7 @@ export function unsubscribeToken(key: string, id: string): string {
 
 /** Same answer for new and existing addresses, so the form never reveals who is on the list. */
 export const join = mutation({
-  args: { email: v.string(), source: v.union(v.literal('notify'), v.literal('pitch'), v.literal('landing')), website: v.optional(v.string()) },
+  args: { email: v.string(), source: v.union(v.literal('notify'), v.literal('pitch'), v.literal('landing'), v.literal('home')), website: v.optional(v.string()) },
   returns: v.null(),
   handler: async (ctx, args) => {
     // Hidden field only bots fill in: accept quietly, store nothing.

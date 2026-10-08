@@ -3,8 +3,9 @@ import { games } from '@trmnl-games/platform'
 import { PlatformHeader } from '../lib/platformShell'
 import { RELEASE_STATUS, SiteLinks } from '../lib/prose'
 import { SampleScreen } from '../lib/sampleScreen'
-import { BUTTON_PRIMARY, BUTTON_SECONDARY, LINK_BUTTON } from '../lib/ui'
+import { BUTTON_SECONDARY, LINK_BUTTON } from '../lib/ui'
 import { seo } from '../lib/seo'
+import { WaitlistForm } from '../lib/waitlist'
 
 export const Route = createFileRoute('/')({ head: () => seo({ path: '/' }), component: Home })
 
@@ -23,9 +24,10 @@ function Home() {
             <p className="max-w-prose leading-relaxed">{game.description} Every fifteen minutes your hero fights, finds or falls, and the screen on your desk shows what happened.</p>
             <p className="text-sm text-muted">{RELEASE_STATUS}</p>
           </div>
+          <WaitlistForm source="home" />
           <div className="flex flex-wrap gap-3">
-            <Link to="/games/desk-crawler" className={`${LINK_BUTTON} ${BUTTON_PRIMARY}`}>How it plays</Link>
-            <Link to="/app/desk-crawler" className={`${LINK_BUTTON} ${BUTTON_SECONDARY}`}>Open companion</Link>
+            <Link to="/games/desk-crawler" className={`${LINK_BUTTON} ${BUTTON_SECONDARY}`}>How it plays</Link>
+            <Link to="/app/desk-crawler" className="inline-flex min-h-11 items-center underline underline-offset-4">Open companion</Link>
           </div>
         </section>
         <SiteLinks />

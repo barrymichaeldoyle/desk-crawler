@@ -48,7 +48,7 @@ Mobile navigation: Hero, Bag, Rankings, Connections; settings under account menu
 
 ## Onboarding
 
-Signed-out visitors to any `/app/desk-crawler` route (where the screen's QR codes lead, often from someone else's TRMNL) see a short Desk Crawler pitch first: what the game is, the sample screen, that it needs a TRMNL, links to the game and help pages, and an "Already playing?" sign-in (D102). Other signed-out `/app` routes keep the plain sign-in prompt. While Desk Crawler awaits marketplace review, the pitch, the game page and `/desk-crawler/waiting-list` carry the launch-list form, and the signed-in Start card offers "Email me at launch" with the account's verified email (D105).
+Signed-out visitors to any `/app/desk-crawler` route (where the screen's QR codes lead, often from someone else's TRMNL) see a short Desk Crawler pitch first: what the game is, the sample screen, that it needs a TRMNL, links to the game and help pages, and an "Already playing?" sign-in (D102). Other signed-out `/app` routes keep the plain sign-in prompt. While Desk Crawler awaits marketplace review, the pitch, the home page, the game page and `/desk-crawler/waiting-list` carry the launch-list form, and the signed-in Start card offers "Email me at launch" with the account's verified email (D105).
 
 Sign in before creating game state. Ask for a public alias separately from imported Clerk/TRMNL real names. Explain that leaderboard/device aliases are public to other players. Hero name has a default suggestion but can be edited before creation.
 

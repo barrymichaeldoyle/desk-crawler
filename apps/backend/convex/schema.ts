@@ -7,8 +7,8 @@ import { logDetail } from './lib/logDetail'
  * package that uses them; future systems use additive migrations.
  */
 
-/** Where a launch-list signup came from: the share link, the signed-out QR pitch, the game page or a signed-in account. */
-export const waitlistSource = v.union(v.literal('notify'), v.literal('pitch'), v.literal('landing'), v.literal('account'))
+/** Where a launch-list signup came from: the share link, the signed-out QR pitch, the game page, the home page or a signed-in account. */
+export const waitlistSource = v.union(v.literal('notify'), v.literal('pitch'), v.literal('landing'), v.literal('home'), v.literal('account'))
 
 export const heroStatus = v.union(
   v.literal('exploring'),

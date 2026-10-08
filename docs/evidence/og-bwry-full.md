@@ -42,4 +42,4 @@ Barry said that, with the X full landscape and portrait done, the TRMNL OG and B
 
 ## Rollout state
 
-Local until pushed. The four-ink scene URLs need the backend art route from this change, which ships with the template in the same deployment.
+Deployed from `efc9e65` (pushed to `main`; lint and Workers build passed). The four-ink scene URLs are served by the art route in the same deployment.

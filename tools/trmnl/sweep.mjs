@@ -52,13 +52,22 @@ for (const file of files.sort()) {
   const layout = layoutExt.replace('.html', '')
   const portrait = deviceOrient.endsWith('-portrait')
   const device = deviceOrient.replace('-portrait', '')
-  const [w, h] = SIZES[device][layout]
+  // The whole screen, so every mashup slot is on the page in either orientation; checks measure the plugin's view.
+  const [w, h] = SIZES[device].markup
   const size = portrait ? { width: h, height: w } : { width: w, height: h }
   await page.setViewportSize(size)
-  await page.goto(`http://127.0.0.1:${port}/${file}`, { waitUntil: 'load' })
-  await page.waitForFunction(() => window.TRMNL_PLUGINS_READY === true, null, { timeout: 20000 }).catch(() => {})
-  await page.evaluate(() => document.fonts.ready)
-  await page.waitForTimeout(400); await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))))
+  // The framework loads from trmnl.com, so a stalled request could hold a page forever: bound each load and retry once.
+  const settle = async () => {
+    await page.goto(`http://127.0.0.1:${port}/${file}`, { waitUntil: 'load', timeout: 60000 })
+    await page.waitForFunction(() => window.TRMNL_PLUGINS_READY === true, null, { timeout: 20000 }).catch(() => {})
+    await page.evaluate(() => document.fonts.ready)
+    await page.waitForTimeout(400); await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))))
+  }
+  const bounded = () => Promise.race([settle(), new Promise((_, reject) => setTimeout(() => reject(new Error(`timed out loading ${file}`)), 90000))])
+  await bounded().catch(async (error) => {
+    process.stdout.write(`retry ${file}: ${error.message}\n`)
+    await bounded()
+  })
   const result = await page.evaluate(() => {
     const view = document.querySelector('.view')
     const footer = Array.from(document.querySelectorAll('.title_bar')).find((el) => el.getClientRects().length > 0)
@@ -81,12 +90,17 @@ for (const file of files.sort()) {
     const scene = Array.from(layoutEl.querySelectorAll('img')).filter(visible).find((e) => e.naturalWidth > 200)
     const recaps = Array.from(layoutEl.querySelectorAll('[data-recap-items]')).filter(visible).map((e) => ({ lines: Number(e.dataset.recapItems), fit: e.dataset.recapFit, shown: Number(e.dataset.recapCount), items: e.querySelectorAll('[data-recap-item]').length, marks: Array.from(e.querySelectorAll('[data-recap-item]')).filter(visible).filter((i) => i.querySelector('img')).length, text: e.innerText.replace(/\s+/g, ' ').trim() }))
     const chips = Array.from(layoutEl.querySelectorAll('.label--outline')).filter(visible).length
-    return { bound, overflow, broken, textOverflow, lists, recaps, hearts, ticks, counters, rankRows, chips, sceneTop: scene ? scene.getBoundingClientRect().top : null, storyTop: lists.length ? layoutEl.querySelector('[data-story-list]').getBoundingClientRect().top : null }
+    // Nothing above the recap ribbon may run into it: every visible text or image outside it ends above its top.
+    const ribbon = Array.from(layoutEl.querySelectorAll('[data-recap-ribbon]')).find(visible)
+    const ribbonTop = ribbon ? ribbon.getBoundingClientRect().top : null
+    const underRibbon = ribbon ? Array.from(layoutEl.querySelectorAll('span,img')).filter(visible).filter((e) => !ribbon.contains(e) && e.getBoundingClientRect().height > 0 && e.getBoundingClientRect().bottom > ribbonTop + 1).map((e) => ({ tag: e.tagName, text: (e.innerText || '').slice(0, 40), bottom: e.getBoundingClientRect().bottom, ribbonTop })) : []
+    return { bound, overflow, broken, textOverflow, underRibbon, lists, recaps, hearts, ticks, counters, rankRows, chips, sceneTop: scene ? scene.getBoundingClientRect().top : null, storyTop: lists.length ? layoutEl.querySelector('[data-story-list]').getBoundingClientRect().top : null }
   })
-  const ok = !result.error && result.overflow.length === 0 && result.broken.length === 0 && result.textOverflow.length === 0 && result.lists.every((l) => l.fit === 'complete') && result.recaps.every((r) => r.fit === 'complete') && result.hearts.every((h) => h.images === 10 && h.wrappedRows === 1 && h.rows === 1) && result.ticks.every((t) => t.images === 10 && t.tickRows === 1)
+  const ok = !result.error && result.overflow.length === 0 && result.underRibbon.length === 0 && result.broken.length === 0 && result.textOverflow.length === 0 && result.lists.every((l) => l.fit === 'complete') && result.recaps.every((r) => r.fit === 'complete') && result.hearts.every((h) => h.images === 10 && h.wrappedRows === 1 && h.rows === 1) && result.ticks.every((t) => t.images === 10 && t.tickRows === 1)
   if (!ok) failures++
   results.push({ file, state, device, portrait, layout, ok, ...result })
-  if (shotsDir) await page.screenshot({ path: join(shotsDir, file.replace('.html', '.png')), clip: { x: 0, y: 0, ...size } })
+  // The plugin's own view: in portrait the mashup slots are not the landscape box turned on its side.
+  if (shotsDir) await page.locator('.view').first().screenshot({ path: join(shotsDir, file.replace('.html', '.png')) })
   process.stdout.write(`${ok ? 'ok  ' : 'FAIL'} ${file}\n`)
 }
 await browser.close()

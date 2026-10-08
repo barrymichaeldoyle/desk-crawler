@@ -1,5 +1,8 @@
 /**
- * Four self-contained TRMNL layouts. Template v39 lifts the OG-sized panels (D94): the full landscape sets a 3x scene
+ * Four self-contained TRMNL layouts. Template v40 gives the X its own half, side and quarter arrangements (D95): the
+ * half views take the full layout's header, scene, board and one-line ledger; the side stacks the header over the scene
+ * (its bag code hung in the corner in landscape), the stories and a board; the quarter shows the HP and XP counts with
+ * the code beside the name. The OG keeps its arrangements, each block marked `lg:hidden`. Template v39 lifts the OG-sized panels (D94): the full landscape sets a 3x scene
  * beside a five-row board and runs a screen-wide ledger of one-line stories with stat columns; the full portrait takes
  * the 3x scene across its width with the QR hung in its corner and a six-row board in two columns; both name the
  * counters and show the gear by its marks. On BWRY ink panels the scene prints its four-ink twin and the hearts, lost
@@ -24,7 +27,7 @@
 import { GLYPHS, glyphRows } from '../art/glyphs'
 import { hudMarkUri } from '../art/hud'
 
-export const TEMPLATE_VERSION = 39
+export const TEMPLATE_VERSION = 40
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -320,7 +323,7 @@ const storyList = (clamp: number, classes: string, size = 16, fit = 60, timeBelo
 /**
  * Pinned framework 3.4 emits its final stats before signalling readiness. Fit the
  * actual rich-text boxes at that point, reserving the footer and following rank
- * line. Only visibility changes; there are no styles, network calls or writes.
+ * line, and trim boards marked `data-fit-rows` to their slot. Only visibility changes; there are no styles, network calls or writes.
  * Scope to this view so another Desk Crawler slot has its own height budget, and
  * to the orientation layout the framework is showing (the other is display: none).
  */
@@ -348,6 +351,29 @@ const fitStories = `<script>
       row.dataset.recapFit = count === 1 || row.getBoundingClientRect().height <= limit ? 'complete' : 'over';
     });
     const layoutBottom = Math.min(footer.getBoundingClientRect().top, layout.getBoundingClientRect().bottom - (parseFloat(getComputedStyle(layout).paddingBottom) || 0));
+    // Boards in a bounded slot (the X half's, under its scene): drop trailing rows, and the rule above each, until the
+    // board ends inside the slot. The hero's own row goes last; the row before it goes first.
+    view.querySelectorAll('[data-fit-rows]').forEach(board => {
+      if (!board.getClientRects().length) return;
+      const rows = Array.from(board.querySelectorAll('[data-rank-row]'));
+      board.classList.remove('hidden');
+      rows.forEach(row => { row.classList.remove('hidden'); if (row.previousElementSibling && row.previousElementSibling.matches('.border--h-30')) row.previousElementSibling.classList.remove('hidden'); });
+      const slot = board.closest('[data-fit-bound]');
+      const bound = Math.min(layoutBottom, slot ? slot.getBoundingClientRect().bottom : layoutBottom);
+      const shown = () => rows.filter(row => !row.classList.contains('hidden'));
+      while (shown().length && board.getBoundingClientRect().bottom > bound + 0.5) {
+        const visible = shown();
+        const own = visible[visible.length - 1].classList.contains('label--inverted') && visible.length > 1;
+        const drop = own ? visible[visible.length - 2] : visible[visible.length - 1];
+        drop.classList.add('hidden');
+        const rule = drop.previousElementSibling && drop.previousElementSibling.matches('.border--h-30') ? drop.previousElementSibling : drop.nextElementSibling && drop.nextElementSibling.matches('.border--h-30') ? drop.nextElementSibling : null;
+        if (rule) rule.classList.add('hidden');
+      }
+      // A slot too short for the caption and one row (the longest names wrap the header) shows no board at all. The
+      // X-only boards use plain rules, since lg:block would outrank hidden.
+      if (!shown().length || board.getBoundingClientRect().bottom > bound + 0.5) board.classList.add('hidden');
+      board.dataset.rowCount = String(board.classList.contains('hidden') ? 0 : shown().length);
+    });
     view.querySelectorAll('[data-story-list]').forEach(list => {
       if (!list.getClientRects().length) return;
       const entries = Array.from(list.children).filter(entry => entry.classList.contains('block'));
@@ -570,8 +596,8 @@ const oriented = (classes: string, landscape: string, portrait: string, bar: str
 </div>${portraitBar.replace('class="title_bar"', 'class="title_bar landscape:hidden"')}`
 
 /** A standing companion QR beside its caption, for the narrow portrait columns. */
-const qrFooter = (scale = 3, largeScale = 4) => `
-  {% if qr_base != "" or companion_qr_base != "" %}<div class="no-shrink flex flex--row flex--left flex--center-y gap--small stretch-x" data-companion-qr="true">
+const qrFooter = (scale = 3, largeScale = 4, classes = '') => `
+  {% if qr_base != "" or companion_qr_base != "" %}<div class="${classes}no-shrink flex flex--row flex--left flex--center-y gap--small stretch-x" data-companion-qr="true">
     {% if qr_base != "" %}<div class="no-shrink">${qrImage(scale, largeScale)}</div><span class="label lg:title--small grow" data-clamp="3">{{ qr_label | escape }}</span>
     {% else %}<div class="no-shrink">${qrImage(scale, largeScale, 'companion_qr_base')}</div><span class="label lg:title--small grow">Your bag</span>{% endif %}
   </div>{% endif %}`
@@ -620,35 +646,136 @@ const fullPortrait = `
   {% unless attention %}${recapRibbon}{% endunless %}
   {% endif %}`
 
+/**
+ * The X's own arrangements of the half, side and quarter views (D95). The OG keeps its arrangements, each top-level
+ * block marked `lg:hidden`; these blocks are `hidden lg:block` and lay their content out in an inner flex box, since
+ * `lg:flex` would bring the framework's default gap over the gap classes. They borrow the X full layout's pieces: the
+ * named header, the hearts and XP with their counts, the gear line, a ledger of stories and a ruled board.
+ */
+const xBlock = (inner: string, classes = 'no-shrink') => `<div class="hidden lg:block ${classes} stretch-x">${inner}</div>`
+/**
+ * The hero's name and level with the attack and defense marks. Narrow columns clamp a name longer than `clamp`
+ * characters to one line; shorter names never clamp, since the clamp measures before the row settles.
+ */
+const xName = (clamp = 0, size = 'title') => nameRow(`<span class="${size} ${clamp ? `w--min-0" data-clamp="{% if hero_name.size > ${clamp} %}1{% else %}0{% endif %}" data-clamp-lg="{% if hero_name.size > ${clamp} %}1{% else %}0{% endif %}` : 'no-shrink'}">{{ hero_name | escape }}, level {{ level }}</span>`)
+/**
+ * The full layout's header: hero, status and named counters beside the hearts, XP and gear, with a code at the end. As
+ * in the full portrait (D93) the HUD slot grows from no basis with a minimum that holds a hearts row and its count, so
+ * only the longest names move it under the hero.
+ */
+const xHeader = (code: string) => `<div class="flex flex--row flex--top gap--large stretch-x">
+      <div class="grow w--min-0"><div class="flex flex--row flex--wrap flex--top flex--between gap--large" data-hero-header="x">
+        <div class="no-shrink flex flex--col flex--left gap--xsmall">${xName()}${statusLine(2, 56)}${heroCounters}</div>
+        <div class="grow basis--0 w--min-80 flex flex--col flex--right" data-hud-slot="true"><div class="pt--2 flex flex--col flex--left gap--xsmall" data-hud-block="true">${hudWide(false)}${gearLine}</div></div>
+      </div></div>${code}
+    </div>`
+/** A column's stacked header: the name line, status and named counters, then the hearts, XP and gear lines. */
+const xStackedHeader = (clamp: number) => `<div class="flex flex--col flex--left flex--stretch-x gap--xsmall stretch-x" data-hero-header="x">${xName(clamp)}${statusLine(2, 40)}${heroCounters}${hearts(true)}${xpTicks()}${gearLine}</div>`
+/**
+ * The X header's code: the urgent code with its label when there is one, else the standing bag code. Unlabelled, as
+ * in the full layout's corner (D88).
+ */
+const xCode = `{% if qr_base != "" or companion_qr_base != "" %}<div class="no-shrink flex flex--col flex--center-x gap--xsmall w--[96px]" data-companion-qr="true">{% if qr_base != "" %}<img class="image" src="{{ qr_base }}/3.png" alt=""><span class="title--small text--center" data-clamp="2">{{ qr_label | escape }}</span>{% else %}<img class="image" src="{{ companion_qr_base }}/3.png" alt="">{% endif %}</div>{% endif %}`
+/** The standing bag code hung in a scene's corner, like the full portrait's (D93); an urgent code keeps its own block. */
+const xSceneCode = `{% if qr_base == "" and companion_qr_base != "" %}<div class="absolute top--0 right--0 flex bg--black p--1" data-companion-qr="true"><img class="image" src="{{ companion_qr_base }}/3.png" alt=""></div>{% endif %}`
+const xScene = (field: SceneField, code = '') => `{% if ${field} != "" %}<div class="relative no-shrink" data-scene-row="x"><img class="image" src="{{ ${field} }}" alt="">${code}</div>{% endif %}`
+/**
+ * A ruled board of up to `limit` rows under its caption; a hero below them takes the last row's place. The X keeps
+ * whole rows at its size, so the narrow columns clamp the name rather than the score.
+ */
+const xBoard = (limit: number, fit = false) => `<div class="flex flex--col flex--left flex--top flex--stretch-x gap--xsmall stretch-x" data-board-column="x"${fit ? ' data-fit-rows="true"' : ''}>
+      ${rankCaption}
+      {% unless rank %}{% if rank_status == "dormant" %}<span class="title--small">Not ranked while paused</span>{% else %}<span class="title--small">Ranking within the hour</span>{% endif %}{% endunless %}
+      {% assign board_rows = top10 | default: top5 %}{% assign board_limit = ${limit} %}{% if rank and rank > ${limit} %}{% assign board_limit = ${limit - 1} %}{% endif %}
+      {% for row in board_rows limit: board_limit %}{% unless forloop.first %}<div class="border--h-30 stretch-x"></div>{% endunless %}${rankRow('row.rank', 'row.score', '', 'rank and row.rank == rank')}{% endfor %}
+      {% if rank and rank > ${limit} %}<div class="border--h-30 stretch-x"></div>${rankRow('rank', 'leaderboard_score', '', 'true')}{% endif %}
+    </div>`
+/**
+ * The stories under the attention line, the recap (capped at `recapLines`, none for 0) and the badge. `inline` puts each
+ * story on one line with stat columns.
+ */
+const xLedger = (inline: boolean, recapLines: number) => `<div class="grow w--min-0 h--full flex flex--col flex--left flex--top flex--stretch-x gap--small" data-ledger="x">
+      {% if attention %}${attention('title--small', 3)}{% else %}${attention('title--small', 3)}${recapLines ? recapBlock(recapLines) : ''}{% endif %}
+      {% unless recap %}${celebrationBadge('title--small')}{% endunless %}${inline ? storyList(2, 'title', 24, 64, false, 'lg') : storyList(2, 'title', 24, 50)}
+    </div>`
+
+/**
+ * Half, landscape on the X: the full header, a rune rule, then the scene and a board beside a one-line ledger. The board
+ * shows up to three rows, fitted to its slot, which the recap ribbon or a taller header can shorten.
+ */
+const xHalfWide = `
+  ${xBlock(xHeader(xCode))}
+  ${xBlock(divider)}
+  ${xBlock(`<div class="flex flex--row flex--top gap--large h--full stretch-x">
+    <div class="no-shrink w--80 flex flex--col flex--top gap--small">${xScene('scene_url_small')}${xBoard(3, true)}</div>
+    ${xLedger(true, 0)}
+  </div>`, 'grow h--min-0" data-fit-bound="true')}`
+
+/**
+ * Half, portrait on the X: the full header, the scene (the bag code hung in its corner, so the header keeps the width
+ * for the hero and the HUD side by side) beside a board, a rune rule, then a one-line ledger. An urgent code takes the
+ * header's end with its label.
+ */
+const xHalfTall = `
+  ${xBlock(xHeader(`{% if qr_base != "" %}${xCode}{% endif %}`))}
+  ${xBlock(`<div class="flex flex--col gap--small stretch-x"><div class="flex flex--row flex--top gap--large stretch-x">${xScene('scene_url_medium', xSceneCode)}<div class="grow w--min-0">${xBoard(5)}</div></div>${divider}</div>`)}
+  ${xBlock(`<div class="flex flex--col flex--stretch-x h--full stretch-x">${xLedger(true, 1)}</div>`, 'grow h--min-0')}`
+
+/**
+ * Side on the X: a stacked header, the scene with the bag code hung in its corner (an urgent code sits under it with
+ * its label), a rune rule, the stories, then the board. The portrait column, narrower, takes the 2x scene and closes
+ * with the bag code instead.
+ */
+const xSide = (portrait: boolean) => `
+  ${xBlock(xStackedHeader(portrait ? 10 : 0))}
+  ${xBlock(`<div class="flex flex--col flex--center-x gap--small stretch-x">${portrait ? xScene('scene_url_small') : xScene('scene_url_medium', xSceneCode)}${portrait ? '' : `{% if qr_base != "" %}${bagQr(3, 3)}{% endif %}`}${divider}</div>`)}
+  ${xBlock(`<div class="flex flex--col flex--stretch-x h--full stretch-x">${xLedger(false, 3)}</div>`, 'grow h--min-0')}
+  ${xBlock(xBoard(5))}
+  ${portrait ? xBlock(qrFooter(3, 3)) : ''}`
+
+/**
+ * Quarter on the X: the name line and status beside the bag code, the hearts and XP with their counts under them, then
+ * the stories across the width. The landscape's tiny scene beside the code is gone; the portrait closes with the code.
+ */
+const xQuadrant = (portrait: boolean) => `
+  ${xBlock(portrait
+    ? `<div class="flex flex--col flex--left flex--stretch-x gap--xsmall stretch-x" data-hero-header="x">${xName(10, 'title--small')}${hearts(true)}${xpTicks()}</div>`
+    : `<div class="flex flex--row flex--top gap--medium stretch-x"><div class="grow w--min-0 flex flex--col flex--left flex--stretch-x gap--xsmall" data-hero-header="x">${xName(14, 'title--small')}${statusLine(1, 40)}${hearts(true)}${xpTicks()}</div>${xCode}</div>`)}
+  ${xBlock(`<div class="flex flex--col flex--stretch-x h--full stretch-x"><div class="grow w--min-0 h--full flex flex--col flex--left flex--top flex--stretch-x gap--xsmall" data-ledger="x">
+      {% if attention %}${attention('title--small', 3)}{% else %}${attention('title--small', 3)}${recapBlock(2)}{% endif %}
+      ${storyList(2, 'title--small', 16, 40, portrait)}
+    </div></div>`, 'grow h--min-0')}
+  ${portrait ? xBlock(qrFooter(3, 3)) : ''}`
+
 /** Side, portrait: a narrow column. Hero and health first, the stories take the height, the companion QR closes the column. */
 const halfVerticalPortrait = `
   {% if status == "unlinked" or first_run %}${welcome('halfVertical')}
   {% else %}
-  <div class="no-shrink flex flex--col flex--left flex--stretch-x gap--xsmall stretch-x">
+  <div class="lg:hidden no-shrink flex flex--col flex--left flex--stretch-x gap--xsmall stretch-x">
     <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
     ${statusLine(2, 24)}${hearts(false)}${xpTicks()}${counters()}
   </div>
-  <div class="no-shrink stretch-x"><div class="hidden lg:block">${scene('scene_url_small')}</div>${divider}</div>
-  <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--small stretch-x">
+  <div class="lg:hidden no-shrink stretch-x">${divider}</div>
+  <div class="lg:hidden grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--small stretch-x">
     {% if attention %}${attention('label lg:title--small', 4)}{% else %}${attention('label lg:title--small', 4)}${recapBlock()}{% endif %}
     {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(3, 'label lg:title--small', 16, 26, true)}
   </div>
-  ${qrFooter()}
+  ${qrFooter(3, 4, 'lg:hidden ')}${xSide(true)}
   {% endif %}`
 
 /** Quarter, portrait: hero line, the stories, then the companion QR across the bottom. */
 const quadrantPortrait = `
   {% if status == "unlinked" or first_run %}${welcome('narrowColumn')}
   {% else %}
-  <div class="no-shrink flex flex--col flex--left flex--stretch-x gap--xsmall stretch-x">
-    <span class="label lg:title--small" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
+  <div class="lg:hidden no-shrink flex flex--col flex--left flex--stretch-x gap--xsmall stretch-x">
+    <span class="label" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
     ${hearts(false)}
   </div>
-  <div class="grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small stretch-x">
+  <div class="lg:hidden grow h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall stretch-x">
     {% if attention %}${attention('label lg:title--small', 3)}{% else %}${attention('label lg:title--small', 3)}${recapBlock(2)}{% endif %}
     ${storyList(3, 'label lg:title--small', 16, 24, true)}
   </div>
-  ${qrFooter()}
+  ${qrFooter(3, 4, 'lg:hidden ')}${xQuadrant(true)}
   {% endif %}`
 
 /**
@@ -658,20 +785,20 @@ const quadrantPortrait = `
 const halfVerticalBody = (withScene: boolean) => `
   {% if status == "unlinked" or first_run %}${welcome(withScene ? 'halfVertical' : 'shortColumn')}
   {% else %}
-  <div class="grid no-shrink stretch-x gap--small">
-    <div class="col--span-8 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
-      <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
+  <div class="lg:hidden grid no-shrink stretch-x gap--small">
+    <div class="col--span-8 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall">
+      <span class="title title--small" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
       ${statusLine(2, 42)}${hearts(false)}
-      <div class="hidden lg:block stretch-x">${xpTicks()}</div>
       ${counters()}
     </div>
     <div class="col--span-4 flex flex--col flex--center-x flex--top">${bagQr()}</div>
   </div>
-  <div class="no-shrink stretch-x">${withScene ? `<div class="hidden lg:block">${scene('scene_url_small')}</div>` : ''}${divider}</div>
-  <div class="grow h--full h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--small pt--2">
+  <div class="lg:hidden no-shrink stretch-x">${divider}</div>
+  <div class="lg:hidden grow h--full h--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--small pt--2">
     {% if attention %}${attention('label lg:title--small', 3)}{% else %}${attention('label lg:title--small', 3)}${recapBlock()}{% endif %}
     {% unless recap %}${celebrationBadge('label lg:title--small')}{% endunless %}${storyList(2, 'title title--small lg:title', 24, 50)}
   </div>
+  ${withScene ? xSide(false) : xHalfTall}
   {% endif %}
 `
 
@@ -728,19 +855,17 @@ export const markupFull = `${glyphAssigns([16, 24])}${HUD_ASSIGNS}${oriented('la
 export const markupHalfHorizontal = `${glyphAssigns([16, 24])}${HUD_ASSIGNS}${oriented('layout layout--col layout--top layout--stretch-x gap--small', `
   {% if status == "unlinked" or first_run %}${welcome('halfHorizontal')}
   {% else %}
-  <div class="grid grow h--full h--min-0 stretch-x gap--medium">
-    <div class="col--span-4 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
-      <span class="title title--small lg:title" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
+  <div class="lg:hidden grid grow h--full h--min-0 stretch-x gap--medium">
+    <div class="col--span-4 flex flex--col flex--left flex--top flex--stretch-x gap--xsmall">
+      <span class="title title--small" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
       ${statusLine(2, 36)}${hearts(false)}
-      <div class="hidden lg:block stretch-x">${xpTicks()}</div>
       ${counters()}
-      <div class="hidden lg:block">${scene('scene_url_small')}</div>
     </div>
     <div class="col--span-6 h--full flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
       ${attention('label lg:title--small', 3)}${storyList(2, 'label lg:title--small', 16, 62)}
     </div>
     <div class="col--span-2 flex flex--col flex--center-x flex--top">${bagQr()}</div>
-  </div>
+  </div>${xHalfWide}
   {% unless attention %}${recapRibbon}{% endunless %}
   {% endif %}
 `, halfHorizontalPortrait, titleBar)}${fitStories}`
@@ -750,19 +875,17 @@ export const markupHalfVertical = `${glyphAssigns([16, 24])}${HUD_ASSIGNS}${orie
 export const markupQuadrant = `${glyphAssigns([16])}${HUD_ASSIGNS}${oriented('layout layout--col layout--top layout--stretch-x gap--small', `
   {% if status == "unlinked" or first_run %}${welcome('quadrant')}
   {% else %}
-    <div class="no-shrink flex flex--row flex--left flex--center-y gap--small stretch-x">
-      <span class="label lg:title--small grow w--min-0" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
+    <div class="lg:hidden no-shrink flex flex--row flex--left flex--center-y gap--small stretch-x">
+      <span class="label grow w--min-0" data-clamp="1">{{ hero_name | escape }}, level {{ level }}</span>
       ${hearts(false)}
     </div>
-    <div class="grid grow h--full h--min-0 stretch-x gap--small">
-      <div class="col--span-8 h--full flex flex--col flex--left flex--top flex--stretch-x gap--xsmall lg:gap--small">
+    <div class="lg:hidden grid grow h--full h--min-0 stretch-x gap--small">
+      <div class="col--span-8 h--full flex flex--col flex--left flex--top flex--stretch-x gap--xsmall">
         {% if attention %}${attention('label lg:title--small', 3)}{% else %}${attention('label lg:title--small', 3)}${recapBlock(2)}{% endif %}
         ${storyList(2, 'label lg:title--small', 16, 40)}
       </div>
-      <div class="col--span-4 flex flex--col flex--center-x flex--top gap--small">${bagQr()}
-        <div class="hidden lg:block stretch-x">${scene('scene_url_small')}</div>
-      </div>
-    </div>
+      <div class="col--span-4 flex flex--col flex--center-x flex--top gap--small">${bagQr()}</div>
+    </div>${xQuadrant(false)}
   {% endif %}
 `, quadrantPortrait, titleBar, titleBarNarrow)}${fitStories}`
 

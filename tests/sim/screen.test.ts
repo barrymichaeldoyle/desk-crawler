@@ -61,8 +61,10 @@ describe('device catch-up summary (D54)', () => {
       expect(text).toContain('Last 12 hours')
       // Each fact behind its own mark (v35); a 'none' item has text but no mark.
       for (const item of recap.items) expect(text).toContain(item.t)
-      // Landscape and portrait arrangements each carry the recap: three marks apiece.
-      expect(html.match(/data-recap-item="true"><img /g)).toHaveLength(6)
+      // Every arrangement that carries the recap (landscape and portrait, the OG's and the X's) draws three marks.
+      const recapRows = html.match(/data-recap-items="/g)!.length
+      expect(recapRows).toBeGreaterThanOrEqual(2)
+      expect(html.match(/data-recap-item="true"><img /g)).toHaveLength(recapRows * 3)
       expect(text).toContain('Unplugged a Cable Serpent.')
       for (const change of ['+14\u00a0XP', '+5\u00a0gold', '−12\u00a0HP']) expect(html).toMatch(new RegExp(`label--outline[^"]*">${change.replace('+', '\\+')}<`))
       // Ink panels print lost HP in red and found gold on yellow (D94).
@@ -277,6 +279,47 @@ describe('full layout', () => {
   })
 })
 
+describe('X half, side and quarter arrangements (D95)', () => {
+  const ten = Array.from({ length: 10 }, (_, i) => ({ rank: i + 1, name: `P${i + 1}`, hero_name: `H${i + 1}`, level: 5, score: 2000 - i * 100 }))
+  const vars = { ...payload(), rank: 3, leaderboard_score: 1800, leaderboard_cohort_label: 'Levels 4-7', top10: ten, owner_name: 'P3', companion_qr_base: 'https://art.test/art/qr/v3/bag', ...Object.fromEntries(['scene_url', 'scene_url_small', 'scene_url_medium', 'scene_url_large'].map((field, i) => [field, `https://art.test/art/scene/${i}.png`])) }
+  const views = async (markup: string) => {
+    const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, vars)
+    const [landscape, portrait] = html.split('landscape:hidden') as [string, string]
+    return { landscape, portrait }
+  }
+
+  it('gives the half views the full header, a scene, a ruled board and a one-line ledger', async () => {
+    const { landscape, portrait } = await views(screenMarkup.markup_half_horizontal)
+    for (const view of [landscape, portrait]) {
+      expect(view).toContain('data-hero-header="x"')
+      expect(view).toContain('data-scene-row="x"')
+      expect(view).toContain('data-story-chips-inline="true"')
+      expect(view).toMatch(/data-counters="words"/)
+    }
+    // Three rows under the landscape scene, five beside the portrait scene.
+    expect(landscape.split('data-board-column="x"')[1]!.match(/data-rank-row=/g)).toHaveLength(3)
+    expect(portrait.split('data-board-column="x"')[1]!.match(/data-rank-row=/g)).toHaveLength(5)
+  })
+
+  it('hangs the bag code in the side scene and closes the column with a board', async () => {
+    const { landscape, portrait } = await views(screenMarkup.markup_half_vertical)
+    expect(landscape).toMatch(/data-scene-row="x"><img[^>]*><div class="absolute top--0 right--0 flex bg--black p--1" data-companion-qr="true">/)
+    for (const view of [landscape, portrait]) expect(view.split('data-board-column="x"')[1]!.match(/data-rank-row=/g)).toHaveLength(5)
+    // The narrower portrait column keeps its code at the foot, under the board.
+    expect(portrait.lastIndexOf('data-companion-qr')).toBeGreaterThan(portrait.indexOf('data-board-column="x"'))
+  })
+
+  it('gives the quarter the HP and XP counts, with the code beside the name in landscape', async () => {
+    const { landscape, portrait } = await views(screenMarkup.markup_quadrant)
+    for (const view of [landscape, portrait]) {
+      const x = view.slice(view.indexOf('data-hero-header="x"'))
+      expect(x).toContain('data-hp-count="true"')
+      expect(x).toContain('data-xp-count="true"')
+    }
+    expect(landscape.slice(landscape.indexOf('data-hero-header="x"'), landscape.indexOf('data-ledger="x"'))).toContain('data-companion-qr="true"')
+  })
+})
+
 describe('rich text and status times (D45)', () => {
   it('sets marked names in bold and keeps other text escaped', async () => {
     const vars = payload() as { log: Array<Record<string, unknown>> } & Record<string, unknown>
@@ -373,7 +416,7 @@ describe('log lines (D44)', () => {
 
   it('celebrates a big moment with a badge', async () => {
     expect(await render({ ...payload(), celebration: 'Level up! Now level 6' })).toMatch(/label--inverted bg--red 1bit:bg--black 2bit:bg--black 4bit:bg--black">Level up! Now level 6</)
-    expect(await render(payload())).not.toContain('label--inverted')
+    expect(await render(payload())).not.toMatch(/class="[^"]*label--inverted/)
   })
 
   it('celebrates the longest achievement name on every layout and gives achievement lines a glyph', async () => {
@@ -454,11 +497,14 @@ describe('HUD hearts and counters (D72)', () => {
   it('fills ten hearts in half steps from the real numbers in every layout', async () => {
     for (const markup of Object.values(screenMarkup)) {
       const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, payload())
-      // 118/148 → 15.9 halves → 16: eight full hearts and two empty ones, in both the landscape and portrait arrangements.
+      // 118/148 → 15.9 halves → 16: eight full hearts and two empty ones, in every arrangement (landscape and portrait,
+      // and in the half, side and quarter views the OG's and the X's).
       expect(html).toContain('data-hearts="16"')
-      expect([count(html, full), count(html, half), count(html, empty)]).toEqual([16, 0, 4])
+      const rows = html.match(/data-hearts="/g)!.length
+      expect(rows).toBeGreaterThanOrEqual(2)
+      expect([count(html, full), count(html, half), count(html, empty)]).toEqual([8 * rows, 0, 2 * rows])
       const odd = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, { ...payload(), hp: 75, max_hp: 100 })
-      expect([count(odd, full), count(odd, half), count(odd, empty)]).toEqual([14, 2, 4])
+      expect([count(odd, full), count(odd, half), count(odd, empty)]).toEqual([7 * rows, rows, 2 * rows])
     }
   })
 
@@ -485,10 +531,13 @@ describe('HUD hearts and counters (D72)', () => {
     expect(ticks(await render({ ...payload(), xp_pct: 75 }))).toEqual([14, 2, 4])
     expect(ticks(await render({ ...payload(), xp_pct: 0 }))).toEqual([0, 0, 20])
     expect(ticks(await render({ ...payload(), xp_pct: 100 }))).toEqual([20, 0, 0])
-    // Narrow columns keep the ticks on the X only, except the portrait side, which has the height for them.
-    const half = await new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup.markup_half_horizontal, payload())
-    expect(half).toMatch(/hidden lg:block stretch-x">{?[^]*?data-xp-ticks="6"/)
-    expect(await new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup.markup_quadrant, payload())).not.toContain('data-xp-ticks')
+    // The half and quarter views draw the ticks in the X's arrangements only (D95); the OG's columns have no room.
+    for (const markup of [screenMarkup.markup_half_horizontal, screenMarkup.markup_quadrant]) {
+      const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(markup, payload())
+      const og = html.split(/<div class="hidden lg:block [^"]*stretch-x">/)[0]!
+      expect(html).toContain('data-xp-ticks="6"')
+      expect(og).not.toContain('data-xp-ticks')
+    }
   })
 
   it('shows attack and defense beside the name, the HP count alone after the hearts, and the bag beside the potions (D88)', async () => {

@@ -319,3 +319,5 @@ D24–D28 resolve final pacing/content/recap/incident/recovery-policy recommenda
 2026-10-08, D95 rollout: the first two Workers builds (`6e8c0ea`, retry `1aa0140`) failed because the bulk preview render test passed vitest's 5-second default on the build machine; with each template parsed once and a 30-second budget (`8d11343`) the build passed, so production carries template v40.
 
 2026-10-08, D97: Barry asked for the X half (top/bottom) view to show the scene at the top between the hero details and the code, with the hearts, XP and gear moved down and a vertical rule between the stories and the details. Template v41 gives the landscape half a thin details column (the armor on its own line) beside a vertical rule, with the scene and code over the rune rule and a wider ledger ([evidence](evidence/x-half-details-column.md)).
+
+2026-10-08, D97 rollout: deployed from `3074cae`; lint and the Workers build passed, so production carries template v41.

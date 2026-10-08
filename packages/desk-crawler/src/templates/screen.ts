@@ -1,5 +1,6 @@
 /**
- * Four self-contained TRMNL layouts. Template v47 moves the OG full landscape's code into the view's corner as a smaller
+ * Four self-contained TRMNL layouts. Template v48 adds the raid glyph (a burglar's mask) for raid stories and the recap's
+ * raid fact, and widens the ledger's gold column from 78 to 92 pixels so a raid's four-digit gold swing fits (D110). Template v47 moves the OG full landscape's code into the view's corner as a smaller
  * corner-cut code to the `/dc` short link, and runs the gear line on under it (D108). Template v46 closes the X half's details column to small gaps, so its board keeps a
  * third row above the recap ribbon (D104). Template v45 moves the X side landscape's code to the header's top-right corner,
  * names its gear by the attack and defense marks, shows four board rows and sets the recap as a ribbon at the foot,
@@ -35,7 +36,7 @@
 import { GLYPHS, glyphRows } from '../art/glyphs'
 import { hudMarkUri } from '../art/hud'
 
-export const TEMPLATE_VERSION = 47
+export const TEMPLATE_VERSION = 48
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -290,7 +291,7 @@ const chipCell = (field: string, kind: string, width: string) => `<span class="f
  * A story without changes keeps the whole line, and one with only other changes ("No effect") reserves no stat columns.
  * Units arrive joined by a no-break space, so the last word after it names the stat.
  */
-const chipColumns = (visibility = 'hidden lg:flex') => `{% assign chip_xp = "" %}{% assign chip_gold = "" %}{% assign chip_hp = "" %}{% assign chip_other = "" %}{% for change in line_changes %}{% assign chip_unit = change | split: "\u00a0" | last %}{% if chip_unit == "XP" %}{% assign chip_xp = change %}{% elsif chip_unit == "gold" %}{% assign chip_gold = change %}{% elsif chip_unit == "HP" %}{% assign chip_hp = change %}{% else %}{% capture chip_other %}{{ chip_other }}${chip('change')}{% endcapture %}{% endif %}{% endfor %}<span class="${visibility} flex--row flex--center-y flex--right gap--xsmall no-shrink" data-story-chips-inline="true">{{ chip_other }}{% if chip_xp != "" or chip_gold != "" or chip_hp != "" %}${chipCell('chip_xp', 'xp', 'w--[66px]')}${chipCell('chip_gold', 'gold', 'w--[78px]')}${chipCell('chip_hp', 'hp', 'w--[66px]')}{% endif %}</span>`
+const chipColumns = (visibility = 'hidden lg:flex') => `{% assign chip_xp = "" %}{% assign chip_gold = "" %}{% assign chip_hp = "" %}{% assign chip_other = "" %}{% for change in line_changes %}{% assign chip_unit = change | split: "\u00a0" | last %}{% if chip_unit == "XP" %}{% assign chip_xp = change %}{% elsif chip_unit == "gold" %}{% assign chip_gold = change %}{% elsif chip_unit == "HP" %}{% assign chip_hp = change %}{% else %}{% capture chip_other %}{{ chip_other }}${chip('change')}{% endcapture %}{% endif %}{% endfor %}<span class="${visibility} flex--row flex--center-y flex--right gap--xsmall no-shrink" data-story-chips-inline="true">{{ chip_other }}{% if chip_xp != "" or chip_gold != "" or chip_hp != "" %}${chipCell('chip_xp', 'xp', 'w--[66px]')}${chipCell('chip_gold', 'gold', 'w--[92px]')}${chipCell('chip_hp', 'hp', 'w--[66px]')}{% endif %}</span>`
 
 /**
  * One story as a ledger line: the glyph, the story, and its HH:MM at the end of the line; the stat changes follow as

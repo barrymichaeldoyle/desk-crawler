@@ -9,6 +9,8 @@ import { maxHp } from '@trmnl-games/desk-crawler/sim/core/stats'
 import type { ContentCatalog, HeroState, IncomingRaid, ItemSnapshot, RaidTarget, SimulationInput, StanceId, StreamSeeds } from '@trmnl-games/desk-crawler/sim/core/types'
 import { simulateWorld } from '../../tools/balance/raids'
 import { POLICIES } from '../../tools/balance/run'
+import { activityRecap, recapPeriod } from '@trmnl-games/desk-crawler/payload'
+import { logPresentation } from '@trmnl-games/desk-crawler/log'
 import { baseState, seeds } from './helpers'
 
 const withRaid = (n: number): StreamSeeds => ({ ...seeds(n), raid: (n * 2891336453 + 7) >>> 0 })
@@ -183,4 +185,27 @@ describe('desk raids harness (D110 R1)', () => {
     expect(Object.values(report.pairings).reduce((total, p) => total + p.raids, 0)).toBe(runs.reduce((total, run) => total + run.launches, 0))
     expect(report.gold.moved).toBeGreaterThan(0)
   }, 30_000)
+})
+
+describe('desk raids on the device (D110 R4)', () => {
+  it('reports raids in the recap from both sides and counts a lethal one as a knockout', () => {
+    const period = recapPeriod(Date.UTC(2026, 9, 6, 8), null)
+    const raid = (won: boolean, outcome: 'survived' | 'death', minutes: number) => ({
+      at: period.to - minutes * 60_000,
+      deltas: { xpEarned: 0, gold: won ? 14 : -14, hp: -9 },
+      detail: { outcome: { variant: 'raid' as const, role: 'target' as const, rivalHeroId: 'r', rivalName: 'Quill', won, gold: 14, hpLost: 9, raidTick: 1, outcome }, levelsGained: 0, heldFind: false },
+    })
+    const mixed = activityRecap([raid(true, 'survived', 10), raid(false, 'death', 20), raid(true, 'survived', 30)], period, contentV7)
+    expect(mixed.items).toContainEqual({ k: 'raid', t: '3 raids, 2 won' })
+    expect(mixed.totals.knockouts).toBe(1)
+    expect(activityRecap([raid(true, 'survived', 10)], period, contentV7).items).toContainEqual({ k: 'raid', t: '1 raid won' })
+    expect(activityRecap([raid(false, 'survived', 10), raid(false, 'survived', 20)], period, contentV7).items).toContainEqual({ k: 'raid', t: '2 raids lost' })
+  })
+
+  it('shortens five-figure gold on the device only, so the ledger column holds it', () => {
+    const entry = { summary: '[[Quill]] made off with the petty cash.', kind: 'raid', deltas: { xpEarned: 0, gold: -12_480, hp: -30 } }
+    expect(logPresentation(entry, { compactGold: true }).changes).toEqual(['−12k gold', '−30 HP'])
+    expect(logPresentation(entry).changes).toEqual(['−12480 gold', '−30 HP'])
+    expect(logPresentation({ ...entry, deltas: { ...entry.deltas, gold: -1240 } }, { compactGold: true }).changes[0]).toBe('−1240 gold')
+  })
 })

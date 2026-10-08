@@ -47,7 +47,7 @@ export interface ActivityEntry {
 
 /** Read-only, deterministic digest of recorded outcomes within one completed period. Never infer facts from jokes. */
 export function activityRecap(entries: readonly ActivityEntry[], period: RecapPeriod, content: ContentCatalog, truncated = false) {
-  const totals = { xp: 0, gold: 0, wins: 0, gear: 0, potions: 0, breaks: 0, levels: 0, knockouts: 0, revivals: 0, rareFinds: 0, elites: 0, jackpots: 0 }
+  const totals = { xp: 0, gold: 0, wins: 0, gear: 0, potions: 0, breaks: 0, levels: 0, knockouts: 0, revivals: 0, rareFinds: 0, elites: 0, jackpots: 0, raidsWon: 0, raidsLost: 0 }
   const arrivals = new Set<string>()
   let heldFind = false
   let events = 0
@@ -83,8 +83,16 @@ export function activityRecap(entries: readonly ActivityEntry[], period: RecapPe
     else if (outcome.variant === 'trap' && outcome.outcome === 'death') totals.knockouts++
     else if (outcome.variant === 'revival') totals.revivals++
     else if (outcome.variant === 'travel' && outcome.phase === 'arrive') arrivals.add(outcome.toBiomeId)
+    else if (outcome.variant === 'raid') {
+      // D110: both sides of a raid count, raiding or defending; a lethal one is also a knockout.
+      if (outcome.won) totals.raidsWon++
+      else totals.raidsLost++
+      if (outcome.outcome === 'death') totals.knockouts++
+    }
   }
   const plural = (count: number, one: string, many = `${one}s`) => `${count} ${count === 1 ? one : many}`
+  const raids = totals.raidsWon + totals.raidsLost
+  const raidFact = !raids ? null : !totals.raidsLost ? plural(totals.raidsWon, 'raid won', 'raids won') : !totals.raidsWon ? plural(totals.raidsLost, 'raid lost', 'raids lost') : `${plural(raids, 'raid')}, ${totals.raidsWon} won`
   const activity = [
     totals.wins ? plural(totals.wins, 'fight won', 'fights won') : null,
     totals.gear ? plural(totals.gear, 'gear find') : null,
@@ -96,6 +104,7 @@ export function activityRecap(entries: readonly ActivityEntry[], period: RecapPe
     heldFind ? 'Bag filled up' : null,
     totals.knockouts ? `${plural(totals.knockouts, 'knockout')}${totals.revivals ? ` · ${plural(totals.revivals, 'revival')}` : ''}` : totals.revivals ? plural(totals.revivals, 'revival') : null,
     totals.levels ? `Gained ${plural(totals.levels, 'level')}` : null,
+    raidFact,
     totals.rareFinds ? plural(totals.rareFinds, 'rare find') : null,
     ...[...arrivals].map(id => `Reached ${content.biomes.find(biome => biome.id === id)?.name ?? 'a new area'}`),
     totals.elites ? plural(totals.elites, 'elite defeated', 'elites defeated') : null,
@@ -115,6 +124,7 @@ export function activityRecap(entries: readonly ActivityEntry[], period: RecapPe
     heldFind ? { k: 'loot', t: 'Bag full' } : null,
     totals.knockouts ? { k: 'death', t: plural(totals.knockouts, 'knockout') } : null,
     totals.revivals ? { k: 'revive', t: plural(totals.revivals, 'revival') } : null,
+    raidFact ? { k: 'raid', t: raidFact } : null,
     totals.xp ? { k: 'xp', t: `+${totals.xp} XP` } : null,
     totals.gold ? { k: 'coin', t: `${totals.gold} gold` } : null,
     totals.wins ? { k: 'sword', t: plural(totals.wins, 'win') } : null,

@@ -97,3 +97,21 @@ The production switch to v7 is held until R3 (companion) and R4 (device) can sho
 - Raid lines no longer carry amounts. The first phone capture showed the log's change mapper (D48) cutting "Left with 14 gold." down to "Left with gold.", so the v7 lines were rewritten without numbers and the amounts appear only as change chips. Masked rivals now read "Hidden player", the leaderboards' wording, because "A coworker" read as a name in mid-sentence.
 - Phone check at 390×844 with the companion fixtures harness (`?raids=1` adds a record, five raids and raid log lines, including a 21-character name and a four-digit loss): the card, stance line and filtered log fit without horizontal overflow and the page logs no errors. Without raids the card stays hidden.
 - Tests: a Convex test checks that a raid line keeps the rival's bold name until that rival renames, then reads "Hidden player"; the simulator test checks that raid summaries carry no digits.
+
+## R4 device (template v48)
+
+- **Glyph and recap:** the `raid` glyph is a burglar's mask, shared with the companion. The recap counts raids from both sides ("3 raids, 2 won", "1 raid won", "2 raids lost", mark `raid`, after knockouts and revivals), and a lethal raid also counts as a knockout.
+- **Scene:** a raid this hero won shows the gold prop; a lost one leaves the room empty.
+- **Name masking:** payload logs mask a renamed or departed rival as "Hidden player".
+- **Gold column:** the first sweep of the raid cases (120 previews) failed 24, all in one place: the one-line ledger's 78-pixel gold column clipped a four-digit swing ("−1240 gold" needs 85–89 pixels). The column is now 92 pixels, and the device's change chips shorten gold from 10,000 to "12k", so a five-figure swing fits too. The companion keeps exact figures.
+- **New preview cases:** `raidLost`, `raidWon` and `raidKnockout`, each with the longest raid line and a 20-character rival; `raidRecap`; and `denseRaid`, a full log of the longest raid line.
+- **Checks:**
+  - Full sweep after the change: 996 previews (every state × OG, X and BWRY × four layouts × both orientations, with the recap), 0 failures ([raid cases](raids-device-results.json)).
+  - Official `pnpm lint:trmnl` passes, and `pnpm crosscheck:trmnl` renders 332 contexts identically in liquidjs and Ruby Liquid.
+  - Unit tests cover the recap fact and the compact gold chip.
+
+## R5 achievements, profile and engagement
+
+- **Achievements:** catalog version 3 appends Office raider (raids won 1 / 10 / 50: Light Fingers, Desk Burglar, Cat Burglar) and Desk defender (raids repelled 1 / 10 / 50: Not Today, Neighbourhood Watch, Fort Knox Desk) under a "Raids" category, 152 ids. A hero behind the catalog gets one full pass on its next evaluation, as with version 2.
+- **Public profile:** the profile projection adds `raids { won, failed, repelled, lost }`, counts only, and the page lists raids won and raiders repelled once the hero has a record. The profile test checks that no rival name or raid gold reaches it.
+- **Engagement:** `admin:engagement` reports raids launched, won, repelled and lost, and how many heroes have raided or been raided. The operations and analytics docs say so. Raids are simulation events, so they add no browser analytics event.

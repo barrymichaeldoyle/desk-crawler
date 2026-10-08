@@ -92,6 +92,8 @@ export const engagement = internalQuery({
       bagCapacity: tally(heroes.map((h) => h.bagCapacity)),
       potionCap: tally(heroes.map((h) => h.potionCap ?? 'default')),
       epicFinds: { total: sum((c) => c.epicFinds), heroes: reached((c) => c.epicFinds) },
+      // D110: raids from both sides; launched minus won is failed raids.
+      raids: { launched: sum((c) => c.raidsLaunched), won: sum((c) => c.raidsWon), repelled: sum((c) => c.raidsRepelled), lost: sum((c) => c.raidsLost), heroesRaiding: reached((c) => c.raidsLaunched), heroesRaided: heroes.filter((h) => (h.counters.raidsRepelled ?? 0) + (h.counters.raidsLost ?? 0) > 0).length },
       analyticsConsent: tally(users.map((u) => (u.analyticsConsent === undefined ? 'unset' : u.analyticsConsent ? 'allowed' : 'declined'))),
     }
   },

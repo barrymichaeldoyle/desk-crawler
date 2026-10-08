@@ -19,6 +19,7 @@ type Profile = {
   adventuringSince: number
   rank: { rank: number; totalPlayers: number } | null
   lifetime: { combatWins: number; itemsFound: number; trips: number; rescues: number; epicFinds: number }
+  raids?: { won: number; failed: number; repelled: number; lost: number }
   achievements: Array<{ id: string; tier: number; name: string; blurb: string; family: string }>
   rarity: { counts: Record<string, number>; totalPlayers: number; scoreAt: number } | null
   achievementCount: number
@@ -68,6 +69,9 @@ function HeroProfile() {
 function Found({ profile }: { profile: Profile }) {
   const since = new Date(profile.adventuringSince).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })
   const rows: Array<[string, number]> = [['Fights won', profile.lifetime.combatWins], ['Items found', profile.lifetime.itemsFound], ['Trips', profile.lifetime.trips], ['Rescues', profile.lifetime.rescues], ['Epic finds', profile.lifetime.epicFinds]]
+  // D110: the raid record, once there is one; never who was raided or the gold that moved.
+  const raids = profile.raids
+  if (raids && raids.won + raids.failed + raids.repelled + raids.lost > 0) rows.push(['Raids won', raids.won], ['Raiders repelled', raids.repelled])
   return (
     <>
       <header className="flex flex-col gap-2">

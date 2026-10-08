@@ -65,6 +65,8 @@ export const view = query({
       adventuringSince: hero.activatedAt ?? hero.createdAt,
       rank: rank && published ? { rank: rank.rank, totalPlayers: published.globalTotalPlayers } : null,
       lifetime: { combatWins: counters.combatWins, itemsFound: counters.itemsFound, trips: counters.trips, rescues: counters.rescues, epicFinds: counters.epicFinds },
+      // D110: the raid record only, never who was raided or the gold that moved.
+      raids: { won: counters.raidsWon, failed: counters.raidsLaunched - counters.raidsWon, repelled: counters.raidsRepelled, lost: counters.raidsLost },
       achievements,
       rarity,
       achievementCount: rows.length,

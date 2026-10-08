@@ -8,7 +8,7 @@ import type { NumericCounter } from '../sim/core/types'
  * never logs, so a hero who did the deed before an achievement existed earns
  * it on the first evaluation after release.
  */
-export const ACHIEVEMENTS_VERSION = 2
+export const ACHIEVEMENTS_VERSION = 3
 
 export type AchievementPredicate =
   | { readonly kind: 'counter'; readonly counter: NumericCounter; readonly atLeast: number }
@@ -286,6 +286,19 @@ counter('choices', 'Decisions made', 'Decisions', 'choicesMade', [1, 5, 25, 100]
 counter('epics', 'Epic finds', 'Lifetime', 'epicFinds', [1, 5], [
   ['Legendary Stationery', 'Epic gear. One in a hundred.'],
   ['The Good Drawer', 'Five epics. It locks, obviously.'],
+])
+
+// ---------------------------------------------------------------- v1.2 Other people (catalog version 3, D110; appended, never edited)
+
+counter('office_raider', 'Office raider', 'Raids', 'raidsWon', [1, 10, 50], [
+  ['Light Fingers', "Came back from someone else's desk with their petty cash."],
+  ['Desk Burglar', 'Ten desks lighter. Yours is heavier.'],
+  ['Cat Burglar', 'Fifty raids won across the open-plan. Nobody saw a thing.'],
+])
+counter('desk_defender', 'Desk defender', 'Raids', 'raidsRepelled', [1, 10, 50], [
+  ['Not Today', 'Caught a raider at the drawers and showed them out.'],
+  ['Neighbourhood Watch', 'Ten raiders sent packing.'],
+  ['Fort Knox Desk', 'Fifty raids repelled. The drawers have a reputation.'],
 ])
 
 /** Families in display order. */

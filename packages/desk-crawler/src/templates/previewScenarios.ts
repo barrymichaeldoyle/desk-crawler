@@ -143,6 +143,10 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
       ranking: { ...base.ranking!, rank: 1, score: 12840, top: [{ rank: 1, name: 'Maximilian_Wolfgangs', hero_name: 'Sir Staplington', level: 12, score: 12840 }, ...base.ranking!.top.slice(1)] },
       logs: [{ at: NOW - 7 * 60_000, kind: 'combat', summary: 'Sent an elite [[Microwave Wraith]] back to the kitchen. +188 XP, +57 gold. Reached level 12! Found a [[Rare Ladle of Ruin]].', deltas: { xpEarned: 188, gold: 57, hp: -48 } }, ...base.logs],
     },
+    // D110: the longest raid line with a 20-character rival, a raid this hero lost and one it won (the gold scene), and a lethal raid.
+    raidLost: { ...base, latestEvent: { kind: 'raid', outcome: { variant: 'raid', role: 'raider', won: false } }, logs: [{ at: NOW - 7 * 60_000, kind: 'raid', summary: "The raid on [[Maximilian_Wolfgangs]]'s desk went badly. Dropped the loot on the way out.", deltas: { xpEarned: 0, gold: -1240, hp: -54 } }, ...base.logs] },
+    raidWon: { ...base, latestEvent: { kind: 'raid', outcome: { variant: 'raid', role: 'target', won: true } }, logs: [{ at: NOW - 7 * 60_000, kind: 'raid', summary: 'Caught [[Maximilian_Wolfgangs]] at the drawers. They fled and dropped their loot.', deltas: { xpEarned: 0, gold: 1240, hp: -18 } }, ...base.logs] },
+    raidKnockout: { ...base, hero: hero({ status: 'dead', hp: 0, reviveAtTick: 128 }), latestEvent: { kind: 'death', outcome: { variant: 'raid', role: 'target', won: false } }, logs: [{ at: NOW - 7 * 60_000, kind: 'death', summary: 'Came back to find [[Maximilian_Wolfgangs]] had been through the drawers. Knocked out for 8 ticks. Lost 64 gold.', deltas: { xpEarned: 0, gold: -1304, hp: -54 } }, ...base.logs] },
     unlinked: { ...base, hero: null, ranking: null, logs: [], latestEvent: null },
     // Setup screen while the service is paused: no code to scan, so the panel says so instead of asking for a scan.
     unlinkedPaused: { ...base, hero: null, ranking: null, logs: [], latestEvent: null, world: { ...base.world!, maintenanceMode: true } },
@@ -185,6 +189,13 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
     fullBagRecap: { ...states.sleeping!, activity: { entries: [activityEntry(fixtureGear, 0, { detail: { outcome: fixtureGear, levelsGained: 0, heldFind: true } }), ...overnightEntries], truncated: false } },
     knockoutRecap: { ...states.dead!, activity: { entries: [activityEntry({ ...fixtureFight, outcome: 'death', goldGranted: 0, gearDropped: false }, 0), ...overnightEntries], truncated: false } },
     recoveredRecap: { ...base, activity: { entries: [activityEntry({ variant: 'revival', previousBiomeId: 'server_room', safeBiomeId: 'office_cubicles', hpGranted: 30, reviveAtTick: 119 }, 0), activityEntry({ ...fixtureFight, outcome: 'death', goldGranted: 0, gearDropped: false }, 8), ...overnightEntries], truncated: false } },
+    // D110: raids won and lost overnight, one of them lethal.
+    raidRecap: { ...base, activity: { entries: [
+      activityEntry({ variant: 'raid', role: 'raider', rivalHeroId: 'r1', rivalName: 'Quill', won: true, gold: 14, hpLost: 9, raidTick: 110, outcome: 'survived' }, 0),
+      activityEntry({ variant: 'raid', role: 'target', rivalHeroId: 'r2', rivalName: 'Mo', won: false, gold: 22, hpLost: 54, raidTick: 104, outcome: 'death' }, 1),
+      activityEntry({ variant: 'raid', role: 'target', rivalHeroId: 'r3', rivalName: 'Bea', won: true, gold: 6, hpLost: 18, raidTick: 100, outcome: 'survived' }, 2),
+      ...overnightEntries,
+    ], truncated: false } },
     arrivalRecap: { ...base, activity: { entries: [activityEntry({ variant: 'travel', phase: 'arrive', fromBiomeId: 'office_cubicles', toBiomeId: 'server_room', arrivalTick: 120 }, 0), ...overnightEntries], truncated: false } },
   }
   // Saturated histories prove layout capacity is measured instead of capped at three stories.
@@ -195,6 +206,7 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
     missingQr: { ...base, artBaseUrl: null, logs: denseLogs('Took a coffee break anyway.') },
     denseLong: { ...states.longText!, logs: denseLogs('Sent an elite [[Microwave Wraith]] back to the kitchen. Reached level 12! Found a [[Rare Ladle of Ruin]].') },
     longHero: { ...base, hero: hero({ name: 'W'.repeat(16) }), logs: denseLogs('Filed a [[Paper Imp]] under defeated.') },
+    denseRaid: { ...base, logs: denseLogs("The raid on [[Maximilian_Wolfgangs]]'s desk went badly. Dropped the loot on the way out.").map(log => ({ ...log, kind: 'raid', deltas: { xpEarned: 0, gold: -1240, hp: -54 } })) },
     noMetadata: { ...base, logs: denseLogs('A quiet moment.').map(({ deltas: _deltas, ...entry }) => entry) },
     largeRanking: { ...base, logs: denseLogs('Filed a [[Paper Imp]] under defeated.'), ranking: { ...base.ranking!, rank: 12345, totalPlayers: 999999, top: base.ranking!.top.map(row => ({ ...row, score: 999999 })) } },
   })

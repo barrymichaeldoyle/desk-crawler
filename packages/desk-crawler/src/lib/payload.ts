@@ -219,7 +219,7 @@ export function buildPayload(input: PayloadInput) {
   const servicePaused = world !== null && (world.ticksPaused || world.maintenanceMode)
   const gameAsOf = lastCompletedAt === undefined ? null : formatLocal(lastCompletedAt, input.timezone)
   const logs = input.logs.slice(0, MAX_LOGS).map((log) => {
-    const { narrative, changes } = logPresentation(log)
+    const { narrative, changes } = logPresentation(log, { compactGold: true })
     return { at: iso(log.at), u: Math.floor(log.at / 1000), t: formatLocal(log.at, input.timezone).label, k: log.kind, s: keepUnitsTogether(log.summary), n: keepUnitsTogether(narrative), d: keepUnitsTogether(changes.join(' · ')) }
   })
 

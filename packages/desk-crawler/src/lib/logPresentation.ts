@@ -34,7 +34,7 @@ export function displayLogDeltas(entry: { readonly deltas: LogDeltas; readonly d
 }
 
 /** Shared display copy. Persisted, versioned simulator summaries stay replayable. */
-export function logPresentation(entry: { readonly summary: string; readonly kind: string; readonly deltas?: LogDeltas }) {
+export function logPresentation(entry: { readonly summary: string; readonly kind: string; readonly deltas?: LogDeltas }, options: { readonly compactGold?: boolean } = {}) {
   if (!entry.deltas || entry.kind === 'achievement') return { narrative: entry.summary, changes: [] as string[] }
   const deltas = entry.deltas
   // Transform only plain runs: numbers/units inside marked item names are names.
@@ -49,9 +49,11 @@ export function logPresentation(entry: { readonly summary: string; readonly kind
   ).join('').replace(/\s+/g, ' ').trim()
   if (!narrative) narrative = deltas.gold > 0 ? 'Found gold.' : 'Recovered.'
   const signed = (value: number, unit: string) => `${value > 0 ? '+' : '−'}${Math.abs(value)} ${unit}`
+  // D110: a raid can swing five-figure gold; the device's gold column holds four digits, so it reads "12k" from 10,000.
+  const goldChange = (value: number) => (options.compactGold && Math.abs(value) >= 10_000 ? `${value > 0 ? '+' : '−'}${Math.floor(Math.abs(value) / 1000)}k gold` : signed(value, 'gold'))
   const changes = [
     deltas.xpEarned ? signed(deltas.xpEarned, 'XP') : null,
-    deltas.gold ? signed(deltas.gold, 'gold') : null,
+    deltas.gold ? goldChange(deltas.gold) : null,
     deltas.potionsFound ? signed(deltas.potionsFound, deltas.potionsFound === 1 ? 'healing potion' : 'healing potions') : null,
     // Net HP stays the single HP figure (D48); the potion chip names the part a potion restored.
     deltas.hp ? signed(deltas.hp, 'HP') : null,

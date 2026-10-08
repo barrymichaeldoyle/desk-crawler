@@ -1,0 +1,968 @@
+{
+"date": "2026-10-09",
+"template": 48,
+"total": 996,
+"failures": 0,
+"raidCases": [
+{
+"file": "denseRaid--bwry--markup.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--bwry--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--bwry--markup_half_vertical.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--bwry--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--bwry-portrait--markup.html",
+"ok": true,
+"stories": [
+5
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--bwry-portrait--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--bwry-portrait--markup_half_vertical.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--bwry-portrait--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--og--markup.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--og--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--og--markup_half_vertical.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--og--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--og-portrait--markup.html",
+"ok": true,
+"stories": [
+5
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--og-portrait--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--og-portrait--markup_half_vertical.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--og-portrait--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--x--markup.html",
+"ok": true,
+"stories": [
+6
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--x--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--x--markup_half_vertical.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--x--markup_quadrant.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--x-portrait--markup.html",
+"ok": true,
+"stories": [
+7
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--x-portrait--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--x-portrait--markup_half_vertical.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "denseRaid--x-portrait--markup_quadrant.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--bwry--markup.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--bwry--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--bwry--markup_half_vertical.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--bwry--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--bwry-portrait--markup.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--bwry-portrait--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--bwry-portrait--markup_half_vertical.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--bwry-portrait--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--og--markup.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--og--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--og--markup_half_vertical.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--og--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--og-portrait--markup.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--og-portrait--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--og-portrait--markup_half_vertical.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--og-portrait--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--x--markup.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--x--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--x--markup_half_vertical.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--x--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--x-portrait--markup.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--x-portrait--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--x-portrait--markup_half_vertical.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidKnockout--x-portrait--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--bwry--markup.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--bwry--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--bwry--markup_half_vertical.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--bwry--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--bwry-portrait--markup.html",
+"ok": true,
+"stories": [
+5
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--bwry-portrait--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--bwry-portrait--markup_half_vertical.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--bwry-portrait--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--og--markup.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--og--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--og--markup_half_vertical.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--og--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--og-portrait--markup.html",
+"ok": true,
+"stories": [
+5
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--og-portrait--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--og-portrait--markup_half_vertical.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--og-portrait--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--x--markup.html",
+"ok": true,
+"stories": [
+10
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--x--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--x--markup_half_vertical.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--x--markup_quadrant.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--x-portrait--markup.html",
+"ok": true,
+"stories": [
+12
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--x-portrait--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--x-portrait--markup_half_vertical.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidLost--x-portrait--markup_quadrant.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--bwry--markup.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--bwry--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--bwry--markup_half_vertical.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--bwry--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--bwry-portrait--markup.html",
+"ok": true,
+"stories": [
+5
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--bwry-portrait--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--bwry-portrait--markup_half_vertical.html",
+"ok": true,
+"stories": [
+4
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--bwry-portrait--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--og--markup.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--og--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--og--markup_half_vertical.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--og--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--og-portrait--markup.html",
+"ok": true,
+"stories": [
+5
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--og-portrait--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--og-portrait--markup_half_vertical.html",
+"ok": true,
+"stories": [
+4
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--og-portrait--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--x--markup.html",
+"ok": true,
+"stories": [
+11
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--x--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+5
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--x--markup_half_vertical.html",
+"ok": true,
+"stories": [
+4
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--x--markup_quadrant.html",
+"ok": true,
+"stories": [
+4
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--x-portrait--markup.html",
+"ok": true,
+"stories": [
+13
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--x-portrait--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+4
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--x-portrait--markup_half_vertical.html",
+"ok": true,
+"stories": [
+4
+],
+"textOverflow": []
+},
+{
+"file": "raidRecap--x-portrait--markup_quadrant.html",
+"ok": true,
+"stories": [
+4
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--bwry--markup.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--bwry--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--bwry--markup_half_vertical.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--bwry--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--bwry-portrait--markup.html",
+"ok": true,
+"stories": [
+5
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--bwry-portrait--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--bwry-portrait--markup_half_vertical.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--bwry-portrait--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--og--markup.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--og--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--og--markup_half_vertical.html",
+"ok": true,
+"stories": [
+2
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--og--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--og-portrait--markup.html",
+"ok": true,
+"stories": [
+5
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--og-portrait--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--og-portrait--markup_half_vertical.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--og-portrait--markup_quadrant.html",
+"ok": true,
+"stories": [
+1
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--x--markup.html",
+"ok": true,
+"stories": [
+10
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--x--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--x--markup_half_vertical.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--x--markup_quadrant.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--x-portrait--markup.html",
+"ok": true,
+"stories": [
+12
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--x-portrait--markup_half_horizontal.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--x-portrait--markup_half_vertical.html",
+"ok": true,
+"stories": [
+3
+],
+"textOverflow": []
+},
+{
+"file": "raidWon--x-portrait--markup_quadrant.html",
+"ok": true,
+"stories": [
+4
+],
+"textOverflow": []
+}
+]
+}

@@ -43,8 +43,10 @@ describe('public hero profiles (v1.2)', () => {
     expect(profile.rarity).toMatchObject({ totalPlayers: 2 })
     expect(profile.rarity.counts.slay_paper_imp_2).toBe(1)
     expect(profile.lifetime.combatWins).toBeGreaterThanOrEqual(6)
+    // D110: the raid record is counts only; no rival names or raid gold.
+    expect(profile.raids).toEqual({ won: 0, failed: 0, repelled: 0, lost: 0 })
     const text = JSON.stringify(profile)
-    for (const key of ['gold', 'weaponId', 'armorId', 'items', 'bagCapacity', 'timezone', 'userId', 'tokenIdentifier', 'email']) expect(text).not.toContain(`"${key}":`)
+    for (const key of ['gold', 'rivalName', 'raiderName', 'weaponId', 'armorId', 'items', 'bagCapacity', 'timezone', 'userId', 'tokenIdentifier', 'email']) expect(text).not.toContain(`"${key}":`)
     expect(text).not.toContain(heroId)
     expect(text).not.toContain('999')
   })

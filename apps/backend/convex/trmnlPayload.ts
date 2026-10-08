@@ -1,4 +1,5 @@
 import { currentHero, gameProfile, isDeskCrawler } from './lib/gameProfile'
+import { maskRaidSummaries } from './lib/raids'
 import { v } from 'convex/values'
 import { internalQuery, query, type QueryCtx } from './_generated/server'
 import type { Doc } from './_generated/dataModel'
@@ -92,7 +93,9 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
       .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id))
       .order('desc')
       .take(MAX_LOGS)
-    logs = recent.map((log) => ({ at: log.at, kind: log.kind, summary: log.summary, deltas: displayLogDeltas(log) }))
+    // D110: a raid rival whose name has since changed or gone reads "Hidden player" here too.
+    const summaries = await maskRaidSummaries(ctx, recent)
+    logs = recent.map((log, index) => ({ at: log.at, kind: log.kind, summary: summaries[index]!, deltas: displayLogDeltas(log) }))
     // The most recently completed night or day period in the owner's local time (D75), the same one buildPayload labels.
     const period = recapPeriod(now, utcOffset)
     const window = await ctx.db

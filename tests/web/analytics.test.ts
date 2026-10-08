@@ -18,6 +18,12 @@ describe('support analytics privacy boundary', () => {
     storage.set('tg_analytics_consent_v1', 'declined')
     expect(beforeAnalyticsSend(event({}))).toBeNull()
   })
+  it('keeps the SDK project token that ingestion requires while scrubbing nested tokens', () => {
+    storage.set('tg_analytics_consent_v1', 'allowed')
+    const properties = beforeAnalyticsSend(event({ token: 'phc_project', distinct_id: 'user_test', $set: { token: 'secret-token' } }))?.properties
+    expect(properties).toMatchObject({ token: 'phc_project', distinct_id: 'user_test' })
+    expect(properties?.$set).toEqual({})
+  })
   it('drops every capture while a raw TRMNL install or management credential is in the URL', () => {
     storage.set('tg_analytics_consent_v1', 'allowed')
     for (const query of ['code=secret-code', 'jwt=secret-jwt', 'token=deletion-proof', 'installation_callback_url=https%3A%2F%2Ftrmnl.com']) {

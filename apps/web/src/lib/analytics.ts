@@ -50,7 +50,10 @@ export function scrubAnalyticsValue(value: unknown): unknown {
 
 export function beforeAnalyticsSend(event: CaptureResult | null): CaptureResult | null {
   if (!event || identity === undefined || readAnalyticsConsent() !== 'allowed' || hasSensitiveLocation()) return null
-  return { ...event, properties: scrubAnalyticsValue(event.properties) as CaptureResult['properties'] }
+  // The SDK's top-level `token` is the public project key ingestion requires; the SDK drops any event whose hook removes it.
+  const { token, ...properties } = event.properties ?? {}
+  const scrubbed = scrubAnalyticsValue(properties) as CaptureResult['properties']
+  return { ...event, properties: token === undefined ? scrubbed : { ...scrubbed, token } }
 }
 
 function hasSensitiveLocation() {

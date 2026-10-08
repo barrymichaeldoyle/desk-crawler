@@ -2,7 +2,7 @@
 
 **[Play at trmnlgames.com](https://trmnlgames.com)** · **[Join the waiting list](https://trmnlgames.com/desk-crawler/waiting-list)** for one email when it reaches the TRMNL marketplace.
 
-Also by the same author: **[Formula 1 Race Weekend](https://trmnl.com/recipes/485545)**, a TRMNL plugin that follows the current F1 weekend with sessions, weather, grid and results.
+Also by the same author: **[Formula 1 Race Weekend](https://trmnl.com/recipes/485545)**, a TRMNL plugin that follows the current F1 weekend with sessions, weather, grid and results, powered by [GrandPrixPicks.com](https://grandprixpicks.com).
 
 A passive multiplayer office RPG for your desk. A hero explores every 15 minutes, finds equipment, survives mishaps, and climbs a global leaderboard. Built exclusively for TRMNL: install the plugin to start your hero, watch the story on e-ink, and use the companion website for occasional decisions.
 

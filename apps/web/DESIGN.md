@@ -187,7 +187,7 @@ The companion is not a dashboard about a game; it is the game's own screen. The 
 
 The ground is a dark arcade screen. Panels sit one step lighter inside a hard 3px black outline. Game colours mean one thing everywhere: hearts red, XP green, coins gold, travel sky, rare violet. Arcade lettering (Press Start 2P) is reserved for the HUD voice: labels, nav, counters, buttons and the dialogue line, always small and uppercase. Pixelify Sans titles the page and its sections; the system sans carries every sentence so reading stays fast. The world is dark only.
 
-The TRMNL is the one monochrome object. It sits in a plum bezel with a white e-ink screen showing the device's own framework templates; the companion's colour stops at its edge. Motion is scarce and stepped: the dialogue arrow's two-step bob and the e-ink refresh flash.
+The TRMNL is the one monochrome object. It sits in a plum bezel with a white e-ink screen showing the device's own framework templates; the companion's colour stops at its edge. Motion is scarce and stepped: the dialogue arrow's two-step bob, the e-ink refresh flash, and sheets and notices stepping into place in four frames.
 
 **Key Characteristics:**
 - Dark arcade ground, plum windows in 3px night outlines, cream text; dark theme only.
@@ -206,11 +206,11 @@ An arcade palette: a dark plum-black screen, one lighter window step, cream lett
 - **Coin Gold**: the primary action fill, coins and gold earned, levels, the current-place marks (pixel cursor arrow, select chevron, current world tile outline, own leaderboard row outline, the away tally's frame), the focus ring, text selection and form accent colour. Coin Gold Hi is the primary button's hover step; Coin Gold Lo is the primary button's bottom lip and the coin's shaded centre.
 
 ### Secondary
-- **Heart Red**: heart fills, the danger button edge and hover fill, the destructive-disclosure rule. Heart Red Ink is its text tone and the combat and knock-out badge fill: HP changes, attack stat, losses against equipped gear, rank drops, errors.
+- **Heart Red**: heart fills, the danger button edge and hover fill, the destructive-disclosure rule. Heart Red Ink is its text tone and the combat and knock-out badge fill: HP changes, losses against equipped gear, rank drops, errors. A piece's own attack figure stays in cream; only a comparison is coloured.
 - **XP Green**: the XP bar fill, XP and HP-gain text, rest and revive badges, upgrades, uncommon rarity, rank gains, the countdown figure. It reads as its own ink on the dark ground.
 
 ### Tertiary
-- **Travel Sky**: the Server Room band and world tile. Travel Sky Ink is the travel badge and the defence stat.
+- **Travel Sky**: the Server Room band and world tile. Travel Sky Ink is the travel badge.
 - **Rare Violet**: rare things. Rare Violet Ink names rare gear, counts potions and items found, and fills the trap badge.
 
 ### Neutral
@@ -296,6 +296,7 @@ Chunky arcade keys in the HUD voice.
 - **Quiet:** muted body-type text underlined at 4px offset; hover to cream. For continuations (load more, unequip, clear selection).
 - **Danger:** heart-red edge, heart-red-ink text; hover fills heart red with night text. Destructive confirmations only.
 - **Disabled:** dashed faint edge, no fill, no lip, muted text, not-allowed cursor; also applied while offline.
+- **Pressed:** the primary key sinks two pixels into its lip (the lip halves); secondary and danger invert as on hover; quiet brightens. A tap answers before the server does.
 - **Busy:** the label becomes a present-participle line ("Travelling…"); the shape holds.
 - **Focus:** global 2px gold outline, 2px offset.
 
@@ -326,7 +327,13 @@ Chunky arcade keys in the HUD voice.
 - **Dialogue strip:** cream with a 4px night top rule, a 16px glyph, the HUD Label sentence, an optional bezel-plum detail line, and a 5x3 night "more" arrow in the corner bobbing 2px in two steps (1.2s), the only idle motion.
 
 ### World Map Tile
-- Square tile, 16px padding, 3px night edge, filled with its biome band, night text; a night world-number chip with gold numeral; biome name in Title type; status line; Travel as the primary button. The current tile gains a 4px gold outline; locked tiles are window plum with a dashed faint edge and muted text ("Locked · reach level 9"). Tiles join with 4px dashed gold connectors.
+- Square tile, 16px padding, 3px night edge, filled with its biome band, night text; a night world-number chip with gold numeral; biome name in Title type; status line; Travel as the primary button. The current tile gains a 4px gold outline; locked tiles are window plum with a dashed faint edge and muted text ("Locked · reach level 9"). Tiles join with 4px dashed gold connectors from 640px; on phones each world is one row (chip, name and status, Travel at the right) with no connectors.
+
+### Stance Row
+- The segmented-tab pattern as a radiogroup: three equal cells (Cautious, Balanced, Bold) in a 2px cream edge, the chosen one pressed in Raised Plum with gold text and the cursor arrow; one body-small line beneath names the chosen stance, its blurb and its thresholds.
+
+### Keepsake Strip
+- A window strip in a 4px gold outline: a 48px night tile with the design, "New this week" in HUD Label gold, the title in Title type, and Enter code as the primary button; the code form opens beneath a 3px night rule. After a claim the strip names the keepsake and offers Shelf as a secondary button.
 
 ### While You Were Away Tally
 - Night fill in a 4px gold frame: HUD Title heading in gold, the visit time beside it, then a dashed-rule ledger of HUD Micro labels and HUD Title figures in their stat ink (zero in faint). A 3px gold-edged HUD line counts gains during the visit.
@@ -341,7 +348,7 @@ Chunky arcade keys in the HUD voice.
 - A native modal dialog: a window pinned to the bottom of a phone with safe-area padding, centred at 28rem from 640px, over a 75% night backdrop. Title in Pixelify Sans receives focus; actions in a two-column button grid; Escape, the backdrop and Close dismiss it. Errors raised inside it show inside it.
 
 ### Notice
-- The latest action's outcome in a pinned window above the phone's bottom edge (lifted above the sale bar): a semibold small sentence in XP green or heart-red-ink with a dismiss cross. Successes clear after five seconds; errors stay.
+- The latest action's outcome in a pinned window above the phone's bottom edge (lifted above the sale bar): a semibold small sentence in XP green or heart-red-ink with a dismiss cross. Successes clear after five seconds; errors stay. Every page's commands report here (Hero, Bag, Settings); only a form's validation stays beside its input, and an error raised inside an open sheet shows in the sheet.
 
 ### Device Bezel
 - Bezel Plum, 1.4rem corners, fluid padding; white 0.375rem screen at the device's aspect ratio; the scene stands in until the live template render fades in (200ms), then a six-step black-then-white flash over 420ms when a new screen loads.
@@ -367,4 +374,4 @@ Chunky arcade keys in the HUD voice.
 - **Don't** use drop shadows, blurs or glows for depth; the primary button's inset lip is the only shading.
 - **Don't** convey state by colour alone.
 - **Don't** fall back to the 1-bit logbook or the navy menu-window recolour; this world replaced both.
-- **Don't** add idle motion beyond the dialogue arrow bob and the e-ink refresh.
+- **Don't** add idle motion beyond the dialogue arrow bob and the e-ink refresh; entrances are four stepped frames at most.

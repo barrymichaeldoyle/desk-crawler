@@ -60,7 +60,7 @@ function SlotFace({ item, selectable = false, selected = false, upgrade = false,
  */
 export function Slot({ item, onClick, label, held = false, ...marks }: { item: SlotItem; onClick: () => void; label: string; held?: boolean } & Marks) {
   return (
-    <button type="button" aria-label={label} aria-pressed={marks.selectable ? marks.selected ?? false : undefined} aria-busy={marks.busy || undefined} onClick={onClick} className={`${SLOT} ${edgeOf(item, { selected: marks.selected ?? false, held })} hover:bg-raised focus-visible:outline-offset-[-2px]`}>
+    <button type="button" aria-label={label} aria-pressed={marks.selectable ? marks.selected ?? false : undefined} aria-busy={marks.busy || undefined} onClick={onClick} className={`${SLOT} ${edgeOf(item, { selected: marks.selected ?? false, held })} hover:bg-raised active:bg-raised focus-visible:outline-offset-[-2px]`}>
       <SlotFace item={item} {...marks} />
     </button>
   )
@@ -79,7 +79,7 @@ export function EmptySlot() {
 /** The potion stack as a slot, counting the potions in the corner. */
 export function PotionSlot({ count, onClick, label }: { count: number; onClick: () => void; label: string }) {
   return (
-    <button type="button" aria-label={label} onClick={onClick} className={`${SLOT} border-raised hover:bg-raised focus-visible:outline-offset-[-2px]`}>
+    <button type="button" aria-label={label} onClick={onClick} className={`${SLOT} border-raised hover:bg-raised active:bg-raised focus-visible:outline-offset-[-2px]`}>
       <SpriteIcon sprite={potionArt} className={count === 0 ? 'opacity-40' : ''} />
       <span aria-hidden="true" className="absolute right-1 bottom-0.5 label-px text-rare-ink">{count}</span>
     </button>

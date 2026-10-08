@@ -9,7 +9,7 @@ import { DESK_KEEPSAKES, keepsakeShelf, keepsakeWeek, LETTER_CODES_UNTIL } from 
 import { errorMessage } from '../../../lib/intent'
 import { useOnline } from '../../../lib/network'
 import { Submission } from '../../../lib/submission'
-import { ActionFeedback, Button } from '../../../lib/ui'
+import { ActionFeedback, BUTTON_SECONDARY, Button, LINK_BUTTON } from '../../../lib/ui'
 
 export function KeepsakeIcon({ pixels }: { pixels: readonly string[] }) {
   const path = pixels.flatMap((row, y) => [...row.matchAll(/#+/g)].map((run) => `M${run.index} ${y}h${run[0].length}v1h-${run[0].length}z`)).join('')
@@ -94,29 +94,32 @@ function KeepsakeCodeForm({ form, inputId }: { form: KeepsakeClaim; inputId: str
 export function KeepsakeCallout() {
   const form = useKeepsakeClaim()
   const { collection, next, earned } = form
+  // Closed by default on every screen: the game screen stays in the first viewport and the code is two taps away.
+  const [open, setOpen] = useState(false)
   if (!collection?.connected) return null
   if (form.collectedThisWeek && !earned) return null
   const shown = earned ?? next
-  return <section aria-labelledby="keepsake-callout-title" className="flex min-w-0 flex-col gap-4 border-[3px] border-night bg-panel p-4 outline-4 outline-gold sm:flex-row sm:items-center sm:gap-6 sm:p-5">
-    <div className="grid size-20 shrink-0 place-items-center self-start border-[3px] border-night bg-night text-gold-ink [&>svg]:size-14 sm:self-center">
-      <KeepsakeIcon pixels={shown.pixels} />
+  return <section aria-labelledby="keepsake-callout-title" className="flex min-w-0 flex-col border-[3px] border-night bg-panel outline-4 outline-gold">
+    <div className="flex items-center gap-3 p-3 sm:gap-4 sm:px-4">
+      <div className="grid size-12 shrink-0 place-items-center border-[3px] border-night bg-night text-gold-ink [&>svg]:size-8">
+        <KeepsakeIcon pixels={shown.pixels} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="hud text-hud-sm text-gold-ink">{earned ? 'Collected' : 'New this week'}</p>
+        <h2 id="keepsake-callout-title" className="mt-0.5 font-display text-lg leading-tight font-bold sm:text-2xl">{earned ? `${earned.name} is on your shelf` : 'Keepsake code on your TRMNL'}</h2>
+      </div>
+      {earned
+        ? <Link to="/app/desk-crawler/settings" hash="desk-keepsakes" className={`${LINK_BUTTON} ${BUTTON_SECONDARY} shrink-0 whitespace-nowrap`}>Shelf</Link>
+        : <Button allowOffline variant={open ? 'secondary' : 'primary'} className="shrink-0 whitespace-nowrap" aria-expanded={open} aria-controls="keepsake-callout-form" onClick={() => setOpen((value) => !value)}>{open ? 'Later' : 'Enter code'}</Button>}
     </div>
-    <div className="flex min-w-0 flex-1 flex-col gap-3">
-      {earned ? <>
-        <h2 id="keepsake-callout-title" className="font-display text-2xl font-bold">{earned.name} is on your shelf</h2>
-        <p className="max-w-prose text-sm">{earned.description} A new keepsake code appears on your TRMNL next week.</p>
-        <Link to="/app/desk-crawler/settings" hash="desk-keepsakes" className="self-start text-sm underline underline-offset-4">See your keepsake shelf</Link>
-      </> : <>
-        <div>
-          <p className="hud text-hud-sm text-gold-ink">New this week</p>
-          <h2 id="keepsake-callout-title" className="mt-1 font-display text-2xl font-bold">A keepsake is waiting on your TRMNL</h2>
-        </div>
+    {open && !earned ? (
+      <div id="keepsake-callout-form" className="flex flex-col gap-3 border-t-[3px] border-night p-3 sm:px-4">
         <p className="max-w-prose text-sm">Glance at your TRMNL for the six-digit code beside “Keepsake”, then enter it here to add <strong>{next.name}</strong> to your shelf. {next.description}</p>
         <KeepsakeCodeForm form={form} inputId="keepsake-callout-code" />
         <p id="keepsake-callout-code-help" className="text-sm text-muted">Only your TRMNL shows the code. The preview on this site leaves it out.</p>
-      </>}
-      <ActionFeedback error={form.error} message={earned ? null : form.message} />
-    </div>
+        <ActionFeedback error={form.error} message={form.message} />
+      </div>
+    ) : null}
   </section>
 }
 

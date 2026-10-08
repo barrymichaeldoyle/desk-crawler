@@ -57,10 +57,11 @@ export function Records({ counters, lifetimeXp, stopped = false }: { counters: C
         </Link>
       </div>
       <Rank stopped={stopped} />
-      <dl className="grid grid-cols-1 min-[480px]:grid-cols-2 min-[480px]:gap-x-6">
+      {/* Two columns even on phones: twelve single rows made the section a screen tall. */}
+      <dl className="grid grid-cols-2 gap-x-4 min-[480px]:gap-x-6">
         {rows.map(([label, value]) => (
-          <div key={label} className="flex items-baseline justify-between gap-3 border-t-2 border-dashed border-rule py-2">
-            <dt className="label-px whitespace-nowrap text-muted">{label}</dt>
+          <div key={label} className="flex min-w-0 items-baseline justify-between gap-2 border-t-2 border-dashed border-rule py-2">
+            <dt className="label-px min-w-0 text-muted">{label}</dt>
             <dd className="font-bold whitespace-nowrap tabular-nums">{value}</dd>
           </div>
         ))}

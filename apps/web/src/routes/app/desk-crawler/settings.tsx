@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { useIntent } from '../../../lib/intent'
 import { seo } from '../../../lib/seo'
-import { ActionFeedback, Button, Card, LoadingState } from '../../../lib/ui'
+import { Button, Card, LoadingState, NoticeBar, useNotice } from '../../../lib/ui'
 import { preload } from '../../../lib/preload'
 import { DeskKeepsakes } from './-keepsakes'
 
@@ -14,15 +14,15 @@ export const Route = createFileRoute('/app/desk-crawler/settings')({ head: () =>
 function Settings() {
   const { data: me } = useQuery(convexQuery(api.users.me, {}))
   const { data: hero } = useQuery(convexQuery(api.heroes.mine, {}))
-  const pause = useIntent(api.heroes.pause)
+  // One pinned notice for every command on the page (D98), so the cards hold their shape while an action settles.
+  const { notice, notify, dismiss } = useNotice()
+  const pause = useIntent(api.heroes.pause, { onFeedback: notify })
   const { data: connections } = useQuery(convexQuery(api.connections.mine, {}))
-  const disconnect = useIntent(api.connections.disconnect)
-  const deletion = useIntent(api.deletion.requestGameDeletion)
+  const disconnect = useIntent(api.connections.disconnect, { onFeedback: notify })
+  const deletion = useIntent(api.deletion.requestGameDeletion, { onFeedback: notify })
   const [confirmText, setConfirmText] = useState('')
   const [disconnectId, setDisconnectId] = useState<string | null>(null)
-  const resume = useIntent(api.heroes.resume)
-  const [action, setAction] = useState<'pause' | 'resume' | null>(null)
-  const feedback = action ? { pause, resume }[action] : null
+  const resume = useIntent(api.heroes.resume, { onFeedback: notify })
   if (!me?.user || !hero) return <LoadingState label="Loading settings…" />
   const healthy = hero.simulationState !== 'quarantined'
   return (
@@ -37,7 +37,7 @@ function Settings() {
         ) : hero.status === 'paused' ? (
           <>
             <p>Paused. Nothing is earned until you resume, and there is no catch-up.</p>
-            <Button className="mt-3" pending={resume.pending} busyLabel="Resuming…" disabled={!healthy || pause.pending} onClick={() => { setAction('resume'); return resume.run({}, 'Adventures resumed. Your hero joins the next adventure.') }}>
+            <Button className="mt-3" pending={resume.pending} busyLabel="Resuming…" disabled={!healthy || pause.pending} onClick={() => resume.run({}, 'Adventures resumed. Your hero joins the next adventure.')}>
               Resume adventures
             </Button>
           </>
@@ -46,14 +46,13 @@ function Settings() {
         ) : (
           <>
             <p>Pausing stops encounters and rewards until you resume. Recent XP ages out meanwhile, so your rank can drop.</p>
-            <Button className="mt-3" variant="secondary" pending={pause.pending} busyLabel="Pausing…" disabled={!healthy || resume.pending || (hero.status !== 'exploring' && hero.status !== 'resting')} onClick={() => { setAction('pause'); return pause.run({}, 'Adventures paused.') }}>
+            <Button className="mt-3" variant="secondary" pending={pause.pending} busyLabel="Pausing…" disabled={!healthy || resume.pending || (hero.status !== 'exploring' && hero.status !== 'resting')} onClick={() => pause.run({}, 'Adventures paused.')}>
               Pause adventures
             </Button>
           </>
         )}
         {hero.status === 'dead' || hero.status === 'travelling' ? <p className="mt-2 text-sm text-muted">You can pause after your hero returns from {hero.status === 'dead' ? 'recovering' : 'travelling'}.</p> : null}
         {!healthy ? <p className="mt-2 text-sm">Paused for a service check.</p> : null}
-        <ActionFeedback error={feedback?.error ?? null} message={feedback?.message ?? null} />
       </Card>
       <DeskKeepsakes />
       <Card title="TRMNL installations">
@@ -85,7 +84,6 @@ function Settings() {
             <Button allowOffline variant="quiet" disabled={disconnect.pending} onClick={() => setDisconnectId(null)}>Cancel</Button>
           </div>
         </div> : null}
-        <ActionFeedback {...disconnect} />
       </Card>
       <details className="border-t-2 border-hp pt-4">
         <summary className="min-h-11 cursor-pointer font-semibold text-hp-ink">Delete Desk Crawler progress…</summary>
@@ -108,13 +106,13 @@ function Settings() {
         >
           Delete my Desk Crawler progress
         </Button>
-        <ActionFeedback {...deletion} />
         <p className="mt-4 text-sm">To delete your sign-in and every game, go to <Link to="/account" className="underline underline-offset-4">Account</Link>.</p>
       </details>
       <nav aria-label="Help" className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
         <Link to="/help/desk-crawler" className="inline-flex min-h-11 items-center underline underline-offset-4">TRMNL and setup help</Link>
         <Link to="/support" className="inline-flex min-h-11 items-center underline underline-offset-4">Contact support</Link>
       </nav>
+      <NoticeBar notice={notice} onDismiss={dismiss} />
     </>
   )
 }

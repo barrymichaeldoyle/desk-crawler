@@ -9,7 +9,7 @@ import { api } from '@trmnl-games/backend/api'
 import type { Id } from '@trmnl-games/backend/data-model'
 import { useIntent } from '../../../lib/intent'
 import { seo } from '../../../lib/seo'
-import { BUTTON_SECONDARY, Button, Card, ErrorNote, LINK_BUTTON, LoadingState } from '../../../lib/ui'
+import { BUTTON_SECONDARY, Button, Card, ErrorNote, LINK_BUTTON, LoadingState, NoticeBar, useNotice } from '../../../lib/ui'
 import { preload } from '../../../lib/preload'
 import { retainSellableSelection, saleIsCurrent } from '../../../lib/bagSelection'
 import { RARITY_TONE } from '../../../lib/palette'
@@ -32,7 +32,6 @@ type Gear = {
   equipped: boolean
   held: boolean
 }
-type Notice = { kind: 'ok' | 'error'; text: string; key: number }
 type Biome = { id: string; name: string; unlocked: boolean }
 
 const SALE_LIMIT = 30
@@ -55,13 +54,13 @@ function Inventory() {
   const [sale, setSale] = useState<Gear[] | null>(null)
   const [busyId, setBusyId] = useState<string | null>(null)
   const [destination, setDestination] = useState('')
-  const [notice, setNotice] = useState<Notice | null>(null)
+  const { notice, notify: announce, dismiss } = useNotice()
   // Errors inside an open sheet show there; the pinned notice carries the rest (the sheet would hide it).
   const sheetOpen = useRef(false)
   sheetOpen.current = openId !== null || sale !== null
-  const notify = ({ error, message }: { error: string | null; message: string | null }) => {
-    if (error && sheetOpen.current) return
-    setNotice({ kind: error ? 'error' : 'ok', text: error ?? message ?? '', key: Date.now() })
+  const notify = (feedback: { error: string | null; message: string | null }) => {
+    if (feedback.error && sheetOpen.current) return
+    announce(feedback)
   }
   const equip = useIntent(api.inventory.equip, { onFeedback: notify })
   const unequip = useIntent(api.inventory.unequip, { onFeedback: notify })
@@ -101,7 +100,7 @@ function Inventory() {
     const next = new Set(retainSellableSelection(current, gear))
     if (next.has(id)) next.delete(id)
     else if (next.size < SALE_LIMIT) next.add(id)
-    else setNotice({ kind: 'error', text: `A sale holds up to ${SALE_LIMIT} items. Sell these first, then select more.`, key: Date.now() })
+    else announce({ error: `A sale holds up to ${SALE_LIMIT} items. Sell these first, then select more.`, message: null })
     return next
   })
   const leaveSale = () => { setMode('browse'); setSelected(new Set()) }
@@ -164,17 +163,18 @@ function Inventory() {
           <div className="flex min-w-0 flex-col gap-1.5">
             <h3 className="caps text-sm text-muted">Potions</h3>
             <PotionSlot count={bag.potions} label={`${count(bag.potions, 'potion')}, each heals ${POTION_HEAL_PCT}% of max HP`} onClick={() => setOpenId('potions')} />
-            <p className="truncate text-sm"><span className="text-rare-ink">+{pctOf(hero.maxHp, POTION_HEAL_PCT)} HP</span> each</p>
+            <p className="truncate text-sm">+{pctOf(hero.maxHp, POTION_HEAL_PCT)} HP each</p>
           </div>
         </div>
       </Card>
 
       <section aria-labelledby="bag-gear-title" className="window min-w-0 px-4 pt-3 pb-4 sm:px-5">
+        {/* The title stays one line beside either button, so the header holds still when Sell gear becomes Done. */}
         <div className="flex min-h-11 items-center justify-between gap-3">
-          <h2 id="bag-gear-title" className="font-display text-2xl font-bold">{bag.ladder.name}</h2>
+          <h2 id="bag-gear-title" className="min-w-0 truncate font-display text-xl font-bold sm:text-2xl">{bag.ladder.name}</h2>
           {mode === 'sell'
-            ? <Button allowOffline variant="secondary" className="shrink-0 whitespace-nowrap" disabled={busy} onClick={leaveSale}>Done</Button>
-            : <Button allowOffline variant="secondary" className="shrink-0 whitespace-nowrap" disabled={sellable.length === 0} onClick={() => setMode('sell')}>Sell gear</Button>}
+            ? <Button allowOffline variant="secondary" className="w-28 shrink-0 whitespace-nowrap" disabled={busy} onClick={leaveSale}>Done</Button>
+            : <Button allowOffline variant="secondary" className="w-28 shrink-0 whitespace-nowrap" disabled={sellable.length === 0} onClick={() => setMode('sell')}>Sell</Button>}
         </div>
         <p className="mt-1 min-h-5 text-sm text-muted">
           {mode === 'sell'
@@ -234,7 +234,7 @@ function Inventory() {
         </> : null}
       </Sheet>
 
-      <NoticeBar notice={notice} lifted={mode === 'sell'} onDismiss={() => setNotice(null)} />
+      <NoticeBar notice={notice} lifted={mode === 'sell'} onDismiss={dismiss} />
     </div>
   )
 }
@@ -268,7 +268,7 @@ function ItemSheet({ item, hero, current, manageable, reason, busy, full, intent
     </div>
     <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
       <dt className="caps text-muted">{statLabel(item)}</dt>
-      <dd className="tabular-nums"><StatOf item={item} />{!item.equipped ? <span className={`font-semibold ${delta > 0 ? 'text-xp-ink' : delta < 0 ? 'text-hp-ink' : 'text-muted'}`}>{delta > 0 ? ` (+${delta} upgrade)` : delta < 0 ? ` (${delta} vs equipped)` : ' (same as equipped)'}</span> : null}</dd>
+      <dd className="tabular-nums"><StatOf item={item} />{!item.equipped ? <Delta delta={delta} /> : null}</dd>
       {!item.equipped ? <><dt className="caps text-muted">Equipped</dt><dd className="tabular-nums">{current ? <>{current.label}, <StatOf item={current} /></> : <span className="text-muted">Nothing</span>}</dd></> : null}
       {item.affix ? <><dt className="caps text-muted">{item.affix.name}</dt><dd>{item.affix.blurb}</dd></> : null}
       <dt className="caps text-muted">Sells for</dt>
@@ -288,31 +288,6 @@ function ItemSheet({ item, hero, current, manageable, reason, busy, full, intent
       <Button allowOffline variant="quiet" className={item.equipped || item.held ? '' : 'col-span-2'} disabled={busy} onClick={onClose}>Close</Button>
     </div>
   </>
-}
-
-/** The latest action's outcome, pinned above the phone's bottom edge (and above the sale bar). Successes clear themselves. */
-function NoticeBar({ notice, lifted, onDismiss }: { notice: Notice | null; lifted: boolean; onDismiss: () => void }) {
-  const dismiss = useRef(onDismiss)
-  dismiss.current = onDismiss
-  useEffect(() => {
-    if (!notice || notice.kind === 'error') return
-    const timer = setTimeout(() => dismiss.current(), 5000)
-    return () => clearTimeout(timer)
-  }, [notice])
-  const text = notice?.text ?? ''
-  return (
-    <div className={`pointer-events-none fixed inset-x-0 z-30 flex justify-center px-4 ${lifted ? 'bottom-[calc(5.5rem+env(safe-area-inset-bottom))]' : 'bottom-[calc(1rem+env(safe-area-inset-bottom))]'}`}>
-      <div role="status" aria-live="polite" className="contents">{notice?.kind === 'ok' ? <NoticePanel text={text} tone="text-xp-ink" onDismiss={onDismiss} /> : null}</div>
-      <div role="alert" className="contents">{notice?.kind === 'error' ? <NoticePanel text={text} tone="text-hp-ink" onDismiss={onDismiss} /> : null}</div>
-    </div>
-  )
-}
-
-function NoticePanel({ text, tone, onDismiss }: { text: string; tone: string; onDismiss: () => void }) {
-  return <div className="window pointer-events-auto flex w-full max-w-md items-center gap-3 px-4 py-2 text-sm">
-    <p className={`min-w-0 flex-1 font-semibold ${tone}`}>{text}</p>
-    <button type="button" aria-label="Dismiss" onClick={onDismiss} className="hud text-hud-sm flex size-11 shrink-0 items-center justify-center text-muted hover:text-ink">×</button>
-  </div>
 }
 
 type Ladder = {
@@ -363,8 +338,8 @@ function Merchant({ visit, gold, potions, cap, disabled, intent }: { visit: Visi
 function BagLadder({ ladder, capacity, gold, disabled, intent }: { ladder: Ladder; capacity: number; gold: number; disabled: boolean; intent: PurchaseIntent<{ tierId: string }> }) {
   const next = ladder.next
   const affordable = next?.price != null && gold >= next.price
-  return <Card title={ladder.name}>
-    <p className="tabular-nums">Holds <strong>{capacity}</strong> pieces of gear. Equipped gear and potions don’t take up space.</p>
+  return <Card title="Bigger bags">
+    <p className="tabular-nums">Your <strong>{ladder.name}</strong> holds <strong>{capacity}</strong> pieces of gear. Equipped gear and potions don’t take up space.</p>
     {next ? <>
       <p className="mt-3"><strong>Next: {next.name}</strong>, {next.capacity} slots</p>
       <p className="mt-1 text-sm text-muted">{next.milestoneAdventures !== null ? `Yours after ${next.milestoneAdventures} adventures` : `Yours at level ${next.milestoneLevel}`}, or sooner if your hero finds one.</p>
@@ -376,8 +351,14 @@ function BagLadder({ ladder, capacity, gold, disabled, intent }: { ladder: Ladde
   </Card>
 }
 
+/** A piece's own figure stays neutral; only a comparison takes a colour (green better, red worse). */
 function StatOf({ item }: { item: Gear }) {
-  return <span className={item.kind === 'weapon' ? 'text-hp-ink' : 'text-sky-ink'}>+{statOf(item)} {statLabel(item)}</span>
+  return <span>+{statOf(item)} {statLabel(item)}</span>
+}
+
+/** The difference against the equipped piece, signed and coloured by direction. */
+function Delta({ delta }: { delta: number }) {
+  return <span className={`font-semibold ${delta > 0 ? 'text-xp-ink' : delta < 0 ? 'text-hp-ink' : 'text-muted'}`}>{delta > 0 ? ` (+${delta} better)` : delta < 0 ? ` (${delta} worse)` : ' (same)'}</span>
 }
 
 function ResumeAt() {

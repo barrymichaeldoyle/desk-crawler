@@ -7,7 +7,7 @@ import { pctOf } from '@trmnl-games/desk-crawler/sim/core/stats'
 import { api } from '@trmnl-games/backend/api'
 import { seo } from '../../../lib/seo'
 import { artUrl, useIntent } from '../../../lib/intent'
-import { ActionFeedback, BUTTON_PRIMARY, Button, LoadingState } from '../../../lib/ui'
+import { BUTTON_PRIMARY, Button, LoadingState, NoticeBar, useNotice } from '../../../lib/ui'
 import { BIOME_SWATCH } from '../../../lib/palette'
 import { preload } from '../../../lib/preload'
 import { ReturnRecap } from './-recap'
@@ -147,19 +147,21 @@ type Stance = { id: StanceId; name: string; blurb: string; potionBelowPct: numbe
 
 function HeroSheet({ hero }: { hero: HeroView }) {
   const { data: bag } = useQuery(convexQuery(api.inventory.mine, {}))
-  const travel = useIntent(api.heroes.changeBiome)
-  const potion = useIntent(api.inventory.usePotion)
-  const pause = useIntent(api.heroes.pause)
-  const resume = useIntent(api.heroes.resume)
-  const stance = useIntent(api.heroes.setStance)
-  const choose = useIntent(api.heroes.choose)
-  const [action, setAction] = useState<'potion' | 'pause' | 'resume' | null>(null)
-  const feedback = action ? { potion, pause, resume }[action] : null
+  // Every command reports into one pinned notice (D98), so nothing under the buttons moves when an action settles.
+  const { notice, notify, dismiss } = useNotice()
+  const travel = useIntent(api.heroes.changeBiome, { onFeedback: notify })
+  const potion = useIntent(api.inventory.usePotion, { onFeedback: notify })
+  const pause = useIntent(api.heroes.pause, { onFeedback: notify })
+  const resume = useIntent(api.heroes.resume, { onFeedback: notify })
+  const stance = useIntent(api.heroes.setStance, { onFeedback: notify })
+  const choose = useIntent(api.heroes.choose, { onFeedback: notify })
   const healthy = hero.simulationState !== 'quarantined'
   const canAct = healthy && (hero.status === 'exploring' || hero.status === 'resting')
-  const busy = travel.pending || potion.pending || pause.pending || resume.pending || stance.pending || choose.pending
+  // Only the acting control shows busy (D98); the rest stay live, since the backend serialises intents anyway.
+  const [pendingStance, setPendingStance] = useState<StanceId | null>(null)
   const healing = Math.min(hero.maxHp - hero.hp, pctOf(hero.maxHp, POTION_HEAL_PCT))
   const potionLabel = !bag ? 'Drink potion' : !bag.potions ? 'No potions' : hero.hp >= hero.maxHp ? `Drink potion (${bag.potions})` : `Drink potion +${healing} HP (${bag.potions})`
+  const chosenStance = hero.stances.find((option) => option.id === hero.stance) ?? null
 
   const stopNote = hero.status === 'paused' ? 'Resume adventures to travel.' : hero.status === 'sleeping' ? 'Make room in your bag to travel.' : hero.status === 'dead' ? 'Travel opens again once your hero is back on their feet.' : null
 
@@ -174,17 +176,17 @@ function HeroSheet({ hero }: { hero: HeroView }) {
               </Link>
             ) : null}
             {hero.status === 'paused' ? (
-              <Button pending={resume.pending} busyLabel="Resuming…" disabled={!healthy || busy} onClick={() => { setAction('resume'); return resume.run({}, 'Adventures resumed. Your hero joins the next adventure.') }}>
+              <Button pending={resume.pending} busyLabel="Resuming…" disabled={!healthy} onClick={() => resume.run({}, 'Adventures resumed. Your hero joins the next adventure.')}>
                 Resume adventures
               </Button>
             ) : null}
             {canAct ? (
-              <Button variant={hero.hp < hero.maxHp && bag?.potions ? 'primary' : 'secondary'} pending={potion.pending} busyLabel="Drinking…" disabled={busy || hero.hp >= hero.maxHp || !bag?.potions} onClick={() => { setAction('potion'); return potion.run({}, `Potion drunk, +${healing} HP.`) }}>
+              <Button variant={hero.hp < hero.maxHp && bag?.potions ? 'primary' : 'secondary'} pending={potion.pending} busyLabel="Drinking…" disabled={hero.hp >= hero.maxHp || !bag?.potions} onClick={() => potion.run({}, `Potion drunk, +${healing} HP.`)}>
                 {potionLabel}
               </Button>
             ) : null}
             {canAct ? (
-              <Button variant="secondary" pending={pause.pending} busyLabel="Pausing…" disabled={busy} onClick={() => { setAction('pause'); return pause.run({}, 'Adventures paused.') }}>
+              <Button variant="secondary" pending={pause.pending} busyLabel="Pausing…" onClick={() => pause.run({}, 'Adventures paused.')}>
                 Pause adventures
               </Button>
             ) : null}
@@ -193,7 +195,6 @@ function HeroSheet({ hero }: { hero: HeroView }) {
         {hero.effects.length > 0 ? <ul aria-label="Effects" className="flex flex-wrap gap-2 text-sm">{hero.effects.map((effect) => <li key={effect.id} className={`border-[3px] px-2 py-1 ${effect.kind === 'bane' ? 'border-hp-ink' : 'border-night'}`}><strong>{effect.name}</strong> · {effect.blurb} · {effect.ticksLeft === 1 ? 'one adventure' : `${effect.ticksLeft} adventures`} left</li>)}</ul> : null}
         {hero.merchantTicksLeft !== null ? <p className="text-sm"><strong>A merchant is visiting.</strong> <Link to="/app/desk-crawler/inventory" className="underline underline-offset-4">See the offers in your bag</Link> within {hero.merchantTicksLeft === 1 ? 'one adventure' : `${hero.merchantTicksLeft} adventures`}.</p> : null}
         {!healthy ? <p className="text-sm">Paused for a service check. <Link to="/support" className="underline underline-offset-4">Contact support</Link> if it lasts.</p> : null}
-        <ActionFeedback error={feedback?.error ?? null} message={feedback?.message ?? null} />
       </section>
 
       {hero.choice ? (
@@ -204,52 +205,62 @@ function HeroSheet({ hero }: { hero: HeroView }) {
             {hero.choice.options.map((option) => {
               const parts = [option.change.gold ? `${option.change.gold > 0 ? '+' : '−'}${Math.abs(option.change.gold)} gold` : null, option.change.hp ? `${option.change.hp > 0 ? '+' : '−'}${Math.abs(option.change.hp)} HP` : null, option.change.potions ? `+${option.change.potions} ${option.change.potions === 1 ? 'potion' : 'potions'}` : null].filter(Boolean)
               return (
-                <Button key={option.id} variant={option.id === hero.choice!.defaultOptionId ? 'secondary' : 'primary'} pending={choose.pending} busyLabel="Deciding…" disabled={!healthy || busy} onClick={() => choose.run({ optionId: option.id }, 'Decided.')}>
+                <Button key={option.id} variant={option.id === hero.choice!.defaultOptionId ? 'secondary' : 'primary'} pending={choose.pending} busyLabel="Deciding…" disabled={!healthy} onClick={() => choose.run({ optionId: option.id }, 'Decided.')}>
                   {option.label}{parts.length ? ` (${parts.join(', ')})` : ''}
                 </Button>
               )
             })}
           </div>
           <p className="text-sm text-muted">Decides itself in {hero.choice.ticksLeft === 1 ? 'one adventure' : `${hero.choice.ticksLeft} adventures`}: {hero.choice.options.find((option) => option.id === hero.choice!.defaultOptionId)?.label ?? 'the default'}.</p>
-          <ActionFeedback {...choose} />
         </section>
       ) : null}
 
       {hero.stances.length > 0 ? (
         <section aria-labelledby="stance-title" className="flex flex-col gap-3">
-          <h2 id="stance-title" className="font-display text-3xl font-bold">Stance</h2>
-          <p className="text-sm text-muted">How carefully your hero looks after itself between fights. Changes apply from the next adventure.</p>
-          <div role="radiogroup" aria-label="Stance" className="grid gap-3 sm:grid-cols-3">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+            <h2 id="stance-title" className="font-display text-3xl font-bold">Stance</h2>
+            <p className="text-sm text-muted">Applies from the next adventure.</p>
+          </div>
+          {/* One segmented row, like the ranking period: the chosen cell is pressed and its rule reads underneath. */}
+          <div role="radiogroup" aria-label="Stance" className="flex border-2 border-edge">
             {hero.stances.map((option) => {
               const chosen = option.id === hero.stance
+              const switching = stance.pending && pendingStance === option.id
               return (
-                <button key={option.id} type="button" role="radio" aria-checked={chosen} disabled={!healthy || busy} onClick={() => { if (!chosen) void stance.run({ stance: option.id }, `${option.name} stance from the next adventure.`) }} className={`flex min-w-0 flex-col gap-1 border-[3px] p-4 text-left ${chosen ? 'border-night bg-night text-gold-ink' : 'border-night bg-panel'} disabled:opacity-60`}>
-                  <span className="font-display text-2xl font-bold">{option.name}{chosen ? ' ✓' : ''}</span>
-                  <span className="text-sm">{option.blurb}</span>
-                  <span className={`text-xs ${chosen ? '' : 'text-muted'}`}>Potion below {option.potionBelowPct}% · rest below {option.restBelowPct}% · back out at {option.resumeAtPct}% · {option.victoryXpPct}% XP from wins</span>
+                <button key={option.id} type="button" role="radio" aria-checked={chosen} aria-busy={switching || undefined} disabled={!healthy || stance.pending} onClick={async () => { if (chosen) return; setPendingStance(option.id); await stance.run({ stance: option.id }, `${option.name} stance from the next adventure.`); setPendingStance(null) }} className={`menu-cursor flex min-h-11 flex-1 items-center justify-center px-2 py-2 label-px not-last:border-r-2 not-last:border-edge ${chosen ? 'bg-navy text-gold' : switching ? 'bg-rule text-ink' : 'text-muted hover:bg-rule hover:text-ink active:bg-rule active:text-ink disabled:text-muted'}`}>
+                  {switching ? 'Switching…' : option.name}
                 </button>
               )
             })}
           </div>
-          <ActionFeedback {...stance} />
+          {chosenStance ? (
+            <p className="min-h-10 text-sm" aria-live="polite">
+              <strong>{chosenStance.name}.</strong> {chosenStance.blurb}{' '}
+              <span className="text-muted tabular-nums">Potion below {chosenStance.potionBelowPct}% · rest below {chosenStance.restBelowPct}% · back out at {chosenStance.resumeAtPct}% · {chosenStance.victoryXpPct}% XP from wins.</span>
+            </p>
+          ) : null}
         </section>
       ) : null}
 
       <section aria-labelledby="map-title">
         <h2 id="map-title" className="font-display text-3xl font-bold">World map</h2>
-        <ol className="mt-4 grid gap-3 sm:grid-cols-3 sm:gap-[15px]">
+        {/* Phones get one row per world (number, name, status, Travel); from 640px the three tiles sit side by side on their dashed path. */}
+        <ol className="mt-4 grid gap-2 sm:grid-cols-3 sm:gap-[15px]">
           {hero.biomes.map((biome, index) => {
             const here = biome.id === hero.biomeId
             const onTheWay = biome.id === hero.targetBiomeId
             return (
-              <li key={biome.id} aria-current={here ? 'location' : undefined} className={`relative flex min-w-0 flex-col gap-1 p-4 sm:not-last:after:absolute sm:not-last:after:top-1/2 sm:not-last:after:-right-[15px] sm:not-last:after:w-[15px] sm:not-last:after:border-t-4 sm:not-last:after:border-dashed sm:not-last:after:border-gold sm:not-last:after:content-[''] ${biome.unlocked ? `border-[3px] border-night ${BIOME_SWATCH[biome.id] ?? 'bg-panel'}` : 'border-[3px] border-dashed border-faint bg-panel text-muted'} ${here ? 'outline-4 outline-gold' : ''}`}>
-                <span className="flex items-center gap-2 font-display text-2xl font-bold">
-                  <span aria-label={`World ${index + 1}`} className="hud grid size-7 shrink-0 place-items-center border-[3px] border-night bg-night text-hud-sm text-gold-ink">{index + 1}</span>
-                  {biome.name}
+              <li key={biome.id} aria-current={here ? 'location' : undefined} className={`relative flex min-w-0 items-center gap-3 px-3 py-2 sm:flex-col sm:items-stretch sm:gap-1 sm:p-4 sm:not-last:after:absolute sm:not-last:after:top-1/2 sm:not-last:after:-right-[15px] sm:not-last:after:w-[15px] sm:not-last:after:border-t-4 sm:not-last:after:border-dashed sm:not-last:after:border-gold sm:not-last:after:content-[''] ${biome.unlocked ? `border-[3px] border-night ${BIOME_SWATCH[biome.id] ?? 'bg-panel'}` : 'border-[3px] border-dashed border-faint bg-panel text-muted'} ${here ? 'outline-4 outline-gold' : ''}`}>
+                <span aria-label={`World ${index + 1}`} className="hud grid size-7 shrink-0 place-items-center border-[3px] border-night bg-night text-hud-sm text-gold-ink sm:hidden">{index + 1}</span>
+                <span className="flex min-w-0 flex-1 flex-col sm:gap-1">
+                  <span className="flex items-center gap-2 font-display text-xl font-bold sm:text-2xl">
+                    <span aria-hidden="true" className="hud hidden size-7 shrink-0 place-items-center border-[3px] border-night bg-night text-hud-sm text-gold-ink sm:grid">{index + 1}</span>
+                    <span className="truncate">{biome.name}</span>
+                  </span>
+                  <span className="text-sm font-semibold">{biome.unlocked ? (here ? 'Exploring' : onTheWay ? 'Arriving next adventure' : 'Unlocked') : `Locked until level ${biome.unlockLevel}`}</span>
                 </span>
-                <span className="text-sm font-semibold">{biome.unlocked ? (here ? 'Exploring' : onTheWay ? 'Arriving next adventure' : 'Unlocked') : `Locked until level ${biome.unlockLevel}`}</span>
                 {biome.unlocked && !here && !onTheWay ? (
-                  <Button className="mt-2 self-start" pending={travel.pending} busyLabel="Travelling…" aria-label={`Travel to ${biome.name}`} disabled={!canAct || busy} onClick={() => travel.run({ biomeId: biome.id }, `Travelling to ${biome.name}. Arrive on the next adventure.`)}>
+                  <Button className="shrink-0 sm:mt-2 sm:self-start" pending={travel.pending} busyLabel="Travelling…" aria-label={`Travel to ${biome.name}`} disabled={!canAct} onClick={() => travel.run({ biomeId: biome.id }, `Travelling to ${biome.name}. Arrive on the next adventure.`)}>
                     Travel
                   </Button>
                 ) : null}
@@ -258,8 +269,9 @@ function HeroSheet({ hero }: { hero: HeroView }) {
           })}
         </ol>
         {!canAct && hero.status !== 'travelling' && stopNote ? <p className="mt-3 text-sm text-muted">{stopNote}</p> : null}
-        <ActionFeedback {...travel} />
       </section>
+
+      <NoticeBar notice={notice} onDismiss={dismiss} />
     </div>
   )
 }

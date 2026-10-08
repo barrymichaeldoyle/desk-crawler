@@ -296,8 +296,14 @@ describe('X half, side and quarter arrangements (D95)', () => {
       expect(view).toContain('data-story-chips-inline="true"')
       expect(view).toMatch(/data-counters="words"/)
     }
-    // Three rows under the landscape scene, five beside the portrait scene.
+    // Three rows in the landscape details column, five beside the portrait scene.
     expect(landscape.split('data-board-column="x"')[1]!.match(/data-rank-row=/g)).toHaveLength(3)
+    // The landscape (D97): the details column holds the hero, the HUD with the gear on two lines and the board; a
+    // vertical rule, then the scene and code over the rune rule and the ledger.
+    const x = landscape.slice(landscape.indexOf('data-details-column="x"'))
+    const order = ['data-hero-header="x"', 'data-hp-count="true"', 'data-gear-line="stacked"', 'data-board-column="x"', 'data-column-rule="true"', 'data-scene-row="x"', 'data-companion-qr="true"', 'data-rune-rule="true"', 'data-ledger="x"'].map(marker => x.indexOf(marker))
+    expect(order.every(index => index >= 0)).toBe(true)
+    expect(order).toEqual([...order].sort((a, b) => a - b))
     expect(portrait.split('data-board-column="x"')[1]!.match(/data-rank-row=/g)).toHaveLength(5)
   })
 

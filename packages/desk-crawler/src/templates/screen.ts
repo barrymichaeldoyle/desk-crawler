@@ -1,5 +1,6 @@
 /**
- * Four self-contained TRMNL layouts. Template v40 gives the X its own half, side and quarter arrangements (D95): the
+ * Four self-contained TRMNL layouts. Template v41 rearranges the X's landscape half (D97): a details column (hero, HUD,
+ * gear on two lines, board) beside a vertical rule, then the scene and code over the rune rule and the ledger. Template v40 gives the X its own half, side and quarter arrangements (D95): the
  * half views take the full layout's header, scene, board and one-line ledger; the side stacks the header over the scene
  * (its bag code hung in the corner in landscape), the stories and a board; the quarter shows the HP and XP counts with
  * the code beside the name. The OG keeps its arrangements, each block marked `lg:hidden`. Template v39 lifts the OG-sized panels (D94): the full landscape sets a 3x scene
@@ -27,7 +28,7 @@
 import { GLYPHS, glyphRows } from '../art/glyphs'
 import { hudMarkUri } from '../art/hud'
 
-export const TEMPLATE_VERSION = 40
+export const TEMPLATE_VERSION = 41
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -525,6 +526,8 @@ const bagQr = (scale = 3, largeScale = 4, caption = true) => `
  */
 const gearName = (field: string) => `<span class="text--bold inline-block">{% if ${field} != "" %}{{ ${field} | escape }}{% else %}None{% endif %}</span>`
 const gearLine = `{% assign gear_plain = weapon | default: "None" | append: armor | default: "None" %}<div class="hidden lg:block stretch-x" data-gear-line="true"><span class="title--small text--regular" ${fitClamp('gear_plain', 1, 44)}>Weapon ${gearName('weapon')} · Armor ${gearName('armor')}</span></div>`
+/** The gear on two lines, weapon over armor, for the X half's narrow details column (D97). */
+const gearLines = `<div class="flex flex--col flex--left gap--xsmall stretch-x" data-gear-line="stacked"><span class="title--small text--regular">Weapon ${gearName('weapon')}</span><span class="title--small text--regular">Armor ${gearName('armor')}</span></div>`
 /**
  * The OG's gear line: the attack and defense marks name the slots, since the HUD block has no width for the words, and
  * each name clamps on its own so a long weapon never hides the armor.
@@ -655,9 +658,13 @@ const fullPortrait = `
 const xBlock = (inner: string, classes = 'no-shrink') => `<div class="hidden lg:block ${classes} stretch-x">${inner}</div>`
 /**
  * The hero's name and level with the attack and defense marks. Narrow columns clamp a name longer than `clamp`
- * characters to one line; shorter names never clamp, since the clamp measures before the row settles.
+ * characters to one line; shorter names never clamp, since the clamp measures before the row settles. `wrap` lets the
+ * attack and defense marks drop under a name too wide to share their line (the X half's details column, D97).
  */
-const xName = (clamp = 0, size = 'title') => nameRow(`<span class="${size} ${clamp ? `w--min-0" data-clamp="{% if hero_name.size > ${clamp} %}1{% else %}0{% endif %}" data-clamp-lg="{% if hero_name.size > ${clamp} %}1{% else %}0{% endif %}` : 'no-shrink'}">{{ hero_name | escape }}, level {{ level }}</span>`)
+const xName = (clamp = 0, size = 'title', wrap = false) => {
+  const row = nameRow(`<span class="${size} ${clamp ? `w--min-0" data-clamp="{% if hero_name.size > ${clamp} %}1{% else %}0{% endif %}" data-clamp-lg="{% if hero_name.size > ${clamp} %}1{% else %}0{% endif %}` : 'no-shrink'}">{{ hero_name | escape }}, level {{ level }}</span>`)
+  return wrap ? row.replace('flex--center-y gap--small stretch-x" data-name-row', 'flex--wrap flex--center-y gap--small stretch-x" data-name-row') : row
+}
 /**
  * The full layout's header: hero, status and named counters beside the hearts, XP and gear, with a code at the end. As
  * in the full portrait (D93) the HUD slot grows from no basis with a minimum that holds a hearts row and its count, so
@@ -700,16 +707,26 @@ const xLedger = (inline: boolean, recapLines: number) => `<div class="grow w--mi
     </div>`
 
 /**
- * Half, landscape on the X: the full header, a rune rule, then the scene and a board beside a one-line ledger. The board
- * shows up to three rows, fitted to its slot, which the recap ribbon or a taller header can shorten.
+ * Half, landscape on the X (D97): a details column (the hero, status and named counters over the hearts, XP and gear,
+ * then a board fitted to what is left of the column) beside a vertical rule; to its right the scene and the code over a
+ * rune rule, then a one-line ledger. The board shows up to three rows, which the recap ribbon or a long name can shorten.
  */
 const xHalfWide = `
-  ${xBlock(xHeader(xCode))}
-  ${xBlock(divider)}
-  ${xBlock(`<div class="flex flex--row flex--top gap--large h--full stretch-x">
-    <div class="no-shrink w--80 flex flex--col flex--top gap--small">${xScene('scene_url_small')}${xBoard(3, true)}</div>
-    ${xLedger(true, 0)}
-  </div>`, 'grow h--min-0" data-fit-bound="true')}`
+  ${xBlock(`<div class="grid h--full stretch-x gap--large">
+    <div class="col--span-4 h--full w--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--medium" data-fit-bound="true" data-details-column="x">
+      <div class="flex flex--col flex--left gap--xsmall stretch-x" data-hero-header="x">${xName(12, 'title', true)}${statusLine(2, 56)}${heroCounters}</div>
+      <div class="flex flex--col flex--left gap--xsmall stretch-x" data-hud-block="true">${hudWide(false)}${gearLines}</div>
+      ${xBoard(3, true)}
+    </div>
+    <div class="col--span-8 h--full w--min-0 flex flex--row flex--stretch-y gap--large">
+      ${columnRule}
+      <div class="grow w--min-0 h--full flex flex--col flex--top flex--stretch-x gap--small">
+        <div class="no-shrink flex flex--row flex--center-y gap--large stretch-x"><div class="grow w--min-0 flex flex--row flex--center-x">${xScene('scene_url_small')}</div>${xCode}</div>
+        <div class="no-shrink stretch-x">${divider}</div>
+        ${xLedger(true, 0)}
+      </div>
+    </div>
+  </div>`, 'grow h--min-0')}`
 
 /**
  * Half, portrait on the X: the full header, the scene (the bag code hung in its corner, so the header keeps the width

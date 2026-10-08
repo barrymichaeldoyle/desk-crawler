@@ -1,0 +1,232 @@
+[
+ {
+  "file": "arrivalRecap--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   5
+  ]
+ },
+ {
+  "file": "choice--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   3
+  ]
+ },
+ {
+  "file": "dead--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   1
+  ]
+ },
+ {
+  "file": "denseLong--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   3
+  ]
+ },
+ {
+  "file": "denseShort--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   5
+  ]
+ },
+ {
+  "file": "elite--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   5
+  ]
+ },
+ {
+  "file": "emptyHistory--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": []
+ },
+ {
+  "file": "emptyWindow--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   5
+  ]
+ },
+ {
+  "file": "expense--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   5
+  ]
+ },
+ {
+  "file": "firstRun--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": []
+ },
+ {
+  "file": "fullBagRecap--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   1
+  ]
+ },
+ {
+  "file": "knockoutRecap--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   1
+  ]
+ },
+ {
+  "file": "largeRanking--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   5
+  ]
+ },
+ {
+  "file": "levelUp--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   5
+  ]
+ },
+ {
+  "file": "longHero--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   5
+  ]
+ },
+ {
+  "file": "longText--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   4
+  ]
+ },
+ {
+  "file": "merchant--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   3
+  ]
+ },
+ {
+  "file": "milestones--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   4
+  ]
+ },
+ {
+  "file": "missingQr--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   9
+  ]
+ },
+ {
+  "file": "noMetadata--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   6
+  ]
+ },
+ {
+  "file": "normal--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   5
+  ]
+ },
+ {
+  "file": "officeDay--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   1
+  ]
+ },
+ {
+  "file": "officeNight--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   1
+  ]
+ },
+ {
+  "file": "overnight--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   5
+  ]
+ },
+ {
+  "file": "partial--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   5
+  ]
+ },
+ {
+  "file": "paused--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   5
+  ]
+ },
+ {
+  "file": "quarantined--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   1
+  ]
+ },
+ {
+  "file": "quietMorning--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   5
+  ]
+ },
+ {
+  "file": "recoveredRecap--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   5
+  ]
+ },
+ {
+  "file": "sleeping--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   1
+  ]
+ },
+ {
+  "file": "stale--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   1
+  ]
+ },
+ {
+  "file": "travelling--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": [
+   6
+  ]
+ },
+ {
+  "file": "unlinked--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": []
+ },
+ {
+  "file": "unlinkedPaused--x--markup_half_horizontal.html",
+  "ok": true,
+  "stories": []
+ }
+]

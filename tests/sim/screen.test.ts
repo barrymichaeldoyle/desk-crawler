@@ -309,12 +309,28 @@ describe('X half, side and quarter arrangements (D95)', () => {
     expect(portrait.split('data-board-column="x"')[1]!.match(/data-rank-row=/g)).toHaveLength(5)
   })
 
-  it('hangs the bag code in the side scene and closes the column with a board', async () => {
-    const { landscape, portrait } = await views(screenMarkup.markup_half_vertical)
-    expect(landscape).toMatch(/data-scene-row="x"><img[^>]*><div class="absolute top--0 right--0 flex bg--black p--1" data-companion-qr="true">/)
-    for (const view of [landscape, portrait]) expect(view.split('data-board-column="x"')[1]!.match(/data-rank-row=/g)).toHaveLength(5)
-    // The narrower portrait column keeps its code at the foot, under the board.
+  it('sets the side code in the header corner, the gear behind its marks and the recap ribbon at the foot (D104)', async () => {
+    const recap = { label: 'Night recap', span: '19:00-07:00', items: [{ k: 'xp', t: '+182 XP' }] }
+    const html = await new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup.markup_half_vertical, { ...vars, recap, weapon: 'Uncommon Cable Cutter' })
+    const [landscape, portrait] = html.split('landscape:hidden') as [string, string]
+    // Landscape: the code closes the header row, the gear follows it, and the scene carries no code.
+    const x = landscape.slice(landscape.indexOf('data-hero-header="x"'))
+    const order = ['data-hero-header="x"', 'data-companion-qr="true"', 'data-gear-line="icons"', 'data-scene-row="x"', 'data-ledger="x"', 'data-board-column="x"', 'data-recap-ribbon="true"'].map(marker => x.indexOf(marker))
+    expect(order.every(index => index >= 0)).toBe(true)
+    expect(order).toEqual([...order].sort((a, b) => a - b))
+    expect(x).toMatch(/data-gear-line="icons"><div[^>]*><img[^>]*src="[^"]+"[^>]*><span class="title--small text--regular"><span class="text--bold inline-block">Uncommon Cable Cutter<\/span>/)
+    expect(x).not.toMatch(/data-scene-row="x"><img[^>]*><div/)
+    expect(x.split('data-board-column="x"')[1]!.match(/data-rank-row=/g)).toHaveLength(4)
+    expect(x.slice(0, x.indexOf('data-recap-ribbon')).match(/data-recap-items/g)).toBeNull()
+    // The narrower portrait column keeps the gear words, the recap over its stories, five rows and its code at the foot.
+    expect(portrait).toContain('data-gear-line="true"')
+    expect(portrait).not.toContain('data-recap-ribbon')
+    expect(portrait.split('data-board-column="x"')[1]!.match(/data-rank-row=/g)).toHaveLength(5)
     expect(portrait.lastIndexOf('data-companion-qr')).toBeGreaterThan(portrait.indexOf('data-board-column="x"'))
+    // The quarter landscape takes the same ribbon after its stories.
+    const quadrant = (await new Liquid({ timezoneOffset: 0 }).parseAndRender(screenMarkup.markup_quadrant, { ...vars, recap })).split('landscape:hidden')[0]!
+    const q = quadrant.slice(quadrant.indexOf('data-ledger="x"'))
+    expect(q.indexOf('data-recap-ribbon="true"')).toBeGreaterThan(q.indexOf('data-story-list'))
   })
 
   it('gives the quarter the HP and XP counts, with the code beside the name in landscape', async () => {

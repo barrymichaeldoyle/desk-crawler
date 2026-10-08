@@ -1,5 +1,8 @@
 /**
- * Four self-contained TRMNL layouts. Template v44 shows the stance beside the bag count under a gauge mark (D103).
+ * Four self-contained TRMNL layouts. Template v45 moves the X side landscape's code to the header's top-right corner,
+ * names its gear by the attack and defense marks, shows four board rows and sets the recap as a ribbon at the foot,
+ * as the X quarter landscape now does too (D104).
+ * Template v44 shows the stance beside the bag count under a gauge mark (D103).
  * Template v43 stands the rune rule on end between the X landscape half's columns
  * and puts a thin rule under its scene (D97). Template v42 sets the X landscape half's scene at 3x (D97). Template v41 rearranges the X's landscape half (D97): a details column (hero, HUD,
  * gear on two lines, board) beside a vertical rule, then the scene and code over the rune rule and the ledger. Template v40 gives the X its own half, side and quarter arrangements (D95): the
@@ -30,7 +33,7 @@
 import { GLYPHS, glyphRows } from '../art/glyphs'
 import { hudMarkUri } from '../art/hud'
 
-export const TEMPLATE_VERSION = 44
+export const TEMPLATE_VERSION = 45
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -548,6 +551,13 @@ const gearLine = `{% assign gear_plain = weapon | default: "None" | append: armo
 /** The gear on two lines, weapon over armor, for the X half's narrow details column (D97). */
 const gearLines = `<div class="flex flex--col flex--left gap--xsmall stretch-x" data-gear-line="stacked"><span class="title--small text--regular">Weapon ${gearName('weapon')}</span><span class="title--small text--regular">Armor ${gearName('armor')}</span></div>`
 /**
+ * The gear behind the attack and defense marks instead of the slot words, for the X side's header: each item keeps its
+ * mark, and the armor drops under the weapon where both names don't fit one line.
+ */
+const gearIcon = (icon: string, field: string) =>
+  `<div class="flex flex--row flex--center-y gap--[3px] w--min-0"><img class="${COUNTER_ICON}" src="{{ ${icon} }}" alt=""><span class="title--small text--regular">${gearName(field)}</span></div>`
+const gearIcons = `<div class="flex flex--row flex--wrap flex--left flex--center-y gap--small stretch-x" data-gear-line="icons">${gearIcon('hud_sword', 'weapon')}${gearIcon('hud_shield', 'armor')}</div>`
+/**
  * The OG's gear line: the attack and defense marks name the slots, since the HUD block has no width for the words, and
  * each name clamps on its own so a long weapon never hides the armor.
  */
@@ -696,7 +706,7 @@ const xHeader = (code: string) => `<div class="flex flex--row flex--top gap--lar
       </div></div>${code}
     </div>`
 /** A column's stacked header: the name line, status and named counters, then the hearts, XP and gear lines. */
-const xStackedHeader = (clamp: number) => `<div class="flex flex--col flex--left flex--stretch-x gap--xsmall stretch-x" data-hero-header="x">${xName(clamp)}${statusLine(2, 40)}${heroCounters}${hearts(true)}${xpTicks()}${gearLine}</div>`
+const xStackedHeader = (clamp: number, gear = gearLine) => `<div class="flex flex--col flex--left flex--stretch-x gap--xsmall stretch-x" data-hero-header="x">${xName(clamp)}${statusLine(2, 40)}${heroCounters}${hearts(true)}${xpTicks()}${gear}</div>`
 /**
  * The X header's code: the urgent code with its label when there is one, else the standing bag code. Unlabelled, as
  * in the full layout's corner (D88).
@@ -760,30 +770,39 @@ const xHalfTall = `
   ${xBlock(`<div class="flex flex--col flex--stretch-x h--full stretch-x">${xLedger(true, 1)}</div>`, 'grow h--min-0')}`
 
 /**
- * Side on the X: a stacked header, the scene with the bag code hung in its corner (an urgent code sits under it with
- * its label), a rune rule, the stories, then the board. The portrait column, narrower, takes the 2x scene and closes
- * with the bag code instead.
+ * Side on the X: the stacked header with the code in its top-right corner, the gear under both behind the attack and
+ * defense marks (one line where the slot words would wrap), the scene clear of any code, a rune rule, the stories, the board, then the recap ribbon
+ * at the foot as in the full portrait (D104). The portrait column, narrower, keeps the gear words, takes the 2x scene
+ * with the recap over the stories, and closes with the bag code instead.
  */
-const xSide = (portrait: boolean) => `
-  ${xBlock(xStackedHeader(portrait ? 10 : 0))}
-  ${xBlock(`<div class="flex flex--col flex--center-x gap--small stretch-x">${portrait ? xScene('scene_url_small') : xScene('scene_url_medium', xSceneCode)}${portrait ? '' : `{% if qr_base != "" %}${bagQr(3, 3)}{% endif %}`}${divider}</div>`)}
+const xSide = (portrait: boolean) => portrait
+  ? `
+  ${xBlock(xStackedHeader(10))}
+  ${xBlock(`<div class="flex flex--col flex--center-x gap--small stretch-x">${xScene('scene_url_small')}${divider}</div>`)}
   ${xBlock(`<div class="flex flex--col flex--stretch-x h--full stretch-x">${xLedger(false, 3)}</div>`, 'grow h--min-0')}
   ${xBlock(xBoard(5))}
-  ${portrait ? xBlock(qrFooter(3, 3)) : ''}`
+  ${xBlock(qrFooter(3, 3))}`
+  : `
+  ${xBlock(`<div class="flex flex--col flex--stretch-x gap--xsmall stretch-x"><div class="flex flex--row flex--top gap--large stretch-x"><div class="grow w--min-0">${xStackedHeader(12, '')}</div>${xCode}</div>${gearIcons}</div>`)}
+  ${xBlock(`<div class="flex flex--col flex--center-x gap--small stretch-x">${xScene('scene_url_medium')}${divider}</div>`)}
+  ${xBlock(`<div class="flex flex--col flex--stretch-x h--full stretch-x">${xLedger(false, 0)}</div>`, 'grow h--min-0')}
+  ${xBlock(xBoard(4))}
+  {% unless attention %}${xBlock(recapRibbon)}{% endunless %}`
 
 /**
  * Quarter on the X: the name line and status beside the bag code, the hearts and XP with their counts under them, then
- * the stories across the width. The landscape's tiny scene beside the code is gone; the portrait closes with the code.
+ * the stories across the width. The landscape's tiny scene beside the code is gone, and its recap is the ribbon at the
+ * foot as in the side (D104); the portrait keeps the recap over the stories and closes with the code.
  */
 const xQuadrant = (portrait: boolean) => `
   ${xBlock(portrait
     ? `<div class="flex flex--col flex--left flex--stretch-x gap--xsmall stretch-x" data-hero-header="x">${xName(10, 'title--small')}${hearts(true)}${xpTicks()}</div>`
     : `<div class="flex flex--row flex--top gap--medium stretch-x"><div class="grow w--min-0 flex flex--col flex--left flex--stretch-x gap--xsmall" data-hero-header="x">${xName(14, 'title--small')}${statusLine(1, 40)}${hearts(true)}${xpTicks()}</div>${xCode}</div>`)}
   ${xBlock(`<div class="flex flex--col flex--stretch-x h--full stretch-x"><div class="grow w--min-0 h--full flex flex--col flex--left flex--top flex--stretch-x gap--xsmall" data-ledger="x">
-      {% if attention %}${attention('title--small', 3)}{% else %}${attention('title--small', 3)}${recapBlock(2)}{% endif %}
+      {% if attention %}${attention('title--small', 3)}{% else %}${attention('title--small', 3)}${portrait ? recapBlock(2) : ''}{% endif %}
       ${storyList(2, 'title--small', 16, 40, portrait)}
     </div></div>`, 'grow h--min-0')}
-  ${portrait ? xBlock(qrFooter(3, 3)) : ''}`
+  ${portrait ? xBlock(qrFooter(3, 3)) : `{% unless attention %}${xBlock(recapRibbon)}{% endunless %}`}`
 
 /** Side, portrait: a narrow column. Hero and health first, the stories take the height, the companion QR closes the column. */
 const halfVerticalPortrait = `

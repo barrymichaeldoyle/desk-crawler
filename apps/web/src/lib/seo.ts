@@ -2,8 +2,10 @@ import { PLATFORM_ORIGIN, PLATFORM_NAME } from '@trmnl-games/platform'
 
 export const SITE_ORIGIN = PLATFORM_ORIGIN
 export const SITE_NAME = PLATFORM_NAME
+/** Bump when the social cards are re-rendered: Discord and other unfurlers cache images by URL. */
+export const OG_VERSION = 2
 /** Desk Crawler's own social card, for its public pages. */
-export const DESK_CRAWLER_OG = { path: '/games/desk-crawler/og.png', alt: 'Desk Crawler: Pip the office warrior squares up to a Cable Serpent in the Server Room' }
+export const DESK_CRAWLER_OG = { path: `/games/desk-crawler/og.png?v=${OG_VERSION}`, alt: 'Desk Crawler: Pip the office warrior squares up to a Cable Serpent in the Server Room' }
 export const SITE_DESCRIPTION = 'Games for your TRMNL e-ink display. Start with Desk Crawler, an office RPG that plays itself on your desk.'
 
 /**

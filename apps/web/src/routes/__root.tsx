@@ -8,7 +8,7 @@ import type { ConvexReactClient } from 'convex/react'
 import { ConvexProviderWithClerk } from 'convex/react-clerk'
 import type { ReactNode } from 'react'
 import { SiteLinks } from '../lib/prose'
-import { SITE_NAME, SITE_ORIGIN, seo } from '../lib/seo'
+import { OG_VERSION, SITE_NAME, SITE_ORIGIN, seo } from '../lib/seo'
 import appCss from '../styles.css?url'
 import { NetworkProvider } from '../lib/network'
 import { AnalyticsProvider } from '../lib/analyticsProvider'
@@ -33,7 +33,7 @@ export const Route = createRootRouteWithContext<{
       ...seo({}).meta,
       { property: 'og:type', content: 'website' },
       { property: 'og:site_name', content: SITE_NAME },
-      { property: 'og:image', content: `${SITE_ORIGIN}/og.png` },
+      { property: 'og:image', content: `${SITE_ORIGIN}/og.png?v=${OG_VERSION}` },
       { property: 'og:image:width', content: '1200' },
       { property: 'og:image:height', content: '630' },
       { property: 'og:image:alt', content: 'TRMNL Games: Pip the office warrior squares up to a Cable Serpent in the Server Room' },

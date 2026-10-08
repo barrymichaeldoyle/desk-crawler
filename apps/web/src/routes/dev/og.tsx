@@ -9,7 +9,7 @@ type Card = keyof typeof CARDS
 
 /**
  * Dev-only social cards (1200x630). `node tools/art/og.mjs` screenshots `#og-card` into
- * public/og.png and public/games/desk-crawler/og.png, so the cards use the site's own fonts,
+ * public/og.png and public/games/desk-crawler/og.png (then bump OG_VERSION in lib/seo.ts), so the cards use the site's own fonts,
  * painted scene and HUD rather than a separate drawing.
  */
 export const Route = createFileRoute('/dev/og')({

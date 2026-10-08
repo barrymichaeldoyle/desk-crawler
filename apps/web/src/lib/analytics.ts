@@ -5,6 +5,9 @@ export type AnalyticsIdentity = { id: string; email: string | null; public_alias
 export const CONSENT_KEY = 'tg_analytics_consent_v1'
 export const CONSENT_EVENT = 'tg:analytics-consent'
 export const IDENTITY_EVENT = 'tg:analytics-identity'
+/** The site footer's link asks the provider to reopen the consent panel. */
+export const PREFERENCES_EVENT = 'tg:analytics-preferences'
+export const openAnalyticsPreferences = () => window.dispatchEvent(new Event(PREFERENCES_EVENT))
 export type AnalyticsEvent = 'installation started' | 'installation submitted' | 'installation connected' | 'installation failed' | 'setup screen shown' | 'setup help opened' | 'companion ready' | 'management opened' | 'management account mismatch' | 'account switched' | 'intent failed'
 let volatileConsent: AnalyticsConsent = null
 

@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
+import { analyticsConfigured, openAnalyticsPreferences } from './analytics'
 
 export function ProsePage({ title, updated, children }: { title: string; updated?: string; children: ReactNode }) {
   return (
@@ -27,6 +28,7 @@ export function SiteLinks({ className = '' }: { className?: string }) {
         <Link to="/support">Support</Link>
         <Link to="/privacy">Privacy</Link>
         <Link to="/terms">Terms</Link>
+        <AnalyticsLink />
       </nav>
       <div className="flex flex-col gap-2 text-muted">
         <p>Unofficial companion site. Not operated by <a href="https://trmnl.com" className="underline underline-offset-4">TRMNL</a>.</p>
@@ -38,6 +40,13 @@ export function SiteLinks({ className = '' }: { className?: string }) {
       </div>
     </footer>
   )
+}
+
+/** Reopens the analytics consent panel; shown only where analytics can run, after hydration so SSR markup matches. */
+function AnalyticsLink() {
+  const [shown, setShown] = useState(false)
+  useEffect(() => setShown(analyticsConfigured()), [])
+  return shown ? <button type="button" className="underline underline-offset-4" onClick={openAnalyticsPreferences}>Analytics preferences</button> : null
 }
 
 export const SUPPORT_EMAIL = 'barry@barrymichaeldoyle.com'

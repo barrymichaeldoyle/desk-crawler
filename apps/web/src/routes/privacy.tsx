@@ -35,7 +35,7 @@ export const Route = createFileRoute('/privacy')({
       <h2>Optional analytics and support</h2>
       <p>If you allow analytics, PostHog records the pages you visit, setup steps, game-action failures and browser errors. When you sign in, these records link to your Clerk account ID, email address, public name and hero name so we can investigate support requests and fix problems.</p>
       <p>PostHog also records masked sessions so we can see where a flow gets stuck. Text and form inputs are masked, sign-in and account details are blocked, and we do not record network bodies, headers or console output. Installation codes, access tokens, management JWTs and URL query strings are excluded.</p>
-      <p>You can decline and keep playing. Use Analytics preferences at the bottom of the page to change your choice. Turning analytics off stops new collection in that browser; it does not erase earlier records. Contact us to remove those records, or delete your TRMNL Games account to request removal of its linked PostHog profile, events and recordings.</p>
+      <p>You can decline and keep playing. Use Analytics preferences in the site footer to change your choice. Turning analytics off stops new collection in that browser; it does not erase earlier records. Contact us to remove those records, or delete your TRMNL Games account to request removal of its linked PostHog profile, events and recordings.</p>
 
       <h2>Cookies</h2>
       <p>

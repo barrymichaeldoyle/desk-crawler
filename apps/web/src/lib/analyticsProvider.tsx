@@ -5,7 +5,7 @@ import { Link, useLocation } from '@tanstack/react-router'
 import { useMutation } from 'convex/react'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
-import { analyticsClient, analyticsConfigured, analyticsIdentityKey, captureAnalytics, CONSENT_EVENT, IDENTITY_EVENT, readAnalyticsConsent, setAnalyticsConsent, setAnalyticsIdentity, stopAnalytics, type AnalyticsConsent } from './analytics'
+import { analyticsClient, analyticsConfigured, analyticsIdentityKey, captureAnalytics, CONSENT_EVENT, IDENTITY_EVENT, PREFERENCES_EVENT, readAnalyticsConsent, setAnalyticsConsent, setAnalyticsIdentity, stopAnalytics, type AnalyticsConsent } from './analytics'
 import { Button } from './ui'
 
 /** Mounted inside Clerk/Convex. SSR and development never initialize analytics. */
@@ -19,6 +19,7 @@ export function AnalyticsProvider() {
   const [preferencesOpen, setPreferencesOpen] = useState(false)
   const revision = useRef(0)
   const lastPage = useRef('')
+  const panel = useRef<HTMLElement>(null)
   useLayoutEffect(() => {
     const available = ready && isLoaded && consent === 'allowed' && (!user || (me !== undefined && me !== null)) && me?.user?.state !== 'deleting'
     setAnalyticsIdentity(!available ? undefined : user ? { id: user.id, email: user.primaryEmailAddress?.emailAddress ?? null, public_alias: me?.user?.publicAlias ?? null, hero_name: me?.hero?.name ?? null } : null)
@@ -26,10 +27,12 @@ export function AnalyticsProvider() {
   }, [consent, isLoaded, me, ready, user])
   useEffect(() => {
     const refresh = () => { setConsent(readAnalyticsConsent()); setReady(true) }
+    const open = () => setPreferencesOpen(true)
     refresh()
     window.addEventListener(CONSENT_EVENT, refresh)
     window.addEventListener('storage', refresh)
-    return () => { window.removeEventListener(CONSENT_EVENT, refresh); window.removeEventListener('storage', refresh) }
+    window.addEventListener(PREFERENCES_EVENT, open)
+    return () => { window.removeEventListener(CONSENT_EVENT, refresh); window.removeEventListener('storage', refresh); window.removeEventListener(PREFERENCES_EVENT, open) }
   }, [])
   useEffect(() => {
     if (!ready || !isLoaded || !analyticsConfigured()) return
@@ -51,14 +54,17 @@ export function AnalyticsProvider() {
     if (allowed === me.user.analyticsConsent) return
     void updateConsent({ allowed }).catch(() => {})
   }, [consent, me, ready, updateConsent])
-  if (!ready || !analyticsConfigured()) return null
+  // Reopened from the footer link, the panel renders under the footer: bring it into view.
+  useEffect(() => { if (preferencesOpen) panel.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }) }, [preferencesOpen])
+  // The standing "Analytics preferences" link lives in the site footer (SiteLinks); this only shows the consent panel.
+  if (!ready || !analyticsConfigured() || (consent !== null && !preferencesOpen)) return null
   const choose = (value: 'allowed' | 'declined') => { setAnalyticsConsent(value); setPreferencesOpen(false) }
-  return <aside aria-label="Analytics preferences" className="mx-auto w-full max-w-3xl px-4 py-4">
-    {consent === null || preferencesOpen ? <div className="border-2 border-edge bg-panel p-4">
+  return <aside ref={panel} aria-label="Analytics preferences" className="mx-auto w-full max-w-3xl px-4 py-4">
+    <div className="border-2 border-edge bg-panel p-4">
       <p className="font-semibold">Help us find problems</p>
       <p className="mt-2 text-sm">Allow usage analytics, error reports and masked session recordings? When signed in, these link to your account and email so we can help with support. You can play either way. <Link to="/privacy" className="underline underline-offset-4">Privacy details</Link></p>
       <div className="mt-3 flex flex-wrap gap-3"><Button variant="secondary" onClick={() => choose('allowed')}>Allow analytics</Button><Button variant="secondary" onClick={() => choose('declined')}>No thanks</Button></div>
-    </div> : <button type="button" className="min-h-11 text-sm underline underline-offset-4" onClick={() => setPreferencesOpen(true)}>Analytics preferences</button>}
+    </div>
   </aside>
 }
 

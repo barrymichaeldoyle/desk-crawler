@@ -8,20 +8,20 @@ import { Button, Card, LoadingState } from '../../../lib/ui'
 import { preload } from '../../../lib/preload'
 import { levelGroup } from '@trmnl-games/desk-crawler/sim/core/stats'
 
-export const Route = createFileRoute('/app/desk-crawler/leaderboard')({ head: () => seo({ title: 'Rankings', index: false }), loader: ({ context }) => preload(context, convexQuery(api.leaderboard.view, { board: 'recent_7d' }), convexQuery(api.heroes.mine, {})), component: Leaderboard })
+export const Route = createFileRoute('/app/desk-crawler/leaderboard')({ head: () => seo({ title: 'Rankings', index: false }), loader: ({ context }) => preload(context, convexQuery(api.leaderboard.view, { board: 'recent_24h' }), convexQuery(api.heroes.mine, {})), component: Leaderboard })
 
 type Board = 'recent_7d' | 'recent_24h' | 'overall'
 const TABS: Array<{ board: Board; label: string }> = [
-  // Short enough to sit on one line in a third of a phone screen.
-  { board: 'recent_7d', label: '7 days' },
+  // Short enough to sit on one line in a third of a phone screen. Shortest period first; it opens the page.
   { board: 'recent_24h', label: '24 hours' },
+  { board: 'recent_7d', label: '7 days' },
   { board: 'overall', label: 'Lifetime' },
 ]
 
 const groupLabel = (key: string) => (key === 'all' ? 'All heroes' : `Levels ${key.replace('-', '–')}`)
 
 function Leaderboard() {
-  const [board, setBoard] = useState<Board>('recent_7d')
+  const [board, setBoard] = useState<Board>('recent_24h')
   const [cohortKey, setCohortKey] = useState<string | undefined>(undefined)
   // The previous board stays while the next one loads, so switching period or group never collapses to a skeleton.
   const { data, isPlaceholderData } = useQuery({ ...convexQuery(api.leaderboard.view, { board, ...(cohortKey ? { cohortKey } : {}) }), placeholderData: keepPreviousData })

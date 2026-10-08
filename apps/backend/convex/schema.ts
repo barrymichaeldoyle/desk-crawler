@@ -438,6 +438,20 @@ export default defineSchema({
     .index('by_state', ['state'])
     .index('by_tokenIdentifier', ['tokenIdentifier']),
 
+  /** Player feedback (D107): signed-in only, emailed to Barry, deleted with the account. */
+  feedback: defineTable({
+    tokenIdentifier: v.string(),
+    clerkUserId: v.string(),
+    publicAlias: v.optional(v.string()),
+    message: v.string(),
+    page: v.optional(v.string()),
+    state: v.union(v.literal('pending'), v.literal('sent'), v.literal('failed')),
+    attempts: v.number(),
+    createdAt: v.number(),
+  })
+    .index('by_tokenIdentifier', ['tokenIdentifier'])
+    .index('by_createdAt', ['createdAt']),
+
   accountDeletionJobs: defineTable({
     heroRef: v.optional(v.string()),
     analyticsDeletionRequired: v.optional(v.boolean()),

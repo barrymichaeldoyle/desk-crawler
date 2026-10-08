@@ -199,6 +199,10 @@ Proposed simple MVP table: `key`, `windowStart`, `count`, `expiresAt`; indexes `
 
 Fields: `email` (trimmed, lower-case), `source: notify | pitch | landing | home | account`, `state: waiting | sending | failed`, `attempts`, `tokenIdentifier?` (only when a signed-in player joined or attached), `createdAt`. Indexes `by_email`, `by_state`, `by_tokenIdentifier`. Rows exist only until Resend accepts the launch email, an unsubscribe, or deletion of the attached account. A batch is claimed (`sending`) before it is sent, so concurrent runs never double-send; three refused attempts park a row as `failed` until `waitlist:requeue`.
 
+### `feedback` (D107)
+
+Fields: `tokenIdentifier`, `clerkUserId`, `publicAlias?` (when the account has a game), `message`, `page?`, `state: pending | sent | failed`, `attempts`, `createdAt`. Indexes `by_tokenIdentifier`, `by_createdAt`. Rows stay after the email is sent and are deleted with the account; `failed` means Resend refused three times, and `feedback:recent` still shows the message.
+
 ## Deletion checkpoints, revocation and administrative audit
 
 ### `accountDeletionJobs`

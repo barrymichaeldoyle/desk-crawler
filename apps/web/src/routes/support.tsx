@@ -14,6 +14,9 @@ export const Route = createFileRoute('/support')({
           Bugs that contain no private information: <a href="https://github.com/barrymichaeldoyle/trmnl-games/issues">GitHub issues</a>.
         </li>
         <li>
+          Ideas, praise or anything else: <a href="/feedback">send feedback</a>.
+        </li>
+        <li>
           Setup and screen questions: see <a href="/help/desk-crawler">TRMNL help</a>.
         </li>
       </ul>

@@ -26,6 +26,7 @@ export function SiteLinks({ className = '' }: { className?: string }) {
         <Link to="/account">Account</Link>
         <Link to="/help/desk-crawler">TRMNL help</Link>
         <Link to="/support">Support</Link>
+        <Link to="/feedback">Feedback</Link>
         <Link to="/privacy">Privacy</Link>
         <Link to="/terms">Terms</Link>
         <AnalyticsLink />

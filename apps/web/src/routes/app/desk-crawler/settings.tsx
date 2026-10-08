@@ -113,6 +113,7 @@ function Settings() {
       <nav aria-label="Help" className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
         <Link to="/help/desk-crawler" className="inline-flex min-h-11 items-center underline underline-offset-4">TRMNL and setup help</Link>
         <Link to="/support" className="inline-flex min-h-11 items-center underline underline-offset-4">Contact support</Link>
+        <Link to="/feedback" search={{ from: '/app/desk-crawler/settings' }} className="inline-flex min-h-11 items-center underline underline-offset-4">Send feedback</Link>
       </nav>
       <NoticeBar notice={notice} onDismiss={dismiss} />
     </>

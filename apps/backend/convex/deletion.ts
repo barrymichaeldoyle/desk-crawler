@@ -256,6 +256,9 @@ export const purgeStep = internalMutation({
           // An entry the account attached to the launch list goes with it (D105); email-only entries are not linked.
           const waitlist = await ctx.db.query('waitlist').withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', user.tokenIdentifier)).take(BATCH)
           for (const row of waitlist) await ctx.db.delete(row._id)
+          // Feedback the account sent goes with it (D107).
+          const feedback = await ctx.db.query('feedback').withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', user.tokenIdentifier)).take(BATCH)
+          if (feedback.length) { await deleteBatch(ctx, feedback); await again(); return null }
           const confirmations = await ctx.db.query('accountDeletionConfirmations').withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', user.tokenIdentifier)).take(BATCH)
           if (confirmations.length) { await deleteBatch(ctx, confirmations); await again(); return null }
         }
@@ -457,7 +460,7 @@ export const recordDeletionEmail = internalMutation({
 /** Bounded scrub of all known exact references; repeat until no account references remain. */
 async function scrubAccountReferences(ctx: MutationCtx, args: { userId: Id<'users'>; tokenIdentifier: string; heroRef?: string }): Promise<number> {
   let changed = 0
-  for (const key of [`intent:${args.userId}`, `keepsake:${args.userId}`]) {
+  for (const key of [`intent:${args.userId}`, `keepsake:${args.userId}`, `feedback:${args.tokenIdentifier}`]) {
     changed += await deleteBatch(ctx, await ctx.db.query('rateLimitBuckets').withIndex('by_key', (q) => q.eq('key', key)).take(BATCH))
   }
   const refs = [args.userId, args.tokenIdentifier, args.tokenIdentifier.split('|').at(-1), args.heroRef].filter((ref): ref is string => !!ref)

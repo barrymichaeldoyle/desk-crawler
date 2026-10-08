@@ -67,6 +67,7 @@ No unbounded public hero lists, arbitrary hero-ID reads, or public token lookup 
 | `waitlist.join` | `email`, `source: notify \| pitch \| landing \| home`, honeypot `website?` | D105: add a normalized address to the launch list; repeats and honeypot fills succeed without a new row | Public, no sign-in; 300 joins per 10 minutes overall |
 | `waitlist.leave` | `id`, signed `token` | Remove a launch-list entry from the email's unsubscribe page; an already-removed entry still succeeds | Public; HMAC token required |
 | `waitlist.joinWithAccount` / `waitlist.leaveWithAccount` | None | Join with, or leave from, the verified primary Clerk email; joining attaches the account to an existing entry for that address | Signed in; revoked or deleting accounts refused |
+| `feedback.send` | `message` (1–2000 chars after trimming), `page?` (a site path) | D107: store the message and email it to Barry with the verified primary Clerk email as Reply-To; retries the email three times | Signed in (no game needed); revoked or deleting accounts refused; 5 per player and 200 overall per hour |
 | `deletion.requestDeletion` | `operationId`, `confirm: DELETE`, email `token` | Disable authority/mask public names; start durable whole-account deletion | Same signed-in identity, delivered/unexpired email proof and explicit POST |
 
 No manual revival, policy editing, ordinary rename, buy merchant item, spell, prestige or guild mutation in MVP. Unused controls must not appear disabled in the web UI as if they are implemented.

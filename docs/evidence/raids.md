@@ -115,3 +115,7 @@ The production switch to v7 is held until R3 (companion) and R4 (device) can sho
 - **Achievements:** catalog version 3 appends Office raider (raids won 1 / 10 / 50: Light Fingers, Desk Burglar, Cat Burglar) and Desk defender (raids repelled 1 / 10 / 50: Not Today, Neighbourhood Watch, Fort Knox Desk) under a "Raids" category, 152 ids. A hero behind the catalog gets one full pass on its next evaluation, as with version 2.
 - **Public profile:** the profile projection adds `raids { won, failed, repelled, lost }`, counts only, and the page lists raids won and raiders repelled once the hero has a record. The profile test checks that no rival name or raid gold reaches it.
 - **Engagement:** `admin:engagement` reports raids launched, won, repelled and lost, and how many heroes have raided or been raided. The operations and analytics docs say so. Raids are simulation events, so they add no browser analytics event.
+
+## Production switch (2026-10-08, 22:15 UTC)
+
+`npx convex run world:setActiveContentVersion '{"contentVersion":"v7"}' --prod` answered `{"from":"v6","to":"v7"}` after the switch commit (`ACTIVE_CONTENT = 'v7'`, help section, privacy line) deployed with a green Workers build. The first v7 run (22:30 UTC) completed with content `v7` pinned, no quarantine, and the evaluated hero joined `raidPool`. At the switch, production had one eligible hero, so no raid can launch yet: a raider never picks itself, and the first raid needs a second active hero. Watch `admin:engagement` (`raids`) once more players are active.

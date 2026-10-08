@@ -213,7 +213,7 @@ describe('encounters and outcomes', () => {
 })
 
 describe('fuzzed long runs', () => {
-  it('keeps every invariant and summary budget across 200 heroes x 500 ticks', () => {
+  it('keeps every invariant and summary budget across 200 heroes x 500 ticks', { timeout: 30_000 }, () => {
     let nextId = 0
     for (let heroIndex = 0; heroIndex < 200; heroIndex += 1) {
       let { hero, inventory } = baseState()

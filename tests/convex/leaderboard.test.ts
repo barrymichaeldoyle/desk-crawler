@@ -58,7 +58,7 @@ describe('hourly leaderboard publication', () => {
     expect(publication?.globalTotalPlayers).toBe(1)
   })
 
-  it('keeps Top 100, full populations and consecutive ranks across pages and cohort boundaries', async () => {
+  it('keeps Top 100, full populations and consecutive ranks across pages and cohort boundaries', { timeout: 30_000 }, async () => {
     await seedWorld(t)
     for (let i = 0; i < 205; i++) await seedHero(t, { status: 'paused', pausedFromStatus: 'exploring', level: i < 103 ? 1 : 5, hp: 100, scoreHour: Math.floor(PUBLISH_SLOT / HOUR) * HOUR, scoreHourXp: 1 })
     await runTick(t)

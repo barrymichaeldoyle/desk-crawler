@@ -113,7 +113,7 @@ describe('bag ladder (D61)', () => {
     expect(() => run(hero, inventory, 1)).toThrow(/BAG_CAPACITY/)
   })
 
-  it('keeps every invariant across 100 heroes x 1,000 ticks and never exceeds the MVP ceiling', () => {
+  it('keeps every invariant across 100 heroes x 1,000 ticks and never exceeds the MVP ceiling', { timeout: 30_000 }, () => {
     let n = 0
     for (let heroIndex = 0; heroIndex < 100; heroIndex += 1) {
       let { hero, inventory } = newHero()

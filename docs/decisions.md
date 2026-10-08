@@ -314,3 +314,5 @@ D24–D28 resolve final pacing/content/recap/incident/recovery-policy recommenda
 2026-10-08, D95: Barry asked for the X half, side and quarter views to look good. Template v40 gives the X its own arrangements of those views from the full layout's pieces while the OG and BWRY stay pixel-identical ([evidence](evidence/x-mashups.md)).
 
 2026-10-08, D96: Barry asked for the hero page scene's colouring to be improved. The companion now paints the whole stage, backdrop included, by region and part instead of filling only the sprites under multiplied 1-bit art; device images are unchanged.
+
+2026-10-08, D95 rollout: the first two Workers builds (`6e8c0ea`, retry `1aa0140`) failed because the bulk preview render test passed vitest's 5-second default on the build machine; with each template parsed once and a 30-second budget (`8d11343`) the build passed, so production carries template v40.

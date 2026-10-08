@@ -31,4 +31,4 @@ Barry was happy with the X full landscape and asked for the portrait to be polis
 
 ## Rollout state
 
-Local only. The live TRMNL render, and whether the corner code scans from a physical X with the scene around it, are unverified.
+Deployed from `867bdf9` (pushed to `main`; lint and Workers build passed). The live TRMNL render, and whether the corner code scans from a physical X with the scene around it, are unverified.

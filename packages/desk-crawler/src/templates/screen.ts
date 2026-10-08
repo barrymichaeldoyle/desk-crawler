@@ -1,5 +1,6 @@
 /**
- * Four self-contained TRMNL layouts. Template v42 sets the X landscape half's scene at 3x (D97). Template v41 rearranges the X's landscape half (D97): a details column (hero, HUD,
+ * Four self-contained TRMNL layouts. Template v43 stands the rune rule on end between the X landscape half's columns
+ * and puts a thin rule under its scene (D97). Template v42 sets the X landscape half's scene at 3x (D97). Template v41 rearranges the X's landscape half (D97): a details column (hero, HUD,
  * gear on two lines, board) beside a vertical rule, then the scene and code over the rune rule and the ledger. Template v40 gives the X its own half, side and quarter arrangements (D95): the
  * half views take the full layout's header, scene, board and one-line ledger; the side stacks the header over the scene
  * (its bag code hung in the corner in landscape), the stories and a board; the quarter shows the HP and XP counts with
@@ -28,7 +29,7 @@
 import { GLYPHS, glyphRows } from '../art/glyphs'
 import { hudMarkUri } from '../art/hud'
 
-export const TEMPLATE_VERSION = 42
+export const TEMPLATE_VERSION = 43
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -62,6 +63,15 @@ const RULE_FILL = svgDataUri('<svg xmlns="http://www.w3.org/2000/svg" width="4" 
  */
 const ruleFill = `<img class="grow w--min-0 h--[12px]" src="${RULE_FILL}" alt="">`
 const runeRule = `${ruleFill}<img class="no-shrink w--[120px] h--[12px]" src="${RUNE_ORNAMENT}" alt="">${ruleFill}`
+
+/**
+ * The rune rule stood on end, for the X landscape half's column separator (D97): the same ornament and fill transposed,
+ * the fills stretching to the column's height.
+ */
+const RUNE_ORNAMENT_V = svgDataUri(atob(RUNE_ORNAMENT.split(',')[1]!).replace('width="120" height="12" viewBox="0 0 120 12" fill="black">', 'width="12" height="120" viewBox="0 0 12 120" fill="black"><g transform="matrix(0 1 1 0 0 0)">').replace('</svg>', '</g></svg>'))
+const RULE_FILL_V = svgDataUri('<svg xmlns="http://www.w3.org/2000/svg" width="12" height="4" viewBox="0 0 12 4" preserveAspectRatio="none" fill="black"><rect x="5" y="0" width="2" height="4"/></svg>')
+const ruleFillV = `<img class="grow h--min-0 w--[12px]" src="${RULE_FILL_V}" alt="">`
+const runeRuleV = `<div class="no-shrink flex flex--col flex--center-x gap--none" data-rune-rule="vertical">${ruleFillV}<img class="no-shrink w--[12px] h--[120px]" src="${RUNE_ORNAMENT_V}" alt="">${ruleFillV}</div>`
 
 /**
  * Device-envelope-only code: no code in owner/public preview payloads. Fits the existing footer height. "code" tells a
@@ -708,8 +718,8 @@ const xLedger = (inline: boolean, recapLines: number) => `<div class="grow w--mi
 
 /**
  * Half, landscape on the X (D97): a details column (the hero, status and named counters over the hearts, XP and gear,
- * then a board fitted to what is left of the column) beside a vertical rule; to its right the 3x scene and the code over a
- * rune rule, then a one-line ledger. The board shows up to three rows, which the recap ribbon or a long name can shorten.
+ * then a board fitted to what is left of the column) beside the rune rule stood on end; to its right the 3x scene and the
+ * code over a thin rule (horizontal room is spare, height is not), then a one-line ledger. The board shows up to three rows, which the recap ribbon or a long name can shorten.
  */
 const xHalfWide = `
   ${xBlock(`<div class="grid h--full stretch-x gap--large">
@@ -719,10 +729,10 @@ const xHalfWide = `
       ${xBoard(3, true)}
     </div>
     <div class="col--span-8 h--full w--min-0 flex flex--row flex--stretch-y gap--large">
-      ${columnRule}
-      <div class="grow w--min-0 h--full flex flex--col flex--top flex--stretch-x gap--small">
+      ${runeRuleV}
+      <div class="grow w--min-0 h--full flex flex--col flex--top flex--stretch-x gap--xsmall">
         <div class="no-shrink flex flex--row flex--center-y gap--large stretch-x"><div class="grow w--min-0 flex flex--row flex--center-x">${xScene('scene_url_medium')}</div>${xCode}</div>
-        <div class="no-shrink stretch-x">${divider}</div>
+        <div class="no-shrink bg--black h--[1px] stretch-x" data-scene-rule="true"></div>
         ${xLedger(true, 0)}
       </div>
     </div>

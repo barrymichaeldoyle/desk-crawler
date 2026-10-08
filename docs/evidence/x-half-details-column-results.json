@@ -3,21 +3,21 @@
   "file": "arrivalRecap--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   4
+   5
   ]
  },
  {
   "file": "choice--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   2
+   3
   ]
  },
  {
   "file": "coffeeBreak--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   7
+   6
   ]
  },
  {
@@ -31,21 +31,21 @@
   "file": "denseLong--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   2
+   3
   ]
  },
  {
   "file": "denseShort--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   4
+   5
   ]
  },
  {
   "file": "elite--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   4
+   5
   ]
  },
  {
@@ -57,14 +57,14 @@
   "file": "emptyWindow--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   4
+   5
   ]
  },
  {
   "file": "expense--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   4
+   5
   ]
  },
  {
@@ -90,63 +90,63 @@
   "file": "largeRanking--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   4
+   5
   ]
  },
  {
   "file": "levelUp--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   4
+   5
   ]
  },
  {
   "file": "longHero--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   4
+   5
   ]
  },
  {
   "file": "longText--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   3
+   4
   ]
  },
  {
   "file": "merchant--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   2
+   3
   ]
  },
  {
   "file": "milestones--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   3
+   4
   ]
  },
  {
   "file": "missingQr--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   9
+   10
   ]
  },
  {
   "file": "noMetadata--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   5
+   6
   ]
  },
  {
   "file": "normal--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   4
+   5
   ]
  },
  {
@@ -167,42 +167,42 @@
   "file": "overnight--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   4
+   5
   ]
  },
  {
   "file": "partial--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   4
+   5
   ]
  },
  {
   "file": "paused--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   4
+   5
   ]
  },
  {
   "file": "potionFind--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   7
+   6
   ]
  },
  {
   "file": "potionFindAndUse--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   7
+   6
   ]
  },
  {
   "file": "potionFullFallback--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   7
+   6
   ]
  },
  {
@@ -216,21 +216,21 @@
   "file": "quietMorning--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   4
+   5
   ]
  },
  {
   "file": "recoveredRecap--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   4
+   5
   ]
  },
  {
   "file": "sample--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   7
+   6
   ]
  },
  {
@@ -251,7 +251,7 @@
   "file": "travelling--x--markup_half_horizontal.html",
   "ok": true,
   "stories": [
-   5
+   6
   ]
  },
  {

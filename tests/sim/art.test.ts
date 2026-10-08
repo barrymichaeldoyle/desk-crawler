@@ -4,6 +4,7 @@ import { parseScenePath, renderScenePng } from '@trmnl-games/desk-crawler/art/ro
 import { composeScene, FULL_SCALE, LARGE_SCALE, MEDIUM_SCALE, SCENE_VERSION, SMALL_SCALE, STAGE_HEIGHT, STAGE_WIDTH } from '@trmnl-games/desk-crawler/art/scene'
 import { sceneFor, scenePath } from '@trmnl-games/desk-crawler/art/sceneKey'
 import { sceneTimeAt, sceneUrlAt, sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
+import { recapPeriod } from '@trmnl-games/desk-crawler/payload'
 import { monsterArt } from '@trmnl-games/desk-crawler/art/monsters'
 import { BWRY_PALETTE, bwryInk, BwryInk } from '@trmnl-games/desk-crawler/art/sceneColour'
 import { contentV1 } from '@trmnl-games/desk-crawler/content/v1'
@@ -133,7 +134,20 @@ describe('local scene time', () => {
     expect(sceneTimeAt(at(10), -4.5 * 3600)).toBe('night')
     expect(sceneTimeAt(at(23), 2 * 3600)).toBe('night')
     expect(sceneTimeAt(at(1), -4 * 3600)).toBe('night')
-    for (const offset of [null, NaN, Infinity, 14 * 3600 + 1, 0.5]) expect(sceneTimeAt(at(23), offset)).toBe('day')
+  })
+
+  it('reads UTC without a valid offset, turning with the recap (D106)', () => {
+    const at = (hour: number, minute = 0) => Date.UTC(2026, 9, 5, hour, minute)
+    for (const offset of [null, NaN, Infinity, 14 * 3600 + 1, 0.5]) {
+      expect(sceneTimeAt(at(6, 59), offset)).toBe('night')
+      expect(sceneTimeAt(at(7), offset)).toBe('day')
+      expect(sceneTimeAt(at(19), offset)).toBe('night')
+    }
+    for (const hour of [0, 6, 7, 12, 18, 19, 23]) {
+      const now = at(hour, 30)
+      expect(sceneTimeAt(now, null)).toBe(recapPeriod(now, null).label === 'Night recap' ? 'day' : 'night')
+    }
+    expect(sceneTimeAt(NaN, null)).toBe('day')
   })
 
   it('selects all scales together without mutating the payload or legacy URLs', () => {

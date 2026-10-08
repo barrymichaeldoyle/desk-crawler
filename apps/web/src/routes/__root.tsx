@@ -36,7 +36,7 @@ export const Route = createRootRouteWithContext<{
       { property: 'og:image', content: `${SITE_ORIGIN}/og.png` },
       { property: 'og:image:width', content: '1200' },
       { property: 'og:image:height', content: '630' },
-      { property: 'og:image:alt', content: 'Desk Crawler: a pixel-art office warrior faces an elite Legacy Mainframe in the Server Room' },
+      { property: 'og:image:alt', content: 'TRMNL Games: Pip the office warrior squares up to a Cable Serpent in the Server Room' },
       { name: 'twitter:card', content: 'summary_large_image' },
     ],
     links: [

@@ -4,10 +4,14 @@ import { DAY_START_HOUR, NIGHT_START_HOUR } from '../lib/activityRecap'
 export const SCENE_VERSION = 4
 export type SceneTime = 'day' | 'night'
 
-/** Cosmetic clock only, on the recap's day/night hours (D84). Offset is seconds east of UTC; unknown local time uses daylight. */
+/**
+ * Cosmetic clock only, on the recap's day/night hours (D84). Offset is seconds east of UTC; a missing or invalid offset
+ * reads UTC, as `recapPeriod` does, so the sky and the recap still turn together (D106).
+ */
 export function sceneTimeAt(now: number, utcOffset: number | null): SceneTime {
-  if (utcOffset === null || !Number.isFinite(now) || !Number.isInteger(utcOffset) || Math.abs(utcOffset) > 14 * 3600) return 'day'
-  const hour = new Date(now + utcOffset * 1000).getUTCHours()
+  if (!Number.isFinite(now)) return 'day'
+  const offset = utcOffset !== null && Number.isInteger(utcOffset) && Math.abs(utcOffset) <= 14 * 3600 ? utcOffset : 0
+  const hour = new Date(now + offset * 1000).getUTCHours()
   return hour >= DAY_START_HOUR && hour < NIGHT_START_HOUR ? 'day' : 'night'
 }
 

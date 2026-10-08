@@ -19,5 +19,5 @@ export const browserUtcOffset = (now: number | null) => now === null ? null : -n
 
 /** A scene URL with the sky for the viewer's local time; daylight until the clock hydrates. */
 export function localSceneUrl(url: string, now: number | null): string {
-  return sceneUrlAt(url, sceneTimeAt(now ?? 0, browserUtcOffset(now)))
+  return sceneUrlAt(url, now === null ? 'day' : sceneTimeAt(now, browserUtcOffset(now)))
 }

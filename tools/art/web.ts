@@ -1,12 +1,11 @@
-/** Render the platform's and Desk Crawler's favicons, app icons and social cards into public/. pnpm tsx tools/art/web.ts */
+/** Render the platform's and Desk Crawler's favicons and app icons into public/. pnpm tsx tools/art/web.ts (social cards: tools/art/og.mjs) */
 import { mkdirSync, writeFileSync } from 'node:fs'
 import type { Canvas } from '@trmnl-games/desk-crawler/art/canvas'
-import { composeScene, STAGE_WIDTH } from '@trmnl-games/desk-crawler/art/scene'
-import { BRAND, Image, bandedScene, colourMark, markSvg, pixelText, pixelTextWidth } from './colour'
+import { BRAND, Image, colourMark, markSvg } from './colour'
 import { faviconCanvas, iconCanvas } from './iconArt'
 import { platformFaviconCanvas, platformIconCanvas } from './platformArt'
 
-function writeIconSet(out: string, title: string, iconArt: Canvas, faviconArt: Canvas): void {
+function writeIconSet(out: string, iconArt: Canvas, faviconArt: Canvas): void {
   mkdirSync(out, { recursive: true })
   const icon = colourMark(iconArt)
   const favicon = colourMark(faviconArt)
@@ -49,19 +48,8 @@ function writeIconSet(out: string, title: string, iconArt: Canvas, faviconArt: C
   png('apple-touch-icon.png', touch, 5)
   png('icon-192.png', icon, 6)
   png('icon-512.png', icon, 16)
-
-  // Social card, 1200x630 = 240x126 x 5: the mark and gold pixel wordmark over the game screen, the fight scene in Server Room colours.
-  const card = new Image(240, 126, BRAND.ground)
-  const wordWidth = pixelTextWidth(title, 2)
-  const rowLeft = Math.round((240 - (32 + 8 + wordWidth)) / 2)
-  card.blit(icon, rowLeft, 12)
-  pixelText(card, title, rowLeft + 40, 21, 2, BRAND.gold)
-  const scene = bandedScene(composeScene('server_room', 'fight', { kind: 'monster', id: 'legacy_mainframe', elite: true }), BRAND.serverBands)
-  card.rect((240 - STAGE_WIDTH) / 2 - 3, 55, STAGE_WIDTH + 6, scene.height + 6, BRAND.night)
-  card.blit(scene, (240 - STAGE_WIDTH) / 2, 58)
-  png('og.png', card, 5)
 }
 
 // The platform mark at the site root; Desk Crawler's Warrior under its game path.
-writeIconSet('apps/web/public', 'TRMNL Games', platformIconCanvas(), platformFaviconCanvas())
-writeIconSet('apps/web/public/games/desk-crawler', 'Desk Crawler', iconCanvas(), faviconCanvas())
+writeIconSet('apps/web/public', platformIconCanvas(), platformFaviconCanvas())
+writeIconSet('apps/web/public/games/desk-crawler', iconCanvas(), faviconCanvas())

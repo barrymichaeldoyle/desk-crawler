@@ -22,6 +22,7 @@ import { Route as AppDeskCrawlerRouteImport } from './routes/app/desk-crawler'
 import { Route as DeskCrawlerUnsubscribeRouteImport } from './routes/desk-crawler/unsubscribe'
 import { Route as DeskCrawlerWaitingListRouteImport } from './routes/desk-crawler/waiting-list'
 import { Route as DevDeskCrawlerRouteImport } from './routes/dev/desk-crawler'
+import { Route as DevOgRouteImport } from './routes/dev/og'
 import { Route as GamesDeskCrawlerRouteImport } from './routes/games/desk-crawler'
 import { Route as HelpDeskCrawlerRouteImport } from './routes/help/desk-crawler'
 import { Route as AppDeskCrawlerIndexRouteImport } from './routes/app/desk-crawler/index'
@@ -96,6 +97,11 @@ const DevDeskCrawlerRoute = DevDeskCrawlerRouteImport.update({
   path: '/dev/desk-crawler',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DevOgRoute = DevOgRouteImport.update({
+  id: '/dev/og',
+  path: '/dev/og',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesDeskCrawlerRoute = GamesDeskCrawlerRouteImport.update({
   id: '/games/desk-crawler',
   path: '/games/desk-crawler',
@@ -153,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/desk-crawler/unsubscribe': typeof DeskCrawlerUnsubscribeRoute
   '/desk-crawler/waiting-list': typeof DeskCrawlerWaitingListRoute
   '/dev/desk-crawler': typeof DevDeskCrawlerRoute
+  '/dev/og': typeof DevOgRoute
   '/games/desk-crawler': typeof GamesDeskCrawlerRoute
   '/help/desk-crawler': typeof HelpDeskCrawlerRoute
   '/app/': typeof AppIndexRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/desk-crawler/unsubscribe': typeof DeskCrawlerUnsubscribeRoute
   '/desk-crawler/waiting-list': typeof DeskCrawlerWaitingListRoute
   '/dev/desk-crawler': typeof DevDeskCrawlerRoute
+  '/dev/og': typeof DevOgRoute
   '/games/desk-crawler': typeof GamesDeskCrawlerRoute
   '/help/desk-crawler': typeof HelpDeskCrawlerRoute
   '/app': typeof AppIndexRoute
@@ -198,6 +206,7 @@ export interface FileRoutesById {
   '/desk-crawler/unsubscribe': typeof DeskCrawlerUnsubscribeRoute
   '/desk-crawler/waiting-list': typeof DeskCrawlerWaitingListRoute
   '/dev/desk-crawler': typeof DevDeskCrawlerRoute
+  '/dev/og': typeof DevOgRoute
   '/games/desk-crawler': typeof GamesDeskCrawlerRoute
   '/help/desk-crawler': typeof HelpDeskCrawlerRoute
   '/app/': typeof AppIndexRoute
@@ -223,6 +232,7 @@ export interface FileRouteTypes {
     | '/desk-crawler/unsubscribe'
     | '/desk-crawler/waiting-list'
     | '/dev/desk-crawler'
+    | '/dev/og'
     | '/games/desk-crawler'
     | '/help/desk-crawler'
     | '/app/'
@@ -244,6 +254,7 @@ export interface FileRouteTypes {
     | '/desk-crawler/unsubscribe'
     | '/desk-crawler/waiting-list'
     | '/dev/desk-crawler'
+    | '/dev/og'
     | '/games/desk-crawler'
     | '/help/desk-crawler'
     | '/app'
@@ -267,6 +278,7 @@ export interface FileRouteTypes {
     | '/desk-crawler/unsubscribe'
     | '/desk-crawler/waiting-list'
     | '/dev/desk-crawler'
+    | '/dev/og'
     | '/games/desk-crawler'
     | '/help/desk-crawler'
     | '/app/'
@@ -290,6 +302,7 @@ export interface RootRouteChildren {
   DeskCrawlerUnsubscribeRoute: typeof DeskCrawlerUnsubscribeRoute
   DeskCrawlerWaitingListRoute: typeof DeskCrawlerWaitingListRoute
   DevDeskCrawlerRoute: typeof DevDeskCrawlerRoute
+  DevOgRoute: typeof DevOgRoute
   GamesDeskCrawlerRoute: typeof GamesDeskCrawlerRoute
   HelpDeskCrawlerRoute: typeof HelpDeskCrawlerRoute
   ConnectTrmnlDeskCrawlerInstallRoute: typeof ConnectTrmnlDeskCrawlerInstallRoute
@@ -387,6 +400,13 @@ declare module '@tanstack/react-router' {
       path: '/dev/desk-crawler'
       fullPath: '/dev/desk-crawler'
       preLoaderRoute: typeof DevDeskCrawlerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dev/og': {
+      id: '/dev/og'
+      path: '/dev/og'
+      fullPath: '/dev/og'
+      preLoaderRoute: typeof DevOgRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/games/desk-crawler': {
@@ -490,6 +510,7 @@ const rootRouteChildren: RootRouteChildren = {
   DeskCrawlerUnsubscribeRoute: DeskCrawlerUnsubscribeRoute,
   DeskCrawlerWaitingListRoute: DeskCrawlerWaitingListRoute,
   DevDeskCrawlerRoute: DevDeskCrawlerRoute,
+  DevOgRoute: DevOgRoute,
   GamesDeskCrawlerRoute: GamesDeskCrawlerRoute,
   HelpDeskCrawlerRoute: HelpDeskCrawlerRoute,
   ConnectTrmnlDeskCrawlerInstallRoute: ConnectTrmnlDeskCrawlerInstallRoute,

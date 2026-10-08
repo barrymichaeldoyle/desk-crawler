@@ -11,7 +11,6 @@ export const BRAND = {
   night: [0x0a, 0x0f, 0x2c],
   navy: [0x22, 0x1d, 0x44],
   ground: [0x15, 0x12, 0x2b],
-  serverBands: [[0x5d, 0x8f, 0xd6], [0x78, 0xa9, 0xe4], [0x9f, 0xd0, 0xf0], [0xff, 0xd1, 0x66]],
   white: [0xff, 0xff, 0xff],
 } as const
 
@@ -102,17 +101,6 @@ export function colourMark(canvas: Canvas, tile: Rgb = BRAND.gold): Image {
   return image
 }
 
-/** A 1-bit scene with its paper replaced by colour bands (ceiling, upper wall, wall, floor at 18/14/40/28%), as the companion's game screen shows it. */
-export function bandedScene(canvas: Canvas, bands: readonly Rgb[]): Image {
-  const image = new Image(canvas.width, canvas.height)
-  const stops = [0.18, 0.32, 0.72, 1]
-  for (let y = 0; y < canvas.height; y += 1) {
-    const band = bands[stops.findIndex((stop) => y < stop * canvas.height)] ?? bands[bands.length - 1]!
-    for (let x = 0; x < canvas.width; x += 1) image.set(x, y, canvas.ink[y * canvas.width + x] ? BRAND.night : band)
-  }
-  return image
-}
-
 /** A 1-bit canvas as night ink on white, for the device scene. */
 export function inkImage(canvas: Canvas): Image {
   const image = new Image(canvas.width, canvas.height)
@@ -136,35 +124,4 @@ export function markSvg(image: Image): string {
   }
   const paths = [...byColour].map(([colour, runs]) => `<path fill="#${colour}" d="${runs.join('')}"/>`).join('')
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${image.width} ${image.height}" shape-rendering="crispEdges">${paths}</svg>\n`
-}
-
-/** A 5x7 pixel alphabet for the wordmarks on the social cards (only the letters the titles use). */
-const LETTERS: Record<string, readonly string[]> = {
-  A: ['.###.', '#...#', '#...#', '#####', '#...#', '#...#', '#...#'],
-  C: ['.###.', '#...#', '#....', '#....', '#....', '#...#', '.###.'],
-  D: ['####.', '#...#', '#...#', '#...#', '#...#', '#...#', '####.'],
-  E: ['#####', '#....', '#....', '####.', '#....', '#....', '#####'],
-  G: ['.###.', '#...#', '#....', '#.###', '#...#', '#...#', '.###.'],
-  K: ['#...#', '#..#.', '#.#..', '##...', '#.#..', '#..#.', '#...#'],
-  L: ['#....', '#....', '#....', '#....', '#....', '#....', '#####'],
-  M: ['#...#', '##.##', '#.#.#', '#.#.#', '#...#', '#...#', '#...#'],
-  N: ['#...#', '##..#', '#.#.#', '#..##', '#...#', '#...#', '#...#'],
-  R: ['####.', '#...#', '#...#', '####.', '#.#..', '#..#.', '#...#'],
-  S: ['.####', '#....', '#....', '.###.', '....#', '....#', '####.'],
-  T: ['#####', '..#..', '..#..', '..#..', '..#..', '..#..', '..#..'],
-  W: ['#...#', '#...#', '#...#', '#.#.#', '#.#.#', '##.##', '#...#'],
-  ' ': ['...', '...', '...', '...', '...', '...', '...'],
-}
-
-/** Width in pixels of `text` set in the pixel alphabet at `scale`, one pixel of tracking per letter. */
-export const pixelTextWidth = (text: string, scale: number) => [...text.toUpperCase()].reduce((sum, ch) => sum + ((LETTERS[ch]?.[0]!.length ?? 3) + 1) * scale, -scale)
-
-/** Draw `text` with its top-left at (left, top). */
-export function pixelText(image: Image, text: string, left: number, top: number, scale: number, colour: Rgb): void {
-  let x = left
-  for (const ch of text.toUpperCase()) {
-    const rows = LETTERS[ch] ?? LETTERS[' ']!
-    rows.forEach((row, y) => [...row].forEach((cell, dx) => { if (cell === '#') image.rect(x + dx * scale, top + y * scale, scale, scale, colour) }))
-    x += (rows[0]!.length + 1) * scale
-  }
 }

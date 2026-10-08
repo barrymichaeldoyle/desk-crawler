@@ -1,11 +1,11 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { SiteLinks } from '../../lib/prose'
-import { seo } from '../../lib/seo'
+import { DESK_CRAWLER_OG, seo } from '../../lib/seo'
 import { SampleScreen } from '../../lib/deskCrawlerPitch'
 import { WaitlistForm } from '../../lib/waitlist'
 
 export const Route = createFileRoute('/desk-crawler/waiting-list')({
-  head: () => seo({ title: 'Desk Crawler waiting list', path: '/desk-crawler/waiting-list', description: 'Get one email when Desk Crawler, an office RPG for your TRMNL e-ink display, is in the TRMNL marketplace.' }),
+  head: () => seo({ title: 'Desk Crawler waiting list', path: '/desk-crawler/waiting-list', description: 'Get one email when Desk Crawler, an office RPG for your TRMNL e-ink display, is in the TRMNL marketplace.', image: DESK_CRAWLER_OG }),
   component: Notify,
 })
 

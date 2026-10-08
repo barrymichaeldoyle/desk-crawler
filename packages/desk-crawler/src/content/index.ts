@@ -5,6 +5,7 @@ import { contentV3 } from './v3'
 import { contentV4 } from './v4'
 import { contentV5 } from './v5'
 import { contentV6 } from './v6'
+import { contentV7 } from './v7'
 
 /**
  * Every supported catalog version. Runs pin one; a balance change after launch
@@ -17,6 +18,7 @@ export const catalogs = {
   v4: contentV4,
   v5: contentV5,
   v6: contentV6,
+  v7: contentV7,
 } as const satisfies Record<string, ContentCatalog>
 
 export type CatalogId = keyof typeof catalogs

@@ -36,7 +36,7 @@ describe('seed v1', () => {
     const pinned = deriveStreamSeed('world-seed', 'hero-1', 120, 1, 'encounter')
     expect(pinned).toBe(deriveStreamSeed('world-seed', 'hero-1', 120, 1, 'encounter'))
     const all = Object.values(deriveStreamSeeds('world-seed', 'hero-1', 120, 1))
-    expect(new Set(all).size).toBe(4)
+    expect(new Set(all).size).toBe(5)
     expect(deriveStreamSeed('world-seed', 'hero-1', 121, 1, 'encounter')).not.toBe(pinned)
     expect(Number.isSafeInteger(pinned) && pinned >= 0 && pinned < 2 ** 32).toBe(true)
   })

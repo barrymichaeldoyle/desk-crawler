@@ -13,8 +13,10 @@ This defines the boundary between simulator, persistence and rendering so future
 | `tick` | Current run's logical tick |
 | `contentVersion` | Exact immutable catalog version |
 | `simulationVersion` | Exact rule/rounding/PRNG version |
-| `streams` | Four independently derived seeded RNG streams specified in [simulation](simulation.md) |
+| `streams` | Four independently derived seeded RNG streams, plus the D110 `raid` stream, specified in [simulation](simulation.md) |
 | `recentSummaries` | Optional two newest story summaries, newest first, used only for narrative callbacks and repeat avoidance |
+| `raidTarget` | D110, optional: the hero the adapter picked when `planRaid` asked for one and the pool row was raidable (id, public name, stance, gold, its thrifty points) |
+| `incomingRaid` | D110, optional: the oldest pending ledger raid against this hero (raider id and public name, tick, who won, gold, the target's HP share) |
 
 The input omits user profile/auth, connection/token data, database context and wall clock. Content is supplied as immutable typed data, not queried inside the core. Inventory ID sorting is a reproducibility requirement even if current rules rarely depend on order.
 
@@ -31,6 +33,8 @@ The database adapter has already checked current ownership, persisted TRMNL acti
 | `event` | Optional single combined tick event with primary kind, <=90-code-point summary, typed detail and net deltas |
 | `metrics` | Fixed counters: encounter kind or none, victory/retreat/death/rescue/level-up/potion/held-find/sleep-start/wake/elite/jackpot counts |
 | `disposition` | `advanced`, `rested`, `arrived`, `departed` (D29 wake into travel), `revived`, `waiting_dead`, `waiting_travel`, `paused`, `sleeping`, or `inventory_sleep_started` |
+| `raidLaunch` | D110, optional: the raid this hero launched (target ID, tick, who won, gold moved, the target's HP share) for the adapter's ledger insert and pool patch |
+| `raidApplied` | D110, optional: `incomingRaid` was applied this tick; the adapter marks that ledger row applied in the same transaction |
 
 No generic free-form side-effect map, database IDs for newly created items, or complete raw document overwrite. New item directives contain copied content fields; the adapter allocates IDs on insertion. Existing item references may identify only items from the validated input.
 
@@ -73,6 +77,7 @@ Every detail has `v=1`, `simulationVersion`, `contentVersion`, `disposition`, `e
 | Rest | Healing applied, automatic-vs-encounter boolean, resulting status |
 | Travel | Previous/destination biome IDs, arrival tick |
 | Revival | Previous biome, safe destination, HP granted, original revival tick |
+| Raid (D110) | Role `raider/target`, rival hero ID and public name, `won` from this hero's side, gold gained or lost, HP lost, the launch tick, outcome `survived/death/rescue` |
 | System/command | Operation kind, public-safe applied result, no auth/token/private profile data |
 
 Death primary log kind can wrap combat/trap detail; level-up may be secondary. The detail discriminator reflects the underlying resolver while `kind` controls the display narrative priority. Command detail uses a separate versioned validator and may omit simulation version when not applicable.

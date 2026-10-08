@@ -42,12 +42,16 @@ export function zeroCounters(): HeroCounters {
     restTicks: 0,
     trips: 0,
     itemsSold: 0,
-  stanceChanges: 0,
-  purchases: 0,
-  merchantVisits: 0,
-  choicesMade: 0,
-  choicesDefaulted: 0,
-  epicFinds: 0,
+    stanceChanges: 0,
+    purchases: 0,
+    merchantVisits: 0,
+    choicesMade: 0,
+    choicesDefaulted: 0,
+    epicFinds: 0,
+    raidsLaunched: 0,
+    raidsWon: 0,
+    raidsRepelled: 0,
+    raidsLost: 0,
   }
 }
 

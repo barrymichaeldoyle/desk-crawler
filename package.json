@@ -16,6 +16,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "balance": "tsx tools/balance/run.ts",
+    "balance:raids": "tsx tools/balance/raids.ts",
     "lint:trmnl:setup": "tsx tools/trmnl/lint.ts --install",
     "lint:trmnl": "tsx tools/trmnl/lint.ts",
     "crosscheck:trmnl": "tsx tools/trmnl/crosscheck.ts",

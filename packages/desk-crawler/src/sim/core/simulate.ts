@@ -5,6 +5,7 @@ import { affixById, effectById, effectiveStats, liveEffects, scaled, withEffect 
 import { nextEarlyPouchTier, potionCap, pouchMilestoneUpgrade } from './pouch'
 import { assertHeroInvariants, SimulationInvariantError } from './invariants'
 import { codePoints, composeSummary, fill, rarityLabel, variant, withArticle, type NarrativeVars } from './narrative'
+import { drawRaidPlan, raidGoldLoss, raidHpLoss, raidStream, raidWinChance } from './raid'
 import { createRng, pickOne, pickWeighted, type Rng } from './rng'
 import { applyXp, deriveStats, maxHp, pctOf } from './stats'
 import type {
@@ -31,6 +32,7 @@ import type {
   MerchantVisit,
   PendingChoice,
   PouchTier,
+  RaidLaunch,
 } from './types'
 
 export const SIMULATION_VERSION = 1
@@ -57,6 +59,8 @@ const ZERO_METRICS: TickMetrics = {
   choicesOffered: 0,
   choicesDefaulted: 0,
   effectsGained: 0,
+  raidsLaunched: 0,
+  raidsApplied: 0,
 }
 
 interface Streams {
@@ -84,6 +88,8 @@ class TickRun {
   private readonly rng: Streams
   private readonly changes: ItemChange[] = []
   private metrics: Mutable<TickMetrics> = { ...ZERO_METRICS }
+  private raidLaunch: RaidLaunch | undefined
+  private raidApplied = false
 
   constructor(private readonly input: SimulationInput) {
     this.h = { ...input.hero, counters: { ...input.hero.counters, monsterWins: { ...input.hero.counters.monsterWins } } }
@@ -244,7 +250,7 @@ class TickRun {
 
   private restingTick(): SimulationResult {
     const { h, content } = this
-    const expired = this.resolveExpiredChoice()
+    const expired = this.resolveExpiredChoice() ?? this.applyIncomingRaid()
     if (expired !== undefined) return expired
     const max = maxHp(h.level)
     const healing = Math.min(max - h.hp, pctOf(max, content.constants.restingHealPct))
@@ -264,7 +270,7 @@ class TickRun {
 
   private explore(): SimulationResult {
     const { h, content, input } = this
-    const expired = this.resolveExpiredChoice()
+    const expired = this.resolveExpiredChoice() ?? this.applyIncomingRaid()
     if (expired !== undefined) return expired
     const c = content.constants
     const sustain = this.sustain()
@@ -298,6 +304,10 @@ class TickRun {
         { potionsUsed, potionHealing },
       )
     }
+
+    // D110: after sustain and before the encounter roll, a raid can be the tick's whole event.
+    const raid = this.launchRaid()
+    if (raid !== undefined) return raid
 
     const biome = this.biome(h.biomeId)
     const kind = pickWeighted<EncounterKind>(this.rng.encounter, [
@@ -539,16 +549,7 @@ class TickRun {
         compact = 'A narrow escape; resting now.'
         outcome = { ...outcome, outcome: 'rescue' } as OutcomeDetail
       } else {
-        goldPenalty = Math.floor((h.gold * Math.max(0, c.deathGoldLossPct - effectiveStats(content, h, input.inventory, input.tick).modifiers.goldLossPct)) / 100)
-        h.gold -= goldPenalty
-        h.status = 'dead'
-        // D80 death ordering: a knockout clears every effect, boon or bane; revival starts clean.
-        delete h.effects
-        h.reviveAtTick = input.tick + ticks
-        delete h.targetBiomeId
-        delete h.arriveAtTick
-        h.counters.deaths += 1
-        this.metrics.deaths = 1
+        goldPenalty = this.knockOut()
         logKind = 'death'
         primary = this.narrate(isCombat ? shared.death : shared.trapDeath, { ...vars, ticks })
         compact = fill('Knocked out. Revives in {ticks} ticks.', { ticks })
@@ -632,6 +633,121 @@ class TickRun {
       disposition,
       { kind: logKind, summary: composeSummary(primary, compact, consequences, c.summaryMaxCodePoints), outcome, encounterKind: kind },
       { potionsUsed, potionHealing, levelsGained, goldPenalty, heldFind, xpGranted, ...(upgrade === undefined ? {} : { bagUpgrade: upgrade }), ...(pouchUpgrade === undefined ? {} : { pouchUpgrade }), ...(effectGained === undefined ? {} : { effectGained: effectGained.id }) },
+    )
+  }
+
+  /** A knockout outside Office Cubicles: the death gold loss (less thrifty), every effect cleared, revival scheduled. */
+  private knockOut(): number {
+    const { h, content, input } = this
+    const c = content.constants
+    const goldPenalty = Math.floor((h.gold * Math.max(0, c.deathGoldLossPct - effectiveStats(content, h, input.inventory, input.tick).modifiers.goldLossPct)) / 100)
+    h.gold -= goldPenalty
+    h.status = 'dead'
+    // D80 death ordering: a knockout clears every effect, boon or bane; revival starts clean.
+    delete h.effects
+    h.reviveAtTick = input.tick + c.reviveAfterTicks
+    delete h.targetBiomeId
+    delete h.arriveAtTick
+    h.counters.deaths += 1
+    this.metrics.deaths = 1
+    return goldPenalty
+  }
+
+  /**
+   * D110 raider side: the launch draw, then the contest, as this tick's whole event. Without raid rules, a raid
+   * seed or a raidable target the tick goes on to its ordinary encounter (the draw is spent, nothing is logged).
+   */
+  private launchRaid(): SimulationResult | undefined {
+    const { h, content, input } = this
+    const rng = raidStream(input.streams, content)
+    if (rng === undefined) return undefined
+    if (drawRaidPlan(rng, h.stance, content) === undefined) return undefined
+    const target = input.raidTarget
+    if (target === undefined || target.heroId === h.id) return undefined
+    const rules = content.raids!
+    const raiderWon = rng.chance(raidWinChance(content, h.stance, target.stance))
+    const thrifty = effectiveStats(content, h, input.inventory, input.tick).modifiers.goldLossPct
+    const gold = raiderWon ? raidGoldLoss(target.gold, rules.goldLossPct, target.goldLossPct ?? 0) : raidGoldLoss(h.gold, rules.goldLossPct, thrifty)
+    if (raiderWon) {
+      h.gold += gold
+      h.counters.goldEarned += gold
+      h.counters.raidsWon += 1
+    } else {
+      h.gold -= gold
+    }
+    h.counters.ticksExplored += 1
+    h.counters.raidsLaunched += 1
+    this.metrics.raidsLaunched = 1
+    const hpLost = Math.min(h.hp, raidHpLoss(maxHp(h.level), raiderWon ? rules.winnerHpPct : rules.loserHpPct))
+    h.hp -= hpLost
+    this.raidLaunch = { targetHeroId: target.heroId, tick: input.tick, raiderWon, gold, targetHpPct: raiderWon ? rules.loserHpPct : rules.winnerHpPct }
+    return this.finishRaid('raider', target.heroId, target.name, raiderWon, gold, hpLost, input.tick)
+  }
+
+  /**
+   * D110 target side: a ledger raid lands as this tick's whole event, the way a defaulted choice does. Gold moves by
+   * the ledger amount, a loss clamped to what the hero holds now; HP by the share of maximum HP. Under a catalog
+   * without raid rules the raid stays pending.
+   */
+  private applyIncomingRaid(): SimulationResult | undefined {
+    const { h, content, input } = this
+    const raid = input.incomingRaid
+    if (raid === undefined || content.raids === undefined) return undefined
+    const won = !raid.raiderWon
+    let gold: number
+    if (won) {
+      gold = raid.gold
+      h.gold += gold
+      h.counters.goldEarned += gold
+      h.counters.raidsRepelled += 1
+    } else {
+      gold = Math.min(raid.gold, h.gold)
+      h.gold -= gold
+      h.counters.raidsLost += 1
+    }
+    const hpLost = Math.min(h.hp, raidHpLoss(maxHp(h.level), raid.targetHpPct))
+    h.hp -= hpLost
+    this.raidApplied = true
+    this.metrics.raidsApplied = 1
+    return this.finishRaid('target', raid.raiderHeroId, raid.raiderName, won, gold, hpLost, raid.tick)
+  }
+
+  /** One raid log entry from this hero's side; lethal raid damage resolves like any lethal encounter. */
+  private finishRaid(role: 'raider' | 'target', rivalHeroId: string, rivalName: string, won: boolean, gold: number, hpLost: number, raidTick: number): SimulationResult {
+    const { h, content } = this
+    const lines = content.raids!.narrative
+    const vars = { rival: rivalName, gold }
+    const pool = role === 'raider' ? (won ? lines.raidWon : lines.raidLost) : won ? lines.repelled : lines.raided
+    const compactTemplate = role === 'raider' ? (won ? 'Raided {rival}. +{gold} gold.' : 'Caught raiding {rival}. Lost {gold} gold.') : won ? 'Caught {rival} raiding. +{gold} gold.' : 'Raided by {rival}. Lost {gold} gold.'
+    const primary = this.narrate(pool, vars)
+    const compact = fill(compactTemplate, vars)
+    let kind: LogKind = 'raid'
+    let outcome: 'survived' | 'death' | 'rescue' = 'survived'
+    let goldPenalty = 0
+    // The raid stays the story; a knockout or rescue is its most important consequence.
+    const consequences: string[] = []
+    if (h.hp === 0) {
+      if (this.biome(h.biomeId).safe) {
+        h.hp = 1
+        h.status = 'resting'
+        h.counters.rescues += 1
+        this.metrics.rescues = 1
+        outcome = 'rescue'
+        consequences.push(this.narrate(lines.rescue, vars))
+      } else {
+        const ticks = content.constants.reviveAfterTicks
+        goldPenalty = this.knockOut()
+        outcome = 'death'
+        kind = 'death'
+        // Fixed and short, so the knockout survives the budget beside the longest name and purse.
+        consequences.push(fill('Knocked out for {ticks} ticks.', { ticks }))
+        if (goldPenalty > 0) consequences.push(`Lost ${goldPenalty} gold.`)
+      }
+    }
+    return this.finish(
+      'advanced',
+      { kind, summary: composeSummary(primary, compact, consequences, content.constants.summaryMaxCodePoints), outcome: { variant: 'raid', role, rivalHeroId, rivalName, won, gold, hpLost, raidTick, outcome } },
+      { goldPenalty },
     )
   }
 
@@ -722,7 +838,7 @@ class TickRun {
   ): SimulationResult {
     const { h, input } = this
     const nextHero = toHeroState(h)
-    const base = { nextHero, itemChanges: this.changes, metrics: this.metrics, disposition }
+    const base = { nextHero, itemChanges: this.changes, metrics: this.metrics, disposition, ...(this.raidLaunch === undefined ? {} : { raidLaunch: this.raidLaunch }), ...(this.raidApplied ? { raidApplied: true } : {}) }
     if (event === undefined) return base
     const detail: LogDetail = {
       v: 1,

@@ -88,6 +88,32 @@ export function validateCatalog(content: ContentCatalog): string[] {
       }
     }
   }
+  // D110: raid chances are permille, the contest stays a real contest for every pairing, losses are bounded shares.
+  const raids = content.raids
+  if (raids) {
+    const stances = ['cautious', 'balanced', 'bold'] as const
+    for (const id of stances) {
+      const launch = raids.launchPermille[id]
+      if (!Number.isSafeInteger(launch) || launch < 0 || launch > 100) problems.push(`raid launch chance for ${id} must be 0–100 permille`)
+      if (!Number.isSafeInteger(raids.edgePct[id])) problems.push(`raid edge for ${id} must be an integer`)
+    }
+    for (const raider of stances) for (const target of stances) {
+      const chance = 50 + raids.edgePct[raider] - raids.edgePct[target]
+      if (!(chance >= 10 && chance <= 90)) problems.push(`raid win chance ${raider} on ${target} must stay within 10–90%`)
+    }
+    for (const [name, value] of [['goldLossPct', raids.goldLossPct], ['loserHpPct', raids.loserHpPct], ['winnerHpPct', raids.winnerHpPct]] as const) {
+      if (!Number.isSafeInteger(value) || value < 0 || value > 50) problems.push(`raid ${name} must be an integer from 0 to 50`)
+    }
+    if (raids.winnerHpPct > raids.loserHpPct) problems.push('the raid winner must lose less HP than the loser')
+    if (!(raids.targetCooldownTicks >= 1 && raids.targetCooldownTicks <= 96)) problems.push('raid target cooldown must be 1 to 96 ticks')
+    for (const [key, lines] of Object.entries(raids.narrative)) {
+      if (lines.length < 1) problems.push(`raid narrative ${key} is empty`)
+      for (const line of lines) {
+        const allowed = key === 'rescue' ? ['rival'] : ['rival', 'gold']
+        for (const [, name] of line.matchAll(/\{(\w+)\}/g)) if (!allowed.includes(name!)) problems.push(`raid narrative ${key} uses {${name}}: ${line}`)
+      }
+    }
+  }
   if (content.merchant) {
     if (!(content.merchant.potionPrice >= 1 && content.merchant.maxPotionsOffered >= 1 && content.merchant.maxPotionsOffered <= 10)) problems.push('merchant potion offer out of bounds')
     if (!(content.merchant.staysForTicks >= 1 && content.merchant.staysForTicks <= 8)) problems.push('merchant must stay between 1 and 8 ticks')

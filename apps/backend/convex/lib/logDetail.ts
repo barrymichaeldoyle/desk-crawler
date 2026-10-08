@@ -81,6 +81,18 @@ const outcome = v.union(
     offers: v.array(v.object({ id: v.union(v.literal('potions'), v.literal('pouch'), v.literal('bag')), name: v.string(), quantity: v.number(), price: v.number(), tierId: v.optional(v.string()) })),
     expiresAtTick: v.number(),
   }),
+  /** D110: one side of a desk raid. */
+  v.object({
+    variant: v.literal('raid'),
+    role: v.union(v.literal('raider'), v.literal('target')),
+    rivalHeroId: v.string(),
+    rivalName: v.string(),
+    won: v.boolean(),
+    gold: v.number(),
+    hpLost: v.number(),
+    raidTick: v.number(),
+    outcome: v.union(v.literal('survived'), v.literal('death'), v.literal('rescue')),
+  }),
 )
 
 export const simulationDetail = v.object({

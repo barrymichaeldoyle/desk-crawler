@@ -3,8 +3,9 @@
  * No Convex, auth, connection or wall-clock types belong here.
  */
 
-export type StreamName = 'encounter' | 'combat' | 'reward' | 'narrative'
-export type StreamSeeds = Readonly<Record<StreamName, number>>
+export type StreamName = 'encounter' | 'combat' | 'reward' | 'narrative' | 'raid'
+/** The `raid` stream (D110) is drawn only under a catalog with raid rules; without its seed no raid can launch. */
+export type StreamSeeds = Readonly<Record<Exclude<StreamName, 'raid'>, number> & { raid?: number }>
 
 export type HeroStatus = 'exploring' | 'resting' | 'travelling' | 'dead' | 'paused' | 'sleeping'
 export type EncounterKind = 'combat' | 'loot' | 'trap' | 'rest'
@@ -25,6 +26,7 @@ export type LogKind =
   | 'achievement'
   | 'merchant'
   | 'choice'
+  | 'raid'
   | 'system'
 
 // ---------------------------------------------------------------- content
@@ -267,6 +269,71 @@ export interface PendingChoice {
 }
 
 /**
+ * Desk raids (D110): heroes raid each other by chance on exploring ticks. Level, gear, affixes and effects play no
+ * part in who wins; only the two stances move the 50/50 contest. Gold moves from loser to winner, never created.
+ */
+export interface RaidRule {
+  /** Chance per exploring tick, in permille, that the hero launches a raid. */
+  readonly launchPermille: Readonly<Record<StanceId, number>>
+  /** Percentage points a stance adds to its own side of the contest, raiding or defending. */
+  readonly edgePct: Readonly<Record<StanceId, number>>
+  /** The loser's gold loss, a share of its current gold (thrifty takes its points off, D81). */
+  readonly goldLossPct: number
+  /** HP each side loses, as shares of its maximum HP. */
+  readonly loserHpPct: number
+  readonly winnerHpPct: number
+  /** A target picked in the last this-many ticks cannot be picked again (enforced by the adapter's pool). */
+  readonly targetCooldownTicks: number
+  /** Placeholders: {rival} {gold}. A knockout adds a fixed "Knocked out for N ticks." */
+  readonly narrative: RaidNarrative
+}
+
+export interface RaidNarrative {
+  /** The raider won ({rival}, {gold}). */
+  readonly raidWon: readonly string[]
+  /** The raider was caught ({rival}). */
+  readonly raidLost: readonly string[]
+  /** The target was raided ({rival}). */
+  readonly raided: readonly string[]
+  /** The target caught the raider ({rival}, {gold}). */
+  readonly repelled: readonly string[]
+  /** Either side rescued by Office Cubicles ({rival}). */
+  readonly rescue: readonly string[]
+}
+
+/** The hero a raid lands on, as the adapter found it live at pick time. */
+export interface RaidTarget {
+  readonly heroId: string
+  /** Public name shown in the raider's log. */
+  readonly name: string
+  readonly stance?: StanceId
+  readonly gold: number
+  /** The target's own thrifty points (D81), so its gold loss is the one it would take at home. */
+  readonly goldLossPct?: number
+}
+
+/** A raid this hero launched, for the adapter's ledger; the target applies it at its next evaluation. */
+export interface RaidLaunch {
+  readonly targetHeroId: string
+  readonly tick: number
+  readonly raiderWon: boolean
+  /** Gold the loser loses and the winner gains. */
+  readonly gold: number
+  /** The target's HP loss as a share of its maximum HP. */
+  readonly targetHpPct: number
+}
+
+/** A ledger raid landing on this hero (the target side), oldest pending first. */
+export interface IncomingRaid {
+  readonly raiderHeroId: string
+  readonly raiderName: string
+  readonly tick: number
+  readonly raiderWon: boolean
+  readonly gold: number
+  readonly targetHpPct: number
+}
+
+/**
  * Typed modifiers (D80/D81) that affixes and effects contribute; every field is additive percentage points and
  * absent means zero. The resolver sums them and applies each at one fixed place.
  */
@@ -342,6 +409,8 @@ export interface ContentCatalog {
   readonly effects?: readonly EffectRule[]
   /** Which effect each source grants; a source may be absent. */
   readonly effectSources?: Readonly<{ trapHit?: string; eliteVictory?: string }>
+  /** Absent before v7 (D110). */
+  readonly raids?: RaidRule
   readonly narrative: Readonly<{ biomes: Readonly<Record<string, BiomeNarrative>>; shared: SharedNarrative; monsters: Readonly<Record<string, MonsterNarrative>> }>
 }
 
@@ -386,6 +455,11 @@ export interface HeroCounters {
   readonly choicesDefaulted: number
   /** Epic gear found (D81). */
   readonly epicFinds: number
+  /** Raids launched, raids won as the raider, raids repelled and raids lost as the target (D110). */
+  readonly raidsLaunched: number
+  readonly raidsWon: number
+  readonly raidsRepelled: number
+  readonly raidsLost: number
 }
 
 /** Counter names that hold one number (everything except `monsterWins`). */
@@ -462,6 +536,10 @@ export interface SimulationInput {
   readonly streams: StreamSeeds
   /** Newest first, at most two. Cosmetic history only; never changes game outcomes. */
   readonly recentSummaries?: readonly string[]
+  /** D110: the hero the adapter picked for a raid this tick, when `planRaid` asked for one and it was raidable. */
+  readonly raidTarget?: RaidTarget
+  /** D110: the oldest pending raid against this hero; applied as the tick's event when the hero is exploring or resting. */
+  readonly incomingRaid?: IncomingRaid
 }
 
 export type Disposition =
@@ -519,6 +597,21 @@ export type OutcomeDetail =
   | { readonly variant: 'revival'; readonly previousBiomeId: string; readonly safeBiomeId: string; readonly hpGranted: number; readonly reviveAtTick: number }
   | { readonly variant: 'merchant'; readonly offers: readonly MerchantOffer[]; readonly expiresAtTick: number }
   | { readonly variant: 'choice'; readonly phase: 'offered' | 'defaulted'; readonly eventId: string; readonly optionId?: string; readonly expiresAtTick: number }
+  | {
+      readonly variant: 'raid'
+      /** This hero's side of the raid. */
+      readonly role: 'raider' | 'target'
+      readonly rivalHeroId: string
+      readonly rivalName: string
+      /** Whether this hero came out on top. */
+      readonly won: boolean
+      /** Gold this hero gained (won) or lost (lost), after the target-side clamp. */
+      readonly gold: number
+      readonly hpLost: number
+      /** The tick the raider launched it. */
+      readonly raidTick: number
+      readonly outcome: 'survived' | 'death' | 'rescue'
+    }
 
 export interface LogDetail {
   readonly v: 1
@@ -574,6 +667,8 @@ export interface TickMetrics {
   readonly choicesOffered: number
   readonly choicesDefaulted: number
   readonly effectsGained: number
+  readonly raidsLaunched: number
+  readonly raidsApplied: number
 }
 
 export interface SimulationResult {
@@ -582,4 +677,8 @@ export interface SimulationResult {
   readonly event?: TickEvent
   readonly metrics: TickMetrics
   readonly disposition: Disposition
+  /** D110: a raid this hero launched; the adapter inserts it in the ledger and marks the target picked. */
+  readonly raidLaunch?: RaidLaunch
+  /** D110: the incoming raid was applied this tick; the adapter marks the ledger row applied. */
+  readonly raidApplied?: boolean
 }

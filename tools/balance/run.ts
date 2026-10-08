@@ -33,7 +33,7 @@ export interface Policy {
   readonly buyBags?: boolean
 }
 
-const POLICIES: readonly Policy[] = [
+export const POLICIES: readonly Policy[] = [
   { name: 'unattended', everyDays: 0 },
   { name: 'daily', everyDays: 1 },
   { name: 'three-day', everyDays: 3 },
@@ -112,7 +112,7 @@ function bestInSlot(content: ContentCatalog): { attack: number; defense: number 
 }
 
 /** One visit: equip best eligible gear, claim and sell everything else, resume/travel to the hardest unlocked biome (D29). */
-function visit(hero: HeroState, inventory: ItemSnapshot[], tick: number, content: ContentCatalog, policy: Policy): { hero: HeroState; inventory: ItemSnapshot[]; bought: number } {
+export function visit(hero: HeroState, inventory: ItemSnapshot[], tick: number, content: ContentCatalog, policy: Policy): { hero: HeroState; inventory: ItemSnapshot[]; bought: number } {
   let bought = 0
   if (!['exploring', 'resting', 'sleeping'].includes(hero.status)) return { hero, inventory, bought }
   const h: Mutable<HeroState> = { ...hero }

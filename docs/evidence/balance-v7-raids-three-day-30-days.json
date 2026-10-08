@@ -1,0 +1,194 @@
+{
+  "meta": {
+    "reportVersion": 1,
+    "contentVersion": "v7",
+    "simulationVersion": 1,
+    "heroes": 300,
+    "days": 30,
+    "policy": "three-day",
+    "raids": {
+      "launchPermille": {
+        "cautious": 5,
+        "balanced": 10,
+        "bold": 20
+      },
+      "edgePct": {
+        "cautious": 10,
+        "balanced": 0,
+        "bold": -5
+      },
+      "goldLossPct": 5,
+      "loserHpPct": 30,
+      "winnerHpPct": 10,
+      "targetCooldownTicks": 24
+    },
+    "seconds": 40.913
+  },
+  "withRaids": {
+    "stances": {
+      "cautious": {
+        "heroes": 100,
+        "launchesPerHeroDay": 0.266,
+        "noTargetSharePct": 34.8,
+        "raidsInvolvedPerHeroDay": 0.984,
+        "heroDaysWithRaidPct": 63.4,
+        "raidHpLostPerHeroDay": 37,
+        "raidGoldNetPerHeroDay": 28.92,
+        "knockoutDayPct": 0.53,
+        "raidKnockoutsPerHeroDay": 0.0007,
+        "doubleKnockouts": 0,
+        "level8MedianDays": 11.6,
+        "level12MedianDays": 17.6,
+        "finalGoldMedian": 11875
+      },
+      "balanced": {
+        "heroes": 100,
+        "launchesPerHeroDay": 0.618,
+        "noTargetSharePct": 31.9,
+        "raidsInvolvedPerHeroDay": 1.327,
+        "heroDaysWithRaidPct": 73.7,
+        "raidHpLostPerHeroDay": 59.4,
+        "raidGoldNetPerHeroDay": -11.56,
+        "knockoutDayPct": 1.83,
+        "raidKnockoutsPerHeroDay": 0.0027,
+        "doubleKnockouts": 0,
+        "level8MedianDays": 9.1,
+        "level12MedianDays": 15.7,
+        "finalGoldMedian": 11243
+      },
+      "bold": {
+        "heroes": 100,
+        "launchesPerHeroDay": 1.228,
+        "noTargetSharePct": 31.7,
+        "raidsInvolvedPerHeroDay": 1.913,
+        "heroDaysWithRaidPct": 85.8,
+        "raidHpLostPerHeroDay": 89.2,
+        "raidGoldNetPerHeroDay": -17.36,
+        "knockoutDayPct": 6.33,
+        "raidKnockoutsPerHeroDay": 0.0133,
+        "doubleKnockouts": 0,
+        "level8MedianDays": 8.3,
+        "level12MedianDays": 16.3,
+        "finalGoldMedian": 9910
+      }
+    },
+    "pairings": {
+      "cautious>cautious": {
+        "raids": 249,
+        "raiderWinPct": 49,
+        "expectedPct": 50,
+        "z": -0.32
+      },
+      "cautious>balanced": {
+        "raids": 296,
+        "raiderWinPct": 61.8,
+        "expectedPct": 60,
+        "z": 0.64
+      },
+      "cautious>bold": {
+        "raids": 252,
+        "raiderWinPct": 61.5,
+        "expectedPct": 65,
+        "z": -1.16
+      },
+      "balanced>cautious": {
+        "raids": 649,
+        "raiderWinPct": 39,
+        "expectedPct": 40,
+        "z": -0.53
+      },
+      "balanced>balanced": {
+        "raids": 627,
+        "raiderWinPct": 51.8,
+        "expectedPct": 50,
+        "z": 0.92
+      },
+      "balanced>bold": {
+        "raids": 578,
+        "raiderWinPct": 54.8,
+        "expectedPct": 55,
+        "z": -0.08
+      },
+      "bold>cautious": {
+        "raids": 1257,
+        "raiderWinPct": 35.2,
+        "expectedPct": 35,
+        "z": 0.18
+      },
+      "bold>balanced": {
+        "raids": 1203,
+        "raiderWinPct": 44.9,
+        "expectedPct": 45,
+        "z": -0.08
+      },
+      "bold>bold": {
+        "raids": 1225,
+        "raiderWinPct": 49.6,
+        "expectedPct": 50,
+        "z": -0.26
+      }
+    },
+    "gold": {
+      "moved": 921842,
+      "clampGap": 0,
+      "earned": 4093260,
+      "clampGapPctOfMoved": 0,
+      "movedPctOfEarned": 22.52
+    },
+    "targetedPerHero": {
+      "p10": 14,
+      "median": 21,
+      "p90": 27,
+      "max": 35
+    }
+  },
+  "baseline": {
+    "stances": {
+      "cautious": {
+        "heroes": 100,
+        "launchesPerHeroDay": 0,
+        "noTargetSharePct": 0,
+        "raidsInvolvedPerHeroDay": 0,
+        "heroDaysWithRaidPct": 0,
+        "raidHpLostPerHeroDay": 0,
+        "raidGoldNetPerHeroDay": 0,
+        "knockoutDayPct": 0.4,
+        "raidKnockoutsPerHeroDay": 0,
+        "doubleKnockouts": 0,
+        "level8MedianDays": 11.5,
+        "level12MedianDays": 17.4,
+        "finalGoldMedian": 11462
+      },
+      "balanced": {
+        "heroes": 100,
+        "launchesPerHeroDay": 0,
+        "noTargetSharePct": 0,
+        "raidsInvolvedPerHeroDay": 0,
+        "heroDaysWithRaidPct": 0,
+        "raidHpLostPerHeroDay": 0,
+        "raidGoldNetPerHeroDay": 0,
+        "knockoutDayPct": 1.4,
+        "raidKnockoutsPerHeroDay": 0,
+        "doubleKnockouts": 0,
+        "level8MedianDays": 9.1,
+        "level12MedianDays": 15.5,
+        "finalGoldMedian": 12468
+      },
+      "bold": {
+        "heroes": 100,
+        "launchesPerHeroDay": 0,
+        "noTargetSharePct": 0,
+        "raidsInvolvedPerHeroDay": 0,
+        "heroDaysWithRaidPct": 0,
+        "raidHpLostPerHeroDay": 0,
+        "raidGoldNetPerHeroDay": 0,
+        "knockoutDayPct": 4.5,
+        "raidKnockoutsPerHeroDay": 0,
+        "doubleKnockouts": 0,
+        "level8MedianDays": 8.3,
+        "level12MedianDays": 15.6,
+        "finalGoldMedian": 11866
+      }
+    }
+  }
+}

@@ -5,3 +5,4 @@ export { starterHero, starterKit, zeroCounters, withCounterDefaults, STARTER_POT
 export * from './stats'
 export type * from './types'
 export * from './bag'
+export { planRaid, raidWinChance, type RaidPlan } from './raid'

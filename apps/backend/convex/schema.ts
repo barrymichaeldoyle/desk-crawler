@@ -54,6 +54,11 @@ export const heroCounters = v.object({
   choicesDefaulted: v.optional(v.number()),
   /** D81: epic gear found. */
   epicFinds: v.optional(v.number()),
+  /** D110: raids launched, won as the raider, repelled and lost as the target. */
+  raidsLaunched: v.optional(v.number()),
+  raidsWon: v.optional(v.number()),
+  raidsRepelled: v.optional(v.number()),
+  raidsLost: v.optional(v.number()),
 })
 
 /** D78 merchant offers: at most three, each bought at most once. */
@@ -78,6 +83,7 @@ export const logKind = v.union(
   v.literal('achievement'),
   v.literal('merchant'),
   v.literal('choice'),
+  v.literal('raid'),
   v.literal('system'),
 )
 

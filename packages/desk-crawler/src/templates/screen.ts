@@ -1,5 +1,6 @@
 /**
- * Four self-contained TRMNL layouts. Template v45 moves the X side landscape's code to the header's top-right corner,
+ * Four self-contained TRMNL layouts. Template v46 closes the X half's details column to small gaps, so its board keeps a
+ * third row above the recap ribbon (D104). Template v45 moves the X side landscape's code to the header's top-right corner,
  * names its gear by the attack and defense marks, shows four board rows and sets the recap as a ribbon at the foot,
  * as the X quarter landscape now does too (D104).
  * Template v44 shows the stance beside the bag count under a gauge mark (D103).
@@ -33,7 +34,7 @@
 import { GLYPHS, glyphRows } from '../art/glyphs'
 import { hudMarkUri } from '../art/hud'
 
-export const TEMPLATE_VERSION = 45
+export const TEMPLATE_VERSION = 46
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -742,7 +743,7 @@ const xLedger = (inline: boolean, recapLines: number) => `<div class="grow w--mi
  */
 const xHalfWide = `
   ${xBlock(`<div class="grid h--full stretch-x gap--large">
-    <div class="col--span-4 h--full w--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--medium" data-fit-bound="true" data-details-column="x">
+    <div class="col--span-4 h--full w--min-0 flex flex--col flex--left flex--top flex--stretch-x gap--small" data-fit-bound="true" data-details-column="x">
       <div class="flex flex--col flex--left gap--xsmall stretch-x">
         <div class="flex flex--col flex--left gap--xsmall stretch-x" data-hero-header="x">${xName(12, 'title', true)}${statusLine(2, 56)}${hudRow('data-counters="2"', goldPotions() + bagCount() + stanceCount(), COUNTER_GAP)}</div>
         <div class="flex flex--col flex--left gap--xsmall stretch-x" data-hud-block="true">${hudWide(false)}${gearLines}</div>

@@ -56,4 +56,4 @@ Template v40 gives the X its own blocks, built from the full layout's pieces. Th
 
 ## Rollout state
 
-Deployed from `8d11343` (pushed to `main`; lint and Workers build passed). The first builds of `6e8c0ea` and its retry failed on a timeout: the bulk preview render test passed 5 seconds on the build machine. It now parses each template once and has a 30-second budget.
+Deployed from `8d11343` (pushed to `main`; the Workers build passed, and the lint passed on `6e8c0ea`, which carries the same template). The first builds of `6e8c0ea` and its retry failed on a timeout: the bulk preview render test passed 5 seconds on the build machine. It now parses each template once and has a 30-second budget.

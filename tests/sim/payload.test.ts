@@ -72,9 +72,14 @@ describe('first-run and companion QR fields', () => {
     expect(pick(buildPayload({ ...input, artBaseUrl: null })).companion_qr_base).toBe('')
     // D88: the full layout's corner code goes to the companion home; unlinked payloads and missing art carry none.
     const home = (p: unknown) => (p as { home_qr_base: string }).home_qr_base
-    expect(home(buildPayload(input))).toBe('https://art.test/art/qr/v3/app')
+    expect(home(buildPayload(input))).toBe('https://art.test/art/qr/v3/home')
     expect(home(buildPayload({ ...input, hero: null }))).toBe('')
     expect(home(buildPayload({ ...input, artBaseUrl: null }))).toBe('')
+    // D108: the OG landscape's corner-cut twin of the same short link.
+    const corner = (p: unknown) => (p as { corner_qr_base: string }).corner_qr_base
+    expect(corner(buildPayload(input))).toBe('https://art.test/art/qr/v3/corner')
+    expect(corner(buildPayload({ ...input, hero: null }))).toBe('')
+    expect(corner(buildPayload({ ...input, artBaseUrl: null }))).toBe('')
   })
 })
 

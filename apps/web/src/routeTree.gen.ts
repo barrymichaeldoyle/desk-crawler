@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AppRouteImport } from './routes/app'
+import { Route as DcRouteImport } from './routes/dc'
 import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SupportRouteImport } from './routes/support'
@@ -51,6 +52,11 @@ const AdminRoute = AdminRouteImport.update({
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DcRoute = DcRouteImport.update({
+  id: '/dc',
+  path: '/dc',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeedbackRoute = FeedbackRouteImport.update({
@@ -157,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
   '/app': typeof AppRouteWithChildren
+  '/dc': typeof DcRoute
   '/feedback': typeof FeedbackRoute
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
@@ -181,6 +188,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
+  '/dc': typeof DcRoute
   '/feedback': typeof FeedbackRoute
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
@@ -206,6 +214,7 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
   '/app': typeof AppRouteWithChildren
+  '/dc': typeof DcRoute
   '/feedback': typeof FeedbackRoute
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
@@ -233,6 +242,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/app'
+    | '/dc'
     | '/feedback'
     | '/privacy'
     | '/support'
@@ -257,6 +267,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
+    | '/dc'
     | '/feedback'
     | '/privacy'
     | '/support'
@@ -281,6 +292,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/app'
+    | '/dc'
     | '/feedback'
     | '/privacy'
     | '/support'
@@ -307,6 +319,7 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRoute
   AppRoute: typeof AppRouteWithChildren
+  DcRoute: typeof DcRoute
   FeedbackRoute: typeof FeedbackRoute
   PrivacyRoute: typeof PrivacyRoute
   SupportRoute: typeof SupportRoute
@@ -350,6 +363,13 @@ declare module '@tanstack/react-router' {
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dc': {
+      id: '/dc'
+      path: '/dc'
+      fullPath: '/dc'
+      preLoaderRoute: typeof DcRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/feedback': {
@@ -523,6 +543,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   AdminRoute: AdminRoute,
   AppRoute: AppRouteWithChildren,
+  DcRoute: DcRoute,
   FeedbackRoute: FeedbackRoute,
   PrivacyRoute: PrivacyRoute,
   SupportRoute: SupportRoute,

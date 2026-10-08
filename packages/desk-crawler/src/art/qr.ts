@@ -18,8 +18,14 @@ export const QR_SCALES = new Set([2, 3, 4, 5, 7])
  */
 const QUIET_MODULES = 2
 
-export const QR_TARGETS = { app: '/app/desk-crawler', bag: '/app/desk-crawler/inventory' } as const
+/**
+ * `home` and `corner` encode the `/dc` short link to the companion home: 25 modules instead of 29 (D108). `corner` is
+ * the OG full layout's top-right code, drawn with its quiet zone on the left and bottom only, since the screen's white
+ * margin already surrounds its top and right.
+ */
+export const QR_TARGETS = { app: '/app/desk-crawler', bag: '/app/desk-crawler/inventory', home: '/dc', corner: '/dc' } as const
 export type QrTarget = keyof typeof QR_TARGETS
+const CORNER_TARGETS: ReadonlySet<QrTarget> = new Set(['corner'])
 
 export const DEFAULT_COMPANION_ORIGIN = 'https://trmnlgames.com'
 
@@ -38,20 +44,20 @@ export function parseQrPath(path: string): { target: QrTarget; scale: number } |
 export function renderQrPng(path: string, origin: string): Uint8Array | null {
   const parsed = parseQrPath(path)
   if (!parsed) return null
-  const { size, ink } = qrInk(`${origin}${QR_TARGETS[parsed.target]}`, parsed.scale)
+  const { size, ink } = qrInk(`${origin}${QR_TARGETS[parsed.target]}`, parsed.scale, CORNER_TARGETS.has(parsed.target))
   return encodePng1Bit(size, size, ink)
 }
 
-/** Square 1-bit bitmap (1 = black) with a two-module quiet zone. */
-export function qrInk(text: string, scale: number): { size: number; ink: Uint8Array } {
+/** Square 1-bit bitmap (1 = black) with a two-module quiet zone, or on the left and bottom only for a `corner` code. */
+export function qrInk(text: string, scale: number, corner = false): { size: number; ink: Uint8Array } {
   const qr = qrcode(0, 'L')
   qr.addData(text)
   qr.make()
-  const modules = qr.getModuleCount() + QUIET_MODULES * 2
+  const modules = qr.getModuleCount() + QUIET_MODULES * (corner ? 1 : 2)
   const size = modules * scale
   const ink = new Uint8Array(size * size)
   for (let y = 0; y < size; y += 1) {
-    const my = Math.floor(y / scale) - QUIET_MODULES
+    const my = Math.floor(y / scale) - (corner ? 0 : QUIET_MODULES)
     for (let x = 0; x < size; x += 1) {
       const mx = Math.floor(x / scale) - QUIET_MODULES
       const inside = my >= 0 && mx >= 0 && my < qr.getModuleCount() && mx < qr.getModuleCount()

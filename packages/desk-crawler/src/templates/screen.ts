@@ -1,5 +1,6 @@
 /**
- * Four self-contained TRMNL layouts. Template v46 closes the X half's details column to small gaps, so its board keeps a
+ * Four self-contained TRMNL layouts. Template v47 moves the OG full landscape's code into the view's corner as a smaller
+ * corner-cut code to the `/dc` short link, and runs the gear line on under it (D108). Template v46 closes the X half's details column to small gaps, so its board keeps a
  * third row above the recap ribbon (D104). Template v45 moves the X side landscape's code to the header's top-right corner,
  * names its gear by the attack and defense marks, shows four board rows and sets the recap as a ribbon at the foot,
  * as the X quarter landscape now does too (D104).
@@ -34,7 +35,7 @@
 import { GLYPHS, glyphRows } from '../art/glyphs'
 import { hudMarkUri } from '../art/hud'
 
-export const TEMPLATE_VERSION = 46
+export const TEMPLATE_VERSION = 47
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -635,6 +636,14 @@ const qrFooter = (scale = 3, largeScale = 4, classes = '') => `
     {% else %}<div class="no-shrink">${qrImage(scale, largeScale, 'companion_qr_base')}</div><span class="label lg:title--small grow">Your bag</span>{% endif %}
   </div>{% endif %}`
 
+/**
+ * The full landscape's standing link. On the OG the corner-cut code (D108) hangs out of the flow in the view's top-right
+ * corner, the screen's margin standing in for its top and right quiet zone, so the hearts and XP keep clear of it while
+ * the gear line runs on underneath; the X keeps its 3x code at the end of the header row.
+ */
+const cornerQr = `{% if qr_base == "" and home_qr_base != "" %}<div class="hidden lg:block no-shrink" data-home-qr="true"><img class="image" src="{{ home_qr_base }}/3.png" alt=""></div>` +
+  `{% if corner_qr_base != "" %}<div class="lg:hidden absolute top--0 right--0" data-home-qr="corner"><img class="image" src="{{ corner_qr_base }}/2.png" alt=""></div>{% endif %}{% endif %}`
+
 /** The portrait's standing link set into the top-right corner of the scene, its quiet zone framing it. */
 const sceneQr = homeQr.replace('class="no-shrink" data-home-qr="true"', 'class="absolute top--0 right--0 flex bg--black p--1" data-home-qr="true"')
 
@@ -866,7 +875,7 @@ const halfHorizontalPortrait = halfVerticalBody(false)
 export const markupFull = `${glyphAssigns([16, 24])}${HUD_ASSIGNS}${oriented('layout layout--col layout--top layout--stretch-x gap--xsmall lg:gap--small', `
   {% if status == "unlinked" or first_run %}${welcome('full')}
   {% else %}
-  <div class="no-shrink flex flex--row flex--top gap--medium stretch-x">
+  <div class="relative no-shrink flex flex--row flex--top gap--medium stretch-x">
     <div class="grow w--min-0 flex flex--row flex--top flex--between gap--medium lg:gap--large" data-hero-header="true">
       <div class="no-shrink flex flex--col flex--left gap--xsmall">
         ${nameRow(`<span class="title lg:hidden w--min-0" data-clamp="1">{{ hero_name | truncate: 12 | escape }}, level {{ level }}</span>
@@ -875,11 +884,11 @@ export const markupFull = `${glyphAssigns([16, 24])}${HUD_ASSIGNS}${oriented('la
         ${heroCounters}
       </div>
       <div class="w--min-0 pt--2 flex flex--col flex--left gap--xsmall" data-hud-block="true">
-        ${hudWide(false)}
+        <div class="flex flex--col flex--left gap--xsmall pr--16 lg:pr--0">${hudWide(false)}</div>
         ${gearLine}${gearLineOg}
       </div>
     </div>
-    ${homeQr}
+    ${cornerQr}
   </div>
   <div class="no-shrink flex flex--col gap--small stretch-x">
     <div class="flex flex--row flex--top lg:flex--center-x gap--medium stretch-x" data-scene-row="true">

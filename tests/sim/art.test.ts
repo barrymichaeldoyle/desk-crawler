@@ -180,4 +180,26 @@ describe('companion QR codes', () => {
       expect(jsQR(rgba, size, size)?.data).toBe('https://trmnlgames.com/app/desk-crawler/inventory')
     }
   })
+
+  it('draws the home and corner codes from the short link, the corner one smaller and quiet only left and below (D108)', async () => {
+    const { default: jsQR } = await import('jsqr')
+    const { qrInk, renderQrPng } = await import('@trmnl-games/desk-crawler/art/qr')
+    const { size: full } = qrInk('https://trmnlgames.com/app/desk-crawler', 2)
+    const { size: home } = qrInk('https://trmnlgames.com/dc', 2)
+    const { size, ink } = qrInk('https://trmnlgames.com/dc', 2, true)
+    expect([full, home, size]).toEqual([66, 58, 54])
+    // Dark modules touch the top and right edges; the left and bottom keep two modules (4 px) of quiet zone.
+    const dark = (x: number, y: number) => ink[y * size + x] === 1
+    expect(Array.from({ length: size }, (_, x) => dark(x, 0)).some(Boolean)).toBe(true)
+    expect(Array.from({ length: size }, (_, y) => dark(size - 1, y)).some(Boolean)).toBe(true)
+    for (let i = 0; i < size; i += 1) for (const edge of [0, 3]) expect(dark(edge, i) || dark(i, size - 1 - edge)).toBe(false)
+    // On the screen the white margin closes the quiet zone: pad the top and right, and it scans.
+    const pad = 10
+    const w = size + pad
+    const rgba = new Uint8ClampedArray(w * w * 4).fill(255)
+    for (let y = 0; y < size; y += 1) for (let x = 0; x < size; x += 1) if (dark(x, y)) rgba.fill(0, ((y + pad) * w + x) * 4, ((y + pad) * w + x) * 4 + 3)
+    expect(jsQR(rgba, w, w)?.data).toBe('https://trmnlgames.com/dc')
+    expect(renderQrPng('/art/qr/v3/corner/2.png', 'https://trmnlgames.com')).not.toBeNull()
+    expect(renderQrPng('/art/qr/v3/home/3.png', 'https://trmnlgames.com')).not.toBeNull()
+  })
 })

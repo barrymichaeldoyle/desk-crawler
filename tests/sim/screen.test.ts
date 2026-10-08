@@ -94,7 +94,12 @@ describe('companion QR in every view', () => {
     const standing = await liquid.parseAndRender(screenMarkup.markup, { ...payload(), companion_qr_base: `${base}/bag`, home_qr_base: `${base}/app` })
     expect(standing).toContain(`src="${base}/app/2.png"`)
     expect(standing).toContain(`src="${base}/app/3.png"`)
+    // D108: without a corner code (an older payload) the OG landscape shows none rather than a broken image.
+    expect(standing).not.toContain('data-home-qr="corner"')
     expect(standing).not.toContain(`src="${base}/bag/`)
+    const corner = await liquid.parseAndRender(screenMarkup.markup, { ...payload(), companion_qr_base: `${base}/bag`, home_qr_base: `${base}/home`, corner_qr_base: `${base}/corner` })
+    expect(corner).toMatch(new RegExp(`class="lg:hidden absolute top--0 right--0" data-home-qr="corner"><img class="image" src="${base}/corner/2.png"`))
+    expect(corner).toContain(`src="${base}/home/3.png"`)
     expect(standing).not.toContain('Your bag')
     expect(standing).not.toContain('data-bag-full')
     const full = await liquid.parseAndRender(screenMarkup.markup, { ...payload(), companion_qr_base: `${base}/bag`, home_qr_base: `${base}/app`, qr_base: `${base}/bag`, qr_label: 'Scan to open your bag', attention: 'Make room in your bag in the companion, then resume.' })

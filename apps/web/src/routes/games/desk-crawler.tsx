@@ -2,6 +2,7 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { RELEASE_STATUS, SiteLinks } from '../../lib/prose'
 import { BUTTON_PRIMARY, LINK_BUTTON } from '../../lib/ui'
 import { seo } from '../../lib/seo'
+import { SampleScreen } from '../../lib/deskCrawlerPitch'
 
 export const Route = createFileRoute('/games/desk-crawler')({ head: () => seo({ title: 'Desk Crawler', path: '/games/desk-crawler', description: 'An office RPG that plays itself on your TRMNL e-ink display.' }), component: Landing })
 
@@ -18,16 +19,7 @@ function Landing() {
         </p>
       </header>
 
-      <figure className="flex flex-col gap-3">
-        <div className="rounded-[1.4rem] bg-[#3a3566] p-[clamp(0.5rem,2.5vw,1rem)]"><img
-          src="/games/desk-crawler/screen-sample.png"
-          alt="Example Desk Crawler screen on a TRMNL X: Pip explores the Server Room, with health, XP, equipment, adventure stories and weekly rankings."
-          width={1200}
-          height={900}
-          className="block w-full rounded-md bg-white"
-        /></div>
-        <figcaption className="text-sm text-muted">Sample hero on a TRMNL X. Your own hero starts when you install the plugin and save it in TRMNL.</figcaption>
-      </figure>
+      <SampleScreen caption="Sample hero on a TRMNL X. Your own hero starts when you install the plugin and save it in TRMNL." />
 
       <div className="flex flex-col gap-4">
         <p className="text-muted">{RELEASE_STATUS}</p>

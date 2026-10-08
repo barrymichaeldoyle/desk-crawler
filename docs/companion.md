@@ -48,6 +48,8 @@ Mobile navigation: Hero, Bag, Rankings, Connections; settings under account menu
 
 ## Onboarding
 
+Signed-out visitors to any `/app/desk-crawler` route (where the screen's QR codes lead, often from someone else's TRMNL) see a short Desk Crawler pitch first: what the game is, the sample screen, that it needs a TRMNL, links to the game and help pages, and an "Already playing?" sign-in (D102). Other signed-out `/app` routes keep the plain sign-in prompt.
+
 Sign in before creating game state. Ask for a public alias separately from imported Clerk/TRMNL real names. Explain that leaderboard/device aliases are public to other players. Hero name has a default suggestion but can be edited before creation.
 
 No class chooser when there is one class. Show the Warrior's simple identity and starter kit. No timezone preference is collected or shown (D39). History and board timestamps use the browser's local timezone.

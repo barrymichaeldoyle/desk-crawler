@@ -4,6 +4,7 @@ import { internal } from './_generated/api'
 import type { Doc } from './_generated/dataModel'
 import { internalQuery, mutation, query, type MutationCtx, type QueryCtx } from './_generated/server'
 import { appError } from './lib/errors'
+import { requireAdmin } from './lib/adminAccess'
 import { sha256Hex } from './lib/hash'
 import { normalizeAlias } from './lib/names'
 import { readWorld } from './world'
@@ -13,14 +14,8 @@ import { readWorld } from './world'
  * server-side ADMIN_TOKEN_IDENTIFIERS allowlist, never from client data. Every
  * action is audited with a reason; none resets progress.
  */
-async function requireAdmin(ctx: QueryCtx): Promise<string> {
-  const identity = await ctx.auth.getUserIdentity()
-  const allowed = (process.env.ADMIN_TOKEN_IDENTIFIERS ?? '').split(',').map((s) => s.trim()).filter(Boolean)
-  if (identity === null || !allowed.includes(identity.tokenIdentifier)) throw appError('UNAUTHENTICATED', 'Admin access required.')
-  return sha256Hex(`admin:${identity.tokenIdentifier}`).slice(0, 16)
-}
 
-async function audit(ctx: MutationCtx, actorRef: string, action: string, targetRef: string, reasonCode: string, outcome: string) {
+export async function audit(ctx: MutationCtx, actorRef: string, action: string, targetRef: string, reasonCode: string, outcome: string) {
   await ctx.db.insert('adminAuditEvents', { actorRef, action, targetRef, reasonCode: reasonCode.slice(0, 64), outcome: outcome.slice(0, 120), at: Date.now() })
 }
 

@@ -59,6 +59,8 @@ export const finishInstall = createServerFn({ method: 'POST' })
   .handler(async ({ data }): Promise<FinishInstallResult> => {
     const pending = isGameSlug(data.gameSlug) ? await openPendingInstall(getCookie(installCookie(data.gameSlug)), flowSecret(), Date.now(), data.gameSlug) : null
     if (!pending) return { ok: false, code: 'INSTALL_EXPIRED', message: 'This installation expired. Start again from TRMNL.' }
+    // Slow Cast installs arrive with its own plugin in slice S7; until then only Desk Crawler links.
+    if (pending.gameSlug !== 'desk-crawler') return { ok: false, code: 'INSTALL_EXPIRED', message: 'This installation expired. Start again from TRMNL.' }
     const { userId, getToken } = await auth()
     const token = userId ? await getToken({ template: 'convex' }) : null
     if (!token) return { ok: false, code: 'UNAUTHENTICATED', message: 'Sign in to connect TRMNL.' }

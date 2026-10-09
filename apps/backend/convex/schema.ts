@@ -127,7 +127,18 @@ export const logKind = v.union(
   v.literal('system'),
 )
 
+/** Every registered game (packages/platform). Storage accepts any of them; each write path still names its own game. */
+export const gameSlug = v.union(v.literal('desk-crawler'), v.literal('slow-cast'))
+export const gameStatus = v.union(v.literal('hidden'), v.literal('preview'), v.literal('live'))
+
 export default defineSchema({
+  /** Server-controlled game lifecycle (slow-cast.md "Architecture"): one row per game once an admin sets its status. */
+  platformGames: defineTable({
+    slug: gameSlug,
+    status: gameStatus,
+    updatedAt: v.number(),
+  }).index('by_slug', ['slug']),
+
   worldState: deskCrawlerEngine.world,
   simulationRuns: defineTable(deskCrawlerEngine.runFields).index('by_tick', ['tick']).index('by_state_and_startedAt', ['state', 'startedAt']),
   simulationFailures: deskCrawlerEngine.failures,
@@ -188,7 +199,7 @@ export default defineSchema({
 
   gameDeletionJobs: defineTable({
     userId: v.id('users'),
-    gameSlug: v.literal('desk-crawler'),
+    gameSlug: gameSlug,
     state: v.union(v.literal('running'), v.literal('completed')),
     phase: v.union(v.literal('connections'), v.literal('gameplay'), v.literal('done')),
     createdAt: v.number(),
@@ -330,7 +341,7 @@ export default defineSchema({
 
 
   operationReceipts: defineTable({
-    scope: v.optional(v.union(v.literal('platform'), v.literal('desk-crawler'))),
+    scope: v.optional(v.union(v.literal('platform'), v.literal('desk-crawler'), v.literal('slow-cast'))),
     userId: v.id('users'),
     operationId: v.string(),
     operation: v.string(),
@@ -515,7 +526,7 @@ export default defineSchema({
     .index('by_at', ['at']),
 
   trmnlGrants: defineTable({
-    gameSlug: v.optional(v.literal('desk-crawler')),
+    gameSlug: v.optional(gameSlug),
     userId: v.id('users'),
     tokenHash: v.string(),
     // Reused revoked credentials authorize only the freshly verified UUID.
@@ -545,7 +556,7 @@ export default defineSchema({
     .index('by_expiresAt', ['expiresAt']),
 
   trmnlInstallAttempts: defineTable({
-    gameSlug: v.optional(v.literal('desk-crawler')),
+    gameSlug: v.optional(gameSlug),
     userId: v.id('users'),
     grantId: v.id('trmnlGrants'),
     state: v.union(v.literal('pending'), v.literal('completed'), v.literal('expired')),
@@ -558,7 +569,7 @@ export default defineSchema({
     .index('by_expiresAt', ['expiresAt']),
 
   trmnlInstances: defineTable({
-    gameSlug: v.optional(v.literal('desk-crawler')),
+    gameSlug: v.optional(gameSlug),
     grantId: v.id('trmnlGrants'),
     userId: v.id('users'),
     uuid: v.string(),

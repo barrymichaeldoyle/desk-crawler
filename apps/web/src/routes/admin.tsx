@@ -9,6 +9,8 @@ import type { Id } from '@trmnl-games/backend/data-model'
 import { errorMessage } from '../lib/intent'
 import { seo } from '../lib/seo'
 import { Button, Card, ErrorNote } from '../lib/ui'
+import { GAME_STATUSES, games, isGameStatus } from '@trmnl-games/platform'
+import { gamesQuery } from '../lib/gameAccess'
 
 /** Owner-run support console (D23). Every action requires a reason and is audited server-side. */
 export const Route = createFileRoute('/admin')({
@@ -35,6 +37,7 @@ function AdminGate() {
   return (
     <>
       <Health />
+      <GameStatuses />
       <UserTools />
     </>
   )
@@ -150,6 +153,49 @@ function UserTools() {
       ) : alias.length >= 2 ? (
         <p className="mt-3 text-sm text-muted">No player with that public name.</p>
       ) : null}
+      <ErrorNote message={error} />
+    </Card>
+  )
+}
+
+/** Game lifecycle switch (D115): hidden, preview or live; audited with a reason. */
+function GameStatuses() {
+  const { data } = useQuery(gamesQuery)
+  const setStatus = useMutation(api.platform.setGameStatus)
+  const [reason, setReason] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  if (!data) return null
+  return (
+    <Card title="Games">
+      <label className="flex flex-col gap-1 text-sm">
+        <span className="font-semibold">Reason (required, audited)</span>
+        <input value={reason} onChange={(e) => setReason(e.target.value)} className="min-h-11 border-2 border-edge bg-ground px-3 text-ink" />
+      </label>
+      <ul className="mt-3 flex flex-col gap-2">
+        {data.games.map((game) => (
+          <li key={game.slug} className="flex flex-wrap items-center justify-between gap-2">
+            <span>{games[game.slug].name}</span>
+            <select
+              aria-label={`${games[game.slug].name} status`}
+              value={game.status}
+              disabled={reason.length < 3}
+              onChange={async (e) => {
+                const status = e.target.value
+                if (!isGameStatus(status)) return
+                setError(null)
+                try {
+                  await setStatus({ slug: game.slug, status, reasonCode: reason })
+                } catch (err) {
+                  setError(errorMessage(err))
+                }
+              }}
+              className="min-h-11 border-2 border-edge bg-ground px-3 text-ink"
+            >
+              {GAME_STATUSES.map((status) => <option key={status} value={status}>{status}</option>)}
+            </select>
+          </li>
+        ))}
+      </ul>
       <ErrorNote message={error} />
     </Card>
   )

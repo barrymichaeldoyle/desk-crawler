@@ -21,6 +21,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AccountDeleteRouteImport } from './routes/account_.delete'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppDeskCrawlerRouteImport } from './routes/app/desk-crawler'
+import { Route as AppSlowCastRouteImport } from './routes/app/slow-cast'
 import { Route as DeskCrawlerUnsubscribeRouteImport } from './routes/desk-crawler/unsubscribe'
 import { Route as DeskCrawlerWaitingListRouteImport } from './routes/desk-crawler/waiting-list'
 import { Route as DevDeskCrawlerRouteImport } from './routes/dev/desk-crawler'
@@ -93,6 +94,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
 const AppDeskCrawlerRoute = AppDeskCrawlerRouteImport.update({
   id: '/desk-crawler',
   path: '/desk-crawler',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSlowCastRoute = AppSlowCastRouteImport.update({
+  id: '/slow-cast',
+  path: '/slow-cast',
   getParentRoute: () => AppRoute,
 } as any)
 const DeskCrawlerUnsubscribeRoute = DeskCrawlerUnsubscribeRouteImport.update({
@@ -176,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/account/delete': typeof AccountDeleteRoute
   '/app/desk-crawler': typeof AppDeskCrawlerRouteWithChildren
+  '/app/slow-cast': typeof AppSlowCastRoute
   '/desk-crawler/unsubscribe': typeof DeskCrawlerUnsubscribeRoute
   '/desk-crawler/waiting-list': typeof DeskCrawlerWaitingListRoute
   '/dev/desk-crawler': typeof DevDeskCrawlerRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByTo {
   '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
   '/account/delete': typeof AccountDeleteRoute
+  '/app/slow-cast': typeof AppSlowCastRoute
   '/desk-crawler/unsubscribe': typeof DeskCrawlerUnsubscribeRoute
   '/desk-crawler/waiting-list': typeof DeskCrawlerWaitingListRoute
   '/dev/desk-crawler': typeof DevDeskCrawlerRoute
@@ -229,6 +237,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/account_/delete': typeof AccountDeleteRoute
   '/app/desk-crawler': typeof AppDeskCrawlerRouteWithChildren
+  '/app/slow-cast': typeof AppSlowCastRoute
   '/desk-crawler/unsubscribe': typeof DeskCrawlerUnsubscribeRoute
   '/desk-crawler/waiting-list': typeof DeskCrawlerWaitingListRoute
   '/dev/desk-crawler': typeof DevDeskCrawlerRoute
@@ -258,6 +267,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/account/delete'
     | '/app/desk-crawler'
+    | '/app/slow-cast'
     | '/desk-crawler/unsubscribe'
     | '/desk-crawler/waiting-list'
     | '/dev/desk-crawler'
@@ -283,6 +293,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/terms'
     | '/account/delete'
+    | '/app/slow-cast'
     | '/desk-crawler/unsubscribe'
     | '/desk-crawler/waiting-list'
     | '/dev/desk-crawler'
@@ -310,6 +321,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/account_/delete'
     | '/app/desk-crawler'
+    | '/app/slow-cast'
     | '/desk-crawler/unsubscribe'
     | '/desk-crawler/waiting-list'
     | '/dev/desk-crawler'
@@ -434,6 +446,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDeskCrawlerRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/slow-cast': {
+      id: '/app/slow-cast'
+      path: '/slow-cast'
+      fullPath: '/app/slow-cast'
+      preLoaderRoute: typeof AppSlowCastRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/desk-crawler/unsubscribe': {
       id: '/desk-crawler/unsubscribe'
       path: '/desk-crawler/unsubscribe'
@@ -548,11 +567,13 @@ const AppDeskCrawlerRouteWithChildren = AppDeskCrawlerRoute._addFileChildren(
 
 interface AppRouteChildren {
   AppDeskCrawlerRoute: typeof AppDeskCrawlerRouteWithChildren
+  AppSlowCastRoute: typeof AppSlowCastRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppDeskCrawlerRoute: AppDeskCrawlerRouteWithChildren,
+  AppSlowCastRoute: AppSlowCastRoute,
   AppIndexRoute: AppIndexRoute,
 }
 

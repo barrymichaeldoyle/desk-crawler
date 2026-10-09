@@ -311,3 +311,16 @@ Grant linking, claimed client connection flags and a screen query alone cannot a
 ## D54 stored recap source
 
 No recap table, checkpoint, new index or backfill is needed. Device assembly uses `tickLogs.by_heroId_and_at_and_sequence` for the authorized hero over `(now − 12 hours, now]`, taking 201 rows and aggregating the newest 200. Commands can consume the cap; an extra row means a partial digest, never a claimed full total. Additive optional combat-outcome `gearRarity` is recorded from the transaction’s awarded item. Existing combat logs omit it and remain valid; loot already records rarity. History retention/deletion, rewards and hero state are unchanged.
+
+## Slow Cast (D115)
+
+Slow Cast's tables sit beside Desk Crawler's in the same deployment ([spec](slow-cast.md#data)).
+
+- **Engine tables** `swWorldState`, `swSimulationRuns`, `swSimulationFailures`, `swScoreWindows`, `swRankInputs`, `swLeaderboardPublications`, `swLeaderboardGenerations`, `swRanks`, `swAchievementStats` come from the same factory as Desk Crawler's (`lib/engine/tables.ts`), so their fields and indexes match. Their `heroId` holds an angler id. Runs count `landed`, `released`, `gotAway` and `levelUps`.
+- **`slowCastProfiles`**: `userId`, `state: active | deleting`, `anglerId?`, `createdAt`; index `by_userId`. One per user.
+- **`anglers`**: the owner, activation and engine markers as on `heroes`, and the fishing state: `level`, `xp`, `lifetimeXp`, `gold`, `status: fishing | paused`, `waterId`, `travelTo?`, `rodTier`, `coolerTier`, `baitOnHook?`, `bait` (units per bait class), `access`, `logbook` (species id to count, best grams, first tick), `counters`, `quietTicks`, `publicProfile?`. No name: the owner's public alias is shown. Indexes `by_userId_and_isActive`, `by_createdAt`, `by_simulationState`.
+- **`catches`**: `anglerId`, `speciesId`, `grams`, `value`, `caughtTick`, `contentVersion`, `createdAt`; index `by_anglerId`. At most the cooler's capacity (24 at the top tier), so an angler read stays bounded.
+- **`swTickLogs`**: as `tickLogs`, keyed by `anglerId`, with Slow Cast's event kinds and a flat detail.
+- **`platformGames`**: `slug`, `status: hidden | preview | live`, `updatedAt`; index `by_slug`. One row per game once an admin sets its status.
+- Shared tables: `trmnlGrants`, `trmnlInstances`, `trmnlInstallAttempts` and `gameDeletionJobs` accept either `gameSlug`; `operationReceipts.scope` adds `slow-cast`; `operationalIncidents.runId` takes either game's run.
+- Retention: Slow Cast logs, failures and runs follow Desk Crawler's windows in the daily cleanup. Deleting Slow Cast progress revokes only Slow Cast connections and purges the angler, its catches, logs and score windows; account deletion purges both games.

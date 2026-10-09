@@ -47,6 +47,7 @@ function SettingsPage() {
               {angler.publicProfile ? 'Make private' : 'Show on my profile'}
             </Button>
           </div>
+          {angler.publicProfile ? <p className="mt-3 text-sm"><Link to="/profile/$alias" params={{ alias: angler.alias }} className="underline underline-offset-4">Open your public profile</Link></p> : null}
           <ActionFeedback error={profile.error} message={profile.message} />
         </Card>
       ) : null}

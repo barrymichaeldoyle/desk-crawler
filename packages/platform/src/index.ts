@@ -62,3 +62,28 @@ export function isGameSlug(value: unknown): value is GameSlug {
 export function isGameStatus(value: unknown): value is GameStatus {
   return value === 'hidden' || value === 'preview' || value === 'live'
 }
+
+/**
+ * Platform achievements (slow-cast.md "Platform profile and achievements"): earned across games, shown on the shared
+ * profile. `games` counts games with an active character; `collected` counts achievements earned in every game.
+ */
+export interface PlatformAchievement {
+  readonly id: string
+  readonly family: 'regular' | 'collector'
+  readonly tier: number
+  readonly name: string
+  readonly blurb: string
+  readonly kind: 'games' | 'collected'
+  readonly atLeast: number
+}
+
+export const PLATFORM_ACHIEVEMENTS: readonly PlatformAchievement[] = [
+  { id: 'regular_1', family: 'regular', tier: 1, name: 'Regular', blurb: 'Plays two TRMNL Games.', kind: 'games', atLeast: 2 },
+  { id: 'collector_1', family: 'collector', tier: 1, name: 'Collector', blurb: '25 achievements across games.', kind: 'collected', atLeast: 25 },
+  { id: 'collector_2', family: 'collector', tier: 2, name: 'Curator', blurb: '100 achievements across games.', kind: 'collected', atLeast: 100 },
+  { id: 'collector_3', family: 'collector', tier: 3, name: 'Archivist', blurb: '250 achievements across games.', kind: 'collected', atLeast: 250 },
+]
+
+export function platformAchievements(stats: { games: number; collected: number }): PlatformAchievement[] {
+  return PLATFORM_ACHIEVEMENTS.filter((a) => (a.kind === 'games' ? stats.games : stats.collected) >= a.atLeast)
+}

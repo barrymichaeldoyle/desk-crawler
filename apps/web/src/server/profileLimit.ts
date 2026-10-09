@@ -1,7 +1,8 @@
 /** Cloudflare Workers rate-limiting binding (wrangler.jsonc `ratelimits`). */
 export type RateLimiter = { limit(options: { key: string }): Promise<{ success: boolean }> }
 
-const PROFILE_PATH = /^\/desk-crawler\/heroes\/[^/]+\/?$/
+/** Desk Crawler hero pages (D109) and the shared profile (D115). */
+const PROFILE_PATH = /^\/(desk-crawler\/heroes|profile)\/[^/]+\/?$/
 
 /**
  * Public hero pages (D109) are the one public page keyed by a guessable name, so

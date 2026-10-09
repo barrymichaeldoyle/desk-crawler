@@ -319,3 +319,7 @@ Two behaviours settled during implementation: an achievement log is written afte
 - Layouts: celebration badge with the longest achievement name on the full and both half layouts (the quadrant has no badge, D44) and the achievement glyph on every layout.
 
 Results from the harness run of 2026-10-06 are in [evidence](evidence/achievements.md).
+
+## Slow Cast and the platform (D115)
+
+Slow Cast has its own catalog (`packages/slow-cast/src/content/achievements.ts`, version 1, 105 ids) with the same rules: unlock rows keyed by owner, unique per id, retroactive predicates over bounded state, rarity from each publication's tally. It is listed in the [Slow Cast spec](slow-cast.md#achievements). Platform achievements (`PLATFORM_ACHIEVEMENTS` in `packages/platform`) are Regular (two games with an active character) and Collector, Curator and Archivist (25, 100 and 250 achievements across games). They are computed when the shared profile at `/profile/<public name>` is read, and their share of players comes from a daily tally (`platformProfile.tally`, 03:27 UTC) over users with at least one active game.

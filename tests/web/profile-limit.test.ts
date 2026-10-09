@@ -13,6 +13,8 @@ describe('public hero page rate limit (D109)', () => {
     const allowed = limiter(true)
     expect(await profileRateLimit(request('/desk-crawler/heroes/Wren'), allowed)).toBeNull()
     expect(allowed.limit).toHaveBeenCalledWith({ key: 'profile:203.0.113.7' })
+    // D115: the shared profile shares the budget.
+    expect((await profileRateLimit(request('/profile/Wren'), limiter(false)))?.status).toBe(429)
     const blocked = await profileRateLimit(request('/desk-crawler/heroes/Wren'), limiter(false))
     expect(blocked?.status).toBe(429)
     expect(blocked?.headers.get('Retry-After')).toBe('60')

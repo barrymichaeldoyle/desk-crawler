@@ -136,6 +136,18 @@ export const gameSlug = v.union(v.literal('desk-crawler'), v.literal('slow-cast'
 export const gameStatus = v.union(v.literal('hidden'), v.literal('preview'), v.literal('live'))
 
 export default defineSchema({
+  /**
+   * Platform achievement rarity (D115): `current` is the last finished daily tally, `building` the one in progress.
+   * `totalPlayers` counts users with at least one active game character.
+   */
+  platformStats: defineTable({
+    key: v.union(v.literal('current'), v.literal('building')),
+    counts: v.record(v.string(), v.number()),
+    totalPlayers: v.number(),
+    cursor: v.optional(v.string()),
+    at: v.number(),
+  }).index('by_key', ['key']),
+
   /** Server-controlled game lifecycle (slow-cast.md "Architecture"): one row per game once an admin sets its status. */
   platformGames: defineTable({
     slug: gameSlug,

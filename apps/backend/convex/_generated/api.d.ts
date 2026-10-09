@@ -49,6 +49,7 @@ import type * as lib_svix from "../lib/svix.js";
 import type * as lib_trmnlManagement from "../lib/trmnlManagement.js";
 import type * as maintenance from "../maintenance.js";
 import type * as platform from "../platform.js";
+import type * as platformProfile from "../platformProfile.js";
 import type * as profiles from "../profiles.js";
 import type * as raids from "../raids.js";
 import type * as sim_runs_adapter from "../sim/runs/adapter.js";
@@ -118,6 +119,7 @@ declare const fullApi: ApiFromModules<{
   "lib/trmnlManagement": typeof lib_trmnlManagement;
   maintenance: typeof maintenance;
   platform: typeof platform;
+  platformProfile: typeof platformProfile;
   profiles: typeof profiles;
   raids: typeof raids;
   "sim/runs/adapter": typeof sim_runs_adapter;

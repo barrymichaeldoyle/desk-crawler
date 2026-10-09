@@ -13,6 +13,9 @@ crons.interval('slow cast watchdog', { minutes: 5 }, internal.slowCast.tick.watc
 /** Stalled-run detection and guarded recovery (simulation.md "Watchdog"). */
 crons.interval('tick watchdog', { minutes: 5 }, internal.sim.runs.tick.watchdog, {})
 
+/** D115: daily platform achievement rarity, after the cleanup and away from both games' tick slots. */
+crons.daily('platform tally', { hourUTC: 3, minuteUTC: 27 }, internal.platformProfile.tally, {})
+
 /** Bounded retention cleanup (data-model.md), away from tick slots. */
 crons.daily('retention cleanup', { hourUTC: 3, minuteUTC: 5 }, internal.maintenance.cleanup, {})
 

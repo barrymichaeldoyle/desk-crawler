@@ -1,5 +1,7 @@
 /**
- * Four self-contained TRMNL layouts. Template v49 adds the desk drawer (D111): the bag count gains "+N" while the drawer
+ * Four self-contained TRMNL layouts. Template v50 adds the to-do list (D112): a checkbox glyph for tasks ticked off and
+ * the morning stand-up, a "2 tasks" recap fact, and a stand-up (or several tasks ticked off) that says its count where a
+ * row is too narrow for the labels. Template v49 adds the desk drawer (D111): the bag count gains "+N" while the drawer
  * holds gear ("20/20+6" at its widest, with no space so five-digit gold and the Cautious stance still fit the OG full header), and a find that went in the drawer takes a drawer glyph. Template v48 adds the raid glyph (a burglar's mask) for raid stories and the recap's
  * raid fact, and widens the ledger's gold column from 78 to 92 pixels so a raid's four-digit gold swing fits (D110). Template v47 moves the OG full landscape's code into the view's corner as a smaller
  * corner-cut code to the `/dc` short link, and runs the gear line on under it (D108). Template v46 closes the X half's details column to small gaps, so its board keeps a
@@ -37,7 +39,7 @@
 import { GLYPHS, glyphRows } from '../art/glyphs'
 import { hudMarkUri } from '../art/hud'
 
-export const TEMPLATE_VERSION = 49
+export const TEMPLATE_VERSION = 50
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -239,7 +241,8 @@ export const glyphUri = (kind: string, size: number) => {
   return `data:image/svg+xml,${encodeURIComponent(svg)}`
 }
 
-const GLYPH_KINDS = Object.keys(GLYPHS)
+/** The companion's open-task box (D112) never appears on the device, so it costs no markup there. */
+const GLYPH_KINDS = Object.keys(GLYPHS).filter((kind) => kind !== 'todoOpen')
 
 /** Each glyph assigned once per layout (`glyph16_combat`...), so log lines only pick a variable instead of repeating the SVG. */
 const glyphAssigns = (sizes: readonly number[]) =>
@@ -264,8 +267,11 @@ const rich = (expr: string) => `{{ ${expr} | escape | replace: "[[", '<span clas
  */
 const richSpan = (content: string) => `<span class="text--regular">${content}</span>`
 
-/** Story above its metadata; the icon and time start at the same left edge. */
-const storyText = richSpan(rich('line_story'))
+/**
+ * Story above its metadata; the icon and time start at the same left edge. A to-do line in its count form (D112)
+ * keeps its full labels on the X, which wraps rather than clamps.
+ */
+const storyText = richSpan(`{% if line_full %}<span class="lg:hidden">${rich('line_story')}</span><span class="hidden lg:inline-block">${rich('line_full')}</span>{% else %}${rich('line_story')}{% endif %}`)
 
 /** Status with a real time when it has one ("Knocked out, back at 12:30"); otherwise the self-contained label. */
 const statusText = richSpan(`{% if status_eta_at and utc_offset != nil %}${rich('status_eta_label')} {{ status_eta_at | plus: utc_offset | date: "%H:%M" }}{% else %}${rich('status_label')}{% endif %}`)
@@ -320,10 +326,14 @@ const logLine = (entry: string, classes: string, clamp: number, size: number, fi
   const changes = `{% for change in line_changes %} ${chip('change')}{% endfor %}`
   const hasChanges = `${entry}.d != nil and ${entry}.d != ""`
   const columns = chipColumns(shown)
+  const lineFit = Math.max(0, fit - (timeBelow ? 0 : 14))
+  // D112: on the OG, a to-do line too long for this row's fit says its count instead ("Stand-up: 3 new tasks."), so it
+  // never clamps mid-name; `line_full` keeps the labels for the X.
+  const compactSwap = `{% assign line_full = nil %}{% if ${entry}.c and line_plain.size > ${lineFit} %}{% assign line_full = line_story %}{% assign line_story = ${entry}.c %}{% assign line_plain = line_story %}{% endif %}`
   const inlineChips = inline && !lead ? `{% if ${hasChanges} %}${columns}{% endif %}` : ''
   const leadRow = lead ? `{% if line_timed or ${hasChanges} %}<div class="${shown} flex--row flex--right flex--center-y gap--xsmall" data-story-lead-meta="true">{% if ${hasChanges} %}${columns}{% endif %}${timeSpan()}</div>{% endif %}` : ''
   const stacked = `{% if ${timeBelow ? `line_timed or ${hasChanges}` : hasChanges} %}<div class="${inline ? 'lg:hidden ' : ''}flex flex--row flex--left flex--top gap--xsmall pt--1" data-story-changes="true"><div class="no-shrink w--[${size}px]"></div><div class="grow w--min-0">${timeBelow ? time : ''}${changes}</div></div>{% endif %}`
-  return `{% assign line_timed = false %}{% if utc_offset != nil and ${entry}.live != true %}{% assign line_timed = true %}{% endif %}{% assign line_changes = ${entry}.d | default: "" | split: " · " %}{% assign line_story = ${entry}.n | default: ${entry}.s %}{% assign line_plain = ${plainOf('line_story')} %}<div class="${wrapper} stretch-x"><div class="grid grid--cols-1 gap--none">${entry === 'log[0]' ? '' : '{% unless forloop.first %}<div class="border--h-30 stretch-x"></div>{% endunless %}'}<div class="flex flex--row flex--left flex--top${inline && !lead ? ` ${onlyX('lg:')}flex--center-y` : ''} gap--xsmall"><div class="no-shrink pt--0.5">${logIcon(`${entry}.k`, size)}</div><span class="${classes} grow" ${fitClamp('line_plain', clamp, Math.max(0, fit - (timeBelow ? 0 : 14)))}>${storyText}</span>${inlineChips}${timeBelow ? '' : time}</div>${inline === 'all' ? '' : stacked}${leadRow}</div></div>`
+  return `{% assign line_timed = false %}{% if utc_offset != nil and ${entry}.live != true %}{% assign line_timed = true %}{% endif %}{% assign line_changes = ${entry}.d | default: "" | split: " · " %}{% assign line_story = ${entry}.n | default: ${entry}.s %}{% assign line_plain = ${plainOf('line_story')} %}${compactSwap}<div class="${wrapper} stretch-x"><div class="grid grid--cols-1 gap--none">${entry === 'log[0]' ? '' : '{% unless forloop.first %}<div class="border--h-30 stretch-x"></div>{% endunless %}'}<div class="flex flex--row flex--left flex--top${inline && !lead ? ` ${onlyX('lg:')}flex--center-y` : ''} gap--xsmall"><div class="no-shrink pt--0.5">${logIcon(`${entry}.k`, size)}</div><span class="${classes} grow" ${fitClamp('line_plain', clamp, lineFit)}>${storyText}</span>${inlineChips}${timeBelow ? '' : time}</div>${inline === 'all' ? '' : stacked}${leadRow}</div></div>`
 }
 
 /** The status line, its clamp fitted like log lines. */

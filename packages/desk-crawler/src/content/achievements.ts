@@ -8,7 +8,7 @@ import type { NumericCounter } from '../sim/core/types'
  * never logs, so a hero who did the deed before an achievement existed earns
  * it on the first evaluation after release.
  */
-export const ACHIEVEMENTS_VERSION = 3
+export const ACHIEVEMENTS_VERSION = 4
 
 export type AchievementPredicate =
   | { readonly kind: 'counter'; readonly counter: NumericCounter; readonly atLeast: number }
@@ -299,6 +299,15 @@ counter('desk_defender', 'Desk defender', 'Raids', 'raidsRepelled', [1, 10, 50],
   ['Not Today', 'Caught a raider at the drawers and showed them out.'],
   ['Neighbourhood Watch', 'Ten raiders sent packing.'],
   ['Fort Knox Desk', 'Fifty raids repelled. The drawers have a reputation.'],
+])
+
+// ---------------------------------------------------------------- v1.1 To-do list (catalog version 4, D112; appended, never edited)
+
+counter('tasks_done', 'Tasks done', 'Lifetime', 'tasksCompleted', [1, 10, 50, 250], [
+  ['Ticked Off', 'Crossed the first task off the office to-do list.'],
+  ['Inbox Zero-ish', 'Ten tasks done. The list keeps coming.'],
+  ['Getting Things Done', 'Fifty tasks ticked off without a single reminder.'],
+  ['Employee of the Month', 'Two hundred and fifty tasks. Framed photo pending.'],
 ])
 
 /** Families in display order. */

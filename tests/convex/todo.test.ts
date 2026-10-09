@@ -158,4 +158,25 @@ describe('to-do list backend (D112 Q2)', () => {
     await t.run(async (ctx) => await ctx.db.patch((await ctx.db.query('worldState').first())!._id, { activeContentVersion: 'v8' }))
     expect((await as(t, 'Ana').query(api.heroes.mine, {})).todo).toBeNull()
   })
+
+  it('awards Tasks done when a tick ticks off the first task, and publishes its rarity', { timeout: 30_000 }, async () => {
+    await seedWorld(t, { activeContentVersion: 'v9', currentTick: 10 })
+    const one = finishedList()
+    // Every exploring tick explores the Office, so a one-adventure task finishes on the first exploring tick.
+    const list = { ...one, lastStandupAt: Date.UTC(2026, 9, 9, 7), tasks: [one.tasks[1]!, task({ templateId: 'explore_biome', biomeId: 'office_cubicles', target: 1 }), task({ templateId: 'elite', target: 1 })] }
+    const heroId = await seedHero(t, { todo: list }, 'Ana')
+    for (let i = 0; i < 4 && ((await heroDoc(t, heroId)).counters.tasksCompleted ?? 0) === 0; i += 1) {
+      vi.setSystemTime(SLOT + i * 15 * 60_000)
+      await runTick(t)
+    }
+    const hero = await heroDoc(t, heroId)
+    expect(hero.counters.tasksCompleted).toBe(1)
+    const unlocked = await t.run(async (ctx) => await ctx.db.query('heroAchievements').withIndex('by_userId_and_achievementId', (q) => q.eq('userId', hero.userId)).collect())
+    expect(unlocked.map((row) => row.achievementId)).toContain('tasks_done_1')
+    const done = (await logs(t, heroId)).find((log) => log.kind === 'todo' && log.summary.startsWith('Ticked off'))
+    expect(done?.summary).toBe('Ticked off: Explore the [[Office Cubicles]].')
+    expect(done?.deltas.gold).toBe(5)
+    const stats = await t.run(async (ctx) => await ctx.db.query('achievementStats').order('desc').first())
+    expect(stats?.counts.tasks_done_1).toBe(1)
+  })
 })

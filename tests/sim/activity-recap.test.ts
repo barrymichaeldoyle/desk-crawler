@@ -112,3 +112,17 @@ describe('12-hour device recap', () => {
     expect(activityRecap([entry({ variant: 'trap', avoided: true, damage: 0, outcome: 'survived' })], PERIOD, contentV1).activity).toBe('Adventures continued')
   })
 })
+
+describe('to-do recap fact (D112)', () => {
+  it('counts tasks ticked off as one fact and never counts a stand-up as an adventure', () => {
+    const done = (count: number): OutcomeDetail => ({ variant: 'todo', phase: 'done', tasks: Array.from({ length: count }, () => ({ templateId: 'defeat_any' as const, label: 'Win 9 fights', reward: 5 })) })
+    const standup: OutcomeDetail = { variant: 'todo', phase: 'standup', tasks: [{ templateId: 'find_gear', label: 'Find a piece of gear', reward: 5 }] }
+    const recap = activityRecap([entry(done(2), { deltas: { xpEarned: 0, gold: 10, hp: 0 } }), entry(done(1)), entry(standup), entry(fight)], PERIOD, contentV1)
+    expect(recap.totals.tasks).toBe(3)
+    expect(recap.events).toBe(1)
+    expect(recap.items).toContainEqual({ k: 'todo', t: '3 tasks' })
+    expect(recap.activity).toContain('3 tasks')
+    // A morning with only the stand-up is still a quiet one.
+    expect(activityRecap([entry(standup)], PERIOD, contentV1).activity).toBe('No new adventures')
+  })
+})

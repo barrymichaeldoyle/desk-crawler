@@ -225,9 +225,7 @@ function todoEvent(input: SimulationInput, result: SimulationResult, phase: 'don
   const labels = tasks.map((task) => taskLabel(task, content))
   const head = phase === 'done' ? 'Ticked off' : 'Stand-up'
   const full = `${head}: ${labels.join('. ')}.`
-  const count = tasks.length === 1 ? 'a task' : `${tasks.length} tasks`
-  const compact = phase === 'done' ? `Ticked off ${count}.` : `Stand-up: ${tasks.length === 1 ? 'a new task' : `${tasks.length} new tasks`}.`
-  const summary = codePoints(full) <= content.constants.summaryMaxCodePoints ? full : compact
+  const summary = codePoints(full) <= content.constants.summaryMaxCodePoints ? full : todoCompactLine(phase, tasks.length)
   const detail: LogDetail = {
     v: 1,
     simulationVersion: input.simulationVersion,
@@ -241,6 +239,10 @@ function todoEvent(input: SimulationInput, result: SimulationResult, phase: 'don
   }
   return { kind: 'todo', summary, detail, deltas: { xpEarned: 0, gold, hp: 0 } }
 }
+
+/** The count form of a to-do line, for a summary over budget and for device rows too narrow for the labels. */
+export const todoCompactLine = (phase: 'done' | 'standup', count: number): string =>
+  phase === 'done' ? `Ticked off ${count === 1 ? 'a task' : `${count} tasks`}.` : `Stand-up: ${count === 1 ? 'a new task' : `${count} new tasks`}.`
 
 export type SwapRefusal = 'NO_TODO' | 'BAD_SLOT' | 'TASK_DONE' | 'SWAP_USED'
 

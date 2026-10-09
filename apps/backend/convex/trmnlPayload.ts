@@ -13,6 +13,7 @@ import { keepsakeCode, keepsakeGrant } from './lib/keepsakes'
 import { keepsakeWeek } from '@trmnl-games/desk-crawler/content/keepsakes'
 import { displayLogDeltas } from '@trmnl-games/desk-crawler/log'
 import { affixById } from '@trmnl-games/desk-crawler/sim/core/modifiers'
+import { todoCompactLine } from '@trmnl-games/desk-crawler/sim/core/todo'
 
 /**
  * Fixed-cost canonical payload for one authorized instance (trmnl.md "Query
@@ -52,6 +53,13 @@ export const forInstance = internalQuery({
     return { outcome: 'payload' as const, payload, keepsakeCode: codeGrant ? keepsakeCode(codeGrant.tokenHash, user._id, week) : null, ...(offsetChanged ? { recordOffsetFor: user._id } : {}) }
   },
 })
+
+/** D112: the count form of a stand-up, or of several tasks ticked off at once; a single ticked-off task keeps its label. */
+function todoCompact(log: Doc<'tickLogs'>): { compact?: string } {
+  if (log.kind !== 'todo' || !('outcome' in log.detail) || log.detail.outcome.variant !== 'todo') return {}
+  const { phase, tasks } = log.detail.outcome
+  return phase === 'standup' || tasks.length > 1 ? { compact: todoCompactLine(phase, tasks.length) } : {}
+}
 
 /** The canonical device payload for a user's current hero. Shared by the device endpoint and the owner preview. */
 async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instanceName: string | null, utcOffset: number | null) {
@@ -98,8 +106,9 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
       .take(MAX_LOGS)
     // D110: a raid rival whose name has since changed or gone reads "Hidden player" here too.
     const summaries = await maskRaidSummaries(ctx, recent)
-    // D111: a loot find that went in the desk drawer takes the drawer glyph.
-    logs = recent.map((log, index) => ({ at: log.at, kind: log.kind === 'loot' && 'drawerFind' in log.detail && log.detail.drawerFind ? 'drawer' : log.kind, summary: summaries[index]!, deltas: displayLogDeltas(log) }))
+    // D111: a loot find that went in the desk drawer takes the drawer glyph. D112: a stand-up, or several tasks ticked
+    // off at once, carries its count form for rows too narrow for the labels.
+    logs = recent.map((log, index) => ({ at: log.at, kind: log.kind === 'loot' && 'drawerFind' in log.detail && log.detail.drawerFind ? 'drawer' : log.kind, summary: summaries[index]!, deltas: displayLogDeltas(log), ...todoCompact(log) }))
     // The most recently completed night or day period in the owner's local time (D75), the same one buildPayload labels.
     const period = recapPeriod(now, utcOffset)
     const window = await ctx.db
@@ -109,9 +118,10 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
       .take(MAX_RECAP_EVENTS + 1)
     activity = { entries: window.slice(0, MAX_RECAP_EVENTS), truncated: window.length > MAX_RECAP_EVENTS }
     // The scene follows the newest gameplay event; the celebration follows the newest log, which may be an achievement (D65).
-    const gameplay = recent.find((log) => log.kind !== 'achievement')
+    // D112: to-do lines follow their tick's story, so neither the scene nor the celebration ever follows one.
+    const gameplay = recent.find((log) => log.kind !== 'achievement' && log.kind !== 'todo')
     if (gameplay) latestEvent = { kind: gameplay.kind, ...('outcome' in gameplay.detail ? { outcome: gameplay.detail.outcome } : {}) }
-    const newest = recent[0]
+    const newest = recent.find((log) => log.kind !== 'todo')
     if (newest) newestEvent = { kind: newest.kind, ...('outcome' in newest.detail ? { outcome: newest.detail.outcome } : {}), ...('achievementId' in newest.detail ? { title: newest.detail.name } : {}) }
   }
 

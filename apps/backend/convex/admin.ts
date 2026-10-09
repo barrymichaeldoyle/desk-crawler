@@ -94,6 +94,8 @@ export const engagement = internalQuery({
       epicFinds: { total: sum((c) => c.epicFinds), heroes: reached((c) => c.epicFinds) },
       // D110: raids from both sides; launched minus won is failed raids.
       raids: { launched: sum((c) => c.raidsLaunched), won: sum((c) => c.raidsWon), repelled: sum((c) => c.raidsRepelled), lost: sum((c) => c.raidsLost), heroesRaiding: reached((c) => c.raidsLaunched), heroesRaided: heroes.filter((h) => (h.counters.raidsRepelled ?? 0) + (h.counters.raidsLost ?? 0) > 0).length },
+      // D112: to-do tasks ticked off, and how many heroes have finished one.
+      tasks: { completed: sum((c) => c.tasksCompleted), heroes: reached((c) => c.tasksCompleted) },
       analyticsConsent: tally(users.map((u) => (u.analyticsConsent === undefined ? 'unset' : u.analyticsConsent ? 'allowed' : 'declined'))),
     }
   },

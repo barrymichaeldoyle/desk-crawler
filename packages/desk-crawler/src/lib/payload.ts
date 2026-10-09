@@ -71,7 +71,8 @@ export interface PayloadInput {
   /** P32: gear in the desk drawer; absent or 0 hides the HUD's "+N". */
   readonly drawerUsed?: number
   readonly heldItemName: string | null
-  readonly logs: ReadonlyArray<{ readonly at: number; readonly kind: string; readonly summary: string; readonly deltas?: LogDeltas }>
+  /** `compact`: D112's count form of a to-do line, for rows too narrow for its labels. */
+  readonly logs: ReadonlyArray<{ readonly at: number; readonly kind: string; readonly summary: string; readonly deltas?: LogDeltas; readonly compact?: string }>
   /** Separate 12-hour read; the ten recent stories cannot imply a complete recap. */
   readonly activity?: { readonly entries: readonly ActivityEntry[]; readonly truncated: boolean }
   /** The owner's UTC offset in seconds (TRMNL's `trmnl[user][utc_offset]`, or the browser's); null means UTC. Sets the recap period (D75). */
@@ -222,7 +223,7 @@ export function buildPayload(input: PayloadInput) {
   const gameAsOf = lastCompletedAt === undefined ? null : formatLocal(lastCompletedAt, input.timezone)
   const logs = input.logs.slice(0, MAX_LOGS).map((log) => {
     const { narrative, changes } = logPresentation(log, { compactGold: true })
-    return { at: iso(log.at), u: Math.floor(log.at / 1000), t: formatLocal(log.at, input.timezone).label, k: log.kind, s: keepUnitsTogether(log.summary), n: keepUnitsTogether(narrative), d: keepUnitsTogether(changes.join(' · ')) }
+    return { at: iso(log.at), u: Math.floor(log.at / 1000), t: formatLocal(log.at, input.timezone).label, k: log.kind, s: keepUnitsTogether(log.summary), n: keepUnitsTogether(narrative), d: keepUnitsTogether(changes.join(' · ')), ...(log.compact === undefined ? {} : { c: log.compact }) }
   })
 
   const common = {

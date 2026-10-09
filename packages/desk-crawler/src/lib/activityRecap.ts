@@ -47,7 +47,7 @@ export interface ActivityEntry {
 
 /** Read-only, deterministic digest of recorded outcomes within one completed period. Never infer facts from jokes. */
 export function activityRecap(entries: readonly ActivityEntry[], period: RecapPeriod, content: ContentCatalog, truncated = false) {
-  const totals = { xp: 0, gold: 0, wins: 0, gear: 0, potions: 0, breaks: 0, levels: 0, knockouts: 0, revivals: 0, rareFinds: 0, elites: 0, jackpots: 0, raidsWon: 0, raidsLost: 0 }
+  const totals = { xp: 0, gold: 0, wins: 0, gear: 0, potions: 0, breaks: 0, levels: 0, knockouts: 0, revivals: 0, rareFinds: 0, elites: 0, jackpots: 0, raidsWon: 0, raidsLost: 0, tasks: 0 }
   const arrivals = new Set<string>()
   let heldFind = false
   let events = 0
@@ -55,6 +55,11 @@ export function activityRecap(entries: readonly ActivityEntry[], period: RecapPe
     // Half-open window avoids counting a boundary event in both adjacent windows.
     if (entry.at <= period.from || entry.at > period.to) continue
     if (!('outcome' in entry.detail)) continue
+    // D112: a stand-up announces tasks, it is not something the hero did; ticked-off tasks are one fact.
+    if (entry.detail.outcome.variant === 'todo') {
+      if (entry.detail.outcome.phase === 'done') totals.tasks += entry.detail.outcome.tasks.length
+      continue
+    }
     events++
     const { outcome, levelsGained } = entry.detail
     totals.xp += entry.deltas.xpEarned
@@ -98,6 +103,7 @@ export function activityRecap(entries: readonly ActivityEntry[], period: RecapPe
     totals.gear ? plural(totals.gear, 'gear find') : null,
     totals.potions ? plural(totals.potions, 'potion found', 'potions found') : null,
     totals.breaks ? plural(totals.breaks, 'break') : null,
+    totals.tasks ? plural(totals.tasks, 'task') : null,
   ].filter((value): value is string => value !== null)
   const gains = [totals.xp ? `+${totals.xp} XP` : null, totals.gold ? `${totals.gold} gold earned` : null].filter((value): value is string => value !== null)
   const highlights = [
@@ -125,6 +131,7 @@ export function activityRecap(entries: readonly ActivityEntry[], period: RecapPe
     totals.knockouts ? { k: 'death', t: plural(totals.knockouts, 'knockout') } : null,
     totals.revivals ? { k: 'revive', t: plural(totals.revivals, 'revival') } : null,
     raidFact ? { k: 'raid', t: raidFact } : null,
+    totals.tasks ? { k: 'todo', t: plural(totals.tasks, 'task') } : null,
     totals.xp ? { k: 'xp', t: `+${totals.xp} XP` } : null,
     totals.gold ? { k: 'coin', t: `${totals.gold} gold` } : null,
     totals.wins ? { k: 'sword', t: plural(totals.wins, 'win') } : null,

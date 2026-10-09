@@ -151,6 +151,12 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
     raidLost: { ...base, latestEvent: { kind: 'raid', outcome: { variant: 'raid', role: 'raider', won: false } }, logs: [{ at: NOW - 7 * 60_000, kind: 'raid', summary: "The raid on [[Maximilian_Wolfgangs]]'s desk went badly. Dropped the loot on the way out.", deltas: { xpEarned: 0, gold: -1240, hp: -54 } }, ...base.logs] },
     raidWon: { ...base, latestEvent: { kind: 'raid', outcome: { variant: 'raid', role: 'target', won: true } }, logs: [{ at: NOW - 7 * 60_000, kind: 'raid', summary: 'Caught [[Maximilian_Wolfgangs]] at the drawers. They fled and dropped their loot.', deltas: { xpEarned: 0, gold: 1240, hp: -18 } }, ...base.logs] },
     raidKnockout: { ...base, hero: hero({ status: 'dead', hp: 0, reviveAtTick: 128 }), latestEvent: { kind: 'death', outcome: { variant: 'raid', role: 'target', won: false } }, logs: [{ at: NOW - 7 * 60_000, kind: 'death', summary: 'Came back to find [[Maximilian_Wolfgangs]] had been through the drawers. Knocked out for 8 ticks. Lost 64 gold.', deltas: { xpEarned: 0, gold: -1304, hp: -54 } }, ...base.logs] },
+    // D112: the longest single task line, two tasks ticked off at once, the longest three-task stand-up as the newest
+    // line, and a stand-up in an older row, where it says its count. The scene keeps following the tick's story.
+    todoDone: { ...base, hero: hero({ biomeId: 'cafeteria_depths', level: 9 }), logs: [{ at: NOW - 7 * 60_000, kind: 'todo', summary: 'Ticked off: Explore the [[Cafeteria Depths]] for 40 adventures.', deltas: { xpEarned: 0, gold: 30, hp: 0 } }, ...base.logs] },
+    todoTwo: { ...base, hero: hero({ biomeId: 'cafeteria_depths', level: 9 }), logs: [{ at: NOW - 7 * 60_000, kind: 'todo', summary: 'Ticked off: Defeat 5 [[Leftovers Hydras]]. Explore the [[Cafeteria Depths]] for 40 adventures.', compact: 'Ticked off 2 tasks.', deltas: { xpEarned: 0, gold: 60, hp: 0 } }, ...base.logs] },
+    todoStandup: { ...base, hero: hero({ biomeId: 'cafeteria_depths', level: 9 }), logs: [{ at: NOW - 7 * 60_000, kind: 'todo', summary: 'Stand-up: Defeat 5 [[Leftovers Hydras]]. Earn 260 gold adventuring. Dodge 2 traps.', compact: 'Stand-up: 3 new tasks.', deltas: { xpEarned: 0, gold: 0, hp: 0 } }, ...base.logs] },
+    todoStandupRow: { ...base, logs: [base.logs[0]!, { at: NOW - 22 * 60_000, kind: 'todo', summary: 'Stand-up: Defeat 5 [[Legacy Mainframes]]. Earn 140 gold adventuring. Beat an elite.', compact: 'Stand-up: 3 new tasks.', deltas: { xpEarned: 0, gold: 0, hp: 0 } }, ...base.logs.slice(1)] },
     unlinked: { ...base, hero: null, ranking: null, logs: [], latestEvent: null },
     // Setup screen while the service is paused: no code to scan, so the panel says so instead of asking for a scan.
     unlinkedPaused: { ...base, hero: null, ranking: null, logs: [], latestEvent: null, world: { ...base.world!, maintenanceMode: true } },
@@ -193,6 +199,13 @@ export function previewScenarios(artBaseUrl: string | null): PreviewScenarios {
     fullBagRecap: { ...states.sleeping!, activity: { entries: [activityEntry(fixtureGear, 0, { detail: { outcome: fixtureGear, levelsGained: 0, heldFind: true } }), ...overnightEntries], truncated: false } },
     knockoutRecap: { ...states.dead!, activity: { entries: [activityEntry({ ...fixtureFight, outcome: 'death', goldGranted: 0, gearDropped: false }, 0), ...overnightEntries], truncated: false } },
     recoveredRecap: { ...base, activity: { entries: [activityEntry({ variant: 'revival', previousBiomeId: 'server_room', safeBiomeId: 'office_cubicles', hpGranted: 30, reviveAtTick: 119 }, 0), activityEntry({ ...fixtureFight, outcome: 'death', goldGranted: 0, gearDropped: false }, 8), ...overnightEntries], truncated: false } },
+    // D112: tasks ticked off overnight join the recap as one fact; the stand-up is not counted.
+    tasksRecap: { ...base, activity: { entries: [
+      activityEntry({ variant: 'todo', phase: 'done', tasks: [{ templateId: 'defeat_any', label: 'Win 12 fights', reward: 16 }] }, 0, { deltas: { xpEarned: 0, gold: 16, hp: 0 } }),
+      activityEntry({ variant: 'todo', phase: 'standup', tasks: [{ templateId: 'find_gear', label: 'Find 2 pieces of gear', reward: 16 }] }, 1),
+      activityEntry({ variant: 'todo', phase: 'done', tasks: [{ templateId: 'find_gear', label: 'Find 2 pieces of gear', reward: 16 }] }, 2, { deltas: { xpEarned: 0, gold: 16, hp: 0 } }),
+      ...overnightEntries,
+    ], truncated: false } },
     // D110: raids won and lost overnight, one of them lethal.
     raidRecap: { ...base, activity: { entries: [
       activityEntry({ variant: 'raid', role: 'raider', rivalHeroId: 'r1', rivalName: 'Quill', won: true, gold: 14, hpLost: 9, raidTick: 110, outcome: 'survived' }, 0),

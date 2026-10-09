@@ -72,3 +72,17 @@ Tests: `tests/convex/todo.test.ts` (first-tick fill and log order, nothing under
 - The Hero page's To-do card ([-todo.tsx](../../apps/web/src/routes/app/desk-crawler/-todo.tsx)), the Swap link and its `task swapped` event, a To-do filter in the quest log, the checkbox glyphs (`todo`, `todoOpen`) shared with the device, and the help page's To-do list section, shown once the active catalog has one.
 - Log presentation keeps to-do labels whole: before the fix, the amount stripper turned "Earn 50 gold adventuring" into "Earn gold adventuring", and a stand-up line showed "No effect". Both are covered in `tests/sim/log-presentation.test.ts`.
 - Phone check at 390 × 844 in the companion fixtures harness (`todo=1`, `todo=used`, with sleeping, raids, a decision and effects, and long names): no horizontal scroll in any state, the card 358 px wide inside the 16 px gutters, the longest label ("Explore the Office Cubicles for 40 adventures") wrapping cleanly, and the Swap link a 44 px tap target.
+
+## Q4 device (template v50)
+
+- The `todo` checkbox glyph marks to-do lines and the recap's "N tasks" fact. A ticked-off line shows its reward as the gold chip; a stand-up shows none. To-do lines never drive the scene or the celebration, which follow the tick's story.
+- Payload logs for a stand-up, or for several tasks ticked off at once, carry a count form `c`. On the OG, a row whose full text would pass its clamp fit says "Stand-up: 3 new tasks." instead of clamping mid-name. The X, which wraps rather than clamps, keeps the full labels. The first build swapped on both screens, so the X full landscape showed the count beside room for the labels; the template now draws both and lets the X show the full text.
+- Preview cases: `todoDone` (the longest single task line, "Ticked off: Explore the Cafeteria Depths for 40 adventures."), `todoTwo` (two tasks at once, 86 characters), `todoStandup` (the longest three-task stand-up that fits the summary, 79 characters), `todoStandupRow` (a stand-up in an older one-line row) and the recap `tasksRecap`.
+- Full sweep: 1,236 previews, 0 failures; the 120 to-do cases are in [todo-device-results.json](todo-device-results.json). Official lint passes and 396 renders match between liquidjs and Ruby Liquid. Reviewed by eye: the OG full and quadrant stand-ups read "Stand-up: 3 new tasks.", the X full landscape wraps the three labels over two lines, the X quadrant wraps a stand-up in an older row, and the X portrait half wraps the two-task line over four lines without touching the board.
+
+## Q5 achievements
+
+- Achievement catalog version 4 appends Tasks done under Lifetime: 1, 10, 50 and 250 tasks (Ticked Off, Inbox Zero-ish, Getting Things Done, Employee of the Month), 156 ids. Every hero gets one full pass at the new version, as with earlier catalogs.
+- A convex test runs real ticks on a v9 world until a one-adventure task finishes: the tick pays 5 gold with "Ticked off: Explore the Office Cubicles.", awards Ticked Off, and the publication's rarity tally counts it.
+- `admin:engagement` adds tasks ticked off and how many heroes have finished one.
+

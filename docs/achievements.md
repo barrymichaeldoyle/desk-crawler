@@ -249,7 +249,7 @@ Set pieces are recomputed when the catalog version changes, so adding a biome in
 | | | III | 12 | Full Set | Every design, once. |
 | | | IV | 24 | Second Shelf | Facilities have been informed. |
 
-Launch total: 60 monster tiers, 5 set pieces and 66 counter tiers, 131 ids. Catalog version 2 (v1.1, 2026-10-07) appends 15 counter tiers in five families, 146 ids: Purchases (1 / 5 / 25 merchant purchases), Merchants met (1 / 10 / 50 visits), Stance changes (1 / 5 / 25), Decisions made (1 / 5 / 25 / 100 choices answered) under a new "Decisions" category, and Epic finds (1 / 5) under Lifetime. Catalog version 3 (v1.2, D110, 2026-10-08) appends 6 counter tiers in two families under a new "Raids" category, 152 ids: Office raider (1 / 10 / 50 raids won: Light Fingers, Desk Burglar, Cat Burglar) and Desk defender (1 / 10 / 50 raids repelled: Not Today, Neighbourhood Watch, Fort Knox Desk). The counters exist from R1, so every raid counts from the switch to content v7.
+Launch total: 60 monster tiers, 5 set pieces and 66 counter tiers, 131 ids. Catalog version 2 (v1.1, 2026-10-07) appends 15 counter tiers in five families, 146 ids: Purchases (1 / 5 / 25 merchant purchases), Merchants met (1 / 10 / 50 visits), Stance changes (1 / 5 / 25), Decisions made (1 / 5 / 25 / 100 choices answered) under a new "Decisions" category, and Epic finds (1 / 5) under Lifetime. Catalog version 3 (v1.2, D110, 2026-10-08) appends 6 counter tiers in two families under a new "Raids" category, 152 ids: Office raider (1 / 10 / 50 raids won: Light Fingers, Desk Burglar, Cat Burglar) and Desk defender (1 / 10 / 50 raids repelled: Not Today, Neighbourhood Watch, Fort Knox Desk). The counters exist from R1, so every raid counts from the switch to content v7. Catalog version 4 (v1.1 stretch, D112, 2026-10-09) appends 4 counter tiers in one family under Lifetime, 156 ids: Tasks done (1 / 10 / 50 / 250 to-do tasks ticked off: Ticked Off, Inbox Zero-ish, Getting Things Done, Employee of the Month). The `tasksCompleted` counter exists from Q1, so every task counts from the switch to content v9.
 
 ### Later releases
 
@@ -258,6 +258,7 @@ Each release appends families for its new system under a new catalog version; it
 | Release | Families |
 | --- | --- |
 | v1.1 Decisions | Shipped as catalog version 2 on 2026-10-07: Purchases, Merchants met, Stance changes, Decisions made, Epic finds |
+| v1.1 To-do list | Tasks done (to-do tasks ticked off), built as catalog version 4 on 2026-10-09 (D112) |
 | v1.2 Other people | Office raider (raids won) and Desk defender (raids repelled) shipped as catalog version 3 on 2026-10-08 (D110); later meetings completed, meetings with the same hero, world events survived |
 | v2.0 Depth | Archive and Parking Garage monsters (five tiers each), salvage, upgrades, persistent elite defeats, dungeon clears |
 | v2.1 Guilds | Raid contributions, hall contributions |

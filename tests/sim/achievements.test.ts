@@ -15,9 +15,9 @@ const state = (overrides: Partial<HeroCounters> = {}, extra: Partial<Achievement
 
 describe('achievement catalog (D65)', () => {
   it('holds the launch set with unique, catalog-backed ids', () => {
-    expect(ACHIEVEMENTS).toHaveLength(152)
+    expect(ACHIEVEMENTS).toHaveLength(156)
     expect(new Set(ACHIEVEMENTS.map((a) => a.id)).size).toBe(ACHIEVEMENTS.length)
-    expect(ACHIEVEMENT_FAMILIES).toHaveLength(12 + 5 + 17 + 5 + 2)
+    expect(ACHIEVEMENT_FAMILIES).toHaveLength(12 + 5 + 17 + 5 + 2 + 1)
     for (const def of ACHIEVEMENTS) {
       expect(ACHIEVEMENT_FAMILIES.some((f) => f.id === def.family)).toBe(true)
       expect(def.name.length).toBeLessThanOrEqual(24)
@@ -140,5 +140,17 @@ describe('simulator lifetime counters (O14)', () => {
     const result = run(hero, inventory)
     expect(result.metrics.potionsUsed).toBe(1)
     expect(result.nextHero.counters.potionsUsed).toBe(1)
+  })
+})
+
+describe('Tasks done (D112, catalog version 4)', () => {
+  it('is a Lifetime family on the tasks counter at 1, 10, 50 and 250', () => {
+    const family = ACHIEVEMENT_FAMILIES.find((f) => f.id === 'tasks_done')
+    expect(family).toMatchObject({ name: 'Tasks done', category: 'Lifetime' })
+    const earned = (count: number) => allSatisfied(state({ tasksCompleted: count }), content).filter((a) => a.family === 'tasks_done').map((a) => a.id)
+    expect(earned(0)).toEqual([])
+    expect(earned(9)).toEqual(['tasks_done_1'])
+    expect(earned(50)).toEqual(['tasks_done_1', 'tasks_done_2', 'tasks_done_3'])
+    expect(earned(250)).toHaveLength(4)
   })
 })

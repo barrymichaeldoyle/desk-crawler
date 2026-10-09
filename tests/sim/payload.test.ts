@@ -201,3 +201,15 @@ describe('device recap privacy and compatibility', () => {
     expect(JSON.stringify(buildPayload({ ...input, activity: { entries: [], truncated: false } }).recap)).not.toContain('Last 12 hours')
   })
 })
+
+describe('to-do lines (D112)', () => {
+  it('carry their count form only when one is given, and keep the label numbers', () => {
+    const payload = buildPayload({ ...input, logs: [
+      { at: NOW - 60_000, kind: 'todo', summary: 'Stand-up: Defeat 5 [[Leftovers Hydras]]. Earn 260 gold adventuring. Dodge 2 traps.', compact: 'Stand-up: 3 new tasks.', deltas: { xpEarned: 0, gold: 0, hp: 0 } },
+      { at: NOW - 60_000, kind: 'todo', summary: 'Ticked off: Earn 50 gold adventuring.', deltas: { xpEarned: 0, gold: 16, hp: 0 } },
+    ] }) as unknown as { log: Array<{ k: string; n: string; d: string; c?: string }> }
+    expect(payload.log[0]).toMatchObject({ k: 'todo', c: 'Stand-up: 3 new tasks.', d: '' })
+    expect(payload.log[1]).toMatchObject({ k: 'todo', n: 'Ticked off: Earn 50 gold adventuring.', d: '+16 gold' })
+    expect(payload.log[1]).not.toHaveProperty('c')
+  })
+})

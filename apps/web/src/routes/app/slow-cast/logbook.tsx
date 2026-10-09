@@ -4,6 +4,7 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { api } from '@trmnl-games/backend/api'
 import { fishSprite, FISH_LARGE } from '@trmnl-games/slow-cast/art/fish'
 import { preload } from '../../../lib/preload'
+import { useAnalyticsView } from '../../../lib/analyticsProvider'
 import { BAIT_LABEL, BAND_LABEL, WEATHER_LABEL, formatWeight } from '../../../lib/slowCast'
 import { Card } from '../../../lib/ui'
 import { Gem, SpriteIcon } from '../desk-crawler/-bagSlots'
@@ -27,6 +28,7 @@ function silhouette(id: string) {
 function LogbookPage() {
   const { data } = useQuery(convexQuery(api.slowCast.anglers.logbook, {}))
   const book = data as Array<{ water: { id: string; name: string }; species: Entry[] }> | null | undefined
+  useAnalyticsView('logbook viewed', { species_logged: book ? book.flatMap((w) => w.species).filter((s) => s.seen).length : 0 }, Boolean(book))
   if (!book) return null
   const seen = book.flatMap((w) => w.species).filter((s) => s.seen).length
   const total = book.flatMap((w) => w.species).length

@@ -7,7 +7,7 @@ import { gameSlug } from './schema'
 
 /** Re-check consent and account state at send time; no telemetry in simulation or polling. */
 export const activationSubject = internalQuery({
-  args: { userId: v.id('users'), event: v.union(v.literal('installation connected'), v.literal('hero activated')), game: v.optional(gameSlug) },
+  args: { userId: v.id('users'), event: v.union(v.literal('installation connected'), v.literal('hero activated'), v.literal('slow cast started')), game: v.optional(gameSlug) },
   returns: v.union(v.null(), v.object({ distinctId: v.string() })),
   handler: async (ctx, { userId, event, game }) => {
     const user = await ctx.db.get(userId)
@@ -19,7 +19,7 @@ export const activationSubject = internalQuery({
 })
 
 export const captureActivation = internalAction({
-  args: { userId: v.id('users'), event: v.optional(v.union(v.literal('installation connected'), v.literal('hero activated'))), game: v.optional(gameSlug) },
+  args: { userId: v.id('users'), event: v.optional(v.union(v.literal('installation connected'), v.literal('hero activated'), v.literal('slow cast started'))), game: v.optional(gameSlug) },
   returns: v.null(),
   handler: async (ctx, { userId, event = 'hero activated', game = 'desk-crawler' }) => {
     const token = process.env.POSTHOG_PROJECT_TOKEN

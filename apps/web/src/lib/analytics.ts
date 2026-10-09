@@ -8,7 +8,7 @@ export const IDENTITY_EVENT = 'tg:analytics-identity'
 /** The site footer's link asks the provider to reopen the consent panel. */
 export const PREFERENCES_EVENT = 'tg:analytics-preferences'
 export const openAnalyticsPreferences = () => window.dispatchEvent(new Event(PREFERENCES_EVENT))
-export type AnalyticsEvent = 'installation started' | 'installation submitted' | 'installation connected' | 'installation failed' | 'setup screen shown' | 'setup help opened' | 'companion ready' | 'management opened' | 'management account mismatch' | 'account switched' | 'intent failed' | 'stance changed' | 'decision made' | 'merchant purchase' | 'pouch bought' | 'bag bought' | 'waitlist joined' | 'feedback sent' | 'profile shared' | 'task swapped' | 'alerts changed' | 'alert opened'
+export type AnalyticsEvent = 'installation started' | 'installation submitted' | 'installation connected' | 'installation failed' | 'setup screen shown' | 'setup help opened' | 'companion ready' | 'management opened' | 'management account mismatch' | 'account switched' | 'intent failed' | 'stance changed' | 'decision made' | 'merchant purchase' | 'pouch bought' | 'bag bought' | 'waitlist joined' | 'feedback sent' | 'profile shared' | 'task swapped' | 'alerts changed' | 'alert opened' | 'fish sold' | 'tackle bought' | 'water changed' | 'bait changed' | 'logbook viewed'
 let volatileConsent: AnalyticsConsent = null
 
 export function readAnalyticsConsent(): AnalyticsConsent {
@@ -140,9 +140,12 @@ export async function analyticsClient(): Promise<PostHog | null> {
 /** Analytics is optional: never delay navigation, submission or game state for it. */
 export function captureAnalytics(event: AnalyticsEvent, properties: Record<string, string | boolean | number | null> = {}) {
   void analyticsClient().then((sdk) => {
-    if (readAnalyticsConsent() === 'allowed' && !hasSensitiveLocation()) sdk?.capture(event, { game: 'desk-crawler', ...properties })
+    if (readAnalyticsConsent() === 'allowed' && !hasSensitiveLocation()) sdk?.capture(event, { game: currentGame(), ...properties })
   }).catch(() => {})
 }
+
+/** The game a page belongs to, for every event's `game` property (D115); platform pages count as Desk Crawler's, as before. */
+export const currentGame = () => (typeof window !== 'undefined' && /(^|\/)slow-cast(\/|$)/.test(window.location.pathname) ? 'slow-cast' : 'desk-crawler')
 
 /** v1.1 choices worth measuring: intent → event and the one catalog id argument it may carry. */
 const INTENT_EVENTS: Record<string, [AnalyticsEvent, string, string]> = {
@@ -151,9 +154,23 @@ const INTENT_EVENTS: Record<string, [AnalyticsEvent, string, string]> = {
   'inventory:buyOffer': ['merchant purchase', 'offerId', 'offer'],
   'inventory:buyPouch': ['pouch bought', 'tierId', 'tier'],
   'inventory:buyBag': ['bag bought', 'tierId', 'tier'],
+  // D115: Slow Cast's choices.
+  'slowCast/anglers:travelTo': ['water changed', 'waterId', 'water'],
+  'slowCast/anglers:chooseBait': ['bait changed', 'bait', 'bait'],
+  'slowCast/anglers:buyAccessItem': ['tackle bought', 'access', 'item'],
+  'slowCast/anglers:buyBaitTubs': ['tackle bought', 'bait', 'item'],
+}
+
+/** Intents whose event carries a count or a fixed kind rather than one catalog id. */
+const SPECIAL_EVENTS: Record<string, (args: Record<string, unknown>) => [AnalyticsEvent, Record<string, string>]> = {
+  'slowCast/anglers:sellCatches': (args) => ['fish sold', { count: String(Array.isArray(args.catchIds) ? args.catchIds.length : 0) }],
+  'slowCast/anglers:buyNextRod': () => ['tackle bought', { item: 'rod' }],
+  'slowCast/anglers:buyNextCooler': () => ['tackle bought', { item: 'cooler' }],
 }
 
 export function intentAnalytics(intent: string, args: Record<string, unknown>): [AnalyticsEvent, Record<string, string>] | null {
+  const special = SPECIAL_EVENTS[intent]
+  if (special) return special(args)
   const entry = INTENT_EVENTS[intent]
   if (!entry) return null
   const [event, arg, property] = entry
@@ -163,7 +180,7 @@ export function intentAnalytics(intent: string, args: Record<string, unknown>): 
 export function captureAnalyticsException(error: unknown, source: string) {
   const safe = new Error(scrubAnalyticsText(error instanceof Error ? error.message : 'Unknown application error'))
   if (error instanceof Error) { safe.name = error.name; if (error.stack) safe.stack = scrubAnalyticsText(error.stack) }
-  void analyticsClient().then((sdk) => { if (readAnalyticsConsent() === 'allowed') sdk?.captureException(safe, { source, game: 'desk-crawler' }) }).catch(() => {})
+  void analyticsClient().then((sdk) => { if (readAnalyticsConsent() === 'allowed') sdk?.captureException(safe, { source, game: currentGame() }) }).catch(() => {})
 }
 
 export function stopAnalytics() {

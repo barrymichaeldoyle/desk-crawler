@@ -96,3 +96,18 @@ From launch until this fix, PostHog received only the server `installation conne
 ## Platform references
 
 Current official documentation was checked through the connected PostHog documentation search: [JavaScript configuration](https://posthog.com/docs/libraries/js/config), [identify users](https://posthog.com/docs/getting-started/identify-users), [replay privacy controls](https://posthog.com/docs/session-replay/privacy), [network recording](https://posthog.com/docs/session-replay/network-recording), [persons API](https://posthog.com/docs/api/persons), and [data deletion](https://posthog.com/docs/privacy/data-storage#data-deletion). The installed PostHog SDK types also validate the configuration. Project creation, masking, replay and exception settings, dashboard construction and API erasure were checked against this EU instance's tool schemas. The PostHog dashboard/query skills were read from the connected server before use.
+
+## Slow Cast events (D115)
+
+Every event carries `game`, now taken from the page: `slow-cast` under `/app/slow-cast`, `/games/slow-cast`, `/help/slow-cast` and its install page, `desk-crawler` elsewhere as before. Slow Cast adds, all behind the same consent:
+
+| Event | When | Properties |
+| --- | --- | --- |
+| `slow cast started` | Server, when a Save activates the angler | `game` |
+| `fish sold` | A sale from the cooler | `count` |
+| `tackle bought` | A rod, cooler, pass or bait tub | `item` (`rod`, `cooler`, the pass id or the bait class) |
+| `water changed` | Travel chosen | `water` |
+| `bait changed` | Bait put on the hook | `bait` |
+| `logbook viewed` | The Log tab opened | `species_logged` |
+
+`alerts changed` names Slow Cast's switches (`coolerFull`, `baitOut`) and `alert opened` accepts `cooler_full` and `bait_out`. No per-cast events.

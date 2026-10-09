@@ -187,7 +187,8 @@ export function useAlertOpened(ready: boolean) {
     if (!ready) return
     const params = new URLSearchParams(window.location.search)
     const kind = params.get('alert')
-    if (kind !== 'asleep' && kind !== 'merchant') return
+    // D115: Slow Cast's alert links carry cooler_full and bait_out.
+    if (kind !== 'asleep' && kind !== 'merchant' && kind !== 'cooler_full' && kind !== 'bait_out') return
     captureAnalytics('alert opened', { kind })
     params.delete('alert')
     const query = params.toString()

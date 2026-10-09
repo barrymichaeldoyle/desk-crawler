@@ -1,8 +1,28 @@
+import { useQuery } from '@tanstack/react-query'
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { gamesQuery } from '../lib/gameAccess'
 import { PRIVACY_UPDATED, ProsePage, SUPPORT_EMAIL } from '../lib/prose'
 import { seo } from '../lib/seo'
 
+/**
+ * Slow Cast's part of the policy (D115). It renders once the game is listed (preview or live), so a hidden game stays
+ * unannounced; admins, the only players while it is hidden, see it too.
+ */
+function SlowCastPrivacy() {
+  const { data } = useQuery(gamesQuery)
+  if (!data?.games.some((game) => game.slug === 'slow-cast')) return null
+  return (
+    <>
+      <h2>Slow Cast</h2>
+      <p>Slow Cast stores your angler: level, gold, the water and bait, your cooler, your logbook of species and best weights, your fishing history, achievements and fly box. Your angler appears under your public name on Slow Cast's leaderboards and on other players' TRMNL screens. If you show Slow Cast on your public profile, anyone with the link sees its level, start date, rank, achievement count and species logged.</p>
+      <p>If you turn on Slow Cast alerts, they use the same devices and quiet hours as your other games' alerts. The weekly fly code on your TRMNL is keyed to your installation and never shown in the companion.</p>
+      <p>In <Link to="/app/slow-cast/settings">Slow Cast settings</Link>, Delete Slow Cast progress removes your angler, cooler, logbook, fly box, achievements, Slow Cast connections and Slow Cast alert settings. Your account and other games stay. Deleting your TRMNL Games account removes Slow Cast with everything else.</p>
+    </>
+  )
+}
+
 export const Route = createFileRoute('/privacy')({
+  loader: ({ context }) => context.queryClient.ensureQueryData(gamesQuery).then(() => undefined).catch(() => undefined),
   head: () => seo({ title: 'Privacy', path: '/privacy', description: 'What TRMNL Games stores, what is public on leaderboards and TRMNL screens, and how to delete your account.' }),
   component: () => (
     <ProsePage title="Privacy" updated={PRIVACY_UPDATED}>
@@ -112,6 +132,7 @@ export const Route = createFileRoute('/privacy')({
 
       <h2>Changes</h2>
       <p>When this policy changes we update this page and the date at the top.</p>
+      <SlowCastPrivacy />
     </ProsePage>
   ),
 })

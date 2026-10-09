@@ -9,6 +9,7 @@ import { preload } from '../../lib/preload'
 import { seo } from '../../lib/seo'
 import { Card, LoadingState } from '../../lib/ui'
 import type { Dock } from '../../lib/slowCast'
+import { useAlertOpened } from './desk-crawler/-alerts'
 
 /**
  * Slow Cast companion shell (slow-cast.md "Companion", D115): the lifecycle gate (not-found for anyone who cannot
@@ -38,6 +39,8 @@ function Shell() {
   const { data: listing } = useQuery(gamesQuery)
   const status = listing?.games.find((game) => game.slug === 'slow-cast')?.status
   const settings = useLocation({ select: (location) => location.pathname.replace(/\/$/, '').endsWith('/settings') })
+  // A cooler or bait alert's tap lands here with ?alert=<kind>; counted once the page is ready.
+  useAlertOpened(!isPending)
   const banner = status && status !== 'live' ? <p className="label-px mx-auto mt-3 w-full max-w-3xl px-4 text-muted">{status === 'hidden' ? 'Hidden: only admins can see Slow Cast' : 'Preview: only admins can open Slow Cast'}</p> : null
   if (isPending) return <main id="main" className="mx-auto w-full max-w-3xl px-4 py-8"><LoadingState label="Loading Slow Cast…" /></main>
   if (dock?.gameState === 'deleting') return <main id="main" className="mx-auto w-full max-w-3xl px-4 py-8"><Card title="Removing Slow Cast progress"><p>Your account and your other games stay. You can start again from TRMNL once removal finishes.</p></Card></main>

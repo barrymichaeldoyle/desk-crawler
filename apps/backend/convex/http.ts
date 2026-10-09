@@ -8,6 +8,8 @@ import { renderHeroCardPng } from '@trmnl-games/desk-crawler/art/heroCard'
 import { sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
 import { DEFAULT_COMPANION_ORIGIN, renderQrPng } from '@trmnl-games/desk-crawler/art/qr'
 import { parseUtcOffset, screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
+import { screenMarkup as slowCastMarkup } from '@trmnl-games/slow-cast/templates/screen'
+import type { GameSlug } from '@trmnl-games/platform'
 
 /**
  * TRMNL lifecycle and screen routes (trmnl.md). Every route authenticates the
@@ -37,10 +39,8 @@ async function readBoundedText(request: Request): Promise<string | null> {
 
 const UUID = /^[0-9a-fA-F-]{8,64}$/
 
-http.route({
-  path: '/trmnl/install/success',
-  method: 'POST',
-  handler: httpAction(async (ctx, request) => {
+const installSuccess = (gameSlug: GameSlug) =>
+  httpAction(async (ctx, request) => {
     const tokenHash = bearerHash(request)
     if (tokenHash === null) return notFound()
     const text = await readBoundedText(request)
@@ -58,6 +58,7 @@ http.route({
     // Only uuid and plugin_setting_id are kept; name/email/profile fields are ignored.
     const pluginSettingId = typeof settingRaw === 'number' || typeof settingRaw === 'string' ? String(settingRaw).slice(0, 64) : undefined
     const result = await ctx.runMutation(internal.trmnl.confirmInstance, {
+      gameSlug,
       tokenHash,
       uuid,
       ...(pluginSettingId === undefined ? {} : { pluginSettingId }),
@@ -65,13 +66,10 @@ http.route({
     })
     if (result.reason === 'unknown_grant' || result.reason === 'foreign_instance') return notFound()
     return json(200, { ok: true })
-  }),
-})
+  })
 
-http.route({
-  path: '/trmnl/uninstall',
-  method: 'POST',
-  handler: httpAction(async (ctx, request) => {
+const uninstall = (gameSlug: GameSlug) =>
+  httpAction(async (ctx, request) => {
     const tokenHash = bearerHash(request)
     if (tokenHash === null) return notFound()
     const text = await readBoundedText(request)
@@ -84,8 +82,48 @@ http.route({
       return json(400, { error: 'invalid_json' })
     }
     if (!UUID.test(uuid)) return json(400, { error: 'invalid_body' })
-    const found = await ctx.runMutation(internal.trmnl.uninstallInstance, { tokenHash, uuid })
+    const found = await ctx.runMutation(internal.trmnl.uninstallInstance, { gameSlug, tokenHash, uuid })
     return found ? json(200, { ok: true }) : notFound()
+  })
+
+// Desk Crawler keeps its original paths; Slow Cast's plugin points at its own (D115).
+http.route({ path: '/trmnl/install/success', method: 'POST', handler: installSuccess('desk-crawler') })
+http.route({ path: '/trmnl/uninstall', method: 'POST', handler: uninstall('desk-crawler') })
+http.route({ path: '/trmnl/slow-cast/install/success', method: 'POST', handler: installSuccess('slow-cast') })
+http.route({ path: '/trmnl/slow-cast/uninstall', method: 'POST', handler: uninstall('slow-cast') })
+
+/** Shared screen request parsing: bearer, form type and size, one `user_uuid`. */
+async function parseScreenRequest(request: Request): Promise<{ tokenHash: string; form: URLSearchParams; uuid: string } | Response> {
+  const tokenHash = bearerHash(request)
+  if (tokenHash === null) return notFound()
+  if (!(request.headers.get('Content-Type') ?? '').startsWith('application/x-www-form-urlencoded')) return json(415, { error: 'unsupported_media_type' })
+  const text = await readBoundedText(request)
+  if (text === null) return json(413, { error: 'too_large' })
+  const form = new URLSearchParams(text)
+  if ([...form.keys()].length > MAX_FORM_FIELDS || form.getAll('user_uuid').length !== 1) return json(400, { error: 'invalid_body' })
+  const uuid = form.get('user_uuid') ?? ''
+  if (!UUID.test(uuid)) return json(400, { error: 'invalid_body' })
+  return { tokenHash, form, uuid }
+}
+
+http.route({
+  path: '/trmnl/slow-cast/v1/screen',
+  method: 'POST',
+  handler: httpAction(async (ctx, request) => {
+    const parsed = await parseScreenRequest(request)
+    if (parsed instanceof Response) return parsed
+    const { tokenHash, form, uuid } = parsed
+    const now = Date.now()
+    const utcOffset = parseUtcOffset(form.get('trmnl[user][utc_offset]'))
+    const args = { tokenHash, uuid, now, utcOffset }
+    let result = await ctx.runQuery(internal.slowCast.payload.forInstance, args)
+    if (result?.outcome === 'recoverable') {
+      await ctx.runMutation(internal.trmnl.confirmInstance, { gameSlug: 'slow-cast', tokenHash, uuid, confirmedBy: 'screen_request' })
+      result = await ctx.runQuery(internal.slowCast.payload.forInstance, args)
+    }
+    if (result === null || result.outcome !== 'payload') return notFound()
+    if (result.recordOffsetFor !== undefined && utcOffset !== null) await ctx.runMutation(internal.trmnl.recordUtcOffset, { userId: result.recordOffsetFor, utcOffset })
+    return json(200, { ...slowCastMarkup, merge_variables: { ...result.payload, utc_offset: utcOffset } })
   }),
 })
 
@@ -93,15 +131,9 @@ http.route({
   path: '/trmnl/v1/screen',
   method: 'POST',
   handler: httpAction(async (ctx, request) => {
-    const tokenHash = bearerHash(request)
-    if (tokenHash === null) return notFound()
-    if (!(request.headers.get('Content-Type') ?? '').startsWith('application/x-www-form-urlencoded')) return json(415, { error: 'unsupported_media_type' })
-    const text = await readBoundedText(request)
-    if (text === null) return json(413, { error: 'too_large' })
-    const form = new URLSearchParams(text)
-    if ([...form.keys()].length > MAX_FORM_FIELDS || form.getAll('user_uuid').length !== 1) return json(400, { error: 'invalid_body' })
-    const uuid = form.get('user_uuid') ?? ''
-    if (!UUID.test(uuid)) return json(400, { error: 'invalid_body' })
+    const parsed = await parseScreenRequest(request)
+    if (parsed instanceof Response) return parsed
+    const { tokenHash, form, uuid } = parsed
     const instanceName = form.get('trmnl[plugin_settings][instance_name]')
 
     const now = Date.now()

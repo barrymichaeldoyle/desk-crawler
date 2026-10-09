@@ -7,7 +7,9 @@
     "./content/*": "./src/content/*.ts",
     "./sim": "./src/sim/index.ts",
     "./sim/*": "./src/sim/*.ts",
-    "./lib/*": "./src/lib/*.ts"
+    "./lib/*": "./src/lib/*.ts",
+    "./payload": "./src/lib/payload.ts",
+    "./templates/*": "./src/templates/*.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

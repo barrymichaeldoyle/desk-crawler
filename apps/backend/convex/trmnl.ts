@@ -1,4 +1,7 @@
-import { currentHero, gameProfile, isDeskCrawler, setCurrentHero, DESK_CRAWLER } from './lib/gameProfile'
+import { currentHero, gameProfile, setCurrentHero, DESK_CRAWLER } from './lib/gameProfile'
+import { deskCrawlerDeleting, isGame, SLOW_CAST_HOOKS } from './lib/gameHooks'
+import { gameSlug as gameSlugValidator } from './schema'
+import type { GameSlug } from '@trmnl-games/platform'
 import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import type { Doc, Id } from './_generated/dataModel'
@@ -12,6 +15,12 @@ import { getOrCreateWorld, worldContent } from './world'
 import { assertNotRevoked, identityHash } from './deletion'
 import { runIntent } from './lib/intent'
 import { MANAGEMENT_PROOF_MS, verifyManagementJwt } from './lib/trmnlManagement'
+
+/** D115: which game's profile is being deleted, its player character, and its name in messages. */
+const gameDeleting = (slug: GameSlug) => (slug === DESK_CRAWLER ? deskCrawlerDeleting : SLOW_CAST_HOOKS.deleting)
+const gameLabel = (slug: GameSlug) => (slug === DESK_CRAWLER ? 'Desk Crawler' : SLOW_CAST_HOOKS.label)
+const currentCharacter = (slug: GameSlug) => (slug === DESK_CRAWLER ? currentHero : SLOW_CAST_HOOKS.current)
+const deletingError = (slug: GameSlug) => appError('GAME_UNAVAILABLE', `${gameLabel(slug)} progress is being deleted. Try again shortly.`)
 
 /** Install attempts stay valid for 20 minutes (data-model.md). */
 export const INSTALL_ATTEMPT_MS = 20 * 60 * 1000
@@ -31,7 +40,7 @@ const linkResult = v.object({
  */
 export const completeInstall = action({
   args: {
-    gameSlug: v.optional(v.literal('desk-crawler')),
+    gameSlug: v.optional(gameSlugValidator),
     code: v.string(),
     publicAlias: v.optional(v.string()),
     heroName: v.optional(v.string()),
@@ -76,7 +85,7 @@ export const completeInstall = action({
 
 export const linkInstall = internalMutation({
   args: {
-    gameSlug: v.optional(v.literal('desk-crawler')),
+    gameSlug: v.optional(gameSlugValidator),
     tokenIdentifier: v.string(),
     tokenHash: v.string(),
     publicAlias: v.optional(v.string()),
@@ -88,10 +97,12 @@ export const linkInstall = internalMutation({
   returns: linkResult,
   handler: async (ctx, args) => {
     const now = Date.now()
+    const slug = args.gameSlug ?? DESK_CRAWLER
     // Deleted accounts: replayed Clerk tokens and old TRMNL codes/tokens never regain authority (D22/V09).
     assertNotRevoked(await ctx.db.query('revokedAuthIdentities').withIndex('by_identityHash', (q) => q.eq('identityHash', identityHash(args.tokenIdentifier))).first())
     if (await ctx.db.query('revokedTrmnlCredentials').withIndex('by_tokenHash', (q) => q.eq('tokenHash', args.tokenHash)).first()) {
-      if (!args.allowReconnection) throw appError('CONNECTION_UNAVAILABLE', 'This connection needs fresh verification from TRMNL. Start from Install, then Save and open Configure.')
+      // The verified reconnection flow (D69) is Desk Crawler's; a revoked Slow Cast token needs a fresh install.
+      if (!args.allowReconnection || slug !== DESK_CRAWLER) throw appError('CONNECTION_UNAVAILABLE', 'This connection needs fresh verification from TRMNL. Start from Install, then Save and open Configure.')
       await reserveReconnection(ctx, args, now)
       return { activationState: 'pending_trmnl' as const, heroCreated: false, reconnectionRequired: true as const }
     }
@@ -120,18 +131,18 @@ export const linkInstall = internalMutation({
       user = (await ctx.db.get(userId))!
     }
     if (user.state !== 'active') throw appError('ACCOUNT_UNAVAILABLE', 'This account is not available.')
-    if ((await gameProfile(ctx, user._id))?.state === 'deleting') throw appError('GAME_UNAVAILABLE', 'Desk Crawler progress is being deleted. Try again shortly.')
+    if (await gameDeleting(slug)(ctx, user._id)) throw deletingError(slug)
 
     // A known token can never be reassigned to another owner.
     let grant = await ctx.db
       .query('trmnlGrants')
       .withIndex('by_tokenHash', (q) => q.eq('tokenHash', args.tokenHash))
       .unique()
-    if (grant && (!isDeskCrawler(grant) || grant.userId !== user._id)) throw appError('CONNECTION_CONFLICT', 'This TRMNL installation is linked to another account.')
+    if (grant && (!isGame(grant, slug) || grant.userId !== user._id)) throw appError('CONNECTION_CONFLICT', 'This TRMNL installation is linked to another account.')
     if (grant && grant.state !== 'active') throw appError('CONNECTION_UNAVAILABLE', 'This TRMNL connection was revoked. Install again from TRMNL.')
     if (args.analyticsConsent !== undefined) await ctx.db.patch(user._id, { analyticsConsent: args.analyticsConsent })
     if (grant === null) {
-      const grantId = await ctx.db.insert('trmnlGrants', { gameSlug: DESK_CRAWLER, userId: user._id, tokenHash: args.tokenHash, state: 'active', createdAt: now, lastVerifiedAt: now })
+      const grantId = await ctx.db.insert('trmnlGrants', { gameSlug: slug, userId: user._id, tokenHash: args.tokenHash, state: 'active', createdAt: now, lastVerifiedAt: now })
       grant = (await ctx.db.get(grantId))!
     } else {
       await ctx.db.patch(grant._id, { lastVerifiedAt: now })
@@ -143,11 +154,15 @@ export const linkInstall = internalMutation({
       .withIndex('by_grantId_and_state', (q) => q.eq('grantId', grant._id).eq('state', 'pending'))
       .take(10)
     for (const attempt of pending) await ctx.db.patch(attempt._id, { state: 'expired' })
-    await ctx.db.insert('trmnlInstallAttempts', { gameSlug: DESK_CRAWLER, userId: user._id, grantId: grant._id, state: 'pending', createdAt: now, expiresAt: now + INSTALL_ATTEMPT_MS })
-    if (args.analyticsConsent === true || (args.analyticsConsent === undefined && user.analyticsConsent === true)) await ctx.scheduler.runAfter(0, internal.analytics.captureActivation, { userId: user._id, event: 'installation connected' })
+    await ctx.db.insert('trmnlInstallAttempts', { gameSlug: slug, userId: user._id, grantId: grant._id, state: 'pending', createdAt: now, expiresAt: now + INSTALL_ATTEMPT_MS })
+    if (args.analyticsConsent === true || (args.analyticsConsent === undefined && user.analyticsConsent === true)) await ctx.scheduler.runAfter(0, internal.analytics.captureActivation, { userId: user._id, event: 'installation connected', game: slug })
 
-    const existing = await currentHero(ctx, user)
+    const existing = await currentCharacter(slug)(ctx, user)
     if (existing) return { activationState: existing.activationState, heroCreated: false }
+    if (slug !== DESK_CRAWLER) {
+      await SLOW_CAST_HOOKS.prepare(ctx, user, now)
+      return { activationState: 'pending_trmnl' as const, heroCreated: true }
+    }
 
     const heroName = validateName(args.heroName ?? '', HERO_NAME_RULE)
     if (!heroName.ok) throw appError('INVALID_INPUT', `Hero name: ${heroName.reason}`)
@@ -219,7 +234,7 @@ const confirmResult = v.object({
  */
 export const confirmInstance = internalMutation({
   args: {
-    gameSlug: v.optional(v.literal('desk-crawler')),
+    gameSlug: v.optional(gameSlugValidator),
     tokenHash: v.string(),
     uuid: v.string(),
     pluginSettingId: v.optional(v.string()),
@@ -228,6 +243,7 @@ export const confirmInstance = internalMutation({
   returns: confirmResult,
   handler: async (ctx, args) => {
     const now = Date.now()
+    const slug = args.gameSlug ?? DESK_CRAWLER
     const instance = await ctx.db
       .query('trmnlInstances')
       .withIndex('by_uuid', (q) => q.eq('uuid', args.uuid))
@@ -239,12 +255,12 @@ export const confirmInstance = internalMutation({
       return { ok: false, reason: pending ? 'reauthorization_required' as const : 'unknown_grant' as const }
     }
     const grant = instance ? await ctx.db.get(instance.grantId) : await ctx.db.query('trmnlGrants').withIndex('by_tokenHash', q => q.eq('tokenHash', args.tokenHash)).unique()
-    if (!grant || !isDeskCrawler(grant) || grant.state !== 'active') return { ok: false, reason: 'unknown_grant' as const }
+    if (!grant || !isGame(grant, slug) || grant.state !== 'active') return { ok: false, reason: 'unknown_grant' as const }
     if (grant.tokenHash !== args.tokenHash || (grant.authorizedUuid && grant.authorizedUuid !== args.uuid)) return { ok: false, reason: 'foreign_instance' as const }
     const owner = await ctx.db.get(grant.userId)
-    if (!owner || owner.state !== 'active' || (await gameProfile(ctx, owner._id))?.state === 'deleting') return { ok: false, reason: 'unknown_grant' as const }
+    if (!owner || owner.state !== 'active' || (await gameDeleting(slug)(ctx, owner._id))) return { ok: false, reason: 'unknown_grant' as const }
     if (instance) {
-      if (!isDeskCrawler(instance) || instance.grantId !== grant._id || instance.userId !== grant.userId) return { ok: false, reason: 'foreign_instance' as const }
+      if (!isGame(instance, slug) || instance.grantId !== grant._id || instance.userId !== grant.userId) return { ok: false, reason: 'foreign_instance' as const }
       if (instance.state !== 'active') return { ok: false, reason: 'tombstoned' as const }
       if (args.pluginSettingId && !instance.pluginSettingId) await ctx.db.patch(instance._id, { pluginSettingId: args.pluginSettingId })
       return { ok: true, reason: 'already_confirmed' as const }
@@ -255,11 +271,11 @@ export const confirmInstance = internalMutation({
         .query('trmnlInstallAttempts')
         .withIndex('by_grantId_and_state', (q) => q.eq('grantId', grant._id).eq('state', 'pending'))
         .take(5)
-    ).find((candidate) => isDeskCrawler(candidate) && candidate.expiresAt > now)
+    ).find((candidate) => isGame(candidate, slug) && candidate.expiresAt > now)
     if (attempt === undefined) return { ok: false, reason: 'no_pending_attempt' as const }
 
     await ctx.db.insert('trmnlInstances', {
-      gameSlug: DESK_CRAWLER,
+      gameSlug: slug,
       grantId: grant._id,
       userId: grant.userId,
       uuid: args.uuid,
@@ -269,7 +285,8 @@ export const confirmInstance = internalMutation({
       createdAt: now,
     })
     await ctx.db.patch(attempt._id, { state: 'completed', completedUuid: args.uuid })
-    await activateForConfirmedInstallation(ctx, grant.userId, now)
+    if (slug === DESK_CRAWLER) await activateForConfirmedInstallation(ctx, grant.userId, now)
+    else await SLOW_CAST_HOOKS.activate(ctx, grant.userId, now)
     return { ok: true, reason: 'confirmed' as const }
   },
 })
@@ -309,16 +326,17 @@ export const recordUtcOffset = internalMutation({
 })
 
 export const uninstallInstance = internalMutation({
-  args: { gameSlug: v.optional(v.literal('desk-crawler')), tokenHash: v.string(), uuid: v.string() },
+  args: { gameSlug: v.optional(gameSlugValidator), tokenHash: v.string(), uuid: v.string() },
   returns: v.boolean(),
   handler: async (ctx, args) => {
     const instance = await ctx.db
       .query('trmnlInstances')
       .withIndex('by_uuid', (q) => q.eq('uuid', args.uuid))
       .unique()
-    if (!instance || !isDeskCrawler(instance)) return false
+    const slug = args.gameSlug ?? DESK_CRAWLER
+    if (!instance || !isGame(instance, slug)) return false
     const grant = await ctx.db.get(instance.grantId)
-    if (!grant || !isDeskCrawler(grant) || grant.tokenHash !== args.tokenHash || grant.userId !== instance.userId || (grant.authorizedUuid && grant.authorizedUuid !== args.uuid)) return false
+    if (!grant || !isGame(grant, slug) || grant.tokenHash !== args.tokenHash || grant.userId !== instance.userId || (grant.authorizedUuid && grant.authorizedUuid !== args.uuid)) return false
     if (instance.state === 'active') await ctx.db.patch(instance._id, { state: 'uninstalled' })
     return true
   },

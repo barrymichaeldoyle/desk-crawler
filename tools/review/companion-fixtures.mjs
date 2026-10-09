@@ -165,6 +165,18 @@ const queries = {
   'slowCast/anglers:dock': () => scDock,
   'slowCast/anglers:logbook': () => scBook,
   'slowCast/payload:preview': () => ({ scene_base: '' }),
+  'slowCast/leaderboard:view': () => ({ published: true, cohortLabel: 'Levels 4-7', totalPlayers: 41, globalTotalPlayers: 63, scoreAt: now, entries: [['Quillfeather_Longname', 7, 2410], ['Mo', 7, 2104], ['Barry', 6, 1980], ['Hidden player', 5, 1702], ['Bea', 6, 1660]].map(([name, level, score], i) => ({ rank: i + 1, name, level, score })), own: { rank: 3, rankDelta: 1, score: 1980 } }),
+  'slowCast/achievements:mine': () => ({ earnedCount: 23, rarity: { counts: { catches_3: 12, logbook_2: 7, got_away_1: 30 }, totalPlayers: 41 }, families: [
+    { family: 'catches', name: 'Catches', category: 'Fishing', tiers: 5, earned: { id: 'catches_3', name: 'Regular on the Bank', blurb: 'The heron nods as you arrive.', tier: 3 }, next: { id: 'catches_4', name: 'Old Hand', tier: 4 }, value: 412, target: 1000 },
+    { family: 'got_away', name: 'Got away', category: 'Fishing', tiers: 3, earned: { id: 'got_away_1', name: 'The One That Got Away', blurb: 'It was this big. Honestly.', tier: 1 }, next: { id: 'got_away_2', name: 'Snapped Again', tier: 2 }, value: 7, target: 10 },
+    { family: 'epic_catches', name: 'Epic catches', category: 'Fishing', tiers: 2, earned: null, next: { id: 'epic_catches_1', name: 'Once in a Season', tier: 1 }, value: 0, target: 1 },
+    { family: 'logbook', name: 'Logbook', category: 'Logbook', tiers: 4, earned: { id: 'logbook_2', name: 'Naturalist', blurb: 'You know a rudd from a roach.', tier: 2 }, next: { id: 'logbook_3', name: 'Field Guide', tier: 3 }, value: 14, target: 20 },
+    { family: 'rods', name: 'Rods', category: 'Progress', tiers: 3, earned: { id: 'rods_3', name: 'Beachcaster', blurb: 'Built for the biggest fish in the sea.', tier: 3 }, next: null, value: 4, target: 4 },
+    { family: 'sales', name: 'Sales', category: 'Trade', tiers: 4, earned: { id: 'sales_2', name: 'Regular Supplier', blurb: 'They know your cooler.', tier: 2 }, next: { id: 'sales_3', name: 'Wholesale', tier: 3 }, value: 182, target: 250 },
+    { family: 'species_roach', name: 'Roach', category: 'Species', tiers: 2, earned: { id: 'specimen_roach', name: 'Specimen Roach', blurb: '', tier: 2 }, next: null, value: 590, target: 450 },
+    { family: 'species_chub', name: 'Chub', category: 'Species', tiers: 2, earned: { id: 'first_chub', name: 'First Chub', blurb: '', tier: 1 }, next: { id: 'specimen_chub', name: 'Specimen Chub', tier: 2 }, value: 2100, target: 1875 },
+    { family: 'species_salmon', name: 'Salmon', category: 'Species', tiers: 2, earned: null, next: { id: 'first_salmon', name: 'First Salmon', tier: 1 }, value: 0, target: 1 },
+  ] }),
   'heroes:mine': () => hero,
   'inventory:mine': () => inventory,
   'heroes:returnSummary': () => data.recap,
@@ -223,12 +235,14 @@ import { Route as ScCooler } from '../../apps/web/src/routes/app/slow-cast/coole
 import { Route as ScShop } from '../../apps/web/src/routes/app/slow-cast/shop';
 import { Route as ScLogbook } from '../../apps/web/src/routes/app/slow-cast/logbook';
 import { Route as ScSettings } from '../../apps/web/src/routes/app/slow-cast/settings';
+import { Route as ScRankings } from '../../apps/web/src/routes/app/slow-cast/rankings';
+import { Route as ScAchievements } from '../../apps/web/src/routes/app/slow-cast/achievements';
 import { AuthShell } from '../../apps/web/src/lib/platformShell';
 import { NetworkProvider } from '../../apps/web/src/lib/network';
 import { OutletContext, useLocation } from './router.jsx';
 import './styles.css';
 const pages = { '/app/desk-crawler': Hero.options.component, '/app/desk-crawler/inventory': Bag.options.component, '/app/desk-crawler/leaderboard': Ranks.options.component, '/app/desk-crawler/settings': Settings.options.component,
-  '/app/slow-cast': ScDock.options.component, '/app/slow-cast/cooler': ScCooler.options.component, '/app/slow-cast/shop': ScShop.options.component, '/app/slow-cast/logbook': ScLogbook.options.component, '/app/slow-cast/settings': ScSettings.options.component };
+  '/app/slow-cast': ScDock.options.component, '/app/slow-cast/cooler': ScCooler.options.component, '/app/slow-cast/shop': ScShop.options.component, '/app/slow-cast/logbook': ScLogbook.options.component, '/app/slow-cast/settings': ScSettings.options.component, '/app/slow-cast/rankings': ScRankings.options.component, '/app/slow-cast/achievements': ScAchievements.options.component };
 const publicPage = location.pathname.startsWith('/desk-crawler/heroes/');
 if (!publicPage && !pages[location.pathname.replace(/\\/$/, '')]) history.replaceState(null, '', '/app/desk-crawler' + location.search);
 function App() {

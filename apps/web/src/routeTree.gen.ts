@@ -36,6 +36,7 @@ import { Route as AppDeskCrawlerInventoryRouteImport } from './routes/app/desk-c
 import { Route as AppDeskCrawlerLeaderboardRouteImport } from './routes/app/desk-crawler/leaderboard'
 import { Route as AppDeskCrawlerSettingsRouteImport } from './routes/app/desk-crawler/settings'
 import { Route as AppSlowCastIndexRouteImport } from './routes/app/slow-cast/index'
+import { Route as AppSlowCastAchievementsRouteImport } from './routes/app/slow-cast/achievements'
 import { Route as AppSlowCastCoolerRouteImport } from './routes/app/slow-cast/cooler'
 import { Route as AppSlowCastLogbookRouteImport } from './routes/app/slow-cast/logbook'
 import { Route as AppSlowCastRankingsRouteImport } from './routes/app/slow-cast/rankings'
@@ -182,6 +183,11 @@ const AppSlowCastIndexRoute = AppSlowCastIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppSlowCastRoute,
 } as any)
+const AppSlowCastAchievementsRoute = AppSlowCastAchievementsRouteImport.update({
+  id: '/achievements',
+  path: '/achievements',
+  getParentRoute: () => AppSlowCastRoute,
+} as any)
 const AppSlowCastCoolerRoute = AppSlowCastCoolerRouteImport.update({
   id: '/cooler',
   path: '/cooler',
@@ -257,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/app/desk-crawler/inventory': typeof AppDeskCrawlerInventoryRoute
   '/app/desk-crawler/leaderboard': typeof AppDeskCrawlerLeaderboardRoute
   '/app/desk-crawler/settings': typeof AppDeskCrawlerSettingsRoute
+  '/app/slow-cast/achievements': typeof AppSlowCastAchievementsRoute
   '/app/slow-cast/cooler': typeof AppSlowCastCoolerRoute
   '/app/slow-cast/logbook': typeof AppSlowCastLogbookRoute
   '/app/slow-cast/rankings': typeof AppSlowCastRankingsRoute
@@ -292,6 +299,7 @@ export interface FileRoutesByTo {
   '/app/desk-crawler/inventory': typeof AppDeskCrawlerInventoryRoute
   '/app/desk-crawler/leaderboard': typeof AppDeskCrawlerLeaderboardRoute
   '/app/desk-crawler/settings': typeof AppDeskCrawlerSettingsRoute
+  '/app/slow-cast/achievements': typeof AppSlowCastAchievementsRoute
   '/app/slow-cast/cooler': typeof AppSlowCastCoolerRoute
   '/app/slow-cast/logbook': typeof AppSlowCastLogbookRoute
   '/app/slow-cast/rankings': typeof AppSlowCastRankingsRoute
@@ -331,6 +339,7 @@ export interface FileRoutesById {
   '/app/desk-crawler/inventory': typeof AppDeskCrawlerInventoryRoute
   '/app/desk-crawler/leaderboard': typeof AppDeskCrawlerLeaderboardRoute
   '/app/desk-crawler/settings': typeof AppDeskCrawlerSettingsRoute
+  '/app/slow-cast/achievements': typeof AppSlowCastAchievementsRoute
   '/app/slow-cast/cooler': typeof AppSlowCastCoolerRoute
   '/app/slow-cast/logbook': typeof AppSlowCastLogbookRoute
   '/app/slow-cast/rankings': typeof AppSlowCastRankingsRoute
@@ -371,6 +380,7 @@ export interface FileRouteTypes {
     | '/app/desk-crawler/inventory'
     | '/app/desk-crawler/leaderboard'
     | '/app/desk-crawler/settings'
+    | '/app/slow-cast/achievements'
     | '/app/slow-cast/cooler'
     | '/app/slow-cast/logbook'
     | '/app/slow-cast/rankings'
@@ -406,6 +416,7 @@ export interface FileRouteTypes {
     | '/app/desk-crawler/inventory'
     | '/app/desk-crawler/leaderboard'
     | '/app/desk-crawler/settings'
+    | '/app/slow-cast/achievements'
     | '/app/slow-cast/cooler'
     | '/app/slow-cast/logbook'
     | '/app/slow-cast/rankings'
@@ -444,6 +455,7 @@ export interface FileRouteTypes {
     | '/app/desk-crawler/inventory'
     | '/app/desk-crawler/leaderboard'
     | '/app/desk-crawler/settings'
+    | '/app/slow-cast/achievements'
     | '/app/slow-cast/cooler'
     | '/app/slow-cast/logbook'
     | '/app/slow-cast/rankings'
@@ -674,6 +686,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSlowCastIndexRouteImport
       parentRoute: typeof AppSlowCastRoute
     }
+    '/app/slow-cast/achievements': {
+      id: '/app/slow-cast/achievements'
+      path: '/achievements'
+      fullPath: '/app/slow-cast/achievements'
+      preLoaderRoute: typeof AppSlowCastAchievementsRouteImport
+      parentRoute: typeof AppSlowCastRoute
+    }
     '/app/slow-cast/cooler': {
       id: '/app/slow-cast/cooler'
       path: '/cooler'
@@ -759,6 +778,7 @@ const AppDeskCrawlerRouteWithChildren = AppDeskCrawlerRoute._addFileChildren(
 )
 
 interface AppSlowCastRouteChildren {
+  AppSlowCastAchievementsRoute: typeof AppSlowCastAchievementsRoute
   AppSlowCastCoolerRoute: typeof AppSlowCastCoolerRoute
   AppSlowCastLogbookRoute: typeof AppSlowCastLogbookRoute
   AppSlowCastRankingsRoute: typeof AppSlowCastRankingsRoute
@@ -768,6 +788,7 @@ interface AppSlowCastRouteChildren {
 }
 
 const AppSlowCastRouteChildren: AppSlowCastRouteChildren = {
+  AppSlowCastAchievementsRoute: AppSlowCastAchievementsRoute,
   AppSlowCastCoolerRoute: AppSlowCastCoolerRoute,
   AppSlowCastLogbookRoute: AppSlowCastLogbookRoute,
   AppSlowCastRankingsRoute: AppSlowCastRankingsRoute,

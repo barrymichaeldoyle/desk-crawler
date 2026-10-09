@@ -8,6 +8,8 @@ import { runBatch, startRun, watchdogStep, type SubjectStep } from '../lib/engin
 import { accumulatorOf, addBucket, creditTick, foldScore, writeEngineRankInput, type RankSubject } from '../lib/engine/scores'
 import { fromAnglerState, progressed, storedDetail, toAnglerState } from './adapter'
 import { currentAngler } from './profile'
+import { awardAngler, stateOf, tallyAnglerUnlocks } from './achievements'
+import { needsFullPass } from '@trmnl-games/slow-cast/content/achievements'
 import { SLOW_CAST_RUNTIME } from './runtime'
 
 /**
@@ -44,6 +46,8 @@ async function publishInputs(ctx: MutationCtx, angler: Doc<'anglers'>, owner: Do
   const scores = await foldScore(ctx, SLOW_CAST_RUNTIME, id, step.run, accumulator)
   const fresh = (await ctx.db.get(angler._id))!
   await writeEngineRankInput(ctx, SLOW_CAST_RUNTIME, step.run, rankSubject(fresh, owner), owner, scores, fresh.status === 'paused')
+  // Rarity is published from the same generation as the boards (D65).
+  await tallyAnglerUnlocks(ctx, owner._id, step.tally.unlocks)
   step.tally.population += 1
 }
 
@@ -132,6 +136,11 @@ async function simulateAnglerStep(ctx: MutationCtx, subject: Doc<'heroes'>, step
   patch.scoreHourXp = credited.accumulator.scoreHourXp
   patch.scoreHour = credited.accumulator.scoreHour
   await ctx.db.patch(angler._id, patch)
+  // Achievements: diff lifetime state; an angler behind the catalog version gets one full pass.
+  if (result.event !== undefined || result.extraEvents !== undefined || needsFullPass(angler.achievementsVersion)) {
+    const updated = (await ctx.db.get(angler._id))!
+    await awardAngler(ctx, updated, stateOf(angler), stateOf(updated), content, now, run.tick)
+  }
   if (run.publishes) await publishInputs(ctx, angler, owner, step, credited.accumulator)
 
   counts.landed += result.metrics.landed

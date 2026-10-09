@@ -21,7 +21,15 @@ export async function purgeAngler(ctx: MutationCtx, anglerId: Id<'anglers'>, bat
     removed += 1
   }
   if (removed > 0) return removed
-  if (await ctx.db.get(anglerId)) {
+  const angler = await ctx.db.get(anglerId)
+  if (angler) {
+    for (const row of await ctx.db.query('swAchievements').withIndex('by_userId_and_achievementId', (q) => q.eq('userId', angler.userId)).take(batch)) {
+      await ctx.db.delete(row._id)
+      removed += 1
+    }
+    if (removed > 0) return removed
+  }
+  if (angler) {
     await ctx.db.delete(anglerId)
     return 1
   }

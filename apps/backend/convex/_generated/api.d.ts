@@ -53,6 +53,7 @@ import type * as profiles from "../profiles.js";
 import type * as raids from "../raids.js";
 import type * as sim_runs_adapter from "../sim/runs/adapter.js";
 import type * as sim_runs_tick from "../sim/runs/tick.js";
+import type * as slowCast_achievements from "../slowCast/achievements.js";
 import type * as slowCast_adapter from "../slowCast/adapter.js";
 import type * as slowCast_anglers from "../slowCast/anglers.js";
 import type * as slowCast_leaderboard from "../slowCast/leaderboard.js";
@@ -121,6 +122,7 @@ declare const fullApi: ApiFromModules<{
   raids: typeof raids;
   "sim/runs/adapter": typeof sim_runs_adapter;
   "sim/runs/tick": typeof sim_runs_tick;
+  "slowCast/achievements": typeof slowCast_achievements;
   "slowCast/adapter": typeof slowCast_adapter;
   "slowCast/anglers": typeof slowCast_anglers;
   "slowCast/leaderboard": typeof slowCast_leaderboard;

@@ -1,6 +1,6 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { api } from '@trmnl-games/backend/api'
 import { fishSprite, FISH_LARGE } from '@trmnl-games/slow-cast/art/fish'
 import { preload } from '../../../lib/preload'
@@ -36,6 +36,7 @@ function LogbookPage() {
         <h1 className="font-display text-3xl font-bold">Logbook</h1>
         <span className="label-px text-muted">{seen} of {total} species</span>
       </div>
+      <p className="text-sm"><Link to="/app/slow-cast/achievements" className="underline underline-offset-4">Achievements</Link></p>
       {book.map(({ water, species }) => (
         <Card key={water.id} title={water.name}>
           <ul className="grid gap-3 sm:grid-cols-2">

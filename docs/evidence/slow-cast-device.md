@@ -12,7 +12,7 @@ States: bareHook, catch, coolerFull, gotAway, longText, millpondDawn, outsideTop
 
 | Layout | Landscape | Portrait |
 | --- | --- | --- |
-| Full | Name, level, XP, status with time and weather, the counters line and the code in the header; the scene at 5x (10x on the X); the attention line; three stories; the twelve-hour recap | The same header; the scene at 3x (8x on the X); five stories; the recap |
+| Full | Name, level, XP, status with time and weather, the counters line and the code in the header; on the OG the scene at 4x beside the seven-day Top 5 (5x without a board), on the X the scene at 6x over the board; the attention line; three stories; the twelve-hour recap | The same header; the scene at 3x (8x on the X); four stories; the board; the recap |
 | Half | Scene at 2x (4x on the X) beside the name, status, counters and the newest story or the attention line, code at the right | Name and code, scene at 2x, status, counters, two stories |
 | Side | Name and code, scene at 2x (5x on the X), status, counters, attention, three stories, recap | Name, scene at 1x (4x on the X), status, counters, four stories, code at the foot |
 | Quarter | Name, status, cooler and gold beside the code; the newest story or the attention line | The same stacked, code at the foot |
@@ -24,4 +24,5 @@ A held fish is drawn at the angler's hands when the newest story is a catch or a
 - Fish sprites come from one trait row per species (`art/fish.ts`): body shape, tail, fin and markings. A sheet of all thirty is drawn by `pnpm tsx tools/art/slowcastSheet.ts <out.png>`; scenes by `tools/art/slowcastScenes.ts`.
 - The pixel canvas, PNG encoder, font and QR drawing moved to `packages/engine/src/art/`; Desk Crawler re-exports them from its old paths and its art tests pass unchanged.
 - Each scene scale is a small 1-bit PNG and every scene URL is immutable.
-- Not yet on the screen: the Top 5 board (S5) and the fly code in the title bar (S6). The quarter shows no scene, as the spec's simplification order allows.
+- The X draws images about 1.8 times their pixel size, so its scales are chosen to fit after that: 6x for the full scene.
+- The board's own row is the label itself, so its inverted text stays white. Not yet on the screen: the fly code in the title bar (S6). The quarter shows no scene or board, as the spec's simplification order allows.

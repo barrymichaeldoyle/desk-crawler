@@ -210,6 +210,18 @@ export default defineSchema({
     .index('by_createdAt', ['createdAt'])
     .index('by_simulationState', ['simulationState']),
 
+  /** One row per earned Slow Cast achievement, keyed by owner (D65 shape); bounded by the catalog. */
+  swAchievements: defineTable({
+    userId: v.id('users'),
+    anglerId: v.id('anglers'),
+    achievementId: v.string(),
+    unlockedAt: v.number(),
+    tick: v.number(),
+    catalogVersion: v.number(),
+  })
+    .index('by_userId_and_achievementId', ['userId', 'achievementId'])
+    .index('by_userId_and_unlockedAt', ['userId', 'unlockedAt']),
+
   /** Fish in an angler's cooler, at most the cooler's capacity (24 at the top tier). Sold explicitly. */
   catches: defineTable({
     anglerId: v.id('anglers'),

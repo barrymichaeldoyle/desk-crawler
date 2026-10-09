@@ -13,6 +13,7 @@ import { readEngineWorld } from '../lib/engine/world'
 import { fromAnglerState, toAnglerState } from './adapter'
 import { currentAngler, slowCastProfile } from './profile'
 import { SLOW_CAST_RUNTIME, SLOW_CAST_SCHEDULE } from './runtime'
+import { awardAfterAnglerIntent } from './achievements'
 import { accessId, baitClass, waterId } from './validators'
 
 /**
@@ -59,6 +60,9 @@ async function applyShop(ctx: MutationCtx, angler: Doc<'anglers'>, result: ShopR
   if (!result.ok) throw appError('INVALID_STATE', REFUSAL[result.code] ?? 'That is not possible right now.')
   const sequence = await commandLog(ctx, angler, operation, summary(result.angler), -result.spent)
   await ctx.db.patch(angler._id, { ...fromAnglerState(result.angler), logSequence: sequence })
+  // A better rod can earn a Rods tier.
+  const { world, content } = await worldContentOf(ctx)
+  await awardAfterAnglerIntent(ctx, angler, content, world?.currentTick ?? 0)
   return { changed: true, gold: result.angler.gold }
 }
 
@@ -134,6 +138,9 @@ export const sellCatches = mutation({
         const earned = next.gold - angler.gold
         const sequence = await commandLog(ctx, angler, 'slowCast.sell', `Sold ${rows.length} fish for ${earned} gold.`, earned)
         await ctx.db.patch(angler._id, { gold: next.gold, counters: next.counters, logSequence: sequence })
+        // Sales and gold earned are achievement families.
+        const { world, content } = await worldContentOf(ctx)
+        await awardAfterAnglerIntent(ctx, angler, content, world?.currentTick ?? 0)
         return { changed: true, gold: next.gold, count: rows.length }
       }),
     )

@@ -31,7 +31,7 @@ export const DESK_CRAWLER_JSON_LD = {
  * Per-route head tags. Child meta with the same name/property replaces the
  * root defaults; private and handoff pages pass `index: false`.
  */
-export function seo({ title, description = SITE_DESCRIPTION, path, index = true, image, jsonLd }: { title?: string; description?: string; path?: string; index?: boolean; image?: { path: string; alt: string }; jsonLd?: object }) {
+export function seo({ title, description = SITE_DESCRIPTION, path, index = true, image, jsonLd }: { title?: string; description?: string; path?: string; index?: boolean; image?: { path: string; alt: string } | { url: string; alt: string; width: number; height: number }; jsonLd?: object }) {
   const fullTitle = title ? `${title} · ${SITE_NAME}` : `${SITE_NAME}: games for your e-ink display`
   return {
     meta: [
@@ -40,7 +40,8 @@ export function seo({ title, description = SITE_DESCRIPTION, path, index = true,
       { property: 'og:title', content: fullTitle },
       { property: 'og:description', content: description },
       ...(path ? [{ property: 'og:url', content: `${SITE_ORIGIN}${path}` }] : []),
-      ...(image ? [{ property: 'og:image', content: `${SITE_ORIGIN}${image.path}` }, { property: 'og:image:alt', content: image.alt }] : []),
+      // A site image by path, or one served elsewhere (a hero's social card comes from the art route, D109) by absolute URL with its size.
+      ...(image ? [{ property: 'og:image', content: 'url' in image ? image.url : `${SITE_ORIGIN}${image.path}` }, { property: 'og:image:alt', content: image.alt }, ...('url' in image ? [{ property: 'og:image:width', content: String(image.width) }, { property: 'og:image:height', content: String(image.height) }] : [])] : []),
       ...(index ? [] : [{ name: 'robots', content: 'noindex, nofollow' }]),
     ],
     links: path && index ? [{ rel: 'canonical', href: `${SITE_ORIGIN}${path}` }] : [],

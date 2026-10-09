@@ -203,3 +203,12 @@ describe('companion QR codes', () => {
     expect(renderQrPng('/art/qr/v3/home/3.png', 'https://trmnlgames.com')).not.toBeNull()
   })
 })
+
+describe('hero social card (D109)', () => {
+  it('draws every character a public name or hero name may use', async () => {
+    const { glyphFor } = await import('@trmnl-games/desk-crawler/art/font')
+    const fallback = glyphFor('?')
+    for (const ch of "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ._'-#·:/,") expect(glyphFor(ch) === fallback && ch !== '?').toBe(false)
+    expect(glyphFor('€')).toBe(fallback)
+  })
+})

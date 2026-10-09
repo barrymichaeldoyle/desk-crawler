@@ -51,6 +51,33 @@ describe('public hero profiles (v1.2)', () => {
     expect(text).not.toContain('999')
   })
 
+  it('links a public hero from the companion leaderboard, and only that hero', async () => {
+    await seedHero(t, { level: 4, counters: { ...zeroCounters(), combatWins: 2 } }, 'Moss')
+    await seedHero(t, {}, 'Fern')
+    await runTick(t)
+    await owner('Moss').mutation(api.heroes.setPublicProfile, { operationId: 'profile-board', visible: true })
+    const board = await owner('Fern').query(api.leaderboard.view, { board: 'overall', cohortKey: 'all' })
+    const rows = board.entries as Array<{ name: string; profile?: boolean }>
+    expect(rows.find((row) => row.name === 'Moss')?.profile).toBe(true)
+    expect(rows.find((row) => row.name === 'Fern')?.profile).toBe(false)
+  })
+
+  it('serves the social card only while the page is public, as a 1200x630 PNG', async () => {
+    await seedHero(t, { level: 7 }, 'Wren')
+    const card = (alias: string) => t.fetch(`/art/card/hero/${encodeURIComponent(alias)}.png`)
+    expect((await card('Wren')).status).toBe(404)
+    await owner('Wren').mutation(api.heroes.setPublicProfile, { operationId: 'profile-card', visible: true })
+    const response = await card('wren')
+    expect(response.status).toBe(200)
+    expect(response.headers.get('Content-Type')).toBe('image/png')
+    const bytes = new Uint8Array(await response.arrayBuffer())
+    const view = new DataView(bytes.buffer)
+    expect([view.getUint32(16), view.getUint32(20)]).toEqual([1200, 630])
+    expect(bytes.length).toBeLessThan(20_000)
+    expect((await card('Nobody')).status).toBe(404)
+    expect((await t.fetch('/art/card/hero/%E0%A4%A.png')).status).toBe(404)
+  })
+
   it('treats suspended, name-repair and unknown aliases exactly like a private profile', async () => {
     const heroId = await seedHero(t, { publicProfile: true }, 'Fern')
     expect(await t.query(api.profiles.view, { alias: 'Fern' })).not.toBeNull()

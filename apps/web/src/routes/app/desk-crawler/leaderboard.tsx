@@ -1,6 +1,6 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { seo } from '../../../lib/seo'
@@ -78,11 +78,16 @@ function Leaderboard() {
             <p>No ranked heroes in this group for this period.</p>
           ) : (
             <ol className="flex flex-col divide-y divide-rule">
-              {data.entries.map((row: { rank: number; name: string; hero_name: string; level: number; score: number }) => (
+              {data.entries.map((row: { rank: number; name: string; hero_name: string; level: number; score: number; profile?: boolean }) => (
                 <li key={row.rank} aria-current={data.own?.rank === row.rank ? 'true' : undefined} className={`flex min-w-0 items-start gap-3 py-3 ${data.own?.rank === row.rank ? '-mx-2 bg-ground px-2 outline-2 outline-gold' : ''}`}>
                   <span className={`w-8 text-right font-bold tabular-nums ${row.rank <= 3 ? 'hud text-sm leading-6 text-gold-ink' : ''}`}>{row.rank}</span>
                   <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">
-                    <span className="block font-semibold">{row.name}</span>
+                    {/* D109: a hero whose owner made its page public links to it. */}
+                    {row.profile ? (
+                      <Link to="/desk-crawler/heroes/$alias" params={{ alias: row.name }} className="block font-semibold underline decoration-dotted underline-offset-4">{row.name}</Link>
+                    ) : (
+                      <span className="block font-semibold">{row.name}</span>
+                    )}
                     {row.hero_name ? <span className="block text-sm text-muted">{row.hero_name}</span> : null}
                   </span>
                   <span className={`min-w-0 max-w-[45%] shrink-0 text-right text-sm font-semibold tabular-nums [overflow-wrap:anywhere] ${board === 'overall' ? 'text-gold-ink' : 'text-xp-ink'}`}>{board === 'overall' ? `Level ${row.level}` : `${row.score.toLocaleString()} XP`}</span>

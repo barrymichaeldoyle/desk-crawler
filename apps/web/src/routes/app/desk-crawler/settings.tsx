@@ -1,9 +1,10 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { useIntent } from '../../../lib/intent'
+import { captureAnalytics } from '../../../lib/analytics'
 import { seo } from '../../../lib/seo'
 import { Button, Card, LoadingState, NoticeBar, useFocusWithin, useNotice } from '../../../lib/ui'
 import { preload } from '../../../lib/preload'
@@ -65,7 +66,10 @@ function Settings() {
           <>
             <p>Anyone with the link can see your hero's name, level, rank, current floor, lifetime counts and achievements. Gear, gold, the adventure log and your account stay private.</p>
             <p className="mt-2 break-all"><Link to="/desk-crawler/heroes/$alias" params={{ alias: me.user.publicAlias }} className="underline underline-offset-4">trmnlgames.com/desk-crawler/heroes/{encodeURIComponent(me.user.publicAlias)}</Link></p>
-            <Button className="mt-3" variant="secondary" pending={profile.pending} busyLabel="Hiding…" onClick={() => profile.run({ visible: false }, 'Your hero page is private again.')}>Make private</Button>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <ShareHeroLink alias={me.user.publicAlias} heroName={hero.name} notify={notify} />
+              <Button variant="secondary" pending={profile.pending} busyLabel="Hiding…" onClick={() => profile.run({ visible: false }, 'Your hero page is private again.')}>Make private</Button>
+            </div>
           </>
         ) : (
           <>
@@ -134,6 +138,40 @@ function Settings() {
         <Link to="/feedback" search={{ from: '/app/desk-crawler/settings' }} className="inline-flex min-h-11 items-center underline underline-offset-4">Send feedback</Link>
       </nav>
       <NoticeBar notice={notice} onDismiss={dismiss} />
+    </>
+  )
+}
+
+/**
+ * Share the public hero page (D109): the phone's share sheet where the browser has one, and Copy link everywhere.
+ * Both report through the page's pinned notice; a cancelled share sheet says nothing.
+ */
+function ShareHeroLink({ alias, heroName, notify }: { alias: string; heroName: string; notify: (feedback: { error: string | null; message: string | null }) => void }) {
+  // Known only in the browser; the server render shows Copy link alone, and Share joins it after hydration.
+  const [canShare, setCanShare] = useState(false)
+  useEffect(() => setCanShare(typeof navigator.share === 'function'), [])
+  const url = () => `${window.location.origin}/desk-crawler/heroes/${encodeURIComponent(alias)}`
+  const share = async () => {
+    try {
+      await navigator.share({ title: `${heroName} in Desk Crawler`, url: url() })
+      captureAnalytics('profile shared', { method: 'share' })
+    } catch (error) {
+      if ((error as Error).name !== 'AbortError') notify({ error: 'Sharing did not work here. Copy the link instead.', message: null })
+    }
+  }
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(url())
+      captureAnalytics('profile shared', { method: 'copy' })
+      notify({ error: null, message: 'Link copied.' })
+    } catch {
+      notify({ error: 'Could not copy the link. Press and hold it above to copy it.', message: null })
+    }
+  }
+  return (
+    <>
+      {canShare ? <Button onClick={share}>Share</Button> : null}
+      <Button variant={canShare ? 'secondary' : 'primary'} onClick={copy}>Copy link</Button>
     </>
   )
 }

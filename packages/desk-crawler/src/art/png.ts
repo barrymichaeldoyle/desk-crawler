@@ -121,3 +121,21 @@ export function encodePngIndexed(width: number, height: number, index: Uint8Arra
   }
   return out
 }
+
+/** An 8-bit indexed PNG around an IDAT stream the caller already compressed (the social card uses fflate, D109). */
+export function encodePngIndexedFromIdat(width: number, height: number, palette: ReadonlyArray<ReadonlyArray<number>>, idat: Uint8Array): Uint8Array {
+  const parts = [
+    Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10]),
+    chunk('IHDR', new Uint8Array([...u32(width), ...u32(height), 8, 3, 0, 0, 0])),
+    chunk('PLTE', Uint8Array.from(palette.flat())),
+    chunk('IDAT', idat),
+    chunk('IEND', new Uint8Array()),
+  ]
+  const out = new Uint8Array(parts.reduce((sum, p) => sum + p.length, 0))
+  let at = 0
+  for (const part of parts) {
+    out.set(part, at)
+    at += part.length
+  }
+  return out
+}

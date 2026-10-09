@@ -14,7 +14,7 @@ const labelFor = (cohortKey: string) => {
 }
 
 /** Mask copied public names whose owner is gone, suspended/deleting, or renamed since the snapshot (leaderboards.md). */
-export async function maskedEntries(ctx: QueryCtx, entries: Doc<'leaderboardGenerations'>['entries'], limit: number) {
+export async function maskedEntries(ctx: QueryCtx, entries: Doc<'leaderboardGenerations'>['entries'], limit: number, options: { profiles?: boolean } = {}) {
   const rows = entries.slice(0, limit)
   const owners = await Promise.all(rows.map((row) => ctx.db.get(row.userId)))
   const heroes = await Promise.all(owners.map((owner) => currentHero(ctx, owner ?? null)))
@@ -27,6 +27,8 @@ export async function maskedEntries(ctx: QueryCtx, entries: Doc<'leaderboardGene
       hero_name: visible ? row.heroName : '',
       level: row.level,
       score: row.score ?? 0,
+      // D109: the companion's board links a visible row to its public page; the device payload never carries it.
+      ...(options.profiles ? { profile: visible && heroes[index]?.publicProfile === true } : {}),
     }
   })
 }

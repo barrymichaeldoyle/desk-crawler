@@ -27,10 +27,19 @@ type Profile = {
 
 const profileQuery = (alias: string) => convexQuery(api.profiles.view, { alias })
 
+/**
+ * The hero's own social card from the art route (D109), 1200x630. Unfurlers cache images by URL, so the level and
+ * rank ride along in the query and a new level or rank gets a fresh card. Without the art origin, the game's card.
+ */
+const heroCard = (profile: Pick<Profile, 'alias' | 'heroName' | 'level' | 'rank'>) =>
+  import.meta.env.VITE_CONVEX_SITE_URL
+    ? { url: artUrl(`/art/card/hero/${encodeURIComponent(profile.alias)}.png?v=${profile.level}-${profile.rank?.rank ?? 0}`), alt: `${profile.heroName}, level ${profile.level}, in Desk Crawler`, width: 1200, height: 630 }
+    : DESK_CRAWLER_OG
+
 export const Route = createFileRoute('/desk-crawler/heroes/$alias')({
   loader: async ({ context, params }) => (await context.queryClient.ensureQueryData(profileQuery(params.alias))) as Profile | null,
   head: ({ loaderData, params }) => loaderData
-    ? seo({ title: `${loaderData.heroName}, level ${loaderData.level}`, path: `/desk-crawler/heroes/${encodeURIComponent(loaderData.alias)}`, description: `${loaderData.alias}'s Desk Crawler hero ${loaderData.heroName}: level ${loaderData.level}${loaderData.rank ? `, ranked #${loaderData.rank.rank} of ${loaderData.rank.totalPlayers}` : ''}, ${loaderData.achievementCount} achievements.`, image: DESK_CRAWLER_OG })
+    ? seo({ title: `${loaderData.heroName}, level ${loaderData.level}`, path: `/desk-crawler/heroes/${encodeURIComponent(loaderData.alias)}`, description: `${loaderData.alias}'s Desk Crawler hero ${loaderData.heroName}: level ${loaderData.level}${loaderData.rank ? `, ranked #${loaderData.rank.rank} of ${loaderData.rank.totalPlayers}` : ''}, ${loaderData.achievementCount} achievements.`, image: heroCard(loaderData) })
     : seo({ title: 'Hero not found', path: `/desk-crawler/heroes/${encodeURIComponent(params.alias)}`, index: false }),
   component: HeroProfile,
 })

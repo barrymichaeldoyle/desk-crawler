@@ -4,6 +4,7 @@ import { httpAction } from './_generated/server'
 import { sha256Hex } from './lib/hash'
 import { verifySvix } from './lib/svix'
 import { renderScenePng } from '@trmnl-games/desk-crawler/art/route'
+import { renderHeroCardPng } from '@trmnl-games/desk-crawler/art/heroCard'
 import { sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
 import { DEFAULT_COMPANION_ORIGIN, renderQrPng } from '@trmnl-games/desk-crawler/art/qr'
 import { parseUtcOffset, screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
@@ -125,8 +126,22 @@ http.route({
 http.route({
   pathPrefix: '/art/',
   method: 'GET',
-  handler: httpAction(async (_ctx, request) => {
+  handler: httpAction(async (ctx, request) => {
     const path = new URL(request.url).pathname
+    // D109: a public hero page's social card, drawn only while the page is public; an hour's cache follows level and rank.
+    const card = /^\/art\/card\/hero\/([^/]{1,80})\.png$/.exec(path)
+    if (card) {
+      let alias: string
+      try {
+        alias = decodeURIComponent(card[1]!)
+      } catch {
+        return new Response('Not found', { status: 404 })
+      }
+      const data = await ctx.runQuery(internal.profiles.card, { alias })
+      const png = data === null ? null : renderHeroCardPng(data)
+      if (png === null) return new Response('Not found', { status: 404, headers: { 'Cache-Control': 'public, max-age=300' } })
+      return new Response(new Blob([png.slice().buffer as ArrayBuffer], { type: 'image/png' }), { status: 200, headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=3600' } })
+    }
     const isQr = path.startsWith('/art/qr/')
     const png = isQr ? renderQrPng(path, process.env.COMPANION_ORIGIN ?? DEFAULT_COMPANION_ORIGIN) : renderScenePng(path)
     if (png === null) return new Response('Not found', { status: 404 })

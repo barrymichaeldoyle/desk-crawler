@@ -299,7 +299,7 @@ export const view = query({
       asOfTick: publication.asOfTick,
       globalTotalPlayers: publication.globalTotalPlayers,
       totalPlayers: generation?.totalPlayers ?? 0,
-      entries: generation ? await maskedEntries(ctx, generation.entries, TOP_ENTRIES) : [],
+      entries: generation ? await maskedEntries(ctx, generation.entries, TOP_ENTRIES, { profiles: true }) : [],
       own: own && own.cohortKey === cohortKey ? { rank: own.rank, rankDelta: own.rankDelta ?? null, score: own.score ?? null } : null,
     }
   },

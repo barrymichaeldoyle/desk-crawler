@@ -8,7 +8,8 @@
  * Then open http://127.0.0.1:4197/app/desk-crawler (or /inventory, /leaderboard, /settings). Query parameters:
  *   status=paused|sleeping|dead|travelling|resting   held=1 (held find, bag full)   slots=30 (gear count)   merchant=1
  *   choice=1 (pending decision)   effects=1   recap=1 (a return tally)   keepsake=done   long=1 (long item names)
- *   quiet=1 (empty log, no achievements)   ok=1 (mutations succeed)   raids=1 (desk raids on, with a record and raid log lines)
+ *   quiet=1 (empty log, no achievements)   ok=1 (mutations succeed)   raids=1 (desk raids on, with a record and raid log lines)   public=1 (hero page public)
+ *   /desk-crawler/heroes/<name> serves the public hero page (private=1 reads as not found)
  * The dev deployment's scene art is used when apps/web/.env.local sets VITE_CONVEX_SITE_URL.
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -28,7 +29,7 @@ const notify = () => listeners.forEach((l) => l());
 const subscribe = (l) => { listeners.add(l); window.addEventListener('popstate', notify); return () => { listeners.delete(l); window.removeEventListener('popstate', notify) } };
 const snapshot = () => location.pathname + location.search + location.hash;
 export const useLocation = (options) => { const key = useSyncExternalStore(subscribe, snapshot, snapshot); const loc = { pathname: location.pathname, search: location.search, hash: location.hash, href: key }; return options?.select ? options.select(loc) : loc };
-export const createFileRoute = () => (options) => ({ options });
+export const createFileRoute = () => (options) => ({ options, useParams: () => ({ alias: decodeURIComponent(location.pathname.replace(/\\/$/, '').split('/').pop()) }) });
 export const createRootRouteWithContext = () => (options) => ({ options });
 export const useRouter = () => ({ invalidate: async () => {} });
 export const useNavigate = () => (to) => { history.pushState(null, '', typeof to === 'string' ? to : to.to); notify() };
@@ -66,6 +67,7 @@ if (flag('recap')) data.recap = { ...data.recap, baseline: { at: Date.now() - 36
 if (params.get('keepsake') === 'done') { data.keepsakes.lastClaimWeek = 9999; data.keepsakes.nextAvailableAt = Date.now() + 86400000 * 3 }
 if (flag('quiet')) { data.log = []; data.achievements.families.forEach((f) => { f.earned = null }); data.achievements.unlocked = [] }
 const raidsOn = flag('raids');
+if (flag('public')) hero.publicProfile = true;
 data.raids = { record: { launched: 0, won: 0, repelled: 0, lost: 0 }, raids: [] };
 if (raidsOn) {
   hero.raidsEnabled = true;
@@ -105,7 +107,10 @@ const queries = {
   'heroes:recentLog': (args) => ({ page: data.log.slice(0, args.paginationOpts.numItems), isDone: true, continueCursor: '' }),
   'trmnlPayload:mine': () => undefined,
   'raids:recent': () => data.raids,
+  // The public hero page (D109) from the same fictional hero; raids=1 adds a raid record, private=1 reads as not found.
+  'profiles:view': (args) => flag('private') ? null : { alias: args.alias, heroName: hero.name, heroClass: 'warrior', level: hero.level, status: hero.status, biome: 'Server Room', scenePath: hero.scenePath, adventuringSince: Date.now() - 86400000 * 12, rank: { rank: 3, totalPlayers: 41 }, lifetime: { combatWins: hero.counters.combatWins, itemsFound: hero.counters.itemsFound, trips: hero.counters.trips ?? 4, rescues: hero.counters.rescues, epicFinds: hero.counters.epicFinds ?? 1 }, raids: raidsOn ? { won: 5, failed: 4, repelled: 4, lost: 3 } : { won: 0, failed: 0, repelled: 0, lost: 0 }, achievements: data.achievements.families.filter((f) => f.earned).slice(0, 4).map((f) => ({ id: f.earned.id, tier: f.earned.tier, name: f.earned.name, blurb: f.earned.blurb, family: f.name })), rarity: null, achievementCount: data.achievements.unlocked.length },
 };
+if (raidsOn) data.leaderboard.recent_24h?.entries?.forEach((row, i) => { row.profile = i % 2 === 0 });
 export const api = new Proxy({}, { get: (_, module) => new Proxy({}, { get: (_, fn) => module + ':' + fn }) });
 export const convexQuery = (fn, args = {}) => ({ queryKey: ['convexQuery', fn, args] });
 export const keepPreviousData = (previous) => previous;
@@ -138,19 +143,22 @@ import { Route as Hero } from '../../apps/web/src/routes/app/desk-crawler/index'
 import { Route as Bag } from '../../apps/web/src/routes/app/desk-crawler/inventory';
 import { Route as Ranks } from '../../apps/web/src/routes/app/desk-crawler/leaderboard';
 import { Route as Settings } from '../../apps/web/src/routes/app/desk-crawler/settings';
+import { Route as Profile } from '../../apps/web/src/routes/desk-crawler/heroes.$alias';
 import { AuthShell } from '../../apps/web/src/lib/platformShell';
 import { NetworkProvider } from '../../apps/web/src/lib/network';
 import { OutletContext, useLocation } from './router.jsx';
 import './styles.css';
 const pages = { '/app/desk-crawler': Hero.options.component, '/app/desk-crawler/inventory': Bag.options.component, '/app/desk-crawler/leaderboard': Ranks.options.component, '/app/desk-crawler/settings': Settings.options.component };
-if (!pages[location.pathname.replace(/\\/$/, '')]) history.replaceState(null, '', '/app/desk-crawler' + location.search);
+const publicPage = location.pathname.startsWith('/desk-crawler/heroes/');
+if (!publicPage && !pages[location.pathname.replace(/\\/$/, '')]) history.replaceState(null, '', '/app/desk-crawler' + location.search);
 function App() {
   const pathname = useLocation({ select: (l) => l.pathname.replace(/\\/$/, '') });
   const AppShell = Shell.options.component;
   return <OutletContext.Provider value={pages[pathname] ?? pages['/app/desk-crawler']}><AuthShell><AppShell /></AuthShell></OutletContext.Provider>;
 }
 document.body.className = 'bg-ground text-ink';
-createRoot(document.getElementById('root')).render(<NetworkProvider><App /></NetworkProvider>);
+const ProfilePage = Profile.options.component;
+createRoot(document.getElementById('root')).render(<NetworkProvider>{publicPage ? <ProfilePage /> : <App />}</NetworkProvider>);
 `)
 write('vite.config.mjs', `import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';

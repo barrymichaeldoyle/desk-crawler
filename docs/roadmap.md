@@ -15,7 +15,7 @@ Release order is a commitment; the dates are not. A release ends when its gate p
 - **v1.0** is deployed and submitted: plugin 564 went to TRMNL review on 2026-10-07 and the review email is sent. Marketplace approval is the one open gate.
 - **v1.0.x** live polish continues while review runs: device templates are at v50, and companion and layout polish ships through main.
 - **v1.1 Decisions** shipped in full on 2026-10-07, with help and analytics coverage added on 2026-10-08 (D101). Production now runs content v9 (the to-do list, D112, after the desk drawer, D111) and achievement catalog version 4. All three stretch items are built: daily quests and lost-and-found are live, and push alerts (D114) were built and switched on on 2026-10-09, when production got its VAPID keys.
-- **Next task:** receive a real alert on Barry's phone (D114, `alertsPush:sendTest` once a device is allowed), and watch the to-do list (D112) and desk drawer (D111) on production.
+- **Next task:** watch the first real alerts (D114; Barry's iPhone received a production test alert on 2026-10-09), and watch the to-do list (D112) and desk drawer (D111) on production.
 - **Next release:** v1.2 Other people, unless the v1.0.x reorder trigger pulls v2.0 Depth ahead once live retention data exists. Two of its rows are done: desk raids (D110, [design](raids.md)) switched on with content v7 at 22:15 UTC on 2026-10-08 after all five slices, and public profiles (D109) finished on 2026-10-09. Meetings, friends/rivals, world events and additional classes remain.
 
 ## v1.0 — Submission (submitted 2026-10-07, awaiting marketplace approval)

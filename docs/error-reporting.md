@@ -27,7 +27,7 @@ Because nothing links a report to an account, account deletion has nothing to er
 
 ## Releases and source maps
 
-Both SDKs report `release` as the build id: the commit Workers Builds deploys (`WORKERS_CI_COMMIT_SHA`), the same id `/build.json` publishes. When the build has `SENTRY_AUTH_TOKEN`, `sentryTanstackStart` from `@sentry/tanstackstart-react/vite` generates hidden source maps, uploads them for that release and deletes the `.map` files, so neither the site nor the Worker serves them. Without the token (local builds) the plugin is left out and the build is unchanged. The token is a Sentry organization auth token with release upload scope, set as a build variable on the Workers Builds trigger, not as a runtime secret.
+Both SDKs report `release` as the build id: the commit Workers Builds deploys (`WORKERS_CI_COMMIT_SHA`), the same id `/build.json` publishes. When the build has `SENTRY_AUTH_TOKEN`, `sentryTanstackStart` from `@sentry/tanstackstart-react/vite` generates hidden source maps, uploads them for that release and deletes the `.map` files, so neither the site nor the Worker serves them. Without the token (local builds) the plugin is left out and the build is unchanged. The token is a Sentry organization auth token with release upload scope, set as a build variable on the Workers Builds trigger, not as a runtime secret. Configured on 2026-10-09: organization token "trmnl-games Workers Builds source maps" (scope `org:ci`), stored as the encrypted build secret `SENTRY_AUTH_TOKEN`. The first build with it (da6c601, retried from the dashboard) uploaded two debug-ID bundles (182 client and 138 server files) and created the release; the live JavaScript carries `_sentryDebugIds` and `.map` URLs return 404.
 
 ## Working with it
 

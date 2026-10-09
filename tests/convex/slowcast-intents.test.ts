@@ -82,12 +82,12 @@ describe('Slow Cast intents (D115, S2)', () => {
 
   it('reads the dock: cooler, bait, shop, forecast and stories', async () => {
     await seedAngler(t, { gold: 42 }, 'Pat')
-    await nextSlowCastTick(t)
     const dock = await as('Pat').query(api.slowCast.anglers.dock, {})
     expect(dock.angler).toMatchObject({ alias: 'Pat', level: 1, gold: 42, waterId: 'millpond', cooler: { name: 'Bucket', capacity: 6 }, rod: { name: 'Cane Rod' } })
     expect(dock.waters.map((w: { id: string; open: boolean }) => [w.id, w.open])).toEqual([['millpond', true], ['river_bend', false], ['harbour_pier', false]])
     expect(dock.shop.rod).toMatchObject({ name: 'Fibreglass Rod', price: 250 })
     expect(dock.angler.bait.find((b: { class: string }) => b.class === 'worms')).toMatchObject({ units: 12, tubsThatFit: 5 })
+    expect(Array.isArray(dock.logs)).toBe(true)
     expect(await as('Nobody').query(api.slowCast.anglers.dock, {})).toEqual({ gameState: null, angler: null })
   })
 

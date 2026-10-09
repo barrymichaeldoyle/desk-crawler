@@ -170,8 +170,9 @@ export const simulateBatch = internalMutation({
           recentSummaries: recentLogs.map((log) => log.summary),
           ...(pick === undefined ? {} : { raidTarget: pick.target }),
           ...(pending === undefined ? {} : { incomingRaid: pending.incoming }),
-          // P31: the stand-up turns on the run's wall slot, never the clock.
+          // P31: the stand-up turns on the run's wall slot, never the clock, in the owner's last TRMNL offset.
           tickAt: run.wallSlot,
+          ...(owner.trmnlUtcOffset === undefined ? {} : { utcOffsetSeconds: owner.trmnlUtcOffset }),
         })
       } catch (error) {
         // Only recognized pure-core failures are isolated; anything else rolls back the page.

@@ -125,6 +125,8 @@ export default defineSchema({
     activeHeroId: v.optional(v.id('heroes')),
     deletionRequestedAt: v.optional(v.number()),
     nameRepairRequired: v.optional(v.boolean()),
+    /** P31: the last UTC offset in seconds a TRMNL screen request sent, written only when it changes; the stand-up and the tick read it. */
+    trmnlUtcOffset: v.optional(v.number()),
   })
     .index('by_tokenIdentifier', ['tokenIdentifier'])
     .index('by_normalizedAlias', ['normalizedAlias'])

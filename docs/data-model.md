@@ -20,7 +20,7 @@ One document per publication: `publicationId`, `runId`, `counts` (achievement id
 
 ### `users`
 
-Fields: `tokenIdentifier` (Clerk issuer + subject identity), `publicAlias`, `normalizedAlias`, `timezone` (legacy compatibility field, validated IANA, UTC for new installs; no current UI preference, D39), `state: active | suspended | deleting`, `createdAt`, `activeHeroId?`, `deletionRequestedAt?`, `publicNameVersion` (initial 1), `nameRepairRequired?` (bounded alias/hero-name field set).
+Fields: `tokenIdentifier` (Clerk issuer + subject identity), `publicAlias`, `normalizedAlias`, `timezone` (legacy compatibility field, validated IANA, UTC for new installs; no current UI preference, D39), `state: active | suspended | deleting`, `createdAt`, `activeHeroId?`, `deletionRequestedAt?`, `publicNameVersion` (initial 1), `nameRepairRequired?` (bounded alias/hero-name field set), `trmnlUtcOffset?` (D112: the last UTC offset in seconds a TRMNL screen request sent, written only when it changes and never cleared by a missing value; the tick passes it to the simulator for the 07:00 stand-up).
 
 Indexes: `by_identity[tokenIdentifier]`, `by_alias[normalizedAlias]`, `by_state[state]`.
 

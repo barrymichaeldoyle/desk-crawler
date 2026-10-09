@@ -31,6 +31,7 @@ export const Route = createFileRoute('/privacy')({
           For each TRMNL installation: the plugin instance ID, a hash of its access token and the settings link TRMNL gives us. We do not store your TRMNL
           name or email.
         </li>
+        <li>The time zone offset your TRMNL sends with each screen (for example UTC+2), so Desk Crawler's morning stand-up follows your day. We keep only the latest one.</li>
         <li>Short-lived operational records such as rate-limit counters and duplicate-request receipts.</li>
         <li>When you request account deletion: your verified primary email, a hash of the confirmation link, and delivery status. The link expires after 30 minutes; expired requests are removed by daily cleanup.</li>
         <li>If you join the Desk Crawler launch list: your email address, where you signed up and, if you joined while signed in, a link to your account. We use it for one email when Desk Crawler reaches the TRMNL marketplace, nothing else.</li>

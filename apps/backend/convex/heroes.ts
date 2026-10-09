@@ -19,6 +19,10 @@ import { sceneFor, scenePath } from '@trmnl-games/desk-crawler/art/sceneKey'
 import { displayLogDeltas } from '@trmnl-games/desk-crawler/log'
 import { raidWinChance } from '@trmnl-games/desk-crawler/sim/core/raid'
 import { maskRaidSummaries } from './lib/raids'
+import { hereBiomeId, isLocal, nextStandupAfter, swapTask as swapTodoTask, swapUsed, taskLabel } from '@trmnl-games/desk-crawler/sim/core/todo'
+import { deriveStreamSeed } from '@trmnl-games/desk-crawler/sim/seed'
+import { worldContent } from './world'
+import { toHeroState } from './sim/runs/adapter'
 
 const intentResult = v.object({
   operationId: v.string(),
@@ -88,6 +92,8 @@ export const mine = query({
       // D110: under a catalog with raids, each stance also says how often it raids and how often it wins against a balanced hero.
       stances: Object.values(content.stances ?? {}).map((rule) => ({ id: rule.id, name: rule.name, blurb: rule.blurb, potionBelowPct: rule.autoPotionBelowPct, restBelowPct: rule.restBelowPct, resumeAtPct: rule.resumeExploringAtPct, victoryXpPct: rule.victoryXpPct, ...(content.raids ? { raidsPerDay: Math.round(content.raids.launchPermille[rule.id] * 96) / 1000, raidWinPct: raidWinChance(content, rule.id, 'balanced') } : {}) })),
       raidsEnabled: content.raids !== undefined,
+      // P31: the to-do list once the world runs a catalog with to-do rules and the hero has one.
+      todo: todoView(worldContent(world), hero, user.trmnlUtcOffset),
       biomes: content.biomes.map((biome) => ({ id: biome.id, name: biome.name, unlockLevel: biome.unlockLevel, unlocked: biome.unlockLevel <= hero.level })),
       world: world
         ? {
@@ -232,6 +238,64 @@ export const setStance = mutation({
       return { changed: true }
     }),
 })
+
+/**
+ * P31: swap one unfinished to-do task for a new one of another kind, dropping its progress. One swap per refill
+ * period; the new task comes from the hero's `quest` stream at the world's current tick, so a retry or a duplicate
+ * receipt writes the same task and nothing is rerolled.
+ */
+export const swapTask = mutation({
+  args: { operationId: v.string(), slot: v.number() },
+  returns: intentResult,
+  handler: async (ctx, args) =>
+    await runIntent(ctx, args.operationId, 'heroes.swapTask', { slot: args.slot }, async (user) => {
+      const hero = await requirePlayableHero(ctx, user)
+      const world = await readWorld(ctx)
+      const content = worldContent(world)
+      const tick = world?.currentTick ?? 0
+      const seed = deriveStreamSeed(world?.worldSeed ?? '', hero._id, tick, world?.activeSimulationVersion ?? 1, 'quest')
+      const swapped = swapTodoTask(toHeroState(hero), args.slot, content, seed, tick)
+      if ('refusal' in swapped) {
+        switch (swapped.refusal) {
+          case 'NO_TODO':
+            throw appError('TODO_UNAVAILABLE', 'The to-do list is not ready yet.')
+          case 'BAD_SLOT':
+            throw appError('INVALID_INPUT', 'Unknown task.')
+          case 'TASK_DONE':
+            throw appError('TASK_DONE', 'That task is already ticked off.')
+          case 'SWAP_USED':
+            throw appError('SWAP_USED', "Today's swap is used. You get a new one at the next stand-up.")
+        }
+      }
+      const task = swapped.list.tasks[args.slot]!
+      await ctx.db.patch(hero._id, { todo: { ...swapped.list, tasks: swapped.list.tasks.map((t) => ({ ...t })) } })
+      await commandLog(ctx, hero, 'swap_task', `Swapped a task: ${taskLabel(task, content)}.`)
+      return { changed: true }
+    }),
+})
+
+/** P31: the companion's To-do card. */
+function todoView(content: ContentCatalog, hero: Doc<'heroes'>, utcOffset: number | undefined) {
+  const list = hero.todo
+  if (content.todo === undefined || list === undefined) return null
+  const here = hereBiomeId(hero)
+  return {
+    tasks: list.tasks.map((task, slot) => ({
+      slot,
+      templateId: task.templateId,
+      label: taskLabel(task, content),
+      progress: task.progress,
+      target: task.target,
+      reward: task.reward,
+      done: task.doneTick !== undefined,
+      biomeId: task.biomeId ?? null,
+      local: isLocal(task, here),
+    })),
+    swapAvailable: !swapUsed(list),
+    nextStandupAt: nextStandupAfter(list, utcOffset, content),
+    refillHour: content.todo.refillHour,
+  }
+}
 
 /** v1.2: show or hide the hero's public profile page. Off until the owner turns it on. */
 export const setPublicProfile = mutation({

@@ -1,4 +1,4 @@
-# To-do list: Q1 rules and harness (P31, D112)
+# To-do list: build evidence (P31, D112)
 
 Date: 2026-10-09 · Simulation version 1 · Content v9 (not active until the switch; production stays on v8 until then) · Harness: `pnpm balance --heroes 300 --days 30 --content v9` ([tools/balance/run.ts](../../tools/balance/run.ts)) · Local Node 24, pure simulator in memory, no database. Raw report: [balance-v9-todo-30-days.json](balance-v9-todo-30-days.json).
 
@@ -57,3 +57,12 @@ Every median is inside the spec's 4 to 16 hours. Dodging traps and elites have l
 ## Not measured
 
 The harness doesn't swap tasks or steer toward an away task. Visiting cohorts travel to the hardest unlocked biome as before. A player who follows the away task will finish more tasks, which the 20-hour floor and the gold-only reward keep small.
+
+## Q2 backend
+
+- `users.trmnlUtcOffset` holds the last offset a TRMNL screen request sent. The payload query compares it with the stored value and returns the owner's id only when it differs, so the screen route calls `trmnl.recordUtcOffset` once per change, not per request. The mutation rechecks and bounds the value, and a missing or invalid offset never clears it. The privacy policy lists it.
+- The tick passes `owner.trmnlUtcOffset` and the run's wall slot to the simulator. The owner document is already read for the current-hero check, so the stand-up adds no read per tick, and the list rides the hero patch the tick already makes.
+- `heroes.swapTask(slot)` is a receipted intent: same operation id, same result, no second swap; a new id after a swap gets `SWAP_USED` until the next refill. It draws from the hero's `quest` stream at the world's current tick, so it can't be rerolled.
+- `heroes.mine` returns the list with labels, progress, rewards, done flags, the place rule's local flag, whether the swap is free and the next stand-up time, once the world runs v9.
+
+Tests: `tests/convex/todo.test.ts` (first-tick fill and log order, nothing under v8, the stored offset moving the stand-up, offset writes only on change, duplicate swap receipts, refusals, the hero query).

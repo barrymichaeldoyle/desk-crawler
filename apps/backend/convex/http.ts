@@ -115,6 +115,7 @@ http.route({
       result = await ctx.runQuery(internal.trmnlPayload.forInstance, args)
     }
     if (result === null || result.outcome !== 'payload') return notFound()
+    if (result.recordOffsetFor !== undefined && utcOffset !== null) await ctx.runMutation(internal.trmnl.recordUtcOffset, { userId: result.recordOffsetFor, utcOffset })
     return json(200, { ...screenMarkup, merge_variables: { ...sceneUrlsAt(result.payload, now, utcOffset), desk_keepsake_code: result.keepsakeCode, utc_offset: utcOffset } })
   }),
 })

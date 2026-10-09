@@ -1,6 +1,6 @@
-# Still Waters: a passive fishing game for TRMNL (P34)
+# Slow Cast: a passive fishing game for TRMNL (P34)
 
-Proposed 2026-10-09 for Barry's review. Not approved, not built. This is the full specification for the second TRMNL Games title, a pixel art fishing simulator that plays itself on the desk display and is managed from the shared companion. "Still Waters" is a working title (see [open questions](#open-questions)).
+Proposed 2026-10-09 for Barry's review and revised the same day with its open questions settled (see [Decisions taken in this revision](#decisions-taken-in-this-revision)). Not approved, not built. This is the full specification for the second TRMNL Games title, a pixel art fishing simulator that plays itself on the desk display and is managed from the shared companion.
 
 Settled with Barry on 2026-10-09 before drafting: real-world outdoor waters and a cosy tone; the companion is setup only (pick the water, rod and bait, then sell, restock and upgrade), with no active reeling; launch content is three waters and about thirty species; the two games connect through the shared account profile and achievements only. Cosmetic nods between games (a lure skin or keepsake earned across games) can be built later but are **not part of the MVP**.
 
@@ -12,9 +12,9 @@ Every player has one angler who sits by a water and casts a line once every fift
 
 ## What a player sees
 
-- **Device:** a pixel art scene of the angler at the current water with the sky for the local time of day and the current weather, a status line ("Casting at the Millpond, dusk, light rain"), the newest story ("A 1.4 kg Tench took the bread at first light."), level, XP, the cooler meter (7 of 10), the bait left, the seven-day Top 5 with the angler's own row, service warnings and the companion QR code. A full cooler shows a quiet panel ("Cooler full: catches are being released") with a QR code to the cooler page.
+- **Device:** a pixel art scene of the angler at the current water with the sky for the local time of day and the current weather, a header with the public alias and level, a status line ("Casting at the Millpond, dusk, light rain"), the newest story ("A 1.4 kg Tench took the bread at first light."), level, XP, the cooler meter (7 of 10), the bait left, the seven-day Top 5 with the angler's own row, service warnings and the companion QR code. A full cooler shows a quiet panel ("Cooler full: catches are being released") with a QR code to the cooler page.
 - **Companion:** a Dock page (scene, status, level, cooler meter, bait, water and travel), a Cooler page (sell one or many), a Tackle Shop (rods, bait, coolers, access gear), a Logbook (every species with count, best weight and first-caught date; unseen species shown as silhouettes), Rankings, Achievements and the shared Settings.
-- **Help page:** `/help/still-waters` explains that the angler fishes alone, nothing spoils and nothing is lost, that a full cooler only means released fish, and what time of day and weather do.
+- **Help page:** `/help/slow-cast` explains that the angler fishes alone, nothing spoils and nothing is lost, that a full cooler only means released fish, and what time of day and weather do.
 - **Public profile:** the shared profile at `/profile/<public name>` lists each game the player has opted in, with that game's level, start date, rank and achievement families. Desk Crawler's existing hero page stays where it is and links to the profile.
 
 No streaks, no daily login, no expiring bait, no spoiling fish, no line breaks that cost gear, no deaths. The only pressure is a cooler that stops earning and a bait tub that runs out, and both are mild by design.
@@ -25,7 +25,7 @@ No streaks, no daily login, no expiring bait, no spoiling fish, no line breaks t
 
 | Field | Starting value / meaning |
 | --- | --- |
-| Name | 2 to 16 characters, the same rule as hero names |
+| Name | The account's public alias; an angler has no separate name |
 | Level / XP | 1 / 0; lifetime XP kept separately |
 | Gold | 0 |
 | Water | `millpond` |
@@ -37,7 +37,7 @@ No streaks, no daily login, no expiring bait, no spoiling fish, no line breaks t
 | Logbook | empty |
 | First log | "You set up on the bank of the Millpond." |
 
-Activation is TRMNL-exclusive as in Desk Crawler (D09): the angler is pending until a verified saved installation of the Still Waters plugin, and a Desk Crawler installation does not activate it. One angler per account, kept across uninstalls, as [product](product.md) rules for heroes.
+Activation is TRMNL-exclusive as in Desk Crawler (D09): the angler is pending until a verified saved installation of the Slow Cast plugin, and a Desk Crawler installation does not activate it. One angler per account, kept across uninstalls, as [product](product.md) rules for heroes.
 
 ### Status
 
@@ -161,12 +161,12 @@ A tub holds at most 96 casts (one day), bought in multiples of its size, so nobo
 
 - `cooler.sell(catchId)` and `cooler.sellMany(catchIds)` (up to 24) sell at the fish's value. Selection is explicit; there is no auto-sell.
 - `shop.buyRod`, `shop.buyCooler`, `shop.buyAccess(waterId)` buy the next tier or the named item at the fixed price. `shop.buyBait(class, tubs)` adds casts up to the 96 cap. `angler.setBait(class)` chooses the hook.
-- `angler.travel(waterId)`, `angler.pause`, `angler.resume`, `angler.rename`, `angler.setPublicProfile` and `connections.disconnect` mirror the Desk Crawler intents.
+- `angler.travel(waterId)`, `angler.pause`, `angler.resume`, `angler.setPublicProfile` and `connections.disconnect` mirror the Desk Crawler intents.
 - All are receipted, rate-limited and owner-checked under the [common intent contract](api.md#common-intent-contract).
 
 ### Determinism and versions
 
-Per-angler seed as [simulation](simulation.md): SHA-256 of `[worldSeed, anglerId, tick, simulationVersion, streamName]`, Mulberry32, four streams `bite`, `species`, `size`, `narrative`. The forecast hashes `[worldSeed, waterId, blockKey]` and is not a per-angler stream. Still Waters has its own simulation version (1) and content version (1) in its own package; it never shares a catalog number with Desk Crawler. Replays of every past content version must stay identical, as Desk Crawler requires.
+Per-angler seed as [simulation](simulation.md): SHA-256 of `[worldSeed, anglerId, tick, simulationVersion, streamName]`, Mulberry32, four streams `bite`, `species`, `size`, `narrative`. The forecast hashes `[worldSeed, waterId, blockKey]` and is not a per-angler stream. Slow Cast has its own simulation version (1) and content version (1) in its own package; it never shares a catalog number with Desk Crawler. Replays of every past content version must stay identical, as Desk Crawler requires.
 
 ## Leaderboards
 
@@ -174,7 +174,7 @@ The same three boards as Desk Crawler (overall, 24 hours, 7 days) over XP, the s
 
 ## Achievements
 
-A Still Waters catalog, versioned and appended as [achievements](achievements.md) requires, with rarity against the Still Waters population from that game's `achievementStats`. Launch families:
+A Slow Cast catalog, versioned and appended as [achievements](achievements.md) requires, with rarity against the Slow Cast population from that game's `achievementStats`. Launch families:
 
 | Family | Counter | Tiers |
 | --- | --- | --- |
@@ -197,24 +197,24 @@ That is about 60 species tiers and 48 counter tiers. Names and one-line descript
 
 ### Platform profile and achievements
 
-The platform grows a public profile page per public name at `/profile/<public name>`, opt-in per game (the existing Desk Crawler switch and a Still Waters switch), listing each opted-in game's level, start date, all-time rank and highest earned tier per family with that game's rarity. The page returns the same not-found for missing, private and suspended names, as D109. A small platform catalog adds two families computed by a daily bounded tally over users rather than at a game publication: Regular (`gamesActive` 2) and Collector (`achievementsEarned` across games 25 / 100 / 250). Platform rarity is the share of users with at least one active game profile. Nothing else crosses games: no gold, items, gating, shared boards or (in the MVP) cosmetic nods.
+The platform grows a public profile page per public name at `/profile/<public name>`, opt-in per game (the existing Desk Crawler switch and a Slow Cast switch), listing each opted-in game's level, start date, all-time rank and highest earned tier per family with that game's rarity. The page returns the same not-found for missing, private and suspended names, as D109. A small platform catalog adds two families computed by a daily bounded tally over users rather than at a game publication: Regular (`gamesActive` 2) and Collector (`achievementsEarned` across games 25 / 100 / 250). Platform rarity is the share of users with at least one active game profile. Nothing else crosses games: no gold, items, gating, shared boards or (in the MVP) cosmetic nods.
 
 ## Device
 
-The screen route is per game (`/trmnl/still-waters/screen`), with its own payload version, templates and scene composer. Layouts follow the Desk Crawler [display rules](trmnl-experience.md#display-rules) with the fishing contents:
+The screen route is per game (`/trmnl/slow-cast/screen`), with its own payload version, templates and scene composer. Layouts follow the Desk Crawler [display rules](trmnl-experience.md#display-rules) with the fishing contents:
 
 | Layout | Must retain | Simplification order |
 | --- | --- | --- |
-| Full | Scene (water, sky band, weather, angler pose, newest fish when the last event was a catch), angler name and level, status line, newest story, XP bar, cooler meter, bait left, seven-day Top 5 with own row, service warnings, companion QR in the corner; a full cooler swaps the board for the cooler panel and its QR | Bait → gold → older stories → sprite size |
-| Half horizontal | Name and level, status line, newest story, cooler meter, QR and warnings | Second story → XP → sprite size |
-| Half vertical | Name and level, status line, newest story, cooler meter, QR and warnings | Older stories → XP → sprite size |
-| Quadrant | Name and level, cooler count, QR, newest outcome or setup message and warnings | Sprite first; no board |
+| Full | Scene (water, sky band, weather, angler pose, newest fish when the last event was a catch), public alias and level, status line, newest story, XP bar, cooler meter, bait left, seven-day Top 5 with own row, service warnings, companion QR in the corner; a full cooler swaps the board for the cooler panel and its QR | Bait → gold → older stories → sprite size |
+| Half horizontal | Alias and level, status line, newest story, cooler meter, QR and warnings | Second story → XP → sprite size |
+| Half vertical | Alias and level, status line, newest story, cooler meter, QR and warnings | Older stories → XP → sprite size |
+| Quadrant | Alias and level, cooler count, QR, newest outcome or setup message and warnings | Sprite first; no board |
 
 Angler poses: casting, waiting, reeling, holding a catch, paused (rod on the rest). The scene reuses the sky bands and composer from Desk Crawler's art package; the water and the weather overlay are new. Four layouts on OG and four on X are the baseline proof, as D37, checked through TRMNL previews (the layout gate). Night recap: a twelve-hour summary line like D54 ("Night: 5 fish, best 2.1 kg Tench, 1 got away") on layouts that have the room.
 
 ## Companion
 
-Routes under `/app/still-waters`: Dock, Cooler, Shop, Logbook, Rankings, Achievements; Settings and Account are shared. The game switcher on the shell lists both games. Empty, pending, paused, travelling, disconnected and error states follow [companion](companion.md). Mobile first at 390 wide. Help at `/help/still-waters`, public game page at `/games/still-waters`.
+Routes under `/app/slow-cast`: Dock, Cooler, Shop, Logbook, Rankings, Achievements; Settings and Account are shared. The game switcher on the shell lists both games. Empty, pending, paused, travelling, disconnected and error states follow [companion](companion.md). Mobile first at 390 wide. Help at `/help/slow-cast`, public game page at `/games/slow-cast`.
 
 ## Alerts
 
@@ -222,32 +222,34 @@ Two opt-in kinds under the D114 machinery, off by default, with the same quiet h
 
 ## Analytics
 
-Consent-gated, as Desk Crawler: `still waters started`, `fish sold`, `tackle bought` (kind, tier), `water changed`, `bait changed`, `logbook viewed`, plus the shared alert and profile events. No per-cast events.
+Consent-gated, as Desk Crawler: `slow cast started`, `fish sold`, `tackle bought` (kind, tier), `water changed`, `bait changed`, `logbook viewed`, plus the shared alert and profile events. No per-cast events.
+
+The angler carries no name of its own, so the public-name moderation, masking and repair rules apply once, on the alias, and onboarding has one step fewer than Desk Crawler.
 
 ## Data
 
 New tables, all prefixed `sw` to keep indexes, retention and deletion boundaries per game. Shared tables gain the game where they already carry a slug.
 
-- `stillWatersProfiles` `{ userId, anglerId }`, one per user, like `deskCrawlerProfiles`.
-- `anglers`: owner, name, level, xp, lifetimeXp, gold, waterId, status, wakeAtTick?, rod, baitOnHook, bait `{ class → castsLeft }`, cooler tier, access set, logbook `{ speciesId → { count, best, firstTick } }`, counters, publicProfile, activation fields, lastTick, eligibleFromTick, createdAt. Indexes `by_owner`, `by_createdAt`.
+- `slowCastProfiles` `{ userId, anglerId }`, one per user, like `deskCrawlerProfiles`.
+- `anglers`: owner, level, xp, lifetimeXp, gold, waterId, status, wakeAtTick?, rod, baitOnHook, bait `{ class → castsLeft }`, cooler tier, access set, logbook `{ speciesId → { count, best, firstTick } }`, counters, publicProfile, activation fields, lastTick, eligibleFromTick, createdAt. Indexes `by_owner`, `by_createdAt`.
 - `catches`: anglerId, speciesId, weight, caughtTick, value; index `by_anglerId`. At most 24 per angler.
 - `swWorldState`, `swSimulationRuns`, `swSimulationFailures`, `swTickLogs`, `swScoreWindows`, `swRankInputs`, `swLeaderboardPublications`, `swLeaderboardGenerations`, `swRanks`, `swAchievements`, `swAchievementStats`: the Desk Crawler shapes with `heroId` read as `anglerId`.
-- Shared: `users` (plus a `stillWatersAlerts` preference block), `trmnlGrants`, `trmnlInstances`, `trmnlInstallAttempts` and `trmnlReconnectAttempts` (`gameSlug` widens to a union), `operationReceipts` and `rateLimitBuckets` (keys carry the game), `pushSubscriptions` (shared devices), `alertOutbox` (kind widens, rows carry the game), `gameDeletionJobs`.
+- Shared: `users` (plus a `slowCastAlerts` preference block), `trmnlGrants`, `trmnlInstances`, `trmnlInstallAttempts` and `trmnlReconnectAttempts` (`gameSlug` widens to a union), `operationReceipts` and `rateLimitBuckets` (keys carry the game), `pushSubscriptions` (shared devices), `alertOutbox` (kind widens, rows carry the game), `gameDeletionJobs`.
 - Retention: `swTickLogs` and `swSimulationRuns` under the same bounded cleanup; `catches` live until sold.
 
-Deleting Still Waters progress revokes its installations, denies its authority and purges the `sw` tables and the profile, leaving the account and Desk Crawler untouched; account deletion runs both games' purges then the Clerk deletion, as the migration plan designed.
+Deleting Slow Cast progress revokes its installations, denies its authority and purges the `sw` tables and the profile, leaving the account and Desk Crawler untouched; account deletion runs both games' purges then the Clerk deletion, as the migration plan designed.
 
 ## Architecture
 
-- **Package** `packages/still-waters` with `content`, `sim`, `art`, `templates` and `payload` subpath exports, pure and network-free like `packages/desk-crawler`.
-- **Backend module** `apps/backend/convex/stillWaters/` owning the `sw` tables, its crons, its screen route and its intents. Crons at UTC minutes 5, 20, 35 and 50 so the two worlds never tick in the same slot; its own watchdog and run guards; game-labelled health, notices and cost lines in operations.
+- **Package** `packages/slow-cast` with `content`, `sim`, `art`, `templates` and `payload` subpath exports, pure and network-free like `packages/desk-crawler`.
+- **Backend module** `apps/backend/convex/slowCast/` owning the `sw` tables, its crons, its screen route and its intents. Crons at UTC minutes 5, 20, 35 and 50 so the two worlds never tick in the same slot; its own watchdog and run guards; game-labelled health, notices and cost lines in operations.
 - **Shared engine.** Before any fishing code, the tick runner, cohort pagination, ranking publication, achievement tally, receipt and rate-limit helpers and the TRMNL lifecycle are lifted into `apps/backend/convex/lib/engine/` as functions parametrised by table names and the simulator adapter. Desk Crawler is switched to the lifted code with its tests unchanged and its production ticks unaffected. This is slice S0 and the main engineering risk of the project.
-- **Registry.** `packages/platform` adds `still-waters` to `games` and `GameSlug`; `clientIdEnv` is `TRMNL_CLIENT_ID_STILL_WATERS` with its own secret. Per-game handoff cookies already exist.
+- **Registry.** `packages/platform` adds `slow-cast` to `games` and `GameSlug`; `clientIdEnv` is `TRMNL_CLIENT_ID_SLOW_CAST` with its own secret. Per-game handoff cookies already exist.
 - **Considered and not chosen:** a Convex component per game. A component cannot reach `users` and the TRMNL grants directly, and the simulator differs per game, so the engine would need to cross the component boundary on every tick. The migration plan keeps that option for a game that needs stronger fault isolation.
 
 ## TRMNL
 
-A separate marketplace plugin with its own OAuth client, listing image, knowledge-base URL and install and manage routes under `/connect/trmnl/still-waters/`. The same install → Save → activation → uninstall tombstone lifecycle. Submitting it is a separate authorized action, after the Desk Crawler listing is approved so the reviewer sees a live platform. Creator Fund eligibility is checked for the second plugin as [monetization](monetization.md) requires; it is budgeted at zero revenue.
+A separate marketplace plugin with its own OAuth client, listing image, knowledge-base URL and install and manage routes under `/connect/trmnl/slow-cast/`. The same install → Save → activation → uninstall tombstone lifecycle. Submitting it is a separate authorized action, after the Desk Crawler listing is approved so the reviewer sees a live platform. Creator Fund eligibility is checked for the second plugin as [monetization](monetization.md) requires; it is budgeted at zero revenue.
 
 ## Art
 
@@ -276,10 +278,12 @@ Progress preservation applies from the first public install, as every release.
 - Fishing meetings or raids between anglers, daily quests, prestige.
 - A trophy wall or keepsakes. Spoilage, line breaks, lost gear, deaths: never.
 
-## Open questions
+## Decisions taken in this revision
 
-1. **Name.** "Still Waters" is the working title. Alternatives: "Gone Fishing", "Slow Cast", "Tackle Box". The slug and plugin name follow the choice.
-2. **Released fish and ranking.** This spec counts released fish for XP, so a player who never sells still ranks and only forgoes gold. The alternative is half XP for a release, which makes selling matter for rank but adds pressure.
-3. **Shared weather.** Weather is shared per water in UTC six-hour blocks, so the forecast is the same for everyone. The alternative is per-angler weather, which is simpler but loses the "same rain on both desks" moment.
-4. **Angler name.** One name per angler, as hero names. Or reuse the public alias and drop the extra name.
-5. **Timing.** Start S0 and S1 now while Desk Crawler waits for marketplace approval, and hold S7 until that approval lands.
+Barry asked on 2026-10-09 for the best player experience on each open question and agreed with the answers.
+
+1. **Name: Slow Cast.** Chosen over the working title Still Waters because it says fishing, hints at the quarter-hour cadence, is distinctive enough to find in a marketplace search and sits naturally beside Desk Crawler in the game switcher. The listing title carries the descriptor: "Slow Cast: a fishing game that plays itself on your TRMNL". Slug `slow-cast`.
+2. **Released fish earn full XP.** Nothing is lost, and ranking measures fishing rather than visiting; the cooler already motivates visits because gold is the only path to gear.
+3. **Shared weather stays.** It makes two desks feel like one world and gives the device something true to say, at no runtime cost.
+4. **No separate angler name.** The angler is the player, so the public alias is the name on the device and the profile. One fewer onboarding step and one fewer moderation surface.
+5. **Timing.** S0 (engine extraction) and S1 (core and harness) can start while plugin 564 awaits approval; S7 (the second listing) waits until Desk Crawler is approved so the reviewer sees a working platform.

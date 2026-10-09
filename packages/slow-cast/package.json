@@ -1,0 +1,21 @@
+{
+  "name": "@trmnl-games/slow-cast",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./content": "./src/content/index.ts",
+    "./content/*": "./src/content/*.ts",
+    "./sim": "./src/sim/index.ts",
+    "./sim/*": "./src/sim/*.ts",
+    "./lib/*": "./src/lib/*.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@trmnl-games/engine": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3"
+  }
+}

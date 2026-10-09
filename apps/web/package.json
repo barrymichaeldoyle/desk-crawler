@@ -23,6 +23,7 @@
     "@trmnl-games/desk-crawler": "workspace:*",
     "@trmnl-games/engine": "workspace:*",
     "@trmnl-games/platform": "workspace:*",
+    "@trmnl-games/slow-cast": "workspace:*",
     "convex": "^1.46.0",
     "jose": "^6.2.12",
     "liquidjs": "^10.30.0",

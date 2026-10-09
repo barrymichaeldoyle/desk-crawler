@@ -31,7 +31,7 @@ No streaks, no daily login, no expiring bait, no spoiling fish, no line breaks t
 | Water | `millpond` |
 | Status | `fishing` |
 | Rod | Cane Rod (lands up to 1.5 kg) |
-| Bait | Worms, 24 casts in the tub |
+| Bait | Worms on the hook, one tub (12 fish) |
 | Cooler | Bucket, 6 fish |
 | Access | none (Millpond needs none) |
 | Logbook | empty |
@@ -51,16 +51,16 @@ One cast per eligible tick, resolved by the pure core in this order:
 2. **Bite.** One `bite` draw against the water's base bite rate × time multiplier × weather multiplier × rod bonus × bait factor (matched bait 1.0, bare hook 0.4). No bite ends the cast; every fourth quiet tick writes one ambient line from the `narrative` stream so the device story never goes stale for more than an hour.
 3. **Species.** One `species` draw over the water's table, filtered to species that take the current bait class and are active in this time band and weather, weighted by rarity (common 700, uncommon 230, rare 60, epic 10 per thousand before filtering). Bare hook filters to species marked `anyBait`.
 4. **Weight.** One `size` draw: a skewed draw in the species range (most fish near the lower third, a long tail to the maximum).
-5. **Landing.** If the weight exceeds the rod's limit the fish **gets away**: a log line ("Something heavy took the line and kept going."), a `gotAway` counter tick, no XP, no gold. This is the device's invitation to buy a better rod.
+5. **Landing.** If the weight exceeds the rod's limit the fish **gets away**: a log line ("Something heavy took the worm and kept going."), a `gotAway` counter tick, no XP, no gold. This is the device's invitation to buy a better rod.
 6. **Logbook and XP.** A landed fish updates the species entry (count, best weight, first-caught tick) and awards XP = species XP × (1 + weight ÷ species maximum). A new personal best adds the record line to the log.
 7. **Cooler.** If the cooler has room the fish becomes a `catches` row. If not, the fish is **released**: it counts in the logbook, XP and achievements, but earns no gold. The release line is explicit ("Cooler full. A 0.9 kg Perch goes back.").
-8. **Bait.** A matched cast uses one unit of bait whether or not a fish bit. At zero the angler fishes with a bare hook until the player restocks. The run-out tick writes one line ("The worm tub is empty.").
+8. **Bait.** A fish that is kept or gets away uses one unit of the bait on the hook. A quiet cast uses none, and a fish released from a full cooler leaves the bait on, so an angler between visits spends nothing. At zero the angler fishes a bare hook until the player restocks, and that tick writes one line ("The worms ran out. Fishing a bare hook."). A bait the water does not use fishes as a bare hook and is not spent. S1 changed this from the first draft's one unit per cast, which cost 99% of fish sales in the harness.
 
 Travel, pause and shop commands never cause a cast or a reward. No catch-up for missed ticks (as [simulation](simulation.md)).
 
 ### Weather and the shared forecast
 
-Weather is shared by everyone at the same water, so two players comparing screens see the same rain. It is derived, not stored: for each water and each UTC six-hour block, the core hashes `[worldSeed, waterId, blockKey]` and draws one condition from the water's weather table. The companion and the device read the same function, so no tick writes weather and the simulator stays pure. Conditions and multipliers:
+Weather is shared by everyone at the same water, so two players comparing screens see the same rain. It is derived, not stored: for each water and each UTC six-hour block, the engine hashes `[worldSeed, 'forecast', waterId, blockKey]` and draws one condition from the water's weather table. The companion and the device read the same function, so no tick writes weather and the simulator stays pure. Conditions and multipliers:
 
 | Condition | Bite | Note |
 | --- | --- | --- |
@@ -74,52 +74,54 @@ Time multipliers: dawn 1.3, day 1.0, dusk 1.3, night 0.8 freshwater and 1.0 at t
 
 ### Waters
 
-| Water | Unlock | Base bite | Baits used | Character |
-| --- | --- | --- | --- | --- |
-| Millpond | start | 16% | Worms, Bread | Calm freshwater commons, carp at dawn, eels at night |
-| River Bend | level 4 and Waders (350 gold) | 14% | Worms, Maggots, Spinner | Trout, grayling and chub; predators on the spinner; salmon in the rain |
-| Harbour Pier | level 8, Pier Permit (1,200 gold) | 12% | Ragworm, Mackerel strip, Spinner | Sea fish, bigger and worth more; most need the Carbon Rod or better |
+| Water | Unlock | Base bite | Baits used |
+| --- | --- | --- | --- |
+| Millpond | start | 13% | worms, bread, spinner |
+| River Bend | level 4 and Waders (250 gold) | 14% | worms, maggots, spinner |
+| Harbour Pier | level 8 and Pier Permit (900 gold) | 12% | ragworm, mackerel strip, spinner |
+
+Millpond: calm freshwater commons, carp at dawn and dusk, eels at night. River Bend: trout, grayling and chub; predators on the spinner; salmon at dawn and dusk in the rain. Harbour Pier: sea fish, bigger and worth more; most need the Carbon Rod or better.
 
 Travel is a receipted intent, one tick, arriving the next, as Desk Crawler travel. A player may travel back freely. Each water's weather table and ambient lines are its own.
 
 ### Species
 
-Thirty species at launch. Rarity sets draw weight; the price and XP are per species and scale with weight (a record-weight fish is worth twice the base). "Any" bait means the species also bites a bare hook. Time and weather list where the species is active; blank means always.
+Thirty species at launch, generated from content v1 (`tools/balance/slowcast-tables.ts`), which is the authority. Rarity sets draw weight unless a species names its own (two epics do, to balance their windows). The price and XP are per species and scale with weight (a record-weight fish is worth twice the base). "Bare hook" means the species also bites with no bait. Time and weather list where the species is active, and a species needs both; blank means always.
 
-| Water | Species | Rarity | Weight (kg) | Bait | Time / weather | Price | XP |
+| Water | Species | Rarity | Weight | Bait | Time / weather | Price | XP |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Millpond | Minnow | common | 0.01 to 0.05 | any | | 2 | 4 |
-| | Roach | common | 0.05 to 0.6 | any | | 4 | 6 |
-| | Rudd | common | 0.05 to 0.7 | bread, worms | day | 4 | 6 |
-| | Perch | common | 0.1 to 1.4 | worms, spinner | | 6 | 8 |
-| | Bream | uncommon | 0.3 to 3.5 | bread, worms | dawn, dusk, night | 10 | 12 |
-| | Crucian Carp | uncommon | 0.2 to 1.6 | bread | dawn, day | 12 | 12 |
-| | Tench | uncommon | 0.5 to 3.0 | bread, worms | dawn, dusk | 14 | 14 |
-| | Eel | rare | 0.3 to 2.5 | worms | night | 20 | 20 |
-| | Common Carp | rare | 1.0 to 12.0 | bread | dawn, dusk | 30 | 28 |
-| | Golden Carp | epic | 1.5 to 8.0 | bread | dawn, clear | 90 | 60 |
-| River Bend | Gudgeon | common | 0.02 to 0.1 | any | | 3 | 5 |
-| | Dace | common | 0.05 to 0.4 | any | | 4 | 6 |
-| | Chub | common | 0.2 to 2.5 | worms, maggots | | 8 | 9 |
-| | Grayling | uncommon | 0.2 to 1.5 | maggots | overcast, rain | 14 | 14 |
-| | Brown Trout | uncommon | 0.2 to 2.5 | worms, spinner | dawn, dusk | 16 | 16 |
-| | Barbel | uncommon | 0.5 to 6.0 | maggots, worms | dusk, night | 18 | 18 |
-| | Rainbow Trout | rare | 0.3 to 3.5 | spinner | day | 24 | 22 |
-| | Pike | rare | 1.0 to 14.0 | spinner | dawn, dusk, overcast | 36 | 32 |
-| | Zander | rare | 0.8 to 7.0 | spinner | dusk, night | 32 | 30 |
-| | Salmon | epic | 2.0 to 15.0 | spinner | rain | 110 | 70 |
-| Harbour Pier | Sand Eel | common | 0.01 to 0.05 | any | | 3 | 5 |
-| | Whiting | common | 0.1 to 1.0 | ragworm | | 8 | 9 |
-| | Mackerel | common | 0.2 to 1.2 | spinner, mackerel strip | day | 10 | 10 |
-| | Pollock | uncommon | 0.5 to 5.0 | spinner, ragworm | dawn, dusk | 18 | 18 |
-| | Flounder | uncommon | 0.2 to 1.5 | ragworm | | 16 | 16 |
-| | Wrasse | uncommon | 0.3 to 2.5 | ragworm | day, clear | 18 | 18 |
-| | Sea Bass | rare | 0.8 to 8.0 | spinner, ragworm | dusk, night | 44 | 36 |
-| | Conger Eel | rare | 2.0 to 30.0 | mackerel strip | night | 50 | 40 |
-| | Smoothhound | rare | 2.0 to 12.0 | ragworm, mackerel strip | dusk, night | 48 | 38 |
-| | Thornback Ray | epic | 2.0 to 10.0 | mackerel strip | night, overcast | 140 | 80 |
+| Millpond | Minnow | common | 10 g to 50 g | worms, bread, bare hook |  | 5 | 8 |
+|  | Roach | common | 50 g to 600 g | worms, bread, bare hook |  | 10 | 12 |
+|  | Rudd | common | 50 g to 700 g | bread, worms | day | 10 | 12 |
+|  | Perch | common | 100 g to 1.4 kg | worms, spinner |  | 15 | 16 |
+|  | Bream | uncommon | 300 g to 3.5 kg | bread, worms | dawn, dusk, night | 25 | 24 |
+|  | Crucian Carp | uncommon | 200 g to 1.6 kg | bread | dawn, day | 30 | 24 |
+|  | Tench | uncommon | 500 g to 3.0 kg | bread, worms | dawn, dusk | 35 | 28 |
+|  | Eel | rare | 300 g to 2.5 kg | worms | night | 50 | 40 |
+|  | Common Carp | rare | 1.0 kg to 12.0 kg | bread | dawn, dusk | 75 | 56 |
+|  | Golden Carp | epic (weight 22) | 1.5 kg to 8.0 kg | bread | dawn, dusk / clear, overcast | 225 | 120 |
+| River Bend | Gudgeon | common | 20 g to 100 g | worms, maggots, bare hook |  | 11 | 14 |
+|  | Dace | common | 50 g to 400 g | worms, maggots, bare hook |  | 14 | 17 |
+|  | Chub | common | 200 g to 2.5 kg | worms, maggots |  | 28 | 25 |
+|  | Grayling | uncommon | 200 g to 1.5 kg | maggots | overcast, rain | 49 | 39 |
+|  | Brown Trout | uncommon | 200 g to 2.5 kg | worms, spinner | dawn, dusk | 56 | 45 |
+|  | Barbel | uncommon | 500 g to 6.0 kg | maggots, worms | dusk, night | 63 | 50 |
+|  | Rainbow Trout | rare | 300 g to 3.5 kg | spinner | day | 84 | 62 |
+|  | Pike | rare | 1.0 kg to 14.0 kg | spinner | dawn, dusk | 126 | 90 |
+|  | Zander | rare | 800 g to 7.0 kg | spinner | dusk, night | 112 | 84 |
+|  | Salmon | epic | 2.0 kg to 15.0 kg | spinner | dawn, dusk / rain | 385 | 196 |
+| Harbour Pier | Sand Eel | common | 10 g to 50 g | ragworm, mackerel strip, bare hook |  | 8 | 10 |
+|  | Whiting | common | 100 g to 1.0 kg | ragworm |  | 20 | 18 |
+|  | Mackerel | common | 200 g to 1.2 kg | spinner, mackerel strip | day | 25 | 20 |
+|  | Pollock | uncommon | 500 g to 5.0 kg | spinner, ragworm | dawn, dusk | 45 | 36 |
+|  | Flounder | uncommon | 200 g to 1.5 kg | ragworm |  | 40 | 32 |
+|  | Wrasse | uncommon | 300 g to 2.5 kg | ragworm | day / clear | 45 | 36 |
+|  | Sea Bass | rare | 800 g to 8.0 kg | spinner, ragworm | dusk, night | 110 | 72 |
+|  | Conger Eel | rare | 2.0 kg to 30.0 kg | mackerel strip | night | 125 | 80 |
+|  | Smoothhound | rare | 2.0 kg to 12.0 kg | ragworm, mackerel strip | dusk, night | 120 | 76 |
+|  | Thornback Ray | epic | 2.0 kg to 10.0 kg | mackerel strip | night / overcast, fog | 350 | 160 |
 
-Fish value is `round(price × (1 + weight ÷ maximum))`, so a species is worth between its price and double it. The table is a tuning starting point; the harness gate below sets the final numbers.
+Fish value is `round(price × (1 + weight ÷ maximum))`, so a species is worth between its price and double it. XP scales the same way. The S1 harness set these numbers; [balance evidence](evidence/slow-cast-balance.md) lists each change from the first draft.
 
 ### Gear
 
@@ -127,40 +129,49 @@ Four ladders, all bought in the Tackle Shop at fixed prices with the same "fixed
 
 **Rods** (landing limit and bite bonus):
 
-| Rod | Limit | Bite bonus | Price |
+| Rod | Lands up to | Bite bonus | Price |
 | --- | --- | --- | --- |
 | Cane Rod | 1.5 kg | 0 | start |
-| Fibreglass Rod | 4 kg | +5% | 300 |
-| Carbon Rod | 10 kg | +10% | 900 |
-| Beachcaster | 30 kg | +15% | 2,000 |
+| Fibreglass Rod | 4.0 kg | +5% | 250 |
+| Carbon Rod | 10.0 kg | +10% | 700 |
+| Beachcaster | 30.0 kg | +15% | 2000 |
 
-**Bait** (consumable, bought in tubs; the angler holds one tub of each class, the companion picks which one is on the hook):
+**Bait** (consumable, bought in tubs; the angler holds each class separately and the companion picks which one is on the hook):
 
-| Bait | Class | Casts per tub | Price | Takes |
-| --- | --- | --- | --- | --- |
-| Worms | worms | 24 | 15 | Freshwater commons, perch, eel, trout |
-| Bread | bread | 24 | 10 | Carp family, bream, rudd, tench |
-| Maggots | maggots | 24 | 20 | River commons, grayling, barbel |
-| Spinner | spinner | 200 (wears out) | 120 | Predators: perch, pike, zander, trout, bass, mackerel, pollock |
-| Ragworm | ragworm | 24 | 40 | Sea commons, flounder, wrasse, bass, smoothhound |
-| Mackerel strip | strip | 24 | 50 | Conger, ray, smoothhound, mackerel |
+| Bait | Fish per tub | Price |
+| --- | --- | --- |
+| Worms | 12 | 25 |
+| Bread | 12 | 20 |
+| Maggots | 12 | 30 |
+| Spinner | 72 | 240 |
+| Ragworm | 12 | 60 |
+| Mackerel strip | 12 | 75 |
 
-A tub holds at most 96 casts (one day), bought in multiples of its size, so nobody stockpiles weeks of bait in one visit and a visit every day or two stays meaningful. Switching bait is free and takes effect at the next cast.
+Each bait holds at most 72 fish, bought in whole tubs, so nobody stockpiles weeks of bait in one visit. Switching bait is free and takes effect at the next cast.
 
-**Coolers:** Bucket 6 → Cool Box 10 (80 gold) → Chest Cooler 16 (400) → Dockside Crate 24 (1,500). The ceiling of 24 rows keeps the per-angler read bounded (24 catches + the angler row).
+**Coolers:**
 
-**Access:** Waders 350 gold (River Bend), Pier Permit 1,200 gold (Harbour Pier). Permanent.
+| Cooler | Holds | Price |
+| --- | --- | --- |
+| Bucket | 6 | start |
+| Cool Box | 12 | 60 |
+| Chest Cooler | 18 | 300 |
+| Dockside Crate | 24 | 1500 |
+
+The ceiling of 24 rows keeps the per-angler read bounded (24 catches + the angler row).
+
+**Access:** Waders 250 gold (River Bend), Pier Permit 900 gold (Harbour Pier). Permanent.
 
 ### Progression
 
 - XP per landed or released fish as above. Level needs `floor(50 × L^1.6)` XP, the Desk Crawler curve, so the ranking level groups (D20 bands) apply unchanged.
-- Expected pace at the catalog's starting numbers: about 12 fish a day at the Millpond, level 4 in two to three days, the Pier in about two weeks (level 8 plus 1,200 gold plus a rod that lands pier fish), the Beachcaster and the epics over the following weeks. The logbook's thirty species, with the four epics gated by time, weather and bait, is the months-long tail. All of this is to be measured, not assumed (see the S1 gate).
+- Measured pace in the S1 harness ([evidence](evidence/slow-cast-balance.md)): about 12 fish a day at the Millpond, level 4 in about two and a quarter days, River Bend on day 4 and the Pier on day 11 for a daily player; River Bend on day 7 and the Pier on day 25 for a player who visits every three days. After a month a daily player has logged about 17 of the 30 species; the logbook, records and the three epics are the months-long tail.
 - Levels unlock nothing except waters and achievements. There are no stats.
 
 ### Selling and the shop
 
 - `cooler.sell(catchId)` and `cooler.sellMany(catchIds)` (up to 24) sell at the fish's value. Selection is explicit; there is no auto-sell.
-- `shop.buyRod`, `shop.buyCooler`, `shop.buyAccess(waterId)` buy the next tier or the named item at the fixed price. `shop.buyBait(class, tubs)` adds casts up to the 96 cap. `angler.setBait(class)` chooses the hook.
+- `shop.buyRod`, `shop.buyCooler`, `shop.buyAccess(waterId)` buy the next tier or the named item at the fixed price. `shop.buyBait(class, tubs)` adds whole tubs up to the 72 cap. `angler.setBait(class)` chooses the hook.
 - `angler.travel(waterId)`, `angler.pause`, `angler.resume`, `angler.setPublicProfile` and `connections.disconnect` mirror the Desk Crawler intents.
 - All are receipted, rate-limited and owner-checked under the [common intent contract](api.md#common-intent-contract).
 
@@ -182,7 +193,7 @@ A Slow Cast catalog, versioned and appended as [achievements](achievements.md) r
 | Logbook | `speciesLogged` | 5 / 10 / 20 / 30 |
 | Big ones | `heaviestCatch` | 1 kg / 5 kg / 10 kg / 20 kg |
 | Rare catches | `rareCaught` (rare and epic) | 1 / 10 / 100 |
-| Epic catches | `epicCaught` | 1 / 4 |
+| Epic catches | `epicCaught` | 1 / 3 (all three epics) |
 | Got away | `gotAway` | 1 / 10 / 50 |
 | Night fishing | `nightCatches` | 1 / 25 / 250 |
 | Released | `released` | 1 / 25 / 250 |
@@ -273,7 +284,7 @@ A separate marketplace plugin with its own OAuth client, listing image, knowledg
 | Slice | Content | Gate |
 | --- | --- | --- |
 | S0 Engine | Lift the shared engine out of Desk Crawler; registry entry with the lifecycle status and the admin-only gate for hidden games; `gameSlug` unions | Desk Crawler's full test set passes unchanged; a production tick after deploy completes clean |
-| S1 Core | Content v1 (waters, species, gear, weather, lines), pure core, four streams, harness | Harness over 30 days: 10 to 14 fish a day at the Millpond; level 4 in 2 to 3 days; Pier reachable in 10 to 16 days for a daily seller; each epic caught at least once in 30 days by a daily seller at the right water; bucket fills in 8 to 14 hours, crate in about 2 days; a never-visiting angler still levels and logs species |
+| S1 Core | Content v1 (waters, species, gear, weather, lines), pure core, four streams, harness | Harness over 30 days: 10 to 14 fish a day at the Millpond; level 4 in 2 to 3 days; Pier reachable in 10 to 16 days for a daily seller; each epic caught at least once in 30 days by half of anglers fishing the right water and bait; bucket fills in 8 to 14 hours, crate in 36 to 60 hours; bait 15% to 40% of sales; a never-visiting angler still levels and logs species; added in S1: a three-day player reaches River Bend by day 12 and the Pier within 30 days |
 | S2 Backend | `sw` tables, profile, tick, intents, screen route, payload v1, deletion paths | convex-test matrix: tick, intents, duplicate receipts, cooler boundary, bait run-out, travel, activation, both deletion levels |
 | S3 Device | Art, scene composer, templates for four layouts on OG and X, recap line | Preview sweep clean in every state; no overflow |
 | S4 Companion | Pages, help, game page, switcher, 390-wide states | Playwright walkthrough with the test identity |
@@ -309,3 +320,5 @@ Barry asked on 2026-10-09 for the best player experience on each open question a
 - 2026-10-09, S0 step 2: `apps/backend/convex/lib/engine/tables.ts` defines the engine tables (world, runs, failures, score windows, rank inputs, publications, generations, ranks, achievement stats) once, for any game, from a table-name map. Desk Crawler's schema now comes from it with its original names; the exported schema is identical table by table, so the deploy changes no table. Change from the spec: engine tables keep the field name `heroId` for the player character in every game (an angler in Slow Cast) so one code path serves both, rather than an `anglerId` column.
 - 2026-10-09, S0 step 3: the run frame is engine code. `lib/engine/runner.ts` starts runs, pages subjects, records progress, starts the leaderboard build or completes the run, and runs the watchdog; `lib/engine/publication.ts` builds, publishes and cleans the hourly sets; `lib/engine/scores.ts` folds score windows and writes rank inputs; `lib/engine/world.ts` owns the world singleton. Each game binds to them with an `EngineRuntime` (tables, schedule, versions, catalogs, function references); `lib/engine/deskCrawler.ts` is Desk Crawler's. Desk Crawler's tick module keeps only its per-hero step and registers the same internal functions as before, so cron targets, scheduled jobs and tests are unchanged. All 489 tests pass.
 - 2026-10-09, S0 step 4: the lifecycle status is live code. `packages/platform` registers Slow Cast with `defaultStatus: 'hidden'`; the `platformGames` table holds the server value; `platform.list` returns live and preview games to everyone and hidden ones to admins only; `platform.setGameStatus` (admin page, audited with a reason) and `platform.setGameStatusInternal` (CLI) switch it. Web routes call `requireOpenGame` in their loader, which throws the ordinary not-found for anyone who cannot open the game. `/app/slow-cast` exists as an admin-only build page, My games shows a hidden game only to admins and a preview game as "Coming soon", and the admin page gains a Games card. Stored `gameSlug` fields accept `slow-cast`; install linking still refuses any game but Desk Crawler until S7.
+- 2026-10-09, S0 gate: production tick 541 (22:00 UTC) completed on the shared engine with its hero processed and nothing quarantined.
+- 2026-10-09, S1: `packages/slow-cast` holds content v1 and the pure core (conditions and the shared forecast, the cast in the spec's order, starter state, shop and setup rules, seeds over four streams). The harness `tools/balance/slowcast.ts` passes all 13 gates; [balance evidence](evidence/slow-cast-balance.md) lists the measured pace and every change from the first draft, the largest being that bait is used only by kept fish and ones that get away. The spec's tables are now generated from the catalog by `tools/balance/slowcast-tables.ts`.

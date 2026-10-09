@@ -14,6 +14,7 @@
     "@trmnl-games/desk-crawler": "workspace:*",
     "@trmnl-games/engine": "workspace:*",
     "@trmnl-games/platform": "workspace:*",
+    "@trmnl-games/slow-cast": "workspace:*",
     "convex": "^1.46.0",
     "convex-helpers": "0.1.126",
     "web-push": "3.6.7"

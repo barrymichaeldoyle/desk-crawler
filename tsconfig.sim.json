@@ -30,6 +30,7 @@
   },
   "include": [
     "packages/engine/src/**/*.ts",
+    "packages/slow-cast/src/**/*.ts",
     "packages/desk-crawler/src/**/*.ts",
     "tests/**/*.ts",
     "tools/**/*.ts"

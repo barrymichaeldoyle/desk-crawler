@@ -41,6 +41,9 @@ importers:
       '@trmnl-games/platform':
         specifier: workspace:*
         version: link:packages/platform
+      '@trmnl-games/slow-cast':
+        specifier: workspace:*
+        version: link:packages/slow-cast
       convex:
         specifier: ^1.46.0
         version: 1.46.0(@clerk/react@6.17.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)
@@ -123,6 +126,9 @@ importers:
       '@trmnl-games/platform':
         specifier: workspace:*
         version: link:../../packages/platform
+      '@trmnl-games/slow-cast':
+        specifier: workspace:*
+        version: link:../../packages/slow-cast
       convex:
         specifier: ^1.46.0
         version: 1.46.0(@clerk/react@6.17.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)
@@ -184,6 +190,9 @@ importers:
       '@trmnl-games/platform':
         specifier: workspace:*
         version: link:../../packages/platform
+      '@trmnl-games/slow-cast':
+        specifier: workspace:*
+        version: link:../../packages/slow-cast
       convex:
         specifier: ^1.46.0
         version: 1.46.0(@clerk/react@6.17.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)
@@ -267,6 +276,16 @@ importers:
         version: 6.0.3
 
   packages/platform:
+    devDependencies:
+      typescript:
+        specifier: ~6.0.3
+        version: 6.0.3
+
+  packages/slow-cast:
+    dependencies:
+      '@trmnl-games/engine':
+        specifier: workspace:*
+        version: link:../engine
     devDependencies:
       typescript:
         specifier: ~6.0.3

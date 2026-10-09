@@ -24,7 +24,8 @@
     "pull:trmnl": "node tools/trmnl/pull-live.mjs",
     "check": "pnpm typecheck && pnpm test",
     "build:deploy": "node tools/deploy/check-target.mjs && pnpm check && convex deploy -y --cmd 'pnpm build'",
-    "deploy:web": "pnpm --filter @trmnl-games/web run deploy"
+    "deploy:web": "pnpm --filter @trmnl-games/web run deploy",
+    "balance:slowcast": "tsx tools/balance/slowcast.ts"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.62.5",
@@ -57,6 +58,7 @@
     "@trmnl-games/desk-crawler": "workspace:*",
     "@trmnl-games/engine": "workspace:*",
     "@trmnl-games/platform": "workspace:*",
+    "@trmnl-games/slow-cast": "workspace:*",
     "convex": "^1.46.0",
     "jose": "^6.2.12",
     "qrcode-generator": "^2.0.4",

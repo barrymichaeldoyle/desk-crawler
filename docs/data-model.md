@@ -35,6 +35,7 @@ Fields:
 - Progress: `level`, `xp`, `lifetimeXp`, `hp`, `gold`, `lastLevelUpTick`.
 - State: `status: exploring | resting | travelling | dead | paused | sleeping`, `biomeId`, `targetBiomeId?`, `arriveAtTick?`, `reviveAtTick?`, `pausedFromStatus?`, `wakeAtTick?` (sleep-only, explicit resume deadline). While sleeping with a pending wake, `targetBiomeId` may hold the D29 Resume destination without `arriveAtTick`; the wake evaluation converts it to ordinary travel.
 - Equipment: `weaponId?`, `armorId?`, `heldItemId?`; equipment/held references alone determine those roles. Held gear is owned but excluded from bag capacity and cannot be equipped until claimed.
+- Desk drawer (D111, content v8): `drawer?: Id<'items'>[]`, newest last, at most the catalog's `deskDrawer.capacity` (6). The held reference widened to a short list: drawer gear is an ordinary owned item row, excluded from bag capacity like held gear. Written by the tick adapter for an overflow find and by the drawer intents; absent means empty.
 - Stance (D76): `stance?: cautious | balanced | bold`, absent means balanced; written only by `heroes.setStance`, read by the simulator adapter.
 - Pouch (D77): `potionCap?`, a cap from the content pouch ladder; absent means the catalog constant. Raised by simulator milestones/finds, `inventory.buyPouch` and merchant purchases; never lowered.
 - Merchant (D78): `merchant?: { offers[≤3], expiresAtTick, biomeId }`, written by the simulator on a visit, trimmed by `inventory.buyOffer` and cleared by the simulator at expiry or by the last sale.

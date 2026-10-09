@@ -1,4 +1,4 @@
-import { bagUsed } from './bag'
+import { bagUsed, drawerCapacity } from './bag'
 import { potionCap } from './pouch'
 import { maxHp, xpToLeave } from './stats'
 import type { ContentCatalog, HeroState, ItemSnapshot } from './types'
@@ -109,6 +109,14 @@ export function assertHeroInvariants(hero: HeroState, inventory: readonly ItemSn
   ref(hero.heldItemId, 'gear', 'HELD_REF')
   if (hero.heldItemId !== undefined && (hero.heldItemId === hero.weaponId || hero.heldItemId === hero.armorId)) {
     fail('HELD_EQUIPPED', 'held gear cannot be equipped')
+  }
+  // P32: drawer ids are owned, unequipped, unheld gear, each once, within the catalog's capacity.
+  const drawer = hero.drawer ?? []
+  if (drawer.length > drawerCapacity(content)) fail('DRAWER_FULL', `${drawer.length} drawer items above capacity`)
+  if (new Set(drawer).size !== drawer.length) fail('DRAWER_DUPLICATE', 'drawer lists an item twice')
+  for (const id of drawer) {
+    ref(id, 'gear', 'DRAWER_REF')
+    if (id === hero.weaponId || id === hero.armorId || id === hero.heldItemId) fail('DRAWER_ELSEWHERE', `drawer item ${id} is equipped or held`)
   }
   if (!content.bagLadder.tiers.some((tier) => tier.capacity === hero.bagCapacity)) fail('BAG_CAPACITY', `capacity ${hero.bagCapacity} is not a bag tier`)
   if (bagUsed(hero, inventory) > hero.bagCapacity) fail('BAG_FULL', 'bag gear above capacity')

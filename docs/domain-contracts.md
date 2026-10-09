@@ -92,6 +92,8 @@ D54 adds optional stored combat `gearRarity`, copied by the persistence adapter 
 
 The core returns held-create intent and sleep status, never a database ID for that find. Adapter allocates the item and writes `heldItemId` atomically. Manual claim clears it; core may not replace an existing held item. Core may clear a due `wakeAtTick` but never wake from a visit/poll alone.
 
+D111 widens this to the desk drawer: under content v8 the core returns a `drawer` create destination for an overflow find while the drawer has room, and the adapter appends the new id to `heroes.drawer` in the same transaction. The core never rewrites the drawer list (output validation rejects any change outside a create), and its invariants require drawer ids to be owned, unequipped, unheld gear, each listed once, within the catalog size. A due wake requires the held slot empty and room in the bag or the drawer.
+
 At each publication, quarantined/paused/sleeping/waiting heroes still age score history at `scoreAt` and capture eligible ranks (dormant heroes on lifetime only); no earned XP is fabricated. Creation/commands never credit recent scores. Whole-batch failure rolls back items, XP history and rank inputs together.
 
 ## Rendering projection

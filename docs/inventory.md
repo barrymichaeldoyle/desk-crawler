@@ -24,6 +24,8 @@ At 30 bag gear, keep adventuring until another actual gear find. Store that find
 
 The authoritative held reference is `heroes.heldItemId`; held gear uses an ordinary owned item row and is excluded from bag/equipment until claimed. Maximum reads: 30 bag gear + one held gear + one potion row = 32. No independent location/equipped flags or expanding queue. A full bag alone does not sleep, and no browser/device/check-in clock triggers it.
 
+Desk drawer (D111, content v8, [spec](desk-drawer.md)): under a catalog with `deskDrawer`, a find that overflows the bag goes in the hero's six-slot drawer (`heroes.drawer`, an ordered id list) and the hero keeps adventuring; only a find that arrives with the drawer full too is held as above. Bag-side rows stay at 20 bag + 2 equipped + 1 held + 1 potion = 24, plus 6 drawer rows = 30, within the 32-row read. Resume needs the held slot empty and a free slot in the bag or the drawer. Nothing in the drawer is ever sold or discarded automatically.
+
 ## Return journey
 
 1. Review bag and held find. Equip/unequip/sell bag gear remain available while sleeping; held gear cannot equip/sell before claiming.

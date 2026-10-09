@@ -59,6 +59,8 @@ export const heroCounters = v.object({
   raidsWon: v.optional(v.number()),
   raidsRepelled: v.optional(v.number()),
   raidsLost: v.optional(v.number()),
+  /** P32: gear finds the desk drawer caught. */
+  drawerFinds: v.optional(v.number()),
 })
 
 /** D78 merchant offers: at most three, each bought at most once. */
@@ -175,6 +177,8 @@ export default defineSchema({
     weaponId: v.optional(v.id('items')),
     armorId: v.optional(v.id('items')),
     heldItemId: v.optional(v.id('items')),
+    /** P32: gear in the desk drawer, newest last, at most the catalog's drawer size; absent means empty. */
+    drawer: v.optional(v.array(v.id('items'))),
     /** D61: unequipped gear the bag holds, always a ladder tier's capacity. */
     bagCapacity: v.number(),
     /** D76: how carefully the hero sustains itself; absent means balanced. */

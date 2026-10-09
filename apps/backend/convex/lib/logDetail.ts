@@ -43,7 +43,7 @@ const outcome = v.union(
     found: v.union(v.literal('gear'), v.literal('potion'), v.literal('gold'), v.literal('bag'), v.literal('pouch')),
     templateId: v.optional(v.string()),
     rarity: v.optional(rarity),
-    destination: v.optional(v.union(v.literal('bag'), v.literal('held'))),
+    destination: v.optional(v.union(v.literal('bag'), v.literal('drawer'), v.literal('held'))),
     goldGranted: v.number(),
     jackpot: v.boolean(),
     potionFullFallback: v.boolean(),
@@ -110,6 +110,8 @@ export const simulationDetail = v.object({
   levelsGained: v.number(),
   goldPenalty: v.number(),
   heldFind: v.boolean(),
+  /** P32: the find went in the desk drawer. */
+  drawerFind: v.optional(v.boolean()),
   bagUpgrade: v.optional(v.object({ from: v.number(), to: v.number(), tierId: v.string(), source: v.union(v.literal('milestone'), v.literal('find')) })),
   /** The potion pouch grew (D77). */
   pouchUpgrade: v.optional(v.object({ from: v.number(), to: v.number(), tierId: v.string(), source: v.union(v.literal('milestone'), v.literal('find')) })),

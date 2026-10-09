@@ -31,6 +31,7 @@ export function applyItemChanges(
         const id = allocateId()
         items.push({ ...change.item, id })
         if (change.destination === 'held') nextHero = { ...nextHero, heldItemId: id }
+        if (change.destination === 'drawer') nextHero = { ...nextHero, drawer: [...(nextHero.drawer ?? []), id] }
         break
       }
     }

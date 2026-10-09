@@ -114,6 +114,16 @@ export function validateCatalog(content: ContentCatalog): string[] {
       }
     }
   }
+  const drawer = content.deskDrawer
+  if (drawer) {
+    // P32: six by design, eight the only fallback; 24 bag-side rows plus the drawer stay within the 32-row read.
+    if (!Number.isSafeInteger(drawer.capacity) || drawer.capacity < 1 || drawer.capacity > 8) problems.push('desk drawer capacity must be 1 to 8')
+    if (drawer.firstUse.length < 1 || drawer.firstDrop.length < 1) problems.push('desk drawer first-use narrative is empty')
+    for (const line of drawer.firstDrop) if (line.includes('{')) problems.push(`desk drawer drop line takes no placeholder: ${line}`)
+    for (const line of drawer.firstUse) {
+      for (const [, name] of line.matchAll(/\{(\w+)\}/g)) if (name !== 'item') problems.push(`desk drawer narrative uses {${name}}: ${line}`)
+    }
+  }
   if (content.merchant) {
     if (!(content.merchant.potionPrice >= 1 && content.merchant.maxPotionsOffered >= 1 && content.merchant.maxPotionsOffered <= 10)) problems.push('merchant potion offer out of bounds')
     if (!(content.merchant.staysForTicks >= 1 && content.merchant.staysForTicks <= 8)) problems.push('merchant must stay between 1 and 8 ticks')

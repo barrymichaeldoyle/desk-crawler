@@ -2,21 +2,40 @@ import type { BagLadder, BagTier, ContentCatalog, HeroState, ItemSnapshot } from
 
 /**
  * Bag capacity rules (D61). Each hero stores a capacity from the content's
- * ladder; it counts only unequipped, non-held gear, so equipped gear and
- * potions take no space.
+ * ladder; it counts only unequipped gear that is neither held nor in the desk
+ * drawer (P32), so equipped gear and potions take no space.
  */
 
-type BagHero = Pick<HeroState, 'heldItemId' | 'weaponId' | 'armorId'>
+type BagHero = Pick<HeroState, 'heldItemId' | 'weaponId' | 'armorId' | 'drawer'>
 type ProgressHero = Pick<HeroState, 'level' | 'counters' | 'bagCapacity'>
 
 /** Gear occupying bag slots. */
 export function bagUsed(hero: BagHero, inventory: readonly Pick<ItemSnapshot, 'id' | 'kind'>[]): number {
-  const outside = new Set([hero.heldItemId, hero.weaponId, hero.armorId])
+  const outside = new Set([hero.heldItemId, hero.weaponId, hero.armorId, ...(hero.drawer ?? [])])
   return inventory.filter((item) => item.kind !== 'potion' && !outside.has(item.id)).length
 }
 
 export function isBagFull(hero: BagHero & Pick<HeroState, 'bagCapacity'>, inventory: readonly Pick<ItemSnapshot, 'id' | 'kind'>[]): boolean {
   return bagUsed(hero, inventory) >= hero.bagCapacity
+}
+
+/** P32: drawer slots under this catalog; 0 before the drawer exists. */
+export function drawerCapacity(content: Pick<ContentCatalog, 'deskDrawer'>): number {
+  return content.deskDrawer?.capacity ?? 0
+}
+
+/** P32: the desk drawer has a free slot for the next overflow find. */
+export function drawerHasRoom(hero: Pick<HeroState, 'drawer'>, content: Pick<ContentCatalog, 'deskDrawer'>): boolean {
+  return (hero.drawer?.length ?? 0) < drawerCapacity(content)
+}
+
+/** P32: the next gear find has somewhere to go, the bag or the drawer; what resuming from inventory sleep needs. */
+export function hasRoomForFind(
+  hero: BagHero & Pick<HeroState, 'bagCapacity'>,
+  inventory: readonly Pick<ItemSnapshot, 'id' | 'kind'>[],
+  content: Pick<ContentCatalog, 'deskDrawer'>,
+): boolean {
+  return !isBagFull(hero, inventory) || drawerHasRoom(hero, content)
 }
 
 /** Index of the tier the hero holds; -1 only for a capacity that is not a tier (an invariant failure). */

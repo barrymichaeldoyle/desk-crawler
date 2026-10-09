@@ -21,6 +21,7 @@ Implementation was authorized on 2026-10-03. This index includes the original pl
 | [Quests](quests.md) | Approved (D112, content v9): daily quests as a passive, place-aware office to-do list paying gold only; refill and timezone rules |
 | [Desk drawer](desk-drawer.md) | Proposed (P32, the lost-and-found row): a six-slot drawer that delays inventory sleep, intents and migration |
 | [Alerts](alerts.md) | Built (D114): opt-in web push only for a stopped hero and an affordable merchant bag or pouch |
+| [Still Waters](still-waters.md) | Proposed (P34): the second game, a passive pixel art fishing simulator; waters, species, gear ladders, shared weather, platform profile and the engine extraction it needs |
 | [Architecture](architecture.md) | Service boundaries, planned file structure, implementation spikes |
 | [Domain contracts](domain-contracts.md) | Pure-core input/output, adapter ownership, typed event details |
 | [Data model](data-model.md) | Planned Convex tables, fields, indexes, invariants, retention |

@@ -13,9 +13,9 @@ Release order is a commitment; the dates are not. A release ends when its gate p
 ## Where we are (2026-10-09)
 
 - **v1.0** is deployed and submitted: plugin 564 went to TRMNL review on 2026-10-07 and the review email is sent. Marketplace approval is the one open gate.
-- **v1.0.x** live polish continues while review runs: device templates are at v49, and companion and layout polish ships through main.
-- **v1.1 Decisions** shipped in full on 2026-10-07, with help and analytics coverage added on 2026-10-08 (D101). Production now runs content v8 (the desk drawer, D111) and achievement catalog version 3. Its stretch items (daily quests, lost-and-found, push/email) are not built; their specs were drafted and revised on 2026-10-09 and wait for Barry's go-ahead.
-- **Next task:** watch the desk drawer (D111) on production, then build quests (P31, content v9) and alerts (P33) if approved.
+- **v1.0.x** live polish continues while review runs: device templates are at v50, and companion and layout polish ships through main.
+- **v1.1 Decisions** shipped in full on 2026-10-07, with help and analytics coverage added on 2026-10-08 (D101). Production now runs content v9 (the to-do list, D112, after the desk drawer, D111) and achievement catalog version 4. Of its stretch items, daily quests and lost-and-found are live; push alerts (P33) is specced and waits for Barry's go-ahead.
+- **Next task:** watch the to-do list (D112) and desk drawer (D111) on production, then build alerts (P33) if approved.
 - **Next release:** v1.2 Other people, unless the v1.0.x reorder trigger pulls v2.0 Depth ahead once live retention data exists. Two of its rows are done: desk raids (D110, [design](raids.md)) switched on with content v7 at 22:15 UTC on 2026-10-08 after all five slices, and public profiles (D109) finished on 2026-10-09. Meetings, friends/rivals, world events and additional classes remain.
 
 ## v1.0 — Submission (submitted 2026-10-07, awaiting marketplace approval)
@@ -73,7 +73,7 @@ Core batch: stances, configurable rest/potion thresholds, a small set of event c
 | Effects | Shipped 2026-10-07 (D80): three catalog effects with typed modifiers and durations, at most three per hero, knockout clears all, rest cleanses banes. Typed duration/modifier rules; death ordering and rest cleansing explicitly designed |
 | Affixes/Epic | Shipped 2026-10-07 (D81): epic at 1%, four affixes rolled on rare and epic gear under v6 only, older gear untouched, Bag page explains them. Versioned generation and owned-item compatibility; extend inventory UI |
 | Achievements (D65) | Shipped early, in v1.0 (2026-10-06). v1.1 families shipped 2026-10-07 as catalog version 2 (D82): purchases, merchants met, stance changes, decisions made, epic finds. See [achievements](achievements.md) |
-| Daily quests | Approved 2026-10-09 as D112 and being built as content v9: an office to-do list of three place-aware tasks paying gold only ([quests](quests.md), [evidence](evidence/quests.md)). Q1 rules and harness, Q2 backend, Q3 companion and help, Q4 device template v50 and Q5 achievement catalog version 4 built; production stays on content v8 until the switch |
+| Daily quests | Live 2026-10-09 as the office to-do list (D112, content v9, [quests](quests.md), [evidence](evidence/quests.md)): three place-aware tasks paying gold only, built in five slices with device template v50 and achievement catalog version 4 |
 | Lost-and-found | Live 2026-10-09 as the six-slot desk drawer (D111, [desk drawer](desk-drawer.md), content v8); extend the single held-find/inventory-sleep system only with a bounded migration; never reintroduce silent disposal |
 | Web push/email alerts | Stretch, specced 2026-10-09 for review as two opt-in web push kinds, hero asleep and an affordable merchant bag or pouch, no email (Barry, 2026-10-09) ([alerts](alerts.md), P33). Deferred by default; user opt-in and calmness review |
 

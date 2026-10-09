@@ -1,6 +1,10 @@
 import { defineSchema, defineTable } from 'convex/server'
 import { v } from 'convex/values'
 import { logDetail, todoKind } from './lib/logDetail'
+import { DESK_CRAWLER_TABLES, engineTables } from './lib/engine/tables'
+
+/** Desk Crawler's engine tables (world, runs, score windows, leaderboard sets), from the shared factory (S0). */
+const deskCrawlerEngine = engineTables(DESK_CRAWLER_TABLES, ['deaths', 'levelUps', 'heldFinds'])
 
 /**
  * Current-release schema only (data-model.md). Tables arrive with the work
@@ -124,6 +128,16 @@ export const logKind = v.union(
 )
 
 export default defineSchema({
+  worldState: deskCrawlerEngine.world,
+  simulationRuns: defineTable(deskCrawlerEngine.runFields).index('by_tick', ['tick']).index('by_state_and_startedAt', ['state', 'startedAt']),
+  simulationFailures: deskCrawlerEngine.failures,
+  heroScoreWindows: deskCrawlerEngine.scoreWindows,
+  rankInputs: deskCrawlerEngine.rankInputs,
+  leaderboardPublications: deskCrawlerEngine.publications,
+  leaderboardGenerations: deskCrawlerEngine.generations,
+  heroRanks: deskCrawlerEngine.ranks,
+  achievementStats: deskCrawlerEngine.achievementStats,
+
   users: defineTable({
     analyticsConsent: v.optional(v.boolean()),
     tokenIdentifier: v.string(),
@@ -171,14 +185,6 @@ export default defineSchema({
     .index('by_userId_and_achievementId', ['userId', 'achievementId'])
     .index('by_userId_and_unlockedAt', ['userId', 'unlockedAt']),
 
-  /** Per-publication unlock tally for rarity; written once at promotion from the run's batch tally (D65). */
-  achievementStats: defineTable({
-    publicationId: v.id('leaderboardPublications'),
-    runId: v.id('simulationRuns'),
-    counts: v.record(v.string(), v.number()),
-    totalPlayers: v.number(),
-    scoreAt: v.number(),
-  }).index('by_publicationId', ['publicationId']),
 
   gameDeletionJobs: defineTable({
     userId: v.id('users'),
@@ -315,165 +321,13 @@ export default defineSchema({
     .index('by_targetHeroId_and_tick', ['targetHeroId', 'tick'])
     .index('by_state_and_tick', ['state', 'tick']),
 
-  worldState: defineTable({
-    key: v.literal('world'),
-    currentTick: v.number(),
-    lastStartedWallSlot: v.optional(v.number()),
-    activeRunId: v.optional(v.id('simulationRuns')),
-    publishedPublicationId: v.optional(v.id('leaderboardPublications')),
-    lastCompletedTick: v.optional(v.number()),
-    lastCompletedAt: v.optional(v.number()),
-    lastPublishedAt: v.optional(v.number()),
-    activeContentVersion: v.string(),
-    activeSimulationVersion: v.number(),
-    worldSeed: v.string(),
-    ticksPaused: v.boolean(),
-    maintenanceMode: v.boolean(),
-    createdAt: v.number(),
-    schemaVersion: v.number(),
-  }).index('by_key', ['key']),
 
-  simulationRuns: defineTable({
-    tick: v.number(),
-    wallSlot: v.number(),
-    scoreAt: v.number(),
-    publishes: v.boolean(),
-    startedAt: v.number(),
-    cohortCutoff: v.number(),
-    contentVersion: v.string(),
-    simulationVersion: v.number(),
-    seedVersion: v.number(),
-    state: v.union(v.literal('simulating'), v.literal('ranking'), v.literal('completed'), v.literal('blocked')),
-    cursor: v.optional(v.string()),
-    paginationVersion: v.literal(1),
-    batchSequence: v.number(),
-    nextScheduledFunctionId: v.optional(v.id('_scheduled_functions')),
-    lastProgressAt: v.number(),
-    finishedAt: v.optional(v.number()),
-    processed: v.number(),
-    eligible: v.number(),
-    skippedDormant: v.number(),
-    quarantined: v.number(),
-    deaths: v.number(),
-    levelUps: v.number(),
-    heldFinds: v.number(),
-    recoveryAttempts: v.number(),
-    failureCode: v.optional(v.string()),
-    /** Publication runs only: unlock counts per achievement id and the heroes tallied (D65). */
-    achievementCounts: v.optional(v.record(v.string(), v.number())),
-    achievementPopulation: v.optional(v.number()),
-  })
-    .index('by_tick', ['tick'])
-    .index('by_state_and_startedAt', ['state', 'startedAt']),
 
-  simulationFailures: defineTable({
-    runId: v.id('simulationRuns'),
-    heroId: v.id('heroes'),
-    reasonCode: v.string(),
-    simulationVersion: v.number(),
-    contentVersion: v.string(),
-    tick: v.number(),
-    message: v.string(),
-    createdAt: v.number(),
-    resolvedAt: v.optional(v.number()),
-  })
-    .index('by_runId', ['runId'])
-    .index('by_heroId', ['heroId'])
-    .index('by_createdAt', ['createdAt']),
 
-  heroScoreWindows: defineTable({
-    heroId: v.id('heroes'),
-    buckets: v.array(v.object({ hourStart: v.number(), xp: v.number() })),
-    xp24h: v.number(),
-    xp7d: v.number(),
-    lastFoldedRunId: v.optional(v.id('simulationRuns')),
-    scoreVersion: v.number(),
-  }).index('by_heroId', ['heroId']),
 
-  rankInputs: defineTable({
-    runId: v.id('simulationRuns'),
-    heroId: v.id('heroes'),
-    userId: v.id('users'),
-    heroKey: v.string(),
-    cohortKey: v.string(),
-    ranked24h: v.boolean(),
-    ranked7d: v.boolean(),
-    negativeScore24h: v.number(),
-    negativeScore7d: v.number(),
-    activatedAt: v.number(),
-    negativeLevel: v.number(),
-    negativeXp: v.number(),
-    lastLevelUpTick: v.number(),
-    heroCreatedAt: v.number(),
-    heroName: v.string(),
-    ownerAlias: v.string(),
-    publicNameVersion: v.number(),
-    level: v.number(),
-    xp: v.number(),
-  })
-    .index('by_runId_and_heroId', ['runId', 'heroId'])
-    .index('by_run_order', ['runId', 'negativeLevel', 'negativeXp', 'lastLevelUpTick', 'heroCreatedAt', 'heroKey'])
-    .index('by_run_recent24', ['runId', 'ranked24h', 'cohortKey', 'negativeScore24h', 'activatedAt', 'heroKey'])
-    .index('by_run_recent7', ['runId', 'ranked7d', 'cohortKey', 'negativeScore7d', 'activatedAt', 'heroKey']),
 
-  leaderboardPublications: defineTable({
-    runId: v.id('simulationRuns'),
-    state: v.union(v.literal('building'), v.literal('published'), v.literal('obsolete')),
-    previousPublicationId: v.optional(v.id('leaderboardPublications')),
-    scoreAt: v.number(),
-    asOfTick: v.number(),
-    globalTotalPlayers: v.number(),
-    currentBoard: v.union(v.literal('overall'), v.literal('recent_24h'), v.literal('recent_7d')),
-    currentGenerationId: v.optional(v.id('leaderboardGenerations')),
-    cursor: v.optional(v.string()),
-    paginationVersion: v.literal(1),
-    batchSequence: v.number(),
-    nextScheduledFunctionId: v.optional(v.id('_scheduled_functions')),
-    lastProgressAt: v.number(),
-    builtAt: v.optional(v.number()),
-    publishedAt: v.optional(v.number()),
-  })
-    .index('by_runId', ['runId'])
-    .index('by_state', ['state']),
 
-  leaderboardGenerations: defineTable({
-    publicationId: v.id('leaderboardPublications'),
-    board: v.union(v.literal('overall'), v.literal('recent_24h'), v.literal('recent_7d')),
-    cohortKey: v.string(),
-    totalPlayers: v.number(),
-    nextRank: v.number(),
-    entries: v.array(
-      v.object({
-        rank: v.number(),
-        heroId: v.id('heroes'),
-        userId: v.id('users'),
-        ownerAlias: v.string(),
-        heroName: v.string(),
-        publicNameVersion: v.number(),
-        level: v.number(),
-        xp: v.number(),
-        score: v.optional(v.number()),
-      }),
-    ),
-    scoreAt: v.number(),
-    state: v.union(v.literal('building'), v.literal('ready')),
-  })
-    .index('by_publicationId_and_board_and_cohortKey', ['publicationId', 'board', 'cohortKey'])
-    .index('by_publicationId', ['publicationId']),
 
-  heroRanks: defineTable({
-    publicationId: v.id('leaderboardPublications'),
-    generationId: v.id('leaderboardGenerations'),
-    board: v.union(v.literal('overall'), v.literal('recent_24h'), v.literal('recent_7d')),
-    cohortKey: v.string(),
-    heroId: v.id('heroes'),
-    rank: v.number(),
-    rankDelta: v.optional(v.number()),
-    score: v.optional(v.number()),
-    level: v.number(),
-  })
-    .index('by_publicationId_and_board_and_heroId', ['publicationId', 'board', 'heroId'])
-    .index('by_publicationId', ['publicationId']),
 
   operationReceipts: defineTable({
     scope: v.optional(v.union(v.literal('platform'), v.literal('desk-crawler'))),

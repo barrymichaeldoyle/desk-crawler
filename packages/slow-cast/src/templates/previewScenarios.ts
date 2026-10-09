@@ -9,7 +9,7 @@ export const PREVIEW_NOW = Date.UTC(2026, 10, 2, 17, 50)
 const minutes = (n: number) => PREVIEW_NOW - n * 60_000
 
 const angler: PayloadAngler = {
-  alias: 'Barry',
+  alias: 'Wren',
   activationState: 'active',
   status: 'fishing',
   quarantined: false,
@@ -50,7 +50,7 @@ const base: SlowCastPayloadInput = {
     top: [
       { rank: 1, name: 'Quillfeather_Longname', level: 7, score: 2410, own: false },
       { rank: 2, name: 'Mo', level: 7, score: 2104, own: false },
-      { rank: 3, name: 'Barry', level: 6, score: 1980, own: true },
+      { rank: 3, name: 'Wren', level: 6, score: 1980, own: true },
       { rank: 4, name: 'Hidden player', level: 5, score: 1702, own: false },
       { rank: 5, name: 'Bea', level: 6, score: 1660, own: false },
     ],

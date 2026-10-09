@@ -85,7 +85,7 @@ describe('Slow Cast payload', () => {
   })
 
   it('asks for setup before the angler is active', () => {
-    expect(buildPayload(scenarios.pending!)).toMatchObject({ status: 'pending', status_label: 'Waiting for TRMNL Save', alias: 'Barry', scene_base: '' })
+    expect(buildPayload(scenarios.pending!)).toMatchObject({ status: 'pending', status_label: 'Waiting for TRMNL Save', alias: 'Wren', scene_base: '' })
     expect(buildPayload(scenarios.unlinked!)).toMatchObject({ status: 'unlinked', alias: null })
   })
 

@@ -20,6 +20,10 @@ export const Route = createFileRoute('/games/slow-cast')({
             {games['slow-cast'].description} Every fifteen minutes your angler casts. The species depends on the water, the bait, the hour and the weather, and the screen on your desk shows what bit. Every day or two you open the companion to sell the cooler, restock bait and buy the rod that lands the one that got away.
           </p>
         </header>
+        <figure className="flex flex-col gap-2">
+          <img src="/games/slow-cast/sample.png" alt="A sample Slow Cast screen: an angler holding a barbel at River Bend at dusk, the week's top five and the latest catches" width={780} height={460} className="w-full border-2 border-edge bg-white [image-rendering:pixelated]" />
+          <figcaption className="text-sm text-muted">Sample angler on a TRMNL OG. Your own angler starts when you install the plugin and save it in TRMNL.</figcaption>
+        </figure>
         <ul className="flex flex-col gap-2 [&_li]:ml-5 [&_li]:list-disc">
           <li>Three waters and thirty species to log, from minnows to a thornback ray.</li>
           <li>Weather shared by every angler at a water, changing every six hours.</li>

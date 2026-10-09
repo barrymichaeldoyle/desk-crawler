@@ -18,6 +18,10 @@ Release order is a commitment; the dates are not. A release ends when its gate p
 - **Next task:** watch the first real alerts (D114; Barry's iPhone received a production test alert on 2026-10-09), and watch the to-do list (D112) and desk drawer (D111) on production.
 - **Next release:** v1.2 Other people, unless the v1.0.x reorder trigger pulls v2.0 Depth ahead once live retention data exists. Two of its rows are done: desk raids (D110, [design](raids.md)) switched on with content v7 at 22:15 UTC on 2026-10-08 after all five slices, and public profiles (D109) finished on 2026-10-09. Meetings, friends/rivals, world events and additional classes remain.
 
+## Slow Cast, the second game (D115)
+
+Built 2026-10-09 in slices S0 to S6 ([spec](slow-cast.md)): a passive fishing game on the shared engine, hidden (admin-only) in production while it waits for its own listing. Its world ticks five minutes into each quarter-hour beside Desk Crawler's. Next: Barry's S7 checklist (plugin, client ID, a private install on his TRMNL), then the marketplace listing after Desk Crawler's approval. Later Slow Cast releases add waters and species under new content versions; cosmetic nods between games are allowed after the MVP.
+
 ## v1.0 — Submission (submitted 2026-10-07, awaiting marketplace approval)
 
 Goal (unchanged from Month 1): a TRMNL user installs the public plugin, prepares a Warrior in the web companion, activates it on authenticated Save, and passive adventures plus a coherent rank keep updating independently of device connectivity.

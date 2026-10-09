@@ -281,18 +281,36 @@ A separate marketplace plugin with its own OAuth client, listing image, knowledg
 
 ## Work slices
 
-| Slice | Content | Gate |
-| --- | --- | --- |
-| S0 Engine | Lift the shared engine out of Desk Crawler; registry entry with the lifecycle status and the admin-only gate for hidden games; `gameSlug` unions | Desk Crawler's full test set passes unchanged; a production tick after deploy completes clean |
-| S1 Core | Content v1 (waters, species, gear, weather, lines), pure core, four streams, harness | Harness over 30 days: 10 to 14 fish a day at the Millpond; level 4 in 2 to 3 days; Pier reachable in 10 to 16 days for a daily seller; each epic caught at least once in 30 days by half of anglers fishing the right water and bait; bucket fills in 8 to 14 hours, crate in 36 to 60 hours; bait 15% to 40% of sales; a never-visiting angler still levels and logs species; added in S1: a three-day player reaches River Bend by day 12 and the Pier within 30 days |
-| S2 Backend | `sw` tables, profile, tick, intents, screen route, payload v1, deletion paths | convex-test matrix: tick, intents, duplicate receipts, cooler boundary, bait run-out, travel, activation, both deletion levels |
-| S3 Device | Art, scene composer, templates for four layouts on OG and X, recap line | Preview sweep clean in every state; no overflow |
-| S4 Companion | Pages, help, game page, switcher, 390-wide states | Playwright walkthrough with the test identity |
-| S5 Boards and badges | Rankings, achievement catalog v1, platform profile page and daily tally | Publication consistency tests; profile not-found parity |
-| S6 Alerts, flies and analytics | Two alert kinds, the fly box on the D46 machinery, events, privacy page | Alert tests by backend path; a real push on the dev keys |
-| S7 Listing | OAuth client, listing image, review email, submission (each an authorized action) | Live install, render and uninstall on Barry's device |
+| Slice | Content | Gate | State (2026-10-09) |
+| --- | --- | --- | --- |
+| S0 Engine | Lift the shared engine out of Desk Crawler; registry entry with the lifecycle status and the admin-only gate for hidden games; `gameSlug` unions | Desk Crawler's full test set passes unchanged; a production tick after deploy completes clean | Done: tests unchanged, production tick 541 clean on the shared engine |
+| S1 Core | Content v1 (waters, species, gear, weather, lines), pure core, four streams, harness | Harness over 30 days: 10 to 14 fish a day at the Millpond; level 4 in 2 to 3 days; Pier reachable in 10 to 16 days for a daily seller; each epic caught at least once in 30 days by half of anglers fishing the right water and bait; bucket fills in 8 to 14 hours, crate in 36 to 60 hours; bait 15% to 40% of sales; a never-visiting angler still levels and logs species; added in S1: a three-day player reaches River Bend by day 12 and the Pier within 30 days | Done: all 13 gates pass ([evidence](evidence/slow-cast-balance.md)) |
+| S2 Backend | `sw` tables, profile, tick, intents, screen route, payload v1, deletion paths | convex-test matrix: tick, intents, duplicate receipts, cooler boundary, bait run-out, travel, activation, both deletion levels | Done: tick, intents, receipts, cooler, bait, travel, activation and both deletion levels covered by convex-test |
+| S3 Device | Art, scene composer, templates for four layouts on OG and X, recap line | Preview sweep clean in every state; no overflow | Done: 384 previews, no failures ([evidence](evidence/slow-cast-device.md)) |
+| S4 Companion | Pages, help, game page, switcher, 390-wide states | Playwright walkthrough with the test identity | Built and checked at 390 wide in the fixtures harness; the walkthrough with the Clerk test identity on the dev deployment is open |
+| S5 Boards and badges | Rankings, achievement catalog v1, platform profile page and daily tally | Publication consistency tests; profile not-found parity | Done: board reads from one publication, rarity tallies, profile not-found parity |
+| S6 Alerts, flies and analytics | Two alert kinds, the fly box on the D46 machinery, events, privacy page | Alert tests by backend path; a real push on the dev keys | Built with backend tests; a real push of a Slow Cast alert is open (the same sender as D114's verified push) |
+| S7 Listing | OAuth client, listing image, review email, submission (each an authorized action) | Live install, render and uninstall on Barry's device | Barry's: see the checklist below |
 
 Progress preservation applies from the first public install, as every release.
+
+### S7 checklist (Barry)
+
+Each step is an outward-facing action, so none was taken overnight.
+
+1. **Create the plugin in TRMNL** as a new Third Party plugin with OAuth, private at first:
+   - Installation URL: `https://trmnlgames.com/connect/trmnl/slow-cast/install`
+   - Installation success webhook: `https://exciting-cormorant-948.convex.site/trmnl/slow-cast/install/success`
+   - Management URL: `https://trmnlgames.com/connect/trmnl/slow-cast/manage`
+   - Markup URL: `https://exciting-cormorant-948.convex.site/trmnl/slow-cast/v1/screen`
+   - Uninstall webhook: `https://exciting-cormorant-948.convex.site/trmnl/slow-cast/uninstall`
+   - Knowledge base: `https://trmnlgames.com/help/slow-cast` (not-found for anyone but admins while hidden)
+   - Refresh: every 15 minutes. Featured image candidate: [`docs/assets/slow-cast-featured.png`](assets/slow-cast-featured.png) (fictional angler, no code).
+2. **Add the client ID** as `TRMNL_CLIENT_ID_SLOW_CAST` in `apps/web/wrangler.jsonc` vars (beside `TRMNL_CLIENT_ID`); the manage page verifies Configure links with it.
+3. **Install it on your TRMNL** while the game is hidden: your account is on the admin allowlist, so the install page, companion and screen work for you and nobody else. Save, then check the first screen, the companion, a sale and an uninstall.
+4. **Switch to preview** in the admin page's Games card when you want the "Coming soon" tile, then **live** the day the marketplace approves the plugin. Each switch is audited.
+5. **Submit for review** when Desk Crawler's listing is approved, as decided.
+
 
 ## Not in the MVP
 

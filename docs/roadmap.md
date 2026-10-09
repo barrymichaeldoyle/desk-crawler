@@ -75,7 +75,7 @@ Core batch: stances, configurable rest/potion thresholds, a small set of event c
 | Achievements (D65) | Shipped early, in v1.0 (2026-10-06). v1.1 families shipped 2026-10-07 as catalog version 2 (D82): purchases, merchants met, stance changes, decisions made, epic finds. See [achievements](achievements.md) |
 | Daily quests | Stretch, specced 2026-10-09 for review as a place-aware office to-do list paying gold only ([quests](quests.md), P31); timezone/DST and timezone-change abuse design first |
 | Lost-and-found | Stretch, specced 2026-10-09 for review as the six-slot desk drawer ([desk drawer](desk-drawer.md), P32); extend the single held-find/inventory-sleep system only with a bounded migration; never reintroduce silent disposal |
-| Web push/email alerts | Stretch, specced 2026-10-09 for review as two opt-in kinds, hero asleep and an affordable merchant bag or pouch ([alerts](alerts.md), P33). Deferred by default; user opt-in, delivery cost and calmness review |
+| Web push/email alerts | Stretch, specced 2026-10-09 for review as two opt-in web push kinds, hero asleep and an affordable merchant bag or pouch, no email (Barry, 2026-10-09) ([alerts](alerts.md), P33). Deferred by default; user opt-in and calmness review |
 
 Achievements are additive and independent of the choice systems, so they can ship first within v1.1. Prefer choices/merchant/stances as one coherent release and schedule quest/push scope separately. Salvage is not in this release: materials without a sink would be a hollow feature, so it ships with gear upgrades in v2.0.
 

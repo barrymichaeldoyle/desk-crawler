@@ -1,4 +1,4 @@
-import qrcode from 'qrcode-generator'
+import { qrInk } from '@trmnl-games/engine/art/qr'
 import { encodePng1Bit } from './png'
 
 /**
@@ -15,8 +15,8 @@ export const QR_SCALES = new Set([2, 3, 4, 5, 7])
 /**
  * v3: low error correction and a two-module quiet zone keep the codes compact on the screen (the bag link drops from
  * 33 to 29 modules). The 1-bit render is crisp and the layout leaves white space around every code, so both hold up.
+ * The drawing lives in the shared engine (`@trmnl-games/engine/art/qr`).
  */
-const QUIET_MODULES = 2
 
 /**
  * `home` and `corner` encode the `/dc` short link to the companion home: 25 modules instead of 29 (D108). `corner` is
@@ -48,21 +48,4 @@ export function renderQrPng(path: string, origin: string): Uint8Array | null {
   return encodePng1Bit(size, size, ink)
 }
 
-/** Square 1-bit bitmap (1 = black) with a two-module quiet zone, or on the left and bottom only for a `corner` code. */
-export function qrInk(text: string, scale: number, corner = false): { size: number; ink: Uint8Array } {
-  const qr = qrcode(0, 'L')
-  qr.addData(text)
-  qr.make()
-  const modules = qr.getModuleCount() + QUIET_MODULES * (corner ? 1 : 2)
-  const size = modules * scale
-  const ink = new Uint8Array(size * size)
-  for (let y = 0; y < size; y += 1) {
-    const my = Math.floor(y / scale) - (corner ? 0 : QUIET_MODULES)
-    for (let x = 0; x < size; x += 1) {
-      const mx = Math.floor(x / scale) - QUIET_MODULES
-      const inside = my >= 0 && mx >= 0 && my < qr.getModuleCount() && mx < qr.getModuleCount()
-      if (inside && qr.isDark(my, mx)) ink[y * size + x] = 1
-    }
-  }
-  return { size, ink }
-}
+export { qrInk }

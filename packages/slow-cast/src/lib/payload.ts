@@ -1,4 +1,6 @@
 import { xpToLeave } from '@trmnl-games/engine/levels'
+import { qrBase, sceneBase } from '../art/route'
+import { poseFor } from '../art/scene'
 import { WEATHER_WORD } from '../sim/conditions'
 import { formatWeight } from '../sim/progress'
 import type { AnglerStatus, BaitClass, SlowCastCatalog, TimeBand, WaterId, Weather } from '../sim/types'
@@ -11,7 +13,11 @@ import type { AnglerStatus, BaitClass, SlowCastCatalog, TimeBand, WaterId, Weath
 export const PAYLOAD_VERSION = 1
 /** Two missed Slow Cast ticks before the device says updates are delayed. */
 export const STALE_AFTER_MS = 30 * 60 * 1000
-export const MAX_STORIES = 4
+export const MAX_STORIES = 5
+/** The recap covers the last twelve hours of stories (slow-cast.md "Device"). */
+export const RECAP_MS = 12 * 3_600_000
+/** Stories the backend reads for the recap: a busy twelve hours is under 60 lines. */
+export const MAX_RECAP_STORIES = 60
 
 export interface PayloadAngler {
   readonly alias: string
@@ -48,6 +54,8 @@ export interface SlowCastPayloadInput {
   readonly weather: Weather
   readonly band: TimeBand
   readonly stories: readonly PayloadStory[]
+  /** The Convex site origin that serves `/art/sc/`; null leaves image fields empty. */
+  readonly artBaseUrl: string | null
 }
 
 const BAND_WORD: Readonly<Record<TimeBand, string>> = { dawn: 'dawn', day: 'day', dusk: 'dusk', night: 'night' }
@@ -67,6 +75,8 @@ export function buildPayload(input: SlowCastPayloadInput) {
       alias: angler?.alias ?? null,
       attention: servicePaused ? 'Slow Cast is down for maintenance.' : 'Sign in to the companion, then save this plugin in TRMNL.',
       qr: 'app' as const,
+      qr_base: input.artBaseUrl && !servicePaused ? `${input.artBaseUrl}${qrBase('home')}` : '',
+      scene_base: '',
       stories: [] as Array<{ kind: string; summary: string }>,
       stale: false,
     }
@@ -84,20 +94,31 @@ export function buildPayload(input: SlowCastPayloadInput) {
   let attention: string | null = null
   if (angler.quarantined || servicePaused) attention = 'Paused for a service check. Nothing is lost.'
   else if (stale) attention = 'Updates delayed. Nothing is lost.'
-  else if (coolerFull) attention = 'Cooler full: catches are being released. Sell in the companion.'
-  else if (!hookUsedHere) attention = hook && hookUnits === 0 ? `Out of ${hook.name.toLowerCase()}: fishing a bare hook.` : 'Fishing a bare hook.'
+  else if (coolerFull) attention = 'Cooler full: sell in the companion.'
+  else if (!hookUsedHere) attention = hook && hookUnits === 0 ? `Out of ${hook.name.toLowerCase()}: bare hook.` : 'Fishing a bare hook.'
   const stories = input.stories.slice(0, MAX_STORIES)
+  // Twelve-hour recap: fish landed (kept or released), the heaviest, and any that got away.
+  const recent = input.stories.filter((story) => now - story.at <= RECAP_MS)
+  const landed = recent.filter((story) => story.kind === 'catch' || story.kind === 'release')
+  const best = landed.reduce<PayloadStory | null>((top, story) => (story.grams !== undefined && (top === null || story.grams > (top.grams ?? 0)) ? story : top), null)
+  const gotAway = recent.filter((story) => story.kind === 'got_away').length
+  const bestName = best?.speciesId ? content.species.find((s) => s.id === best.speciesId)?.name : undefined
+  const recapParts = [`${landed.length} ${landed.length === 1 ? 'fish' : 'fish'}`, ...(best && bestName && best.grams !== undefined ? [`best ${formatWeight(best.grams)} ${bestName}`] : []), ...(gotAway ? [`${gotAway} got away`] : [])]
+  const recap = landed.length + gotAway > 0 ? `Last 12 hours: ${recapParts.join(', ')}` : null
   const latest = stories[0]
   const latestCatch =
     latest && (latest.kind === 'catch' || latest.kind === 'release') && latest.speciesId
       ? { species_id: latest.speciesId, name: content.species.find((s) => s.id === latest.speciesId)?.name ?? latest.speciesId, weight_label: latest.grams === undefined ? null : formatWeight(latest.grams) }
       : null
   const toNext = xpToLeave(angler.level)
+  const status = angler.status === 'paused' ? ('paused' as const) : travelling ? ('travelling' as const) : ('fishing' as const)
+  const pose = poseFor(status, latest?.kind ?? null)
+  const scene = sceneBase({ water: (destination ?? water).id, band: input.band, weather: input.weather, pose, fish: latestCatch?.species_id ?? null })
   return {
     v: PAYLOAD_VERSION,
     game: 'slow-cast' as const,
     data_state: angler.quarantined || servicePaused ? ('service_paused' as const) : ('ready' as const),
-    status: angler.status === 'paused' ? ('paused' as const) : travelling ? ('travelling' as const) : ('fishing' as const),
+    status,
     status_label: statusLabel,
     conditions_label: conditions,
     weather: input.weather,
@@ -119,10 +140,14 @@ export function buildPayload(input: SlowCastPayloadInput) {
     species_logged: angler.speciesLogged,
     species_total: content.species.length,
     stories: stories.map((s) => ({ kind: s.kind, summary: s.summary })),
+    recap,
     latest_catch: latestCatch,
     attention,
     // A full cooler sends the code to the cooler page; otherwise to the dock.
     qr: coolerFull ? ('cooler' as const) : ('app' as const),
+    qr_base: input.artBaseUrl ? `${input.artBaseUrl}${qrBase(coolerFull ? 'cooler' : 'home')}` : '',
+    qr_label: coolerFull ? 'Sell your catch' : 'Your dock',
+    scene_base: input.artBaseUrl ? `${input.artBaseUrl}${scene}` : '',
     stale,
   }
 }

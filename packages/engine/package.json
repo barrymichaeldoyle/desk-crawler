@@ -7,13 +7,15 @@
     "./schedule": "./src/schedule.ts",
     "./score": "./src/score.ts",
     "./seed": "./src/seed.ts",
-    "./levels": "./src/levels.ts"
+    "./levels": "./src/levels.ts",
+    "./art/*": "./src/art/*.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@noble/hashes": "^2.4.0"
+    "@noble/hashes": "^2.4.0",
+    "qrcode-generator": "^2.0.4"
   },
   "devDependencies": {
     "typescript": "~6.0.3"

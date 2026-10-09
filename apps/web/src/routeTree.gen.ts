@@ -16,6 +16,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as DcRouteImport } from './routes/dc'
 import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ScRouteImport } from './routes/sc'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AccountDeleteRouteImport } from './routes/account_.delete'
@@ -69,6 +70,11 @@ const FeedbackRoute = FeedbackRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScRoute = ScRouteImport.update({
+  id: '/sc',
+  path: '/sc',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SupportRoute = SupportRouteImport.update({
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/dc': typeof DcRoute
   '/feedback': typeof FeedbackRoute
   '/privacy': typeof PrivacyRoute
+  '/sc': typeof ScRoute
   '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
   '/account/delete': typeof AccountDeleteRoute
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/dc': typeof DcRoute
   '/feedback': typeof FeedbackRoute
   '/privacy': typeof PrivacyRoute
+  '/sc': typeof ScRoute
   '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
   '/account/delete': typeof AccountDeleteRoute
@@ -233,6 +241,7 @@ export interface FileRoutesById {
   '/dc': typeof DcRoute
   '/feedback': typeof FeedbackRoute
   '/privacy': typeof PrivacyRoute
+  '/sc': typeof ScRoute
   '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
   '/account_/delete': typeof AccountDeleteRoute
@@ -263,6 +272,7 @@ export interface FileRouteTypes {
     | '/dc'
     | '/feedback'
     | '/privacy'
+    | '/sc'
     | '/support'
     | '/terms'
     | '/account/delete'
@@ -290,6 +300,7 @@ export interface FileRouteTypes {
     | '/dc'
     | '/feedback'
     | '/privacy'
+    | '/sc'
     | '/support'
     | '/terms'
     | '/account/delete'
@@ -317,6 +328,7 @@ export interface FileRouteTypes {
     | '/dc'
     | '/feedback'
     | '/privacy'
+    | '/sc'
     | '/support'
     | '/terms'
     | '/account_/delete'
@@ -346,6 +358,7 @@ export interface RootRouteChildren {
   DcRoute: typeof DcRoute
   FeedbackRoute: typeof FeedbackRoute
   PrivacyRoute: typeof PrivacyRoute
+  ScRoute: typeof ScRoute
   SupportRoute: typeof SupportRoute
   TermsRoute: typeof TermsRoute
   AccountDeleteRoute: typeof AccountDeleteRoute
@@ -409,6 +422,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sc': {
+      id: '/sc'
+      path: '/sc'
+      fullPath: '/sc'
+      preLoaderRoute: typeof ScRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/support': {
@@ -587,6 +607,7 @@ const rootRouteChildren: RootRouteChildren = {
   DcRoute: DcRoute,
   FeedbackRoute: FeedbackRoute,
   PrivacyRoute: PrivacyRoute,
+  ScRoute: ScRoute,
   SupportRoute: SupportRoute,
   TermsRoute: TermsRoute,
   AccountDeleteRoute: AccountDeleteRoute,

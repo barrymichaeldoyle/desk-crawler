@@ -25,7 +25,8 @@
     "check": "pnpm typecheck && pnpm test",
     "build:deploy": "node tools/deploy/check-target.mjs && pnpm check && convex deploy -y --cmd 'pnpm build'",
     "deploy:web": "pnpm --filter @trmnl-games/web run deploy",
-    "balance:slowcast": "tsx tools/balance/slowcast.ts"
+    "balance:slowcast": "tsx tools/balance/slowcast.ts",
+    "preview:slowcast": "tsx tools/trmnl/preview-slowcast.ts --inline-art"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.62.5",

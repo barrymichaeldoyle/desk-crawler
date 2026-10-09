@@ -1,6 +1,6 @@
 import { v } from 'convex/values'
 import { contentV1 } from '@trmnl-games/slow-cast/content'
-import { buildPayload, MAX_STORIES } from '@trmnl-games/slow-cast/payload'
+import { buildPayload, MAX_RECAP_STORIES } from '@trmnl-games/slow-cast/payload'
 import { conditionsAt } from '@trmnl-games/slow-cast/sim/simulate'
 import { forecastFor } from '@trmnl-games/slow-cast/sim/seed'
 import type { Doc } from '../_generated/dataModel'
@@ -48,7 +48,7 @@ export async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number,
   const { band } = conditionsAt({ tickAt: slot, ...(offset === undefined ? {} : { utcOffsetSeconds: offset }), weather, content })
   const coolerUsed = angler ? (await ctx.db.query('catches').withIndex('by_anglerId', (q) => q.eq('anglerId', angler._id)).take(32)).length : 0
   const logs = angler
-    ? (await ctx.db.query('swTickLogs').withIndex('by_anglerId_and_at_and_sequence', (q) => q.eq('anglerId', angler._id)).order('desc').take(MAX_STORIES + 4)).filter((log) => log.source !== 'command')
+    ? (await ctx.db.query('swTickLogs').withIndex('by_anglerId_and_at_and_sequence', (q) => q.eq('anglerId', angler._id)).order('desc').take(MAX_RECAP_STORIES)).filter((log) => log.source !== 'command')
     : []
   return buildPayload({
     content,
@@ -73,6 +73,7 @@ export async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number,
     coolerUsed,
     weather,
     band,
+    artBaseUrl: process.env.CONVEX_SITE_URL ?? null,
     stories: logs.map((log) => ({ kind: log.kind, summary: log.summary, at: log.at, ...(log.detail.speciesId === undefined ? {} : { speciesId: log.detail.speciesId }), ...(log.detail.grams === undefined ? {} : { grams: log.detail.grams }) })),
   })
 }

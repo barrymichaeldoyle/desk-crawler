@@ -9,6 +9,7 @@ import { sceneUrlsAt } from '@trmnl-games/desk-crawler/art/sceneTime'
 import { DEFAULT_COMPANION_ORIGIN, renderQrPng } from '@trmnl-games/desk-crawler/art/qr'
 import { parseUtcOffset, screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
 import { screenMarkup as slowCastMarkup } from '@trmnl-games/slow-cast/templates/screen'
+import { renderSlowCastArt } from '@trmnl-games/slow-cast/art/route'
 import type { GameSlug } from '@trmnl-games/platform'
 
 /**
@@ -161,6 +162,12 @@ http.route({
   method: 'GET',
   handler: httpAction(async (ctx, request) => {
     const path = new URL(request.url).pathname
+    // D115: Slow Cast's scenes and codes live under their own prefix.
+    if (path.startsWith('/art/sc/')) {
+      const art = renderSlowCastArt(path, process.env.COMPANION_ORIGIN ?? DEFAULT_COMPANION_ORIGIN)
+      if (art === null) return new Response('Not found', { status: 404 })
+      return new Response(new Blob([art.png.slice().buffer as ArrayBuffer], { type: 'image/png' }), { status: 200, headers: { 'Content-Type': 'image/png', 'Cache-Control': art.immutable ? 'public, max-age=31536000, immutable' : 'public, max-age=86400' } })
+    }
     // D109: a public hero page's social card, drawn only while the page is public; an hour's cache follows level and rank.
     const card = /^\/art\/card\/hero\/([^/]{1,80})\.png$/.exec(path)
     if (card) {

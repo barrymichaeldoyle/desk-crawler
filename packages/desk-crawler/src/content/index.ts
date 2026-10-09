@@ -26,4 +26,4 @@ export const catalogs = {
 export type CatalogId = keyof typeof catalogs
 
 /** New worlds start here; a live world switches with `world.setActiveContentVersion` between runs. */
-export const ACTIVE_CONTENT: CatalogId = 'v7'
+export const ACTIVE_CONTENT: CatalogId = 'v8'

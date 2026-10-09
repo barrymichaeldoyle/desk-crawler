@@ -47,6 +47,7 @@ import { Route as DeskCrawlerHeroesAliasRouteImport } from './routes/desk-crawle
 import { Route as ConnectTrmnlDeskCrawlerInstallRouteImport } from './routes/connect/trmnl/desk-crawler/install'
 import { Route as ConnectTrmnlDeskCrawlerManageRouteImport } from './routes/connect/trmnl/desk-crawler/manage'
 import { Route as ConnectTrmnlSlowCastInstallRouteImport } from './routes/connect/trmnl/slow-cast/install'
+import { Route as ConnectTrmnlSlowCastManageRouteImport } from './routes/connect/trmnl/slow-cast/manage'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -242,6 +243,12 @@ const ConnectTrmnlSlowCastInstallRoute =
     path: '/connect/trmnl/slow-cast/install',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ConnectTrmnlSlowCastManageRoute =
+  ConnectTrmnlSlowCastManageRouteImport.update({
+    id: '/connect/trmnl/slow-cast/manage',
+    path: '/connect/trmnl/slow-cast/manage',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -282,6 +289,7 @@ export interface FileRoutesByFullPath {
   '/connect/trmnl/desk-crawler/install': typeof ConnectTrmnlDeskCrawlerInstallRoute
   '/connect/trmnl/desk-crawler/manage': typeof ConnectTrmnlDeskCrawlerManageRoute
   '/connect/trmnl/slow-cast/install': typeof ConnectTrmnlSlowCastInstallRoute
+  '/connect/trmnl/slow-cast/manage': typeof ConnectTrmnlSlowCastManageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -319,6 +327,7 @@ export interface FileRoutesByTo {
   '/connect/trmnl/desk-crawler/install': typeof ConnectTrmnlDeskCrawlerInstallRoute
   '/connect/trmnl/desk-crawler/manage': typeof ConnectTrmnlDeskCrawlerManageRoute
   '/connect/trmnl/slow-cast/install': typeof ConnectTrmnlSlowCastInstallRoute
+  '/connect/trmnl/slow-cast/manage': typeof ConnectTrmnlSlowCastManageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -360,6 +369,7 @@ export interface FileRoutesById {
   '/connect/trmnl/desk-crawler/install': typeof ConnectTrmnlDeskCrawlerInstallRoute
   '/connect/trmnl/desk-crawler/manage': typeof ConnectTrmnlDeskCrawlerManageRoute
   '/connect/trmnl/slow-cast/install': typeof ConnectTrmnlSlowCastInstallRoute
+  '/connect/trmnl/slow-cast/manage': typeof ConnectTrmnlSlowCastManageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -402,6 +412,7 @@ export interface FileRouteTypes {
     | '/connect/trmnl/desk-crawler/install'
     | '/connect/trmnl/desk-crawler/manage'
     | '/connect/trmnl/slow-cast/install'
+    | '/connect/trmnl/slow-cast/manage'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -439,6 +450,7 @@ export interface FileRouteTypes {
     | '/connect/trmnl/desk-crawler/install'
     | '/connect/trmnl/desk-crawler/manage'
     | '/connect/trmnl/slow-cast/install'
+    | '/connect/trmnl/slow-cast/manage'
   id:
     | '__root__'
     | '/'
@@ -479,6 +491,7 @@ export interface FileRouteTypes {
     | '/connect/trmnl/desk-crawler/install'
     | '/connect/trmnl/desk-crawler/manage'
     | '/connect/trmnl/slow-cast/install'
+    | '/connect/trmnl/slow-cast/manage'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -506,6 +519,7 @@ export interface RootRouteChildren {
   ConnectTrmnlDeskCrawlerInstallRoute: typeof ConnectTrmnlDeskCrawlerInstallRoute
   ConnectTrmnlDeskCrawlerManageRoute: typeof ConnectTrmnlDeskCrawlerManageRoute
   ConnectTrmnlSlowCastInstallRoute: typeof ConnectTrmnlSlowCastInstallRoute
+  ConnectTrmnlSlowCastManageRoute: typeof ConnectTrmnlSlowCastManageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -776,6 +790,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConnectTrmnlSlowCastInstallRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/connect/trmnl/slow-cast/manage': {
+      id: '/connect/trmnl/slow-cast/manage'
+      path: '/connect/trmnl/slow-cast/manage'
+      fullPath: '/connect/trmnl/slow-cast/manage'
+      preLoaderRoute: typeof ConnectTrmnlSlowCastManageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -860,6 +881,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConnectTrmnlDeskCrawlerInstallRoute: ConnectTrmnlDeskCrawlerInstallRoute,
   ConnectTrmnlDeskCrawlerManageRoute: ConnectTrmnlDeskCrawlerManageRoute,
   ConnectTrmnlSlowCastInstallRoute: ConnectTrmnlSlowCastInstallRoute,
+  ConnectTrmnlSlowCastManageRoute: ConnectTrmnlSlowCastManageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

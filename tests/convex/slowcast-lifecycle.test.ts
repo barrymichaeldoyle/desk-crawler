@@ -1,7 +1,7 @@
 // @vitest-environment edge-runtime
 import { convexTest } from 'convex-test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { internal } from '@trmnl-games/backend/api'
+import { api, internal } from '@trmnl-games/backend/api'
 import schema from '../../apps/backend/convex/schema'
 import { sha256Hex } from '../../apps/backend/convex/lib/hash'
 import { seedWorld, type T } from './helpers'
@@ -110,5 +110,17 @@ describe('Slow Cast TRMNL lifecycle (D115, S2)', () => {
     vi.stubEnv('ADMIN_TOKEN_IDENTIFIERS', 'issuer|Boss')
     expect(await link(t, 'Boss', 'sc-tok-boss')).toEqual({ activationState: 'pending_trmnl', heroCreated: true })
     vi.unstubAllEnvs()
+  })
+
+  it('manages and disconnects a Slow Cast installation only through its own game', async () => {
+    await link(t, 'Ana', 'sc-tok-ana')
+    await confirm(t, 'sc-tok-ana', UUID_A)
+    const ana = t.withIdentity({ issuer: 'issuer', subject: 'Ana' })
+    expect(await ana.query(api.connections.forManagement, { gameSlug: 'slow-cast', uuid: UUID_A })).toMatchObject({ owned: true, heroName: 'Ana' })
+    expect(await ana.query(api.connections.forManagement, { uuid: UUID_A })).toEqual({ owned: false })
+    const id = (await t.run(async (ctx) => await ctx.db.query('trmnlInstances').first()))!._id
+    await expect(ana.mutation(api.connections.disconnect, { operationId: 'disc-00001', instanceId: id })).rejects.toThrow()
+    expect(await ana.mutation(api.connections.disconnect, { gameSlug: 'slow-cast', operationId: 'disc-00002', instanceId: id })).toMatchObject({ changed: true })
+    expect((await screen(t, 'sc-tok-ana', UUID_A)).status).toBe(404)
   })
 })

@@ -27,3 +27,11 @@ export function makeSchedule(offsetMs: number): TickSchedule {
   const minute = offsetMs / 60_000
   return { SLOT_MS, SLOT_OFFSET_MS: offsetMs, wallSlotFor, nextSlotAfter, slotEta, cronMinutes: [0, 15, 30, 45].map((m) => m + minute).join(',') }
 }
+
+const HOUR_MS = 60 * 60 * 1000
+
+/** D31: publish on the last slot of each UTC hour, or once after >60 minutes without a publication. */
+export function shouldPublish(scoreAt: number, lastPublishedAt: number | undefined, schedule: Pick<TickSchedule, 'SLOT_OFFSET_MS'> = { SLOT_OFFSET_MS: 0 }): boolean {
+  const lastSlotOfHour = new Date(scoreAt - schedule.SLOT_OFFSET_MS).getUTCMinutes() === 45
+  return lastSlotOfHour || lastPublishedAt === undefined || scoreAt - lastPublishedAt > HOUR_MS
+}

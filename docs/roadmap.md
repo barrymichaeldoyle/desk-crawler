@@ -1,6 +1,6 @@
 # Release roadmap
 
-Updated 2026-10-08 (D64, D70, D101, D110). Work is planned as named releases rather than calendar months. Every passing change may still ship continuously; a release groups a coherent block of work, its release note and its gate. The earlier "Month 1–6" themes map onto the versions below and keep their feature boundaries and gates; nothing from them was dropped.
+Updated 2026-10-09 (D64, D70, D101, D109, D110). Work is planned as named releases rather than calendar months. Every passing change may still ship continuously; a release groups a coherent block of work, its release note and its gate. The earlier "Month 1–6" themes map onto the versions below and keep their feature boundaries and gates; nothing from them was dropped.
 
 Version meaning:
 
@@ -10,12 +10,12 @@ Version meaning:
 
 Release order is a commitment; the dates are not. A release ends when its gate passes. Work never pauses for a gate or a review (D70): while one release waits on an external check, the next one is designed, built and, when it preserves progress and payload meaning, deployed.
 
-## Where we are (2026-10-08)
+## Where we are (2026-10-09)
 
 - **v1.0** is deployed and submitted: plugin 564 went to TRMNL review on 2026-10-07 and the review email is sent. Marketplace approval is the one open gate.
 - **v1.0.x** live polish continues while review runs: device templates are at v48, and companion and layout polish ships through main.
 - **v1.1 Decisions** shipped in full on 2026-10-07, with help and analytics coverage added on 2026-10-08 (D101). Production now runs content v7 and achievement catalog version 3 (D110). Its stretch items (daily quests, lost-and-found, push/email) are not scheduled.
-- **Next:** v1.2 Other people, unless the v1.0.x reorder trigger pulls v2.0 Depth ahead once live retention data exists. Public profiles (D109) and desk raids (D110, [design](raids.md)) are live; raids switched on with content v7 at 22:15 UTC on 2026-10-08 after all five slices.
+- **Next:** v1.2 Other people, unless the v1.0.x reorder trigger pulls v2.0 Depth ahead once live retention data exists. Two of its rows are done: desk raids (D110, [design](raids.md)) switched on with content v7 at 22:15 UTC on 2026-10-08 after all five slices, and public profiles (D109) finished on 2026-10-09. Meetings, friends/rivals, world events and additional classes remain.
 
 ## v1.0 — Submission (submitted 2026-10-07, awaiting marketplace approval)
 
@@ -92,7 +92,7 @@ Core batch: player meetings, friends/rivals, world-event banner, shareable publi
 | Meetings | Later row: friendly meetings select from a completed immutable biome cohort and reuse the raid ledger shape (canonical pair/tick key prevents duplicate rewards/logs); no trading initially |
 | Friends/rivals | Public-profile privacy and moderation; no friend requirement to progress |
 | World events | Versioned typed modifiers, UTC activation, snapshot per tick; admin permissions and rollback |
-| Profiles | Done 2026-10-09 (D109): a social card per hero, Share and Copy link in Settings and leaderboard links finished the slice. Started 2026-10-08: opt-in page per hero at `/desk-crawler/heroes/<public name>`, public-safe projection, same not-found for private and missing names. Page loads are limited to 60 a minute per IP (Workers rate-limiting binding). Public-safe projection, alias controls, rate limits; no equipment/private-log leakage |
+| Profiles | Done 2026-10-09 (D109): an opt-in page per hero at `/desk-crawler/heroes/<public name>` (live 2026-10-08) with a public-safe projection and the same not-found for private and missing names; page loads limited to 60 a minute per IP (Workers rate-limiting binding); the raid record as counts (D110); a social card per hero, Share and Copy link in Settings and leaderboard links to public pages (2026-10-09). Public-safe projection, alias controls, rate limits; no equipment/private-log leakage |
 | Additional classes | Each passive tested; MP/spells only if their economy/state design is ready |
 | Graveyard items | Stretch; only after item-transfer ownership and death-rule changes are designed |
 

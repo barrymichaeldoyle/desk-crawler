@@ -9,6 +9,7 @@ import { api } from '@trmnl-games/backend/api'
 import type { Id } from '@trmnl-games/backend/data-model'
 import { useIntent } from '../../../lib/intent'
 import { seo } from '../../../lib/seo'
+import { Glyph } from '../../../lib/glyphs'
 import { BUTTON_SECONDARY, Button, Card, ErrorNote, LINK_BUTTON, LoadingState, NoticeBar, useNotice } from '../../../lib/ui'
 import { preload } from '../../../lib/preload'
 import { retainSellableSelection, saleIsCurrent } from '../../../lib/bagSelection'
@@ -165,7 +166,7 @@ function Inventory() {
       ) : null}
       {reason ? <p className="text-sm">{hero.status === 'paused' && hero.simulationState !== 'quarantined' ? <>Adventures are paused. <Link to="/app/desk-crawler" className="underline underline-offset-4">Resume from Hero</Link> to change or sell gear.</> : reason}</p> : null}
 
-      <Card title="Equipped">
+      <Card title="Equipped" icon="sword">
         <div className="grid grid-cols-3 gap-3 sm:max-w-sm sm:gap-5">
           {(['weapon', 'armor'] as const).map((kind) => {
             const item = equippedOf(kind)
@@ -186,10 +187,11 @@ function Inventory() {
       <section aria-labelledby="bag-gear-title" className="window min-w-0 px-4 pt-3 pb-4 sm:px-5">
         {/* The title stays one line beside either button, so the header holds still when Sell gear becomes Done. */}
         <div className="flex min-h-11 items-center justify-between gap-3">
-          <h2 id="bag-gear-title" className="min-w-0 truncate font-display text-xl font-bold sm:text-2xl">{bag.ladder.name}</h2>
+          {/* The page header already names the bag; this window is its gear. */}
+          <h2 id="bag-gear-title" className="flex min-w-0 items-center gap-3 font-display text-xl font-bold sm:text-2xl"><Glyph name="bag" size={24} className="text-gold-ink" /><span className="truncate">Gear</span></h2>
           {mode === 'sell'
             ? <Button allowOffline variant="secondary" className="w-28 shrink-0 whitespace-nowrap" disabled={busy} onClick={leaveSale}>Done</Button>
-            : <Button allowOffline variant="secondary" className="w-28 shrink-0 whitespace-nowrap" disabled={sellable.length === 0} onClick={() => setMode('sell')}>Sell</Button>}
+            : <Button allowOffline variant="secondary" className="w-28 shrink-0 whitespace-nowrap" icon="tag" disabled={sellable.length === 0} onClick={() => setMode('sell')}>Sell</Button>}
         </div>
         <p className="mt-1 min-h-5 text-sm text-muted">
           {mode === 'sell'
@@ -358,13 +360,13 @@ type PurchaseIntent<A> = { pending: boolean; run: (args: A, message?: string) =>
 function PotionPouch({ pouch, potions, gold, disabled, intent }: { pouch: Pouch; potions: number; gold: number; disabled: boolean; intent: PurchaseIntent<{ tierId: string }> }) {
   const next = pouch.next
   const affordable = next?.price != null && gold >= next.price
-  return <Card title={pouch.name}>
+  return <Card title={pouch.name} icon="potion">
     <p className="tabular-nums">Holds <strong>{pouch.cap}</strong> potions. You have <strong>{potions}</strong>.</p>
     {next ? <>
       <p className="mt-3"><strong>Next: {next.name}</strong>, {next.cap} potions</p>
       <p className="mt-1 text-sm text-muted">Yours at level {next.milestoneLevel}, or sooner if your hero finds one or the merchant has one.</p>
       {next.price !== null ? next.buyable ? <>
-        <Button className="mt-3" variant={affordable ? 'primary' : 'secondary'} disabled={disabled || !affordable} pending={intent.pending} busyLabel="Buying…" onClick={() => intent.run({ tierId: next.id }, `${next.name} bought. It holds ${next.cap} potions.`)}>Buy for {next.price} gold</Button>
+        <Button className="mt-3" variant={affordable ? 'primary' : 'secondary'} disabled={disabled || !affordable} pending={intent.pending} icon="coin" busyLabel="Buying…" onClick={() => intent.run({ tierId: next.id }, `${next.name} bought. It holds ${next.cap} potions.`)}>Buy for {next.price} gold</Button>
         {!affordable ? <p className="mt-2 text-sm tabular-nums">You have <span className="text-gold-ink">{gold} gold</span>.</p> : null}
       </> : <p className="mt-2 text-sm">{next.lockedUntilLevel !== null ? `You can buy it from level ${next.lockedUntilLevel}.` : 'You can buy it after your next pouch milestone.'}</p> : null}
     </> : <p className="mt-3 text-sm text-muted">This is the biggest pouch for now.</p>}
@@ -373,7 +375,7 @@ function PotionPouch({ pouch, potions, gold, disabled, intent }: { pouch: Pouch;
 
 /** D78: the visiting merchant's offers, each sold once, open for a few adventures. */
 function Merchant({ visit, gold, potions, cap, disabled, intent }: { visit: Visit; gold: number; potions: number; cap: number; disabled: boolean; intent: PurchaseIntent<{ offerId: Offer['id'] }> }) {
-  return <Card title="Wandering Merchant">
+  return <Card title="Wandering Merchant" icon="merchant">
     <p className="text-sm">Leaves in {visit.ticksLeft === 1 ? 'one adventure' : `${visit.ticksLeft} adventures`}. Each offer sells once.</p>
     <ul className="mt-3 flex flex-col gap-3">
       {visit.offers.map((offer) => {
@@ -381,7 +383,7 @@ function Merchant({ visit, gold, potions, cap, disabled, intent }: { visit: Visi
         const overflow = offer.id === 'potions' && potions + offer.quantity > cap
         return <li key={offer.id} className="flex flex-wrap items-center justify-between gap-2 border-t-2 border-faint pt-3 first:border-t-0 first:pt-0">
           <span><strong>{offer.name}</strong>{overflow ? <span className="block text-sm text-muted">Your pouch holds {cap}; make room first.</span> : null}</span>
-          <Button variant={affordable && !overflow ? 'primary' : 'secondary'} disabled={disabled || !affordable || overflow} pending={intent.pending} busyLabel="Buying…" onClick={() => intent.run({ offerId: offer.id }, `${offer.name} bought.`)}>Buy for {offer.price} gold</Button>
+          <Button variant={affordable && !overflow ? 'primary' : 'secondary'} disabled={disabled || !affordable || overflow} pending={intent.pending} icon="coin" busyLabel="Buying…" onClick={() => intent.run({ offerId: offer.id }, `${offer.name} bought.`)}>Buy for {offer.price} gold</Button>
         </li>
       })}
     </ul>
@@ -393,13 +395,13 @@ function Merchant({ visit, gold, potions, cap, disabled, intent }: { visit: Visi
 function BagLadder({ ladder, capacity, gold, disabled, intent }: { ladder: Ladder; capacity: number; gold: number; disabled: boolean; intent: PurchaseIntent<{ tierId: string }> }) {
   const next = ladder.next
   const affordable = next?.price != null && gold >= next.price
-  return <Card title="Bigger bags">
+  return <Card title="Bigger bags" icon="bag">
     <p className="tabular-nums">Your <strong>{ladder.name}</strong> holds <strong>{capacity}</strong> pieces of gear. Equipped gear and potions don’t take up space.</p>
     {next ? <>
       <p className="mt-3"><strong>Next: {next.name}</strong>, {next.capacity} slots</p>
       <p className="mt-1 text-sm text-muted">{next.milestoneAdventures !== null ? `Yours after ${next.milestoneAdventures} adventures` : `Yours at level ${next.milestoneLevel}`}, or sooner if your hero finds one.</p>
       {next.price !== null ? next.buyable ? <>
-        <Button className="mt-3" variant={affordable ? 'primary' : 'secondary'} disabled={disabled || !affordable} pending={intent.pending} busyLabel="Buying…" onClick={() => intent.run({ tierId: next.id }, `${next.name} bought. It holds ${next.capacity}.`)}>Buy for {next.price} gold</Button>
+        <Button className="mt-3" variant={affordable ? 'primary' : 'secondary'} disabled={disabled || !affordable} pending={intent.pending} icon="coin" busyLabel="Buying…" onClick={() => intent.run({ tierId: next.id }, `${next.name} bought. It holds ${next.capacity}.`)}>Buy for {next.price} gold</Button>
         {!affordable ? <p className="mt-2 text-sm tabular-nums">You have <span className="text-gold-ink">{gold} gold</span>.</p> : null}
       </> : <p className="mt-2 text-sm">{next.lockedUntilLevel !== null ? `You can buy it from level ${next.lockedUntilLevel}.` : 'You can buy it after your next bag milestone.'}</p> : null}
     </> : <p className="mt-3 text-sm text-muted">This is the biggest bag for now.</p>}

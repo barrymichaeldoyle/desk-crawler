@@ -11,6 +11,7 @@ import { captureAnalytics } from '../../lib/analytics'
 import { useAnalyticsView } from '../../lib/analyticsProvider'
 import { SwitchAccount } from '../../lib/switchAccount'
 import { WaitlistAccount } from '../../lib/waitlist'
+import { Glyph, type GlyphName } from '../../lib/glyphs'
 
 /** Companion shell: auth gate, setup states and mobile-first navigation (companion.md). */
 export const Route = createFileRoute('/app/desk-crawler')({
@@ -20,11 +21,11 @@ export const Route = createFileRoute('/app/desk-crawler')({
 })
 
 const NAV = [
-  { to: '/app/desk-crawler', label: 'Hero' },
-  { to: '/app/desk-crawler/inventory', label: 'Bag' },
-  { to: '/app/desk-crawler/leaderboard', label: 'Ranks' },
-  { to: '/app/desk-crawler/settings', label: 'Settings' },
-] as const
+  { to: '/app/desk-crawler', label: 'Hero', glyph: 'hero' },
+  { to: '/app/desk-crawler/inventory', label: 'Bag', glyph: 'bag' },
+  { to: '/app/desk-crawler/leaderboard', label: 'Ranks', glyph: 'trophy' },
+  { to: '/app/desk-crawler/settings', label: 'Settings', glyph: 'cog' },
+] as const satisfies ReadonlyArray<{ to: string; label: string; glyph: GlyphName }>
 
 function AppShell() {
   return <SignedInApp />
@@ -84,8 +85,10 @@ function SignedInApp() {
               <Link
                 to={item.to}
                 activeOptions={{ exact: true }}
-                className="menu-cursor flex min-h-13 items-center justify-center text-[0.625rem] text-muted hover:text-ink aria-[current=page]:text-gold-ink aria-[current=page]:shadow-[inset_0_-4px_0_var(--color-gold)] max-sm:before:hidden sm:text-hud-sm"
+                className="menu-cursor flex min-h-13 flex-col items-center justify-center gap-1 text-[0.625rem] text-muted hover:text-ink aria-[current=page]:text-gold-ink aria-[current=page]:shadow-[inset_0_-4px_0_var(--color-gold)] max-sm:before:hidden sm:flex-row sm:gap-2 sm:text-hud-sm"
               >
+                {/* The tab's glyph carries recognition on phones, where the pixel label is at its smallest. */}
+                <Glyph name={item.glyph} className="sm:hidden lg:block" />
                 {item.label}
               </Link>
             </li>

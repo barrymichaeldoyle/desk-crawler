@@ -11,6 +11,7 @@ import { localSceneUrl, useMinute } from '../../../lib/localClock'
 import { changeTone } from './-logStory'
 
 import { BIOME_BANDS } from '../../../lib/palette'
+import { useGains } from '../../../lib/ui'
 import { PixelIcon } from './-pixelIcon'
 import { usePulse, type PulseHero } from './-pulse'
 
@@ -58,6 +59,7 @@ type ScreenHero = PulseHero & { name: string; level: number; hp: number; maxHp: 
  */
 export function GameScreen({ hero }: { hero: ScreenHero }) {
   const pulse = usePulse(hero)
+  const coinGains = useGains(hero.gold)
   const now = useMinute()
   const bands = BIOME_BANDS[hero.biomeId] ?? FALLBACK_BANDS
   const sceneUrl = localSceneUrl(hero.scenePath, now)
@@ -88,7 +90,7 @@ export function GameScreen({ hero }: { hero: ScreenHero }) {
         </div>
         <div className="flex flex-wrap gap-2">
           <p className="flex items-center gap-2 border-[3px] border-night bg-night/85 px-3 py-2.5 text-xs text-gold-ink">
-            <svg viewBox="0 0 8 8" width={16} height={16} aria-hidden="true" shapeRendering="crispEdges"><path className="fill-gold" d="M2 0h4v1H2zM1 1h6v6H1zM0 2h8v4H0zM2 7h4v1H2z" /><path className="fill-gold-lo" d="M3 2h2v4H3z" /></svg>
+            <svg key={coinGains} viewBox="0 0 8 8" width={16} height={16} aria-hidden="true" shapeRendering="crispEdges" className={coinGains > 0 ? 'coin-hop' : ''}><path className="fill-gold" d="M2 0h4v1H2zM1 1h6v6H1zM0 2h8v4H0zM2 7h4v1H2z" /><path className="fill-gold-lo" d="M3 2h2v4H3z" /></svg>
             {hero.gold.toLocaleString()}<span className="sr-only"> gold</span>
           </p>
           {pulse.countdown ? (

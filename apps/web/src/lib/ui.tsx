@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { useOnline } from './network'
+import { Glyph, type GlyphName } from './glyphs'
 
 /**
  * The gold menu choice: shared by Button and links styled as the primary action. A press sinks the key two pixels
@@ -11,7 +12,7 @@ export const BUTTON_SECONDARY = 'hud text-hud-sm border-[3px] border-edge text-i
 /** Layout for a Link that wears a button style. */
 export const LINK_BUTTON = 'inline-flex min-h-11 items-center px-4 py-2 no-underline'
 
-export function Button({ variant = 'primary', className = '', pending = false, busyLabel = 'Working…', allowOffline = false, children, disabled, onClick, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'quiet' | 'danger'; pending?: boolean; busyLabel?: string; allowOffline?: boolean }) {
+export function Button({ variant = 'primary', className = '', pending = false, busyLabel = 'Working…', allowOffline = false, icon, children, disabled, onClick, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'quiet' | 'danger'; pending?: boolean; busyLabel?: string; allowOffline?: boolean; icon?: GlyphName }) {
   const online = useOnline()
   const styles = {
     primary: BUTTON_PRIMARY,
@@ -20,7 +21,7 @@ export function Button({ variant = 'primary', className = '', pending = false, b
     danger: 'hud text-hud-sm border-[3px] border-hp text-hp-ink hover:bg-hp hover:text-night active:bg-hp active:text-night',
   }[variant]
   // A busy button stays focusable (aria-disabled, clicks swallowed): disabling it would drop keyboard focus to the page.
-  return <button type="button" {...props} aria-busy={pending || undefined} aria-disabled={pending || undefined} disabled={!pending && (disabled || (!online && !allowOffline))} onClick={(event) => { if (pending) { event.preventDefault(); return } onClick?.(event) }} className={`min-h-11 px-4 py-2 ${styles} disabled:cursor-not-allowed disabled:border-dashed disabled:border-faint disabled:bg-transparent disabled:text-muted disabled:shadow-none disabled:no-underline disabled:active:translate-y-0 aria-busy:cursor-wait aria-busy:active:translate-y-0 ${className}`}>{pending ? busyLabel : children}</button>
+  return <button type="button" {...props} aria-busy={pending || undefined} aria-disabled={pending || undefined} disabled={!pending && (disabled || (!online && !allowOffline))} onClick={(event) => { if (pending) { event.preventDefault(); return } onClick?.(event) }} className={`min-h-11 px-4 py-2 ${icon ? 'inline-flex items-center justify-center gap-2.5' : ''} ${styles} disabled:cursor-not-allowed disabled:border-dashed disabled:border-faint disabled:bg-transparent disabled:text-muted disabled:shadow-none disabled:no-underline disabled:active:translate-y-0 aria-busy:cursor-wait aria-busy:active:translate-y-0 ${className}`}>{icon ? <Glyph name={icon} className={pending ? 'invisible' : ''} /> : null}{pending ? busyLabel : children}</button>
 }
 
 /**
@@ -43,6 +44,20 @@ export function useFocusWithin<T extends HTMLElement>(swap: unknown) {
     ref.current?.querySelector<HTMLElement>('button:not([disabled]), a[href]')?.focus()
   }, [swap])
   return ref
+}
+
+/**
+ * Counts the times `value` has grown since the page opened, for one-shot gain animations: a component keys its animated
+ * element by the count, so the animation replays on each gain and never runs on load or on a loss.
+ */
+export function useGains(value: number): number {
+  const last = useRef(value)
+  const [gains, setGains] = useState(0)
+  useEffect(() => {
+    if (value > last.current) setGains((count) => count + 1)
+    last.current = value
+  }, [value])
+  return gains
 }
 
 export type Notice = { kind: 'ok' | 'error'; text: string; key: number }
@@ -86,11 +101,11 @@ function NoticePanel({ text, tone, onDismiss }: { text: string; tone: string; on
   </div>
 }
 
-export function Card({ title, children, className = '' }: { title?: string; children: ReactNode; className?: string }) {
+export function Card({ title, icon, children, className = '' }: { title?: string; icon?: GlyphName; children: ReactNode; className?: string }) {
   const id = useId()
   return (
     <section aria-labelledby={title ? id : undefined} className={`window min-w-0 px-4 pt-3 pb-4 sm:px-5 ${className}`}>
-      {title ? <h2 id={id} className="mb-3 font-display text-2xl font-bold">{title}</h2> : null}
+      {title ? icon ? <h2 id={id} className="mb-3 flex items-center gap-3 font-display text-2xl font-bold"><Glyph name={icon} size={24} className="text-gold-ink" /><span className="min-w-0">{title}</span></h2> : <h2 id={id} className="mb-3 font-display text-2xl font-bold">{title}</h2> : null}
       {children}
     </section>
   )

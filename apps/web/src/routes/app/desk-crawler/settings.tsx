@@ -39,13 +39,13 @@ function Settings() {
         <h1 className="font-display text-3xl font-bold">Settings</h1>
         <p className="mt-2">Playing as <strong>{me.user.publicAlias}</strong>, the name other players see on leaderboards and TRMNL screens.</p>
       </header>
-      <Card title="Adventures"><div ref={adventures}>
+      <Card title="Adventures" icon="travel"><div ref={adventures}>
         {hero.activationState !== 'active' ? (
           <p>Your hero is ready. Save the Desk Crawler plugin in TRMNL to start adventures.</p>
         ) : hero.status === 'paused' ? (
           <>
             <p>Paused. Nothing is earned until you resume, and there is no catch-up.</p>
-            <Button className="mt-3" pending={resume.pending} busyLabel="Resuming…" disabled={!healthy || pause.pending} onClick={() => resume.run({}, 'Adventures resumed. Your hero joins the next adventure.')}>
+            <Button className="mt-3" icon="play" pending={resume.pending} busyLabel="Resuming…" disabled={!healthy || pause.pending} onClick={() => resume.run({}, 'Adventures resumed. Your hero joins the next adventure.')}>
               Resume adventures
             </Button>
           </>
@@ -54,7 +54,7 @@ function Settings() {
         ) : (
           <>
             <p>Pausing stops encounters and rewards until you resume. Recent XP ages out meanwhile, so your rank can drop.</p>
-            <Button className="mt-3" variant="secondary" pending={pause.pending} busyLabel="Pausing…" disabled={!healthy || resume.pending || (hero.status !== 'exploring' && hero.status !== 'resting')} onClick={() => setAskPause(true)}>
+            <Button className="mt-3" icon="pause" variant="secondary" pending={pause.pending} busyLabel="Pausing…" disabled={!healthy || resume.pending || (hero.status !== 'exploring' && hero.status !== 'resting')} onClick={() => setAskPause(true)}>
               Pause adventures
             </Button>
             <ConfirmSheet open={askPause} title="Pause adventures?" confirmLabel="Pause" busyLabel="Pausing…" cancelLabel="Keep adventuring" pending={pause.pending} disabled={!healthy} onClose={() => setAskPause(false)} onConfirm={async () => { if (await pause.run({}, 'Adventures paused.')) setAskPause(false) }}>
@@ -65,7 +65,7 @@ function Settings() {
         {hero.status === 'dead' || hero.status === 'travelling' ? <p className="mt-2 text-sm text-muted">You can pause after your hero returns from {hero.status === 'dead' ? 'recovering' : 'travelling'}.</p> : null}
         {!healthy ? <p className="mt-2 text-sm">Paused for a service check.</p> : null}
       </div></Card>
-      <Card title="Public profile"><div ref={sharing}>
+      <Card title="Public profile" icon="eye"><div ref={sharing}>
         {hero.activationState !== 'active' ? (
           <p>Your hero can have a public page once adventures start.</p>
         ) : hero.publicProfile ? (
@@ -85,7 +85,7 @@ function Settings() {
         )}
       </div></Card>
       <DeskKeepsakes />
-      <Card title="TRMNL installations">
+      <Card title="TRMNL installations" icon="plug">
         <p className="mb-3 text-sm text-muted">TRMNL plugin installations showing your hero.</p>
         {connections === undefined ? <LoadingState label="Loading installations…" /> : connections.length > 0 ? (
           <ul className="flex flex-col divide-y divide-rule">
@@ -96,7 +96,7 @@ function Settings() {
                   <span className="ml-2 text-sm text-muted">{c.state === 'active' ? 'Connected' : c.state === 'uninstalled' ? 'Uninstalled' : 'Disconnected'}</span>
                 </span>
                 {c.state === 'active' ? (
-                  <Button allowOffline variant="secondary" disabled={disconnect.pending} onClick={() => { disconnect.clearFeedback(); setDisconnectId(c.id) }}>
+                  <Button allowOffline icon="plug" variant="secondary" disabled={disconnect.pending} onClick={() => { disconnect.clearFeedback(); setDisconnectId(c.id) }}>
                     Disconnect
                   </Button>
                 ) : null}
@@ -176,7 +176,7 @@ function ShareHeroLink({ alias, heroName, notify }: { alias: string; heroName: s
   }
   return (
     <>
-      {canShare ? <Button onClick={share}>Share</Button> : null}
+      {canShare ? <Button icon="share" onClick={share}>Share</Button> : null}
       <Button variant={canShare ? 'secondary' : 'primary'} onClick={copy}>Copy link</Button>
     </>
   )

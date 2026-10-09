@@ -10,6 +10,7 @@ import { errorMessage } from '../../../lib/intent'
 import { useOnline } from '../../../lib/network'
 import { Submission } from '../../../lib/submission'
 import { ActionFeedback, BUTTON_SECONDARY, Button, LINK_BUTTON } from '../../../lib/ui'
+import { Glyph } from '../../../lib/glyphs'
 
 export function KeepsakeIcon({ pixels }: { pixels: readonly string[] }) {
   const path = pixels.flatMap((row, y) => [...row.matchAll(/#+/g)].map((run) => `M${run.index} ${y}h${run[0].length}v1h-${run[0].length}z`)).join('')
@@ -105,8 +106,8 @@ export function KeepsakeCallout() {
         <KeepsakeIcon pixels={shown.pixels} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="hud text-hud-sm text-gold-ink">{earned ? 'Collected' : 'New this week'}</p>
-        <h2 id="keepsake-callout-title" className="mt-0.5 font-display text-lg leading-tight font-bold sm:text-2xl">{earned ? `${earned.name} is on your shelf` : 'Keepsake code on your TRMNL'}</h2>
+        <p className="hud text-hud-sm whitespace-nowrap text-gold-ink">{earned ? 'Collected' : 'This week'}</p>
+        <h2 id="keepsake-callout-title" className="mt-0.5 font-display text-lg leading-tight font-bold sm:text-2xl">{earned ? `${earned.name} is on your shelf` : 'Keepsake code ready'}</h2>
       </div>
       {earned
         ? <Link to="/app/desk-crawler/settings" hash="desk-keepsakes" className={`${LINK_BUTTON} ${BUTTON_SECONDARY} shrink-0 whitespace-nowrap`}>Shelf</Link>
@@ -129,7 +130,7 @@ export function DeskKeepsakes() {
 
   return <section id="desk-keepsakes" aria-labelledby="keepsakes-title" className="window min-w-0 scroll-mt-20 px-4 pt-3 pb-4 sm:px-5">
     <div className="flex flex-wrap items-baseline justify-between gap-2">
-      <h2 id="keepsakes-title" className="font-display text-2xl font-bold">Desk keepsakes</h2>
+      <h2 id="keepsakes-title" className="flex items-center gap-3 font-display text-2xl font-bold"><Glyph name="keepsake" size={24} className="text-gold-ink" />Desk keepsakes</h2>
       {collection ? <p className="text-sm tabular-nums">{collection.totalCollected.toLocaleString()} collected</p> : null}
     </div>
     <p className="mt-3 max-w-prose text-sm text-muted">A souvenir for keeping Desk Crawler on your desk. Once a week your TRMNL shows a keepsake code. Enter it here to add the design to your shelf.</p>
@@ -142,8 +143,9 @@ export function DeskKeepsakes() {
       <p id="keepsake-code-help" className="mt-3 max-w-prose text-sm text-muted">{collection.connected ? 'The code sits beside “Keepsake” on your TRMNL screen. The preview on this site leaves it out.' : 'Reconnect the Desk Crawler plugin in TRMNL to receive keepsake codes.'}</p>
       <ActionFeedback error={error} message={message} />
       <ul aria-label="Your keepsake shelf" className="mt-5 grid grid-cols-1 gap-x-6 gap-y-4 min-[480px]:grid-cols-2 sm:grid-cols-3 sm:gap-y-5">
-        {keepsakeShelf(collection.totalCollected).map((item) => <li key={item.id} className={`flex items-center gap-3 ${item.count ? '[&>svg]:text-gold-ink' : 'text-muted'}`}>
-          <KeepsakeIcon pixels={item.pixels} />
+        {/* Collected designs sit in a solid night tile in gold; the rest are dark silhouettes in a dashed edge, still to earn. */}
+        {keepsakeShelf(collection.totalCollected).map((item) => <li key={item.id} className={`flex items-center gap-3 ${item.count ? '' : 'text-muted'}`}>
+          <span aria-hidden="true" className={`grid size-12 shrink-0 place-items-center border-[3px] bg-night ${item.count ? 'border-night text-gold-ink' : 'border-dashed border-faint text-raised'}`}><KeepsakeIcon pixels={item.pixels} /></span>
           <div className="min-w-0"><p className="text-sm font-semibold">{item.name}</p><p className="mt-0.5 text-sm tabular-nums">{item.count ? `${item.count.toLocaleString()} collected` : 'Not collected yet'}</p></div>
         </li>)}
       </ul>

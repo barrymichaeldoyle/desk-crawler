@@ -90,7 +90,7 @@ Biome control shows unlocked choices and locked requirements. Explain travel arr
 
 Use potion shows available count and projected heal. The Bag page states the heal rule (40% of max HP) with the hero's own HP figure, and the help page explains the rule and the automatic drink threshold (Barry noted on 2026-10-07 that the amount was not stated anywhere). Hide or explain unavailable/full-HP cases. Manual actions affect live web state promptly; e-ink will reflect them on its next scheduled render.
 
-Achievements (D65) sit under Records: earned families as cards (name, tier numeral, blurb, earned date, rarity band and share from the hourly publication, progress toward the next tier), unearned families collapsed behind "N more to find" as "?" cards that show only the category and the first tier's rarity, never a Legendary preview. Below twenty ranked heroes the share reads "3 of 11 heroes". No timers, streaks or task list; nothing is recomputed on a visit. See [achievements](achievements.md).
+Achievements (D65) sit under Records: earned families as a grid of badge tiles (the family's glyph, tier numeral and name) that each open a sheet with the blurb, earned date, rarity band and share from the hourly publication and a meter toward the next tier (cards until 2026-10-09, when they made the Hero page about 1,000px longer on a phone), unearned families collapsed behind "N more to find" as "?" cards that show only the category and the first tier's rarity, never a Legendary preview. Below twenty ranked heroes the share reads "3 of 11 heroes". No timers, streaks or task list; nothing is recomputed on a visit. See [achievements](achievements.md).
 
 ## Inventory
 

@@ -216,6 +216,18 @@
   .notice-rise {
     animation: sheet-rise 160ms steps(4, end) both;
   }
+  /* A one-shot gain: the coin hops like a collected coin, in four steps. Never idle, only when gold arrives. */
+  .coin-hop {
+    animation: coin-hop 320ms steps(4, end) both;
+  }
+}
+
+@keyframes coin-hop {
+  0% { transform: translateY(0); }
+  25% { transform: translateY(-4px); }
+  50% { transform: translateY(-6px); }
+  75% { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
 }
 
 @keyframes sheet-rise {

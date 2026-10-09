@@ -1,6 +1,7 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@trmnl-games/backend/api'
+import { SectionTitle } from '../../../lib/glyphs'
 import { PixelIcon } from './-pixelIcon'
 import { KIND_BADGE } from '../../../lib/palette'
 
@@ -34,9 +35,7 @@ export function Raids({ enabled }: { enabled: boolean }) {
   ]
   return (
     <section aria-labelledby="raids-title" className="window flex min-w-0 flex-col gap-3 px-4 pt-3 pb-4 sm:px-5">
-      <h2 id="raids-title" className="font-display text-3xl font-bold">
-        Raids
-      </h2>
+      <SectionTitle id="raids-title" glyph="raid" tone="text-rare-ink">Raids</SectionTitle>
       <p className="text-sm text-muted">Heroes raid each other's desks by chance while exploring. Your stance sets how often yours raids and how often it wins.</p>
       <dl className="grid grid-cols-2 gap-x-4 min-[480px]:gap-x-6">
         {tally.map(([label, value]) => (

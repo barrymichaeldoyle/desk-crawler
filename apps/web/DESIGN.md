@@ -187,7 +187,7 @@ The companion is not a dashboard about a game; it is the game's own screen. The 
 
 The ground is a dark arcade screen. Panels sit one step lighter inside a hard 3px black outline. Game colours mean one thing everywhere: hearts red, XP green, coins gold, travel sky, rare violet. Arcade lettering (Press Start 2P) is reserved for the HUD voice: labels, nav, counters, buttons and the dialogue line, always small and uppercase. Pixelify Sans titles the page and its sections; the system sans carries every sentence so reading stays fast. The world is dark only.
 
-The TRMNL is the one monochrome object. It sits in a plum bezel with a white e-ink screen showing the device's own framework templates; the companion's colour stops at its edge. Motion is scarce and stepped: the dialogue arrow's two-step bob, the e-ink refresh flash, and sheets and notices stepping into place in four frames.
+The TRMNL is the one monochrome object. It sits in a plum bezel with a white e-ink screen showing the device's own framework templates; the companion's colour stops at its edge. Motion is scarce and stepped: the dialogue arrow's two-step bob, the e-ink refresh flash, sheets and notices stepping into place in four frames, and one-shot gains (the coin hopping when gold arrives, a to-do checkbox hopping when ticked off) in four steps.
 
 **Key Characteristics:**
 - Dark arcade ground, plum windows in 3px night outlines, cream text; dark theme only.
@@ -313,13 +313,20 @@ Chunky arcade keys in the HUD voice.
 - **Disclosure:** a currentColor pixel triangle that turns down when open.
 - **Error:** a semibold small sentence in heart-red-ink with role alert.
 
+### Glyphs
+- 8x8 cell grids drawn at integer scale (16px, 24px for titles, 8px for rank arrows) in `currentColor`. Log-kind glyphs live in `packages/desk-crawler/src/art/glyphs.ts` because the device draws them; companion-only glyphs (nav, records, buttons, achievement families) live in `apps/web/src/lib/glyphs.tsx` and never reach a template.
+- **Section titles** (`SectionTitle`, and `Card`'s `icon`) lead with a 24px glyph in the stat ink they are about (to-do green, raids violet, stance and world map sky, everything else gold), so the long Hero page has landmarks.
+- **Buttons** may lead with a 16px glyph (`Button`'s `icon`) when it names the action at a glance: potion, pause, play, travel, tag for Sell, coin for Buy. Skip it where the label would wrap.
+- **Records** rows lead with their stat's glyph in its ink; **Rankings** mark first place with a crown and second and third with medals beside the gold numerals, and rank changes carry an up or down arrow beside the word.
+
 ### Navigation (HUD Nav)
-- **Style:** sticky night bar with a 4px raised-plum bottom edge; the gold-tile mark and "Desk Crawler" in gold HUD type at left from 640px; four equal tabs (Hero, Bag, Ranks, Settings), muted HUD Micro (HUD Label from 640px).
+- **Style:** sticky night bar with a 4px raised-plum bottom edge; the gold-tile mark and "Desk Crawler" in gold HUD type at left from 640px; four equal tabs (Hero, Bag, Ranks, Settings), muted HUD Micro (HUD Label from 640px). Each tab carries its glyph (hero, bag, trophy, cog) above the label on phones and beside it from 1024px; between 640 and 1024px the label stands alone beside the cursor.
 - **Active:** gold-ink text with the gold pixel cursor arrow (aria-current); hover to cream.
 
 ### Segmented Tabs and Text Filters
 - **Segmented tabs:** square cells inside a 2px cream edge, divided by 2px edges; the pressed cell fills Raised Plum with gold text and the cursor arrow. Ranking period, device layout.
-- **Text filters:** muted HUD Micro (or body small for the device picker); the pressed option goes gold-ink with the cursor arrow. Quest-log filters, device picker.
+- **Text filters:** muted HUD Micro (or body small for the device picker); the pressed option goes gold-ink with the cursor arrow. Device picker.
+- **Badge filters:** the quest log's filters are 44px square badges holding the glyph of the lines they keep ("All" in Small Label), so all seven fit one phone row. Unpressed: window plum, raised edge, muted glyph. Pressed: the kind's badge fill, night glyph, gold outline; the chosen filter's name reads beneath in Small Label.
 
 ### Game Screen (signature)
 - **Frame:** 4px night outline; biome bands behind the 1-bit scene in multiply blend.
@@ -333,13 +340,16 @@ Chunky arcade keys in the HUD voice.
 - The segmented-tab pattern as a radiogroup: three equal cells (Cautious, Balanced, Bold) in a 2px cream edge, the chosen one pressed in Raised Plum with gold text and the cursor arrow; one body-small line beneath names the chosen stance, its blurb and its thresholds.
 
 ### Keepsake Strip
-- A window strip in a 4px gold outline: a 48px night tile with the design, "New this week" in HUD Label gold, the title in Title type, and Enter code as the primary button; the code form opens beneath a 3px night rule. After a claim the strip names the keepsake and offers Shelf as a secondary button.
+- A window strip in a 4px gold outline: a 48px night tile with the design, "This week" in HUD Label gold, "Keepsake code ready" in Title type, and Enter code as the primary button; the code form opens beneath a 3px night rule. After a claim the strip names the keepsake and offers Shelf as a secondary button.
 
 ### While You Were Away Tally
 - Night fill in a 4px gold frame: HUD Title heading in gold, the visit time beside it, then a dashed-rule ledger of HUD Micro labels and HUD Title figures in their stat ink (zero in faint). A 3px gold-edged HUD line counts gains during the visit.
 
 ### Quest Log Row
-- A compact window: a 32px badge (2px night edge) filled with its kind's game colour holding a night glyph, the narrative sentence beside it (bold names), then the timestamp and change chips in stat inks. Day headers are HUD Micro, sticky.
+- A compact window: a 32px badge (2px night edge) filled with its kind's game colour holding a night glyph, the narrative sentence beside it (bold names), then the timestamp and change chips in stat inks. Day headers are HUD Micro, sticky. Companion commands (all `system` lines) take their command's glyph (coin for a sale or purchase, sword for equipping, play, pause, door for the first shift, potion, drawer, shield for stance). Achievements earned one after another in the same minute fold into one line ("3 achievements: A, B and C"). The log shows twelve lines, then Show more adds twenty.
+
+### Achievement Badge
+- A square-ish window tile (3px night edge, at least 5.25rem wide, three across on a phone): a 40px gold badge holding the family's glyph in night, its tier numeral on a night tab at the top-right, and the name in two lines of small semibold text. Tapping opens a sheet with the blurb, rarity, earned date and a gold meter toward the next tier. Unearned families stay behind "N more to find" as dashed "?" cards, two across.
 
 ### Bag Slot
 - A square night cell in a 3px edge coloured by rarity (common on Raised Plum, uncommon XP green, rare violet, epic gold), holding the piece's 16x16 icon at 3x (ink in cream, white cells in Raised Plum) with its gem at 2x in the bottom-left corner. Top-right: a green pixel arrow for an upgrade or a muted `L12` level lock on a night tab; top-left in a sale: a 2px cream checkbox that fills gold with a night tick, the edge going gold. A held find wears a gold dashed edge; an empty slot is a dithered cell in a dashed Raised Plum edge; a busy slot dims its icon under a dither. Slots sit in an auto-filling grid of 4.5rem minimum cells (four across on a phone).

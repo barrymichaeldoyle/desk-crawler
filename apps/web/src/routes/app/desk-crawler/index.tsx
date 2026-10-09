@@ -10,6 +10,7 @@ import { artUrl, useIntent } from '../../../lib/intent'
 import { BUTTON_PRIMARY, Button, LoadingState, NoticeBar, useFocusWithin, useNotice } from '../../../lib/ui'
 import { BIOME_SWATCH } from '../../../lib/palette'
 import { preload } from '../../../lib/preload'
+import { Glyph, SectionTitle } from '../../../lib/glyphs'
 import { ReturnRecap } from './-recap'
 import { GameScreen, latestLogQuery } from './-gameScreen'
 import { AdventureLog } from './-log'
@@ -64,7 +65,7 @@ function HeroHome() {
           <Raids enabled={hero.raidsEnabled === true} />
           <Achievements />
           <section aria-labelledby="trmnl-title" className="flex flex-col gap-3">
-            <h2 id="trmnl-title" className="font-display text-3xl font-bold">On your TRMNL</h2>
+            <SectionTitle id="trmnl-title" glyph="screen" tone="text-ink">On your TRMNL</SectionTitle>
             <Suspense fallback={<DeviceStandIn sceneUrl={artUrl(hero.scenePath)} heroName={hero.name} />}>
               <DevicePreview sceneUrl={artUrl(hero.scenePath)} heroName={hero.name} />
             </Suspense>
@@ -117,7 +118,8 @@ function LiveGain({ hero }: { hero: { lifetimeXp: number; level: number; counter
   if (gained.length === 0) return null
   const label = (unit: string, value: number) => (unit === 'XP' || unit === 'gold' || value === 1 ? unit : unit.replace(/^(\w+)/, '$1s'))
   return (
-    <p role="status" className="hud border-[3px] border-gold px-3 py-2 text-hud-sm text-gold-ink">
+    // Steps in again each time it changes, so a fresh gain while the page is open is noticed.
+    <p key={gained.map(([unit, value]) => unit + value).join()} role="status" className="hud notice-rise border-[3px] border-gold px-3 py-2 text-hud-sm text-gold-ink">
       While you've been here: {gained.map(([unit, value]) => `+${value.toLocaleString()} ${label(unit, value)}`).join(', ')}
     </p>
   )
@@ -186,24 +188,25 @@ function HeroSheet({ hero }: { hero: HeroView }) {
     <div className="flex min-w-0 flex-col gap-8">
       <section ref={commands} aria-label="Commands" className="flex flex-col gap-2">
         {canAct || hero.status === 'paused' || hero.status === 'sleeping' ? (
-          <div className="flex flex-wrap gap-2">
+          // Full-width keys stacked on phones so their edges line up; a row from 640px.
+          <div className="grid gap-2 sm:flex sm:flex-wrap">
             {hero.status === 'sleeping' ? (
-              <Link to="/app/desk-crawler/inventory" className={`inline-flex min-h-11 items-center px-4 ${BUTTON_PRIMARY}`}>
-                Open bag
+              <Link to="/app/desk-crawler/inventory" className={`inline-flex min-h-11 items-center justify-center gap-2.5 px-4 ${BUTTON_PRIMARY}`}>
+                <Glyph name="bag" />Open bag
               </Link>
             ) : null}
             {hero.status === 'paused' ? (
-              <Button pending={resume.pending} busyLabel="Resuming…" disabled={!healthy} onClick={() => resume.run({}, 'Adventures resumed. Your hero joins the next adventure.')}>
+              <Button icon="play" pending={resume.pending} busyLabel="Resuming…" disabled={!healthy} onClick={() => resume.run({}, 'Adventures resumed. Your hero joins the next adventure.')}>
                 Resume adventures
               </Button>
             ) : null}
             {canAct ? (
-              <Button variant={hero.hp < hero.maxHp && bag?.potions ? 'primary' : 'secondary'} pending={potion.pending} busyLabel="Drinking…" disabled={hero.hp >= hero.maxHp || !bag?.potions} onClick={() => potion.run({}, `Potion drunk, +${healing} HP.`)}>
+              <Button icon="potion" variant={hero.hp < hero.maxHp && bag?.potions ? 'primary' : 'secondary'} pending={potion.pending} busyLabel="Drinking…" disabled={hero.hp >= hero.maxHp || !bag?.potions} onClick={() => potion.run({}, `Potion drunk, +${healing} HP.`)}>
                 {potionLabel}
               </Button>
             ) : null}
             {canAct ? (
-              <Button variant="secondary" pending={pause.pending} busyLabel="Pausing…" onClick={() => setAsk({ kind: 'pause' })}>
+              <Button icon="pause" variant="secondary" pending={pause.pending} busyLabel="Pausing…" onClick={() => setAsk({ kind: 'pause' })}>
                 Pause adventures
               </Button>
             ) : null}
@@ -216,7 +219,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
 
       {hero.choice ? (
         <section aria-labelledby="choice-title" className="flex flex-col gap-3 border-[3px] border-night bg-panel p-4">
-          <h2 id="choice-title" className="font-display text-2xl font-bold">{hero.choice.title}</h2>
+          <SectionTitle id="choice-title" glyph="choice" tone="text-sky-ink" size="text-2xl">{hero.choice.title}</SectionTitle>
           <p>{hero.choice.prompt}</p>
           <div className="flex flex-wrap gap-2">
             {hero.choice.options.map((option) => {
@@ -237,7 +240,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
       {hero.stances.length > 0 ? (
         <section aria-labelledby="stance-title" className="flex flex-col gap-3">
           <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-            <h2 id="stance-title" className="font-display text-3xl font-bold">Stance</h2>
+            <SectionTitle id="stance-title" glyph="shield" tone="text-sky-ink">Stance</SectionTitle>
             <p className="text-sm text-muted">Applies from the next adventure.</p>
           </div>
           {/* One segmented row, like the ranking period: the chosen cell is pressed and its rule reads underneath. */}
@@ -263,7 +266,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
       ) : null}
 
       <section aria-labelledby="map-title">
-        <h2 id="map-title" className="font-display text-3xl font-bold">World map</h2>
+        <SectionTitle id="map-title" glyph="pin" tone="text-sky-ink">World map</SectionTitle>
         {/* Phones get one row per world (number, name, status, Travel); from 640px the three tiles sit side by side on their dashed path. */}
         <ol className="mt-4 grid gap-2 sm:grid-cols-3 sm:gap-[15px]">
           {hero.biomes.map((biome, index) => {
@@ -281,7 +284,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
                   <span className="text-sm font-semibold">{biome.unlocked ? (here ? 'Exploring' : onTheWay ? 'Arriving next adventure' : 'Unlocked') : `Locked until level ${biome.unlockLevel}`}</span>
                 </span>
                 {biome.unlocked && !here && !onTheWay ? (
-                  <Button className="shrink-0 sm:mt-2 sm:self-start" pending={travel.pending} busyLabel="Travelling…" aria-label={travel.pending ? undefined : `Travel to ${biome.name}`} disabled={!canAct} onClick={() => setAsk({ kind: 'travel', biomeId: biome.id })}>
+                  <Button icon="travel" className="shrink-0 sm:mt-2 sm:self-start" pending={travel.pending} busyLabel="Travelling…" aria-label={travel.pending ? undefined : `Travel to ${biome.name}`} disabled={!canAct} onClick={() => setAsk({ kind: 'travel', biomeId: biome.id })}>
                     Travel
                   </Button>
                 ) : null}

@@ -3,6 +3,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
+import { Glyph } from '../../../lib/glyphs'
 import { seo } from '../../../lib/seo'
 import { Button, Card, LoadingState } from '../../../lib/ui'
 import { preload } from '../../../lib/preload'
@@ -65,7 +66,7 @@ function Leaderboard() {
             <p className="mb-3 font-semibold">
               You are <span className="text-gold-ink">#{data.own.rank.toLocaleString()}</span> of {data.totalPlayers.toLocaleString()}
               {board !== 'overall' && data.own.score !== null ? ` with ${data.own.score.toLocaleString()} XP` : ''}
-              {data.own.rankDelta ? `, ${data.own.rankDelta > 0 ? 'up' : 'down'} ${Math.abs(data.own.rankDelta)} since the last update` : ''}
+              {data.own.rankDelta ? <>, <span className={`inline-flex items-center gap-1 ${data.own.rankDelta > 0 ? 'text-xp-ink' : 'text-hp-ink'}`}><Glyph name={data.own.rankDelta > 0 ? 'up' : 'down'} size={8} />{data.own.rankDelta > 0 ? 'up' : 'down'} {Math.abs(data.own.rankDelta)}</span> since the last update</> : ''}
             </p>
           ) : ownGroup !== data.cohortKey && board !== 'overall' ? (
             <Button variant="quiet" onClick={() => setCohortKey(undefined)}>
@@ -80,7 +81,9 @@ function Leaderboard() {
             <ol className="flex flex-col divide-y divide-rule">
               {data.entries.map((row: { rank: number; name: string; hero_name: string; level: number; score: number; profile?: boolean }) => (
                 <li key={row.rank} aria-current={data.own?.rank === row.rank ? 'true' : undefined} className={`flex min-w-0 items-start gap-3 py-3 ${data.own?.rank === row.rank ? '-mx-2 bg-ground px-2 outline-2 outline-gold' : ''}`}>
-                  <span className={`w-8 text-right font-bold tabular-nums ${row.rank <= 3 ? 'hud text-sm leading-6 text-gold-ink' : ''}`}>{row.rank}</span>
+                  {/* The podium wears a crown and medals beside its gold numerals; the rest keep a blank column so names stay aligned. */}
+                  <span aria-hidden="true" className="flex h-6 w-4 shrink-0 items-center text-gold-ink">{row.rank === 1 ? <Glyph name="crown" /> : row.rank <= 3 ? <Glyph name="medal" /> : null}</span>
+                  <span className={`-ml-1 w-7 text-right font-bold tabular-nums ${row.rank <= 3 ? 'hud text-sm leading-6 text-gold-ink' : ''}`}>{row.rank}</span>
                   <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">
                     {/* D109: a hero whose owner made its page public links to it. */}
                     {row.profile ? (

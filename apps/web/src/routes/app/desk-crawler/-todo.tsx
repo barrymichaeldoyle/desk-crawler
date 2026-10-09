@@ -5,6 +5,8 @@ import { useIntent } from '../../../lib/intent'
 import { ConfirmSheet, Consequences } from './-confirm'
 import { captureAnalytics } from '../../../lib/analytics'
 import { PixelIcon } from './-pixelIcon'
+import { useGains } from '../../../lib/ui'
+import { SectionTitle } from '../../../lib/glyphs'
 
 export type TodoView = {
   tasks: Array<{ slot: number; templateId: string; label: string; progress: number; target: number; reward: number; done: boolean; biomeId: string | null; local: boolean }>
@@ -34,7 +36,7 @@ export function TodoCard({ todo, biomes, healthy, notify }: { todo: TodoView; bi
   return (
     <section aria-labelledby="todo-title" className="window flex min-w-0 flex-col gap-3 px-4 pt-3 pb-4 sm:px-5">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-        <h2 id="todo-title" className="font-display text-3xl font-bold">To-do</h2>
+        <SectionTitle id="todo-title" glyph="todo" tone="text-xp-ink">To-do</SectionTitle>
         <p className="text-sm text-muted">{done === 0 ? `Finished tasks get new ones at the ${clock(todo.refillHour)} stand-up.` : `New tasks at the ${clock(todo.refillHour)} stand-up.`}</p>
       </div>
       <ol aria-label="Tasks" className="flex flex-col gap-3">
@@ -42,9 +44,7 @@ export function TodoCard({ todo, biomes, healthy, notify }: { todo: TodoView; bi
           const pct = Math.max(0, Math.min(100, Math.round((task.progress * 100) / task.target)))
           return (
             <li key={`${task.slot}-${task.templateId}-${task.label}`} className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-x-3">
-              <span aria-hidden="true" className={`grid size-8 place-items-center border-2 border-night ${task.done ? 'bg-xp' : 'bg-panel'}`}>
-                <PixelIcon kind={task.done ? 'todo' : 'todoOpen'} plain className="text-night" />
-              </span>
+              <TaskBox done={task.done} />
               <div className="flex min-w-0 flex-col gap-1">
                 <p className="pt-1">
                   <span className="sr-only">{task.done ? 'Done: ' : ''}</span>
@@ -102,5 +102,15 @@ export function TodoCard({ todo, biomes, healthy, notify }: { todo: TodoView; bi
         ) : null}
       </ConfirmSheet>
     </section>
+  )
+}
+
+/** The task's checkbox badge; ticking off while the page is open hops it once, like a collected coin. */
+function TaskBox({ done }: { done: boolean }) {
+  const ticks = useGains(done ? 1 : 0)
+  return (
+    <span key={ticks} aria-hidden="true" className={`grid size-8 place-items-center border-2 border-night ${done ? 'bg-xp' : 'bg-panel'} ${ticks > 0 ? 'coin-hop' : ''}`}>
+      <PixelIcon kind={done ? 'todo' : 'todoOpen'} plain className="text-night" />
+    </span>
   )
 }

@@ -96,7 +96,8 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
       .take(MAX_LOGS)
     // D110: a raid rival whose name has since changed or gone reads "Hidden player" here too.
     const summaries = await maskRaidSummaries(ctx, recent)
-    logs = recent.map((log, index) => ({ at: log.at, kind: log.kind, summary: summaries[index]!, deltas: displayLogDeltas(log) }))
+    // D111: a loot find that went in the desk drawer takes the drawer glyph.
+    logs = recent.map((log, index) => ({ at: log.at, kind: log.kind === 'loot' && 'drawerFind' in log.detail && log.detail.drawerFind ? 'drawer' : log.kind, summary: summaries[index]!, deltas: displayLogDeltas(log) }))
     // The most recently completed night or day period in the owner's local time (D75), the same one buildPayload labels.
     const period = recapPeriod(now, utcOffset)
     const window = await ctx.db

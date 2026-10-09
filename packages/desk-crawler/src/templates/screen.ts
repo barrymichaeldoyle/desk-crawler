@@ -1,5 +1,6 @@
 /**
- * Four self-contained TRMNL layouts. Template v48 adds the raid glyph (a burglar's mask) for raid stories and the recap's
+ * Four self-contained TRMNL layouts. Template v49 adds the desk drawer (D111): the bag count gains "+N" while the drawer
+ * holds gear ("20/20+6" at its widest, with no space so five-digit gold and the Cautious stance still fit the OG full header), and a find that went in the drawer takes a drawer glyph. Template v48 adds the raid glyph (a burglar's mask) for raid stories and the recap's
  * raid fact, and widens the ledger's gold column from 78 to 92 pixels so a raid's four-digit gold swing fits (D110). Template v47 moves the OG full landscape's code into the view's corner as a smaller
  * corner-cut code to the `/dc` short link, and runs the gear line on under it (D108). Template v46 closes the X half's details column to small gaps, so its board keeps a
  * third row above the recap ribbon (D104). Template v45 moves the X side landscape's code to the header's top-right corner,
@@ -36,7 +37,7 @@
 import { GLYPHS, glyphRows } from '../art/glyphs'
 import { hudMarkUri } from '../art/hud'
 
-export const TEMPLATE_VERSION = 48
+export const TEMPLATE_VERSION = 49
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -159,8 +160,8 @@ const COUNTER_GAP = 'gap--medium'
 const counter = (icon: string, text: string, classes = '') => `<div class="${classes}flex flex--row flex--center-y gap--[3px] no-shrink"><img class="${COUNTER_ICON}" src="{{ ${icon} }}" alt=""><span class="label lg:title--small">${text}</span></div>`
 /** Attack and defense (the companion's ATK/DEF, D60): the level base plus the equipped gear. */
 const attackDefense = (classes = '') => counter('hud_sword', '{{ attack }}', classes) + counter('hud_shield', '{{ defense }}', classes)
-/** Bag slots in use, always beside the potions (D88). Null (unlinked) shows nothing. */
-const bagCount = (classes = '') => `{% if bag_capacity %}${counter('hud_bag', '{{ bag_used }}/{{ bag_capacity }}', classes).replace('<div class="', '<div data-bag-count="true" class="')}{% endif %}`
+/** Bag slots in use, always beside the potions (D88), then "+N" for gear in the desk drawer (D111). Null (unlinked) shows nothing. */
+const bagCount = (classes = '') => `{% if bag_capacity %}${counter('hud_bag', '{{ bag_used }}/{{ bag_capacity }}{% if drawer_used > 0 %}+{{ drawer_used }}{% endif %}', classes).replace('<div class="', '<div data-bag-count="true" class="')}{% endif %}`
 /**
  * The stance under its gauge mark, needle low, centred or high (D103), after the bag count. A setting rather than a
  * count, it outlasts the log line that changed it. Empty (unlinked, or a catalog without stances) shows nothing.

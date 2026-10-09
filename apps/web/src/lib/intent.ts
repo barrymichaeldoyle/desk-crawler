@@ -1,5 +1,6 @@
 import { ConvexError } from 'convex/values'
 import { useMutation } from 'convex/react'
+import type { OptimisticUpdate } from 'convex/browser'
 import type { FunctionReference } from 'convex/server'
 import { useRef, useState } from 'react'
 import { ExpiredSubmission, Submission } from './submission'
@@ -18,10 +19,14 @@ export function errorMessage(error: unknown): string {
 
 /**
  * Run a state-changing intent with a fresh operation ID per action, a pending
- * flag that blocks double clicks, and a readable error.
+ * flag that blocks double clicks, and a readable error. A preference the server
+ * only stores (a switch, the stance, profile visibility) passes `optimisticUpdate`
+ * so the page changes on the tap; Convex rolls it back if the intent fails.
+ * Gains and spends never do: the server decides those.
  */
-export function useIntent<Args extends { operationId: string }>(fn: FunctionReference<'mutation', 'public', Args>, options: { onFeedback?: (feedback: { error: string | null; message: string | null }) => void } = {}) {
-  const mutate = useMutation(fn)
+export function useIntent<Args extends { operationId: string }>(fn: FunctionReference<'mutation', 'public', Args>, options: { onFeedback?: (feedback: { error: string | null; message: string | null }) => void; optimisticUpdate?: OptimisticUpdate<Args> } = {}) {
+  const base = useMutation(fn)
+  const mutate = options.optimisticUpdate ? base.withOptimisticUpdate(options.optimisticUpdate) : base
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)

@@ -28,7 +28,14 @@ function Settings() {
   const [askPause, setAskPause] = useState(false)
   const [disconnectId, setDisconnectId] = useState<string | null>(null)
   const resume = useIntent(api.heroes.resume, { onFeedback: notify })
-  const profile = useIntent(api.heroes.setPublicProfile, { onFeedback: notify })
+  // Visibility is a stored preference, so the card flips on the tap and rolls back if the save fails.
+  const profile = useIntent(api.heroes.setPublicProfile, {
+    onFeedback: notify,
+    optimisticUpdate: (store, { visible }) => {
+      const current = store.getQuery(api.heroes.mine, {})
+      if (current) store.setQuery(api.heroes.mine, {}, { ...current, publicProfile: visible })
+    },
+  })
   // Pause and Resume swap places when they succeed; focus follows to whichever control takes over.
   const adventures = useFocusWithin<HTMLDivElement>(hero?.status)
   const sharing = useFocusWithin<HTMLDivElement>(hero?.publicProfile)

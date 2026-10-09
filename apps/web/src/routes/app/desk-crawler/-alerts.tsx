@@ -1,12 +1,14 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
 import { Link, useLocation } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { captureAnalytics } from '../../../lib/analytics'
 import { useIntent } from '../../../lib/intent'
 import { currentSubscription, deviceLabel, endpointFingerprint, pushSupport, subscribePush, type PushSupport } from '../../../lib/push'
 import { Button, Card, LoadingState } from '../../../lib/ui'
+
+type Prefs = { asleep: boolean; merchant: boolean; quietStart: number; quietEnd: number }
 
 type Notify = (feedback: { error: string | null; message: string | null }) => void
 
@@ -26,8 +28,28 @@ const KINDS = [
 export function AlertsCard({ notify }: { notify: Notify }) {
   const { data: alerts } = useQuery(convexQuery(api.alerts.mine, {}))
   const subscribe = useIntent(api.alerts.subscribe, { onFeedback: notify })
-  const save = useIntent(api.alerts.setPreferences, { onFeedback: notify })
-  const remove = useIntent(api.alerts.removeDevice, { onFeedback: notify })
+  const save = useIntent(api.alerts.setPreferences, {
+    onFeedback: notify,
+    optimisticUpdate: (store, { asleep, merchant, quietStart, quietEnd }) => {
+      const current = store.getQuery(api.alerts.mine, {})
+      if (current) store.setQuery(api.alerts.mine, {}, { ...current, asleep, merchant, quietStart, quietEnd, offReason: null })
+    },
+  })
+  // Removing a device drops it from the list on the tap; the last one turns both kinds off, as the server does.
+  const remove = useIntent(api.alerts.removeDevice, {
+    onFeedback: notify,
+    optimisticUpdate: (store, { deviceId }) => {
+      const current = store.getQuery(api.alerts.mine, {})
+      if (!current) return
+      const devices = current.devices.filter((device) => device.id !== deviceId)
+      store.setQuery(api.alerts.mine, {}, { ...current, devices, ...(devices.length === 0 ? { asleep: false, merchant: false } : {}) })
+    },
+  })
+  // Switches and quiet hours show the player's choice at once (the draft) and save in order, latest wins;
+  // a failed save drops the draft, so the card falls back to what the server holds.
+  const [draft, setDraft] = useState<Prefs | null>(null)
+  const queued = useRef<{ prefs: Prefs; message: string } | null>(null)
+  const saving = useRef(false)
   // Browser capabilities are known only after hydration; the server render shows no button.
   const [support, setSupport] = useState<PushSupport>('checking')
   const [thisFingerprint, setThisFingerprint] = useState<string | null>(null)
@@ -45,15 +67,32 @@ export function AlertsCard({ notify }: { notify: Notify }) {
   if (alerts === null) return null
   const timezone = (typeof Intl !== 'undefined' && Intl.DateTimeFormat().resolvedOptions().timeZone) || alerts.timezone
   const thisDevice = alerts.devices.find((device) => device.fingerprint === thisFingerprint)
-  const busy = save.pending || subscribe.pending || remove.pending || asking
+  const busy = subscribe.pending || remove.pending || asking
+  const shown: Prefs = draft ?? { asleep: alerts.asleep, merchant: alerts.merchant, quietStart: alerts.quietStart, quietEnd: alerts.quietEnd }
 
-  const update = async (patch: Partial<{ asleep: boolean; merchant: boolean; quietStart: number; quietEnd: number }>, message: string) => {
-    const next = { asleep: alerts.asleep, merchant: alerts.merchant, quietStart: alerts.quietStart, quietEnd: alerts.quietEnd, ...patch }
+  const update = async (patch: Partial<Prefs>, message: string) => {
+    const next = { ...shown, ...patch }
     if (next.quietStart === next.quietEnd) {
       notify({ error: 'Quiet hours need a different start and end.', message: null })
       return
     }
-    if (await save.run({ ...next, timezone }, message)) captureAnalytics('alerts changed', { asleep: next.asleep, merchant: next.merchant })
+    setDraft(next)
+    queued.current = { prefs: next, message }
+    if (saving.current) return
+    saving.current = true
+    while (queued.current) {
+      const { prefs, message: saved } = queued.current
+      queued.current = null
+      const ok = await save.run({ ...prefs, timezone }, saved)
+      if (!ok) {
+        queued.current = null
+        break
+      }
+      captureAnalytics('alerts changed', { asleep: prefs.asleep, merchant: prefs.merchant })
+    }
+    saving.current = false
+    // The query already holds the saved values when the save resolves, so the draft can go.
+    setDraft(null)
   }
 
   const allow = async () => {
@@ -94,7 +133,7 @@ export function AlertsCard({ notify }: { notify: Notify }) {
             <legend className="sr-only">Alert kinds</legend>
             {KINDS.map((kind) => (
               <label key={kind.id} className="flex min-h-11 cursor-pointer items-start gap-3 py-1">
-                <input type="checkbox" className="mt-1 size-6 shrink-0 accent-gold" checked={alerts[kind.id]} disabled={busy} onChange={(event) => update({ [kind.id]: event.target.checked }, event.target.checked ? `${kind.name} alerts on.` : `${kind.name} alerts off.`)} />
+                <input type="checkbox" className="mt-1 size-6 shrink-0 accent-gold" checked={shown[kind.id]} onChange={(event) => update({ [kind.id]: event.target.checked }, event.target.checked ? `${kind.name} alerts on.` : `${kind.name} alerts off.`)} />
                 <span><strong>{kind.name}</strong><span className="block text-sm">{kind.blurb}</span></span>
               </label>
             ))}
@@ -105,7 +144,7 @@ export function AlertsCard({ notify }: { notify: Notify }) {
               {(['quietStart', 'quietEnd'] as const).map((field) => (
                 <label key={field} className="flex items-center gap-2 text-sm">
                   <span>{field === 'quietStart' ? 'From' : 'Until'}</span>
-                  <select value={alerts[field]} disabled={busy} onChange={(event) => update({ [field]: Number(event.target.value) }, 'Quiet hours saved.')} className="pixel-select min-h-11 border-2 border-edge pr-9 pl-3 text-base">
+                  <select value={shown[field]} onChange={(event) => update({ [field]: Number(event.target.value) }, 'Quiet hours saved.')} className="pixel-select min-h-11 border-2 border-edge pr-9 pl-3 text-base">
                     {HOURS.map((hour) => <option key={hour} value={hour}>{clock(hour)}</option>)}
                   </select>
                 </label>

@@ -169,12 +169,17 @@ function HeroSheet({ hero }: { hero: HeroView }) {
   const potion = useIntent(api.inventory.usePotion, { onFeedback: notify })
   const pause = useIntent(api.heroes.pause, { onFeedback: notify })
   const resume = useIntent(api.heroes.resume, { onFeedback: notify })
-  const stance = useIntent(api.heroes.setStance, { onFeedback: notify })
+  // The stance is a stored preference: once confirmed it shows as chosen at once, and rolls back if the save fails.
+  const stance = useIntent(api.heroes.setStance, {
+    onFeedback: notify,
+    optimisticUpdate: (store, args) => {
+      const current = store.getQuery(api.heroes.mine, {})
+      if (current) store.setQuery(api.heroes.mine, {}, { ...current, stance: args.stance })
+    },
+  })
   const choose = useIntent(api.heroes.choose, { onFeedback: notify })
   const healthy = hero.simulationState !== 'quarantined'
   const canAct = healthy && (hero.status === 'exploring' || hero.status === 'resting')
-  // Only the acting control shows busy (D98); the rest stay live, since the backend serialises intents anyway.
-  const [pendingStance, setPendingStance] = useState<StanceId | null>(null)
   // Anything that could set the hero back or slow it down asks first (the to-do swap, pause, travel, stance, a costly decision).
   const [ask, setAsk] = useState<Ask | null>(null)
   const close = () => setAsk(null)
@@ -251,10 +256,9 @@ function HeroSheet({ hero }: { hero: HeroView }) {
           <div role="group" aria-label="Stance" className="flex border-2 border-edge">
             {hero.stances.map((option) => {
               const chosen = option.id === hero.stance
-              const switching = stance.pending && pendingStance === option.id
               return (
-                <button key={option.id} type="button" aria-pressed={chosen} aria-busy={switching || undefined} aria-disabled={stance.pending || undefined} disabled={!healthy} onClick={() => { if (chosen || stance.pending) return; setAsk({ kind: 'stance', id: option.id }) }} className={`menu-cursor flex min-h-11 flex-1 items-center justify-center px-2 py-2 label-px not-last:border-r-2 not-last:border-edge not-aria-pressed:before:hidden ${chosen ? 'bg-navy text-gold' : switching ? 'bg-rule text-ink' : 'text-muted hover:bg-rule hover:text-ink active:bg-rule active:text-ink disabled:text-muted'}`}>
-                  {switching ? 'Switching…' : option.name}
+                <button key={option.id} type="button" aria-pressed={chosen} aria-disabled={stance.pending || undefined} disabled={!healthy} onClick={() => { if (chosen || stance.pending) return; setAsk({ kind: 'stance', id: option.id }) }} className={`menu-cursor flex min-h-11 flex-1 items-center justify-center px-2 py-2 label-px not-last:border-r-2 not-last:border-edge not-aria-pressed:before:hidden ${chosen ? 'bg-navy text-gold' : 'text-muted hover:bg-rule hover:text-ink active:bg-rule active:text-ink disabled:text-muted'}`}>
+                  {option.name}
                 </button>
               )
             })}
@@ -298,7 +302,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
         {!canAct && hero.status !== 'travelling' && stopNote ? <p className="mt-3 text-sm text-muted">{stopNote}</p> : null}
       </section>
 
-      <AskSheets ask={ask} hero={hero} close={close} intents={{ pause, travel, stance, choose }} onStance={setPendingStance} />
+      <AskSheets ask={ask} hero={hero} close={close} intents={{ pause, travel, stance, choose }} />
 
       <NoticeBar notice={notice} onDismiss={dismiss} />
     </div>
@@ -315,7 +319,7 @@ const pct = (value: number) => `${value}%`
  * The confirmations for the Hero page's commands that could cost progress or pace. Each says what the action costs and
  * whether it can be undone; only its confirm button commits.
  */
-function AskSheets({ ask, hero, close, intents, onStance }: { ask: Ask | null; hero: HeroView; close: () => void; intents: { pause: Run<Record<string, never>>; travel: Run<{ biomeId: string }>; stance: Run<{ stance: StanceId }>; choose: Run<{ optionId: string }> }; onStance: (id: StanceId | null) => void }) {
+function AskSheets({ ask, hero, close, intents }: { ask: Ask | null; hero: HeroView; close: () => void; intents: { pause: Run<Record<string, never>>; travel: Run<{ biomeId: string }>; stance: Run<{ stance: StanceId }>; choose: Run<{ optionId: string }> } }) {
   const healthy = hero.simulationState !== 'quarantined'
   const here = hero.biomes.findIndex((b) => b.id === hero.biomeId)
   const common = { onClose: close, disabled: !healthy }
@@ -349,7 +353,7 @@ function AskSheets({ ask, hero, close, intents, onStance }: { ask: Ask | null; h
     const now = hero.stances.find((s) => s.id === hero.stance)
     if (!next || !now) return null
     return (
-      <ConfirmSheet open title={`Switch to ${next.name}?`} confirmLabel={`Go ${next.name}`} busyLabel="Switching…" cancelLabel={`Stay ${now.name}`} pending={intents.stance.pending} {...common} onConfirm={async () => { onStance(next.id); if (await intents.stance.run({ stance: next.id }, `${next.name} stance from the next adventure.`)) close(); onStance(null) }}>
+      <ConfirmSheet open title={`Switch to ${next.name}?`} confirmLabel={`Go ${next.name}`} busyLabel="Switching…" cancelLabel={`Stay ${now.name}`} pending={intents.stance.pending} {...common} onConfirm={() => { close(); void intents.stance.run({ stance: next.id }, `${next.name} stance from the next adventure.`) }}>
         <p>{next.blurb}</p>
         <Consequences>
           {next.victoryXpPct < now.victoryXpPct ? <li>Wins give <strong>{pct(next.victoryXpPct)} XP</strong> instead of {pct(now.victoryXpPct)}, so your hero levels more slowly.</li> : next.victoryXpPct > now.victoryXpPct ? <li>Wins give {pct(next.victoryXpPct)} XP instead of {pct(now.victoryXpPct)}.</li> : null}

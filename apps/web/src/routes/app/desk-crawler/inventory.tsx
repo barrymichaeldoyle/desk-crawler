@@ -15,6 +15,7 @@ import { retainSellableSelection, saleIsCurrent } from '../../../lib/bagSelectio
 import { RARITY_TONE } from '../../../lib/palette'
 import { EmptySlot, Gem, PotionSlot, Sheet, SheetTitle, Slot, SlotPreview } from './-bagSlots'
 import { useNow } from './-pulse'
+import { ConfirmButtons, Consequences } from './-confirm'
 
 export const Route = createFileRoute('/app/desk-crawler/inventory')({ head: () => seo({ title: 'Bag', index: false }), loader: ({ context }) => preload(context, convexQuery(api.inventory.mine, {}), convexQuery(api.heroes.mine, {})), component: Inventory })
 
@@ -240,7 +241,7 @@ function Inventory() {
       </Sheet>
 
       <Sheet open={openId !== null && openId !== 'potions'} onClose={() => setOpenId(null)} label="Gear">
-        {opened ? <ItemSheet item={opened} hero={hero} current={equippedOf(opened.kind)} manageable={manageable} reason={reason} busy={busy} full={full} claimBlocked={claimBlocked} intents={{ equip: opened.inDrawer ? equipDrawer : equip, unequip, claim, move: claimDrawer }} onClose={() => setOpenId(null)} onEquip={() => act(opened, opened.inDrawer ? equipDrawer : equip, { itemId: opened.id }, opened.inDrawer && equippedOf(opened.kind) ? `${opened.label} equipped. The old piece went in the drawer.` : `${opened.label} equipped.`)} onUnequip={() => act(opened, unequip, { slot: opened.kind }, `${opened.label} unequipped.`)} onClaim={() => act(opened, claim, {}, claimMessage(opened))} onMove={() => act(opened, claimDrawer, { itemId: opened.id }, `${opened.label} moved into your bag.`)} onSell={() => { setOpenId(null); setSale([opened]) }} /> : <>
+        {opened ? <ItemSheet key={opened.id} item={opened} hero={hero} current={equippedOf(opened.kind)} manageable={manageable} reason={reason} busy={busy} full={full} claimBlocked={claimBlocked} intents={{ equip: opened.inDrawer ? equipDrawer : equip, unequip, claim, move: claimDrawer }} onClose={() => setOpenId(null)} onEquip={() => act(opened, opened.inDrawer ? equipDrawer : equip, { itemId: opened.id }, opened.inDrawer && equippedOf(opened.kind) ? `${opened.label} equipped. The old piece went in the drawer.` : `${opened.label} equipped.`)} onUnequip={() => act(opened, unequip, { slot: opened.kind }, `${opened.label} unequipped.`)} onClaim={() => act(opened, claim, {}, claimMessage(opened))} onMove={() => act(opened, claimDrawer, { itemId: opened.id }, `${opened.label} moved into your bag.`)} onSell={() => { setOpenId(null); setSale([opened]) }} /> : <>
           <SheetTitle>Gone from your bag</SheetTitle>
           <p className="mt-2 text-sm">That piece was sold or moved from another screen.</p>
           <Button allowOffline variant="secondary" className="mt-4 w-full" onClick={() => setOpenId(null)}>Close</Button>
@@ -290,6 +291,9 @@ function ItemSheet({ item, hero, current, manageable, reason, busy, full, claimB
   const error = item.equipped ? intents.unequip.error : item.held ? intents.claim.error : intents.equip.error ?? (item.inDrawer ? intents.move.error : null)
   // D111: Move to bag shows only while the bag has a free slot.
   const movable = item.inDrawer && !full
+  // Unequipping, or equipping something weaker, makes the hero fight worse, so it asks first (in place, inside this sheet).
+  const [confirming, setConfirming] = useState<'equip' | 'unequip' | null>(null)
+  const weaker = !item.equipped && current !== null && delta < 0
   return <>
     <div className="flex items-start gap-3">
       <div className="w-16 shrink-0"><SlotPreview item={item} /></div>
@@ -308,18 +312,36 @@ function ItemSheet({ item, hero, current, manageable, reason, busy, full, claimB
     </dl>
     {!manageable && reason ? <p className="mt-3 text-sm">{reason}</p> : item.held && claimBlocked ? <p className="mt-3 text-sm">Sell an item or get a bigger bag to claim this find.</p> : !item.equipped && !item.held && !canEquip ? <p className="mt-3 text-sm">Your hero can wear this from level {item.requiredLevel}. It can still be sold.</p> : null}
     <div className="mt-3 empty:hidden"><ErrorNote message={error} /></div>
-    <div className="mt-4 grid grid-cols-2 gap-2">
+    {confirming ? (
+      <div className="mt-4 flex flex-col gap-3">
+        <Consequences>
+          {confirming === 'unequip'
+            ? <li>Your hero fights without a {item.kind} until you equip another, so its {statLabel(item)} drops by <strong>{statOf(item)}</strong>. The {item.label} goes into your bag.</li>
+            : <li>The {item.label} has <strong>{Math.abs(delta)} less {statLabel(item)}</strong> than your {current?.label}, so your hero fights a little worse. The {current?.label} goes into {item.inDrawer ? 'the desk drawer' : 'your bag'}.</li>}
+          <li>You can change it back any time on this page.</li>
+        </Consequences>
+        <ConfirmButtons
+          confirmLabel={confirming === 'unequip' ? 'Unequip' : 'Equip anyway'}
+          busyLabel={confirming === 'unequip' ? 'Removing…' : 'Equipping…'}
+          cancelLabel="Keep it on"
+          pending={confirming === 'unequip' ? intents.unequip.pending : intents.equip.pending}
+          disabled={!manageable || busy}
+          onConfirm={confirming === 'unequip' ? onUnequip : onEquip}
+          onCancel={() => setConfirming(null)}
+        />
+      </div>
+    ) : <div className="mt-4 grid grid-cols-2 gap-2">
       {item.equipped
-        ? <Button variant="secondary" disabled={!manageable || busy} pending={intents.unequip.pending} busyLabel="Removing…" onClick={onUnequip}>Unequip</Button>
+        ? <Button variant="secondary" disabled={!manageable || busy} pending={intents.unequip.pending} busyLabel="Removing…" onClick={() => setConfirming('unequip')}>Unequip</Button>
         : item.held
           ? <Button disabled={!manageable || busy || claimBlocked} pending={intents.claim.pending} busyLabel="Claiming…" onClick={onClaim}>{full && !claimBlocked ? 'Put in drawer' : 'Claim find'}</Button>
           : <>
-            <Button variant={delta > 0 && canEquip ? 'primary' : 'secondary'} disabled={!manageable || busy || !canEquip} pending={intents.equip.pending} busyLabel="Equipping…" onClick={onEquip}>Equip</Button>
+            <Button variant={delta > 0 && canEquip ? 'primary' : 'secondary'} disabled={!manageable || busy || !canEquip} pending={intents.equip.pending} busyLabel="Equipping…" onClick={() => (weaker ? setConfirming('equip') : onEquip())}>Equip</Button>
             <Button allowOffline variant="secondary" disabled={!manageable || busy} onClick={onSell}>Sell</Button>
             {movable ? <Button variant="secondary" className="col-span-2" disabled={!manageable || busy} pending={intents.move.pending} busyLabel="Moving…" onClick={onMove}>Move to bag</Button> : null}
           </>}
       <Button allowOffline variant="quiet" className={item.equipped || item.held ? '' : 'col-span-2'} disabled={busy} onClick={onClose}>Close</Button>
-    </div>
+    </div>}
   </>
 }
 

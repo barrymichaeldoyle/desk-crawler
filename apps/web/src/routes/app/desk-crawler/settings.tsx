@@ -1,4 +1,5 @@
 import { convexQuery } from '@convex-dev/react-query'
+import { ConfirmSheet, PauseConsequences } from './-confirm'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
@@ -22,6 +23,8 @@ function Settings() {
   const disconnect = useIntent(api.connections.disconnect, { onFeedback: notify })
   const deletion = useIntent(api.deletion.requestGameDeletion, { onFeedback: notify })
   const [confirmText, setConfirmText] = useState('')
+  // Pausing slows the hero down, so it asks first (as on the Hero page).
+  const [askPause, setAskPause] = useState(false)
   const [disconnectId, setDisconnectId] = useState<string | null>(null)
   const resume = useIntent(api.heroes.resume, { onFeedback: notify })
   const profile = useIntent(api.heroes.setPublicProfile, { onFeedback: notify })
@@ -51,9 +54,12 @@ function Settings() {
         ) : (
           <>
             <p>Pausing stops encounters and rewards until you resume. Recent XP ages out meanwhile, so your rank can drop.</p>
-            <Button className="mt-3" variant="secondary" pending={pause.pending} busyLabel="Pausing…" disabled={!healthy || resume.pending || (hero.status !== 'exploring' && hero.status !== 'resting')} onClick={() => pause.run({}, 'Adventures paused.')}>
+            <Button className="mt-3" variant="secondary" pending={pause.pending} busyLabel="Pausing…" disabled={!healthy || resume.pending || (hero.status !== 'exploring' && hero.status !== 'resting')} onClick={() => setAskPause(true)}>
               Pause adventures
             </Button>
+            <ConfirmSheet open={askPause} title="Pause adventures?" confirmLabel="Pause" busyLabel="Pausing…" cancelLabel="Keep adventuring" pending={pause.pending} disabled={!healthy} onClose={() => setAskPause(false)} onConfirm={async () => { if (await pause.run({}, 'Adventures paused.')) setAskPause(false) }}>
+              <PauseConsequences />
+            </ConfirmSheet>
           </>
         )}
         {hero.status === 'dead' || hero.status === 'travelling' ? <p className="mt-2 text-sm text-muted">You can pause after your hero returns from {hero.status === 'dead' ? 'recovering' : 'travelling'}.</p> : null}

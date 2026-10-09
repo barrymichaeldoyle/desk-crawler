@@ -18,6 +18,7 @@ import { Raids } from './-raids'
 import { Achievements } from './-achievements'
 import { KeepsakeCallout } from './-keepsakes'
 import { TodoCard, type TodoView } from './-todo'
+import { ConfirmSheet, Consequences, PauseConsequences } from './-confirm'
 
 const DevicePreview = lazy(() => import('./-devicePreview').then((module) => ({ default: module.DevicePreview })))
 
@@ -170,6 +171,9 @@ function HeroSheet({ hero }: { hero: HeroView }) {
   const canAct = healthy && (hero.status === 'exploring' || hero.status === 'resting')
   // Only the acting control shows busy (D98); the rest stay live, since the backend serialises intents anyway.
   const [pendingStance, setPendingStance] = useState<StanceId | null>(null)
+  // Anything that could set the hero back or slow it down asks first (the to-do swap, pause, travel, stance, a costly decision).
+  const [ask, setAsk] = useState<Ask | null>(null)
+  const close = () => setAsk(null)
   const healing = Math.min(hero.maxHp - hero.hp, pctOf(hero.maxHp, POTION_HEAL_PCT))
   const potionLabel = !bag ? 'Drink potion' : !bag.potions ? 'No potions' : hero.hp >= hero.maxHp ? `Drink potion (${bag.potions})` : `Drink potion +${healing} HP (${bag.potions})`
   const chosenStance = hero.stances.find((option) => option.id === hero.stance) ?? null
@@ -199,7 +203,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
               </Button>
             ) : null}
             {canAct ? (
-              <Button variant="secondary" pending={pause.pending} busyLabel="Pausing…" onClick={() => pause.run({}, 'Adventures paused.')}>
+              <Button variant="secondary" pending={pause.pending} busyLabel="Pausing…" onClick={() => setAsk({ kind: 'pause' })}>
                 Pause adventures
               </Button>
             ) : null}
@@ -218,7 +222,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
             {hero.choice.options.map((option) => {
               const parts = [option.change.gold ? `${option.change.gold > 0 ? '+' : '−'}${Math.abs(option.change.gold)} gold` : null, option.change.hp ? `${option.change.hp > 0 ? '+' : '−'}${Math.abs(option.change.hp)} HP` : null, option.change.potions ? `+${option.change.potions} ${option.change.potions === 1 ? 'potion' : 'potions'}` : null].filter(Boolean)
               return (
-                <Button key={option.id} variant={option.id === hero.choice!.defaultOptionId ? 'secondary' : 'primary'} pending={choose.pending} busyLabel="Deciding…" disabled={!healthy} onClick={() => choose.run({ optionId: option.id }, 'Decided.')}>
+                <Button key={option.id} variant={option.id === hero.choice!.defaultOptionId ? 'secondary' : 'primary'} pending={choose.pending} busyLabel="Deciding…" disabled={!healthy} onClick={() => (option.change.gold < 0 || option.change.hp < 0 ? setAsk({ kind: 'choice', optionId: option.id }) : choose.run({ optionId: option.id }, 'Decided.'))}>
                   {option.label}{parts.length ? ` (${parts.join(', ')})` : ''}
                 </Button>
               )
@@ -243,7 +247,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
               const chosen = option.id === hero.stance
               const switching = stance.pending && pendingStance === option.id
               return (
-                <button key={option.id} type="button" aria-pressed={chosen} aria-busy={switching || undefined} aria-disabled={stance.pending || undefined} disabled={!healthy} onClick={async () => { if (chosen || stance.pending) return; setPendingStance(option.id); await stance.run({ stance: option.id }, `${option.name} stance from the next adventure.`); setPendingStance(null) }} className={`menu-cursor flex min-h-11 flex-1 items-center justify-center px-2 py-2 label-px not-last:border-r-2 not-last:border-edge not-aria-pressed:before:hidden ${chosen ? 'bg-navy text-gold' : switching ? 'bg-rule text-ink' : 'text-muted hover:bg-rule hover:text-ink active:bg-rule active:text-ink disabled:text-muted'}`}>
+                <button key={option.id} type="button" aria-pressed={chosen} aria-busy={switching || undefined} aria-disabled={stance.pending || undefined} disabled={!healthy} onClick={() => { if (chosen || stance.pending) return; setAsk({ kind: 'stance', id: option.id }) }} className={`menu-cursor flex min-h-11 flex-1 items-center justify-center px-2 py-2 label-px not-last:border-r-2 not-last:border-edge not-aria-pressed:before:hidden ${chosen ? 'bg-navy text-gold' : switching ? 'bg-rule text-ink' : 'text-muted hover:bg-rule hover:text-ink active:bg-rule active:text-ink disabled:text-muted'}`}>
                   {switching ? 'Switching…' : option.name}
                 </button>
               )
@@ -277,7 +281,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
                   <span className="text-sm font-semibold">{biome.unlocked ? (here ? 'Exploring' : onTheWay ? 'Arriving next adventure' : 'Unlocked') : `Locked until level ${biome.unlockLevel}`}</span>
                 </span>
                 {biome.unlocked && !here && !onTheWay ? (
-                  <Button className="shrink-0 sm:mt-2 sm:self-start" pending={travel.pending} busyLabel="Travelling…" aria-label={travel.pending ? undefined : `Travel to ${biome.name}`} disabled={!canAct} onClick={() => travel.run({ biomeId: biome.id }, `Travelling to ${biome.name}. Arrive on the next adventure.`)}>
+                  <Button className="shrink-0 sm:mt-2 sm:self-start" pending={travel.pending} busyLabel="Travelling…" aria-label={travel.pending ? undefined : `Travel to ${biome.name}`} disabled={!canAct} onClick={() => setAsk({ kind: 'travel', biomeId: biome.id })}>
                     Travel
                   </Button>
                 ) : null}
@@ -288,7 +292,81 @@ function HeroSheet({ hero }: { hero: HeroView }) {
         {!canAct && hero.status !== 'travelling' && stopNote ? <p className="mt-3 text-sm text-muted">{stopNote}</p> : null}
       </section>
 
+      <AskSheets ask={ask} hero={hero} close={close} intents={{ pause, travel, stance, choose }} onStance={setPendingStance} />
+
       <NoticeBar notice={notice} onDismiss={dismiss} />
     </div>
   )
+}
+
+type Ask = { kind: 'pause' } | { kind: 'travel'; biomeId: string } | { kind: 'stance'; id: StanceId } | { kind: 'choice'; optionId: string }
+type Run<A> = { pending: boolean; run: (args: A, message?: string) => Promise<boolean> }
+
+const KNOCKOUT = 'a knockout costs 10% of your gold and about two hours'
+const pct = (value: number) => `${value}%`
+
+/**
+ * The confirmations for the Hero page's commands that could cost progress or pace. Each says what the action costs and
+ * whether it can be undone; only its confirm button commits.
+ */
+function AskSheets({ ask, hero, close, intents, onStance }: { ask: Ask | null; hero: HeroView; close: () => void; intents: { pause: Run<Record<string, never>>; travel: Run<{ biomeId: string }>; stance: Run<{ stance: StanceId }>; choose: Run<{ optionId: string }> }; onStance: (id: StanceId | null) => void }) {
+  const healthy = hero.simulationState !== 'quarantined'
+  const here = hero.biomes.findIndex((b) => b.id === hero.biomeId)
+  const common = { onClose: close, disabled: !healthy }
+  if (ask?.kind === 'pause') {
+    return (
+      <ConfirmSheet open title="Pause adventures?" confirmLabel="Pause" busyLabel="Pausing…" cancelLabel="Keep adventuring" pending={intents.pause.pending} {...common} onConfirm={async () => { if (await intents.pause.run({}, 'Adventures paused.')) close() }}>
+        <PauseConsequences />
+      </ConfirmSheet>
+    )
+  }
+  if (ask?.kind === 'travel') {
+    const index = hero.biomes.findIndex((b) => b.id === ask.biomeId)
+    const destination = hero.biomes[index]
+    const current = hero.biomes[here]
+    const waiting = (hero.todo?.tasks ?? []).filter((task) => !task.done && task.biomeId === hero.biomeId)
+    if (!destination) return null
+    return (
+      <ConfirmSheet open title={`Travel to the ${destination.name}?`} confirmLabel="Travel" busyLabel="Travelling…" cancelLabel="Stay here" pending={intents.travel.pending} {...common} onConfirm={async () => { if (await intents.travel.run({ biomeId: destination.id }, `Travelling to ${destination.name}. Arrive on the next adventure.`)) close() }}>
+        <Consequences>
+          <li>The trip takes one adventure (about 15 minutes) with no encounter.</li>
+          {index < here ? <li>It is an easier floor than the {current?.name}: fights pay less XP and gold there.</li> : null}
+          {/* Office Cubicles (the first floor) is safe; anywhere else a knockout can happen. */}
+          {index > here ? <li>Fights are tougher there, and {KNOCKOUT}.</li> : index > 0 ? <li>Outside the Office Cubicles, {KNOCKOUT}.</li> : null}
+          {waiting.length > 0 ? <li>{waiting.length === 1 ? 'A to-do task needs' : `${waiting.length} to-do tasks need`} the {current?.name}; {waiting.length === 1 ? 'it waits' : 'they wait'} until your hero is back.</li> : null}
+        </Consequences>
+      </ConfirmSheet>
+    )
+  }
+  if (ask?.kind === 'stance') {
+    const next = hero.stances.find((s) => s.id === ask.id)
+    const now = hero.stances.find((s) => s.id === hero.stance)
+    if (!next || !now) return null
+    return (
+      <ConfirmSheet open title={`Switch to ${next.name}?`} confirmLabel={`Go ${next.name}`} busyLabel="Switching…" cancelLabel={`Stay ${now.name}`} pending={intents.stance.pending} {...common} onConfirm={async () => { onStance(next.id); if (await intents.stance.run({ stance: next.id }, `${next.name} stance from the next adventure.`)) close(); onStance(null) }}>
+        <p>{next.blurb}</p>
+        <Consequences>
+          {next.victoryXpPct < now.victoryXpPct ? <li>Wins give <strong>{pct(next.victoryXpPct)} XP</strong> instead of {pct(now.victoryXpPct)}, so your hero levels more slowly.</li> : next.victoryXpPct > now.victoryXpPct ? <li>Wins give {pct(next.victoryXpPct)} XP instead of {pct(now.victoryXpPct)}.</li> : null}
+          {next.restBelowPct < now.restBelowPct ? <li>It keeps fighting down to <strong>{pct(next.restBelowPct)} HP</strong> (now {pct(now.restBelowPct)}), so knockouts are more likely outside the Office; {KNOCKOUT}.</li> : null}
+          {next.potionBelowPct > now.potionBelowPct ? <li>It drinks potions sooner (below {pct(next.potionBelowPct)} HP instead of {pct(now.potionBelowPct)}), so they run out faster.</li> : null}
+          <li>It applies from the next adventure, and you can switch back any time.</li>
+        </Consequences>
+      </ConfirmSheet>
+    )
+  }
+  if (ask?.kind === 'choice' && hero.choice) {
+    const option = hero.choice.options.find((o) => o.id === ask.optionId)
+    if (!option) return null
+    const costs = [option.change.gold < 0 ? `${Math.abs(option.change.gold)} gold` : null, option.change.hp < 0 ? `${Math.abs(option.change.hp)} HP` : null].filter(Boolean).join(' and ')
+    const gains = [option.change.gold > 0 ? `${option.change.gold} gold` : null, option.change.hp > 0 ? `${option.change.hp} HP` : null, option.change.potions > 0 ? `${option.change.potions} ${option.change.potions === 1 ? 'potion' : 'potions'}` : null].filter(Boolean).join(' and ')
+    return (
+      <ConfirmSheet open title={`${option.label}?`} confirmLabel={option.label} busyLabel="Deciding…" cancelLabel="Not yet" pending={intents.choose.pending} {...common} onConfirm={async () => { if (await intents.choose.run({ optionId: option.id }, 'Decided.')) close() }}>
+        <Consequences>
+          <li>This costs <strong>{costs}</strong>{gains ? `, and gives ${gains}` : ''}.</li>
+          <li>A decision can't be undone. If you don't answer, “{hero.choice.options.find((o) => o.id === hero.choice!.defaultOptionId)?.label}” happens by itself.</li>
+        </Consequences>
+      </ConfirmSheet>
+    )
+  }
+  return null
 }

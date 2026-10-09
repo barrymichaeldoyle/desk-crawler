@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { markedRuns } from '@trmnl-games/desk-crawler/sim/core/narrative'
 import { useIntent } from '../../../lib/intent'
-import { Button } from '../../../lib/ui'
-import { Sheet, SheetTitle } from './-bagSlots'
+import { ConfirmSheet, Consequences } from './-confirm'
 import { captureAnalytics } from '../../../lib/analytics'
 import { PixelIcon } from './-pixelIcon'
 
@@ -74,36 +73,34 @@ export function TodoCard({ todo, biomes, healthy, notify }: { todo: TodoView; bi
         })}
       </ol>
       <p className="text-xs text-muted">Your hero works through these by itself. Tasks never expire, and gold is the only reward.</p>
-      <Sheet open={askingTask !== null} onClose={() => setAsking(null)} label="Swap this task?">
+      <ConfirmSheet
+        open={askingTask !== null}
+        title="Swap this task?"
+        confirmLabel="Swap task"
+        busyLabel="Swapping…"
+        cancelLabel="Keep it"
+        pending={swap.pending}
+        disabled={!healthy}
+        onClose={() => setAsking(null)}
+        onConfirm={async () => {
+          if (swap.pending || askingTask === null) return
+          const task = askingTask
+          if (await swap.run({ slot: task.slot }, 'Task swapped. Your next swap comes with the stand-up.')) captureAnalytics('task swapped', { template_id: task.templateId })
+          setAsking(null)
+        }}
+      >
         {askingTask ? (
-          <div className="flex flex-col gap-3">
-            <SheetTitle>Swap this task?</SheetTitle>
+          <>
             <p><Label text={askingTask.label} /></p>
-            <ul className="flex list-disc flex-col gap-1 pl-5 text-sm">
+            <Consequences>
               <li>You get <strong>one swap between stand-ups</strong>. The next one comes with the {clock(todo.refillHour)} stand-up.</li>
               <li>The new task is a different kind, picked at random{askingTask.local ? '' : ', and it can be done where your hero is'}.</li>
               {askingTask.progress > 0 ? <li>Progress on this task ({askingTask.progress.toLocaleString()}/{askingTask.target.toLocaleString()}) is lost.</li> : null}
               <li>Swapping is optional: a task your hero can't get on with is swapped by itself after two stand-ups.</li>
-            </ul>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                pending={swap.pending}
-                busyLabel="Swapping…"
-                disabled={!healthy}
-                onClick={async () => {
-                  if (swap.pending) return
-                  const task = askingTask
-                  if (await swap.run({ slot: task.slot }, 'Task swapped. Your next swap comes with the stand-up.')) captureAnalytics('task swapped', { template_id: task.templateId })
-                  setAsking(null)
-                }}
-              >
-                Swap task
-              </Button>
-              <Button variant="secondary" disabled={swap.pending} onClick={() => setAsking(null)}>Keep it</Button>
-            </div>
-          </div>
+            </Consequences>
+          </>
         ) : null}
-      </Sheet>
+      </ConfirmSheet>
     </section>
   )
 }

@@ -5,7 +5,7 @@ import { mutation, query, type MutationCtx, type QueryCtx } from './_generated/s
 import { appError } from './lib/errors'
 import { commandLog, currentUser, requirePlayableHero, runIntent } from './lib/intent'
 import { maxHp, pctOf } from '@trmnl-games/desk-crawler/sim/core/stats'
-import { bagUsed, currentTier, guaranteedTierIndex, isBagFull, nextEarlyTier, nextTier } from '@trmnl-games/desk-crawler/sim/core/bag'
+import { bagUsed, currentTier, drawerCapacity, drawerHasRoom, guaranteedTierIndex, hasRoomForFind, isBagFull, nextEarlyTier, nextTier } from '@trmnl-games/desk-crawler/sim/core/bag'
 import { currentPouchTier, guaranteedPouchIndex, nextEarlyPouchTier, nextPouchTier, potionCap } from '@trmnl-games/desk-crawler/sim/core/pouch'
 import { starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
 import { affixById } from '@trmnl-games/desk-crawler/sim/core/modifiers'
@@ -36,16 +36,23 @@ async function heroItems(ctx: QueryCtx, heroId: Id<'heroes'>): Promise<Doc<'item
 }
 
 const contentOf = async (ctx: QueryCtx): Promise<ContentCatalog> => worldContent(await readWorld(ctx))
-const asBagHero = (hero: Doc<'heroes'>): Pick<HeroState, 'heldItemId' | 'weaponId' | 'armorId' | 'bagCapacity' | 'level' | 'counters'> => ({
+const asBagHero = (hero: Doc<'heroes'>): Pick<HeroState, 'heldItemId' | 'weaponId' | 'armorId' | 'drawer' | 'bagCapacity' | 'level' | 'counters'> => ({
   level: hero.level,
   counters: withCounterDefaults(hero.counters),
   bagCapacity: hero.bagCapacity,
   ...(hero.heldItemId === undefined ? {} : { heldItemId: hero.heldItemId }),
+  ...(hero.drawer === undefined ? {} : { drawer: hero.drawer }),
   ...(hero.weaponId === undefined ? {} : { weaponId: hero.weaponId }),
   ...(hero.armorId === undefined ? {} : { armorId: hero.armorId }),
 })
 const asSnapshots = (items: Doc<'items'>[]) => items.map((item) => ({ id: item._id as string, kind: item.kind }))
 const bagFull = (hero: Doc<'heroes'>, items: Doc<'items'>[]) => isBagFull(asBagHero(hero), asSnapshots(items))
+const inDrawer = (hero: Doc<'heroes'>, id: Id<'items'>) => hero.drawer?.includes(id) ?? false
+/** P32: the drawer without these items; undefined once it is empty, so storage keeps "absent means empty". */
+const drawerWithout = (hero: Doc<'heroes'>, ids: readonly Id<'items'>[]) => {
+  const rest = (hero.drawer ?? []).filter((id) => !ids.includes(id))
+  return rest.length === 0 ? undefined : rest
+}
 
 /** The bag ladder as the companion shows it (D61): current bag, next bag and how to get it. */
 function bagLadderView(content: ContentCatalog, hero: Doc<'heroes'>) {
@@ -122,6 +129,8 @@ export const mine = query({
     return {
       capacity,
       used,
+      // P32: the desk drawer's size under the live catalog (0 before v8) and its items, newest last.
+      drawer: { capacity: drawerCapacity(content), itemIds: hero.drawer ?? [] },
       ladder: bagLadderView(content, hero),
       pouch: pouchView(content, hero),
       merchant: merchantView(hero, await currentTick(ctx)),
@@ -129,7 +138,7 @@ export const mine = query({
       armorId: hero.armorId ?? null,
       heldItemId: hero.heldItemId ?? null,
       potions: items.find((item) => item.kind === 'potion')?.quantity ?? 0,
-      canResume: hero.status === 'sleeping' && hero.heldItemId === undefined && used < capacity && hero.wakeAtTick === undefined,
+      canResume: hero.status === 'sleeping' && hero.heldItemId === undefined && hasRoomForFind(asBagHero(hero), asSnapshots(items), content) && hero.wakeAtTick === undefined,
       gear: items
         .filter((item) => item.kind !== 'potion')
         .map((item) => ({
@@ -146,6 +155,7 @@ export const mine = query({
           affix: ((affix) => (affix ? { name: affix.name, blurb: affix.blurb } : null))(affixById(catalogs[ACTIVE_CONTENT], item.affixId)),
           equipped: item._id === hero.weaponId || item._id === hero.armorId,
           held: item._id === hero.heldItemId,
+          inDrawer: inDrawer(hero, item._id),
         }))
         .sort((a, b) => Number(b.held) - Number(a.held) || Number(b.equipped) - Number(a.equipped) || b.attack + b.defense - (a.attack + a.defense)),
     }
@@ -185,6 +195,7 @@ export const equip = mutation({
       const item = await ctx.db.get(args.itemId)
       if (item === null || item.heroId !== hero._id || item.kind === 'potion') throw appError('ITEM_NOT_AVAILABLE', 'That item is not available.')
       if (item._id === hero.heldItemId) throw appError('ITEM_HELD', 'Claim the held find first.')
+      if (inDrawer(hero, item._id)) throw appError('ITEM_IN_DRAWER', 'Equip that from the desk drawer.')
       if (item.requiredLevel > hero.level) throw appError('LEVEL_REQUIREMENT', `Requires level ${item.requiredLevel}.`)
       const slot = item.kind === 'weapon' ? 'weaponId' : 'armorId'
       if (hero[slot] === item._id) return { changed: false }
@@ -211,7 +222,7 @@ export const unequip = mutation({
     }),
 })
 
-/** Sell bag gear. Equipped and held items are refused; the sale value comes from the stored item, never the client. */
+/** Sell bag or desk drawer gear. Equipped and held items are refused; the sale value comes from the stored item, never the client. */
 async function sellItems(ctx: MutationCtx, hero: Doc<'heroes'>, itemIds: Id<'items'>[]) {
   if (!MANAGEABLE.has(hero.status)) throw appError('INVALID_STATE', 'Gear can be sold while exploring, resting or taking a break.')
   if (new Set(itemIds).size !== itemIds.length) throw appError('INVALID_INPUT', 'Each item can only be sold once.')
@@ -225,7 +236,9 @@ async function sellItems(ctx: MutationCtx, hero: Doc<'heroes'>, itemIds: Id<'ite
   }
   const gold = items.reduce((sum, item) => sum + item.saleValue, 0)
   for (const item of items) await ctx.db.delete(item._id)
-  await ctx.db.patch(hero._id, { gold: hero.gold + gold, counters: { ...withCounterDefaults(hero.counters), goldEarned: hero.counters.goldEarned + gold, itemsSold: (hero.counters.itemsSold ?? 0) + items.length } })
+  // P32: sold drawer items leave the drawer in the same write.
+  const drawer = items.some((item) => inDrawer(hero, item._id)) ? { drawer: drawerWithout(hero, itemIds) } : {}
+  await ctx.db.patch(hero._id, { gold: hero.gold + gold, ...drawer, counters: { ...withCounterDefaults(hero.counters), goldEarned: hero.counters.goldEarned + gold, itemsSold: (hero.counters.itemsSold ?? 0) + items.length } })
   return { gold, items }
 }
 
@@ -242,7 +255,7 @@ export const sell = mutation({
     }),
 })
 
-/** D29: sell up to 30 player-selected bag items atomically under one receipt. */
+/** D29: sell up to 30 player-selected bag or drawer items atomically under one receipt. */
 export const sellMany = mutation({
   args: { operationId: v.string(), itemIds: v.array(v.id('items')) },
   returns: intentResult,
@@ -257,7 +270,7 @@ export const sellMany = mutation({
     }),
 })
 
-/** Move the held find into the bag; needs one free slot (D19). */
+/** Move the held find into the bag; needs one free slot (D19). With the bag full, it goes in the desk drawer when that has room (P32). */
 export const claimHeld = mutation({
   args: { operationId: v.string() },
   returns: intentResult,
@@ -266,10 +279,55 @@ export const claimHeld = mutation({
       const hero = await requirePlayableHero(ctx, user)
       if (hero.status !== 'sleeping' || hero.heldItemId === undefined) throw appError('INVALID_STATE', 'There is no held find to claim.')
       const items = await heroItems(ctx, hero._id)
-      if (bagFull(hero, items)) throw appError('BAG_FULL', 'Free a bag slot to claim the find.')
-      const held = items.find((item) => item._id === hero.heldItemId)
-      await ctx.db.patch(hero._id, { heldItemId: undefined })
-      await commandLog(ctx, hero, 'claim_held', held ? `Claimed the ${itemLabel(held)}.` : 'Claimed the held find.')
+      const heldId = hero.heldItemId
+      const held = items.find((item) => item._id === heldId)
+      if (!bagFull(hero, items)) {
+        await ctx.db.patch(hero._id, { heldItemId: undefined })
+        await commandLog(ctx, hero, 'claim_held', held ? `Claimed the ${itemLabel(held)}.` : 'Claimed the held find.')
+        return { changed: true }
+      }
+      if (!drawerHasRoom(asBagHero(hero), await contentOf(ctx))) throw appError('BAG_FULL', 'Free a bag slot to claim the find.')
+      await ctx.db.patch(hero._id, { heldItemId: undefined, drawer: [...(hero.drawer ?? []), heldId] })
+      await commandLog(ctx, hero, 'claim_held', held ? `Put the ${itemLabel(held)} in the desk drawer.` : 'Put the held find in the desk drawer.')
+      return { changed: true }
+    }),
+})
+
+/** P32: move a desk drawer item into the bag; needs one free bag slot, like claiming the held find. */
+export const claimFromDrawer = mutation({
+  args: { operationId: v.string(), itemId: v.id('items') },
+  returns: intentResult,
+  handler: async (ctx, args) =>
+    await runIntent(ctx, args.operationId, 'inventory.claimFromDrawer', { itemId: args.itemId }, async (user) => {
+      const hero = await requirePlayableHero(ctx, user)
+      if (!MANAGEABLE.has(hero.status)) throw appError('INVALID_STATE', 'Gear can be moved while exploring, resting or taking a break.')
+      if (!inDrawer(hero, args.itemId)) throw appError('ITEM_NOT_AVAILABLE', 'That item is not in the desk drawer.')
+      const items = await heroItems(ctx, hero._id)
+      if (bagFull(hero, items)) throw appError('BAG_FULL', 'Free a bag slot to move this into the bag.')
+      const item = items.find((candidate) => candidate._id === args.itemId)
+      await ctx.db.patch(hero._id, { drawer: drawerWithout(hero, [args.itemId]) })
+      await commandLog(ctx, hero, 'claim_drawer', item ? `Moved the ${itemLabel(item)} into the bag.` : 'Moved a drawer item into the bag.')
+      return { changed: true }
+    }),
+})
+
+/** P32: equip a desk drawer item; the piece it replaces takes the drawer slot it frees, so space is never a problem. */
+export const equipFromDrawer = mutation({
+  args: { operationId: v.string(), itemId: v.id('items') },
+  returns: intentResult,
+  handler: async (ctx, args) =>
+    await runIntent(ctx, args.operationId, 'inventory.equipFromDrawer', { itemId: args.itemId }, async (user) => {
+      const hero = await requirePlayableHero(ctx, user)
+      if (!MANAGEABLE.has(hero.status)) throw appError('INVALID_STATE', 'Gear can be changed while exploring, resting or taking a break.')
+      if (!inDrawer(hero, args.itemId)) throw appError('ITEM_NOT_AVAILABLE', 'That item is not in the desk drawer.')
+      const item = await ctx.db.get(args.itemId)
+      if (item === null || item.heroId !== hero._id || item.kind === 'potion') throw appError('ITEM_NOT_AVAILABLE', 'That item is not available.')
+      if (item.requiredLevel > hero.level) throw appError('LEVEL_REQUIREMENT', `Requires level ${item.requiredLevel}.`)
+      const slot = item.kind === 'weapon' ? 'weaponId' : 'armorId'
+      const replaced = hero[slot]
+      const drawer = (hero.drawer ?? []).flatMap((id) => (id !== args.itemId ? [id] : replaced === undefined ? [] : [replaced]))
+      await ctx.db.patch(hero._id, { [slot]: item._id, drawer: drawer.length === 0 ? undefined : drawer })
+      await commandLog(ctx, hero, 'equip', `Equipped the ${itemLabel(item)}.`)
       return { changed: true }
     }),
 })
@@ -285,7 +343,8 @@ export const resumeAdventures = mutation({
       if (hero.heldItemId !== undefined) throw appError('HELD_ITEM_PENDING', 'Claim the held find first.')
       const items = await heroItems(ctx, hero._id)
       const content = await contentOf(ctx)
-      if (bagFull(hero, items)) throw appError('BAG_FULL', 'Free at least one bag slot first.')
+      // P32: room for the next find, in the bag or the desk drawer.
+      if (!hasRoomForFind(asBagHero(hero), asSnapshots(items), content)) throw appError('BAG_FULL', content.deskDrawer ? 'Free a bag or drawer slot first.' : 'Free at least one bag slot first.')
       let targetBiomeId: string | undefined
       if (args.biomeId !== undefined && args.biomeId !== hero.biomeId) {
         const biome = content.biomes.find((b) => b.id === args.biomeId)

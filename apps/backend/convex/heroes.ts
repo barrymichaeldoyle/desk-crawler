@@ -295,7 +295,9 @@ export const returnSummary = query({
       .query('items')
       .withIndex('by_heroId', (q) => q.eq('heroId', hero._id))
       .take(40)
-    const unequipped = items.filter((item) => item.kind !== 'potion' && item._id !== hero.weaponId && item._id !== hero.armorId && item._id !== hero.heldItemId).length
+    // P32: drawer gear is counted apart from the bag, as the held find is.
+    const drawer = new Set<string>(hero.drawer ?? [])
+    const unequipped = items.filter((item) => item.kind !== 'potion' && item._id !== hero.weaponId && item._id !== hero.armorId && item._id !== hero.heldItemId && !drawer.has(item._id)).length
     const baseline = hero.companionVisitBaseline ?? null
     return {
       baseline,
@@ -313,6 +315,7 @@ export const returnSummary = query({
         : null,
       unequipped,
       held: hero.heldItemId !== undefined,
+      inDrawer: drawer.size,
       status: hero.status,
     }
   },

@@ -87,6 +87,7 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
       ...(hero.heldItemId === undefined ? {} : { heldItemId: hero.heldItemId }),
       ...(hero.weaponId === undefined ? {} : { weaponId: hero.weaponId }),
       ...(hero.armorId === undefined ? {} : { armorId: hero.armorId }),
+      ...(hero.drawer === undefined ? {} : { drawer: hero.drawer }),
     }, items.map((item) => ({ id: item._id as string, kind: item.kind })))
     const recent = await ctx.db
       .query('tickLogs')
@@ -153,6 +154,7 @@ async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number, instan
     potions,
     bagUsed,
     bagCapacity: hero?.bagCapacity ?? 0,
+    drawerUsed: hero?.drawer?.length ?? 0,
     heldItemName,
     logs,
     ...(activity ? { activity } : {}),

@@ -3,6 +3,8 @@ import { convexTest } from 'convex-test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { api, internal } from '@trmnl-games/backend/api'
 import schema from '../../apps/backend/convex/schema'
+import { contentV1 } from '@trmnl-games/desk-crawler/content/v1'
+import { starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
 import { sha256Hex } from '../../apps/backend/convex/lib/hash'
 import { verifySvix } from '../../apps/backend/convex/lib/svix'
 import { seedDeletionConfirmation, seedHero, seedWorld, type T } from './helpers'
@@ -37,6 +39,11 @@ describe('account deletion (D22)', () => {
 
   it('denies authority at once, purges game data, deletes the Clerk user and keeps only revocation hashes', async () => {
     const heroId = await seedHero(t, {}, 'Ana')
+    // D111: desk drawer items are ordinary item rows, so the same purge removes them.
+    await t.run(async (ctx) => {
+      const drawerItem = await ctx.db.insert('items', { ...starterKit(contentV1).weapon, heroId, createdAt: Date.now() })
+      await ctx.db.patch(heroId, { drawer: [drawerItem] })
+    })
     const tokenHash = sha256Hex('installation-token-ana')
     await linkGrant(t, 'Ana', tokenHash)
     const user = t.withIdentity({ issuer: 'issuer', subject: 'Ana' })

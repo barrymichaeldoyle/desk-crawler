@@ -11,6 +11,7 @@
  *   quiet=1 (empty log, no achievements)   ok=1 (mutations succeed)   raids=1 (desk raids on, with a record and raid log lines)   public=1 (hero page public)
  *   drawer=N (D111: the desk drawer on, holding N of 6, with the bag full when N > 0)
  *   todo=1 (D112: the to-do list with a done task, an away task and the longest label, plus to-do log lines)   todo=used (the same, swap spent)
+ *   alerts=on (P33: two devices, both kinds on)   alerts=gone (turned off because the last device went stale)   alerts=none (no VAPID key yet)
  *   /desk-crawler/heroes/<name> serves the public hero page (private=1 reads as not found)
  * The dev deployment's scene art is used when apps/web/.env.local sets VITE_CONVEX_SITE_URL.
  */
@@ -133,6 +134,8 @@ const queries = {
   'achievements:mine': () => data.achievements,
   'keepsakes:mine': () => data.keepsakes,
   'connections:mine': () => data.connections,
+  // P33: off with no device by default; alerts=on lists two devices with both kinds on, alerts=gone shows the stale-device note.
+  'alerts:mine': () => ({ vapidPublicKey: params.get('alerts') === 'none' ? null : 'BFixtureVapidKey', timezone: 'Europe/Dublin', asleep: params.get('alerts') === 'on', merchant: params.get('alerts') === 'on', quietStart: 21, quietEnd: 8, offReason: params.get('alerts') === 'gone' ? 'no_devices' : null, devices: params.get('alerts') === 'on' ? [{ id: 'd1', label: 'Chrome on Android', createdAt: Date.now() - 864e5, fingerprint: 'aaaa' }, { id: 'd2', label: 'Safari on iPhone', createdAt: Date.now() - 36e5, fingerprint: 'bbbb' }] : [] }),
   'leaderboard:view': (args) => { const board = data.leaderboard[args.board ?? 'recent_7d']; return args.cohortKey && args.cohortKey !== board.cohortKey ? { ...board, cohortKey: args.cohortKey, own: null, entries: board.entries.slice(0, 6), totalPlayers: 6 } : board },
   'heroes:recentLog': (args) => ({ page: data.log.slice(0, args.paginationOpts.numItems), isDone: true, continueCursor: '' }),
   'trmnlPayload:mine': () => undefined,

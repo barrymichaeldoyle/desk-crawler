@@ -29,6 +29,7 @@ Each environment uses explicit app/API origins and a matching Clerk issuer. Deve
 | Admin allowlist | Server-controlled Clerk subjects/verified claims, never client writes |
 | Convex/Cloudflare deployment tokens | CI secrets with project-scoped access |
 | Resend key | Convex server-only; configured for approved D27/D38 incident/recovery notices |
+| VAPID key pair for push alerts (D114) | Convex env `VAPID_PUBLIC_KEY` (served to the companion) and `VAPID_PRIVATE_KEY` (server-only), optional `VAPID_SUBJECT` (defaults to `https://trmnlgames.com/support`). Generate with `npx web-push generate-vapid-keys`, one pair per deployment. Rotating the pair invalidates every stored subscription, so players have to allow their devices again |
 
 Keep an `.env.example` with variable names and fake placeholders during implementation; never print or commit actual secret values. Do not create replacement accounts when existing subscriptions can host the project.
 

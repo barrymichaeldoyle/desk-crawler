@@ -213,6 +213,24 @@ Fields: `email` (trimmed, lower-case), `source: notify | pitch | landing | home 
 
 Fields: `tokenIdentifier`, `clerkUserId`, `publicAlias?` (when the account has a game), `message`, `page?`, `state: pending | sent | failed`, `attempts`, `createdAt`. Indexes `by_tokenIdentifier`, `by_createdAt`. Rows stay after the email is sent and are deleted with the account; `failed` means Resend refused three times, and `feedback:recent` still shows the message.
 
+## Alerts (D114)
+
+### `users.alerts`
+
+Optional object on the user: `asleep`, `merchant`, `quietStart`, `quietEnd` and optional `offReason: 'no_devices'`. Absent means both kinds are off. `users.timezone` is rewritten from the browser whenever preferences are saved and is used for quiet hours and the local day of the caps.
+
+### `pushSubscriptions`
+
+`userId`, `endpoint`, `p256dh`, `auth`, `label`, `createdAt`. Indexed by `userId` and `endpoint`. At most five per account.
+
+### `alertOutbox`
+
+`userId`, `heroId`, `kind` (`asleep` or `merchant`), `key` (`heroId:kind:tick`, the row's identity), `eventTick`, optional `offerId`/`offerName`, `state` (`pending`, `sending`, `sent`, `skipped`, `failed`), optional `reason`, `notBefore`, `attempts`, optional `localDay` (set while sending or sent, for the caps), `createdAt`, `updatedAt`. Indexed by key, by state and `notBefore`, by user and local day, and by creation time.
+
+### `alertSender`
+
+Singleton row (`key: 'sender'`) holding the scheduled sender job and its run time, so a tick never queues a second run.
+
 ## Deletion checkpoints, revocation and administrative audit
 
 ### `accountDeletionJobs`
@@ -265,6 +283,8 @@ Fields: `incidentKey` (run + stall kind), `runId`, `state: open | recovered`, `o
 | Revoked credential/auth-identity hashes | While external credential/identity can authenticate | Purpose-disclosed, no arbitrary TTL; V09 governs fresh authorization |
 | Rank inputs | Until generation obsolete | Delete with generation cleanup |
 | Operation receipts | 24 hours | Indexed expiry pages |
+| Alert outbox (D114) | 7 days whatever the state | Daily bounded cleanup by creation time; purged with the game or the account |
+| Push subscriptions (D114) | Until removed, replaced by a sixth device, answered 404/410 by the push service, or the game or account is deleted | No TTL |
 | Install attempts | 20-minute validity; purge within 24 hours | Deny expired confirmation immediately; preserve active connections |
 | Handoffs | 10-minute validity; purge within 24 hours | Deny expired immediately regardless of cleanup |
 | Rate buckets | Until expired | Daily bounded cleanup |

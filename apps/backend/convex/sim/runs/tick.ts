@@ -19,6 +19,7 @@ import { openIncident, recoverIncidents } from '../../incidents'
 import { achievementState, awardAchievements, keepsakeTotal, mergeCounts, tallyUnlocks } from '../../lib/achievements'
 import { needsFullPass } from '@trmnl-games/desk-crawler/sim/core/achievements'
 import { SLOT_MS, SLOT_OFFSET_MS, wallSlotFor } from '@trmnl-games/desk-crawler/sim/schedule'
+import { queueAlerts } from '../../lib/alerts'
 
 export { SLOT_MS, SLOT_OFFSET_MS, wallSlotFor }
 
@@ -200,6 +201,8 @@ export const simulateBatch = internalMutation({
 
       await applyResult(ctx, hero, items, result, now)
       if (content.raids !== undefined) await settleRaids(ctx, { hero, owner, result, plan, pick, pending, tick: run.tick })
+      // P33: an outbox row for a nap or an affordable bag or pouch, only when the owner turned that alert on.
+      if (owner.alerts !== undefined) await queueAlerts(ctx, { owner, hero, result, tick: run.tick, now })
       const progressed = !['waiting_dead', 'waiting_travel', 'paused', 'sleeping'].includes(result.disposition)
       const markers: Partial<Doc<'heroes'>> = { lastTick: run.tick, ...(content.raids === undefined ? {} : await joinRaidPool(ctx, hero)) }
       if (progressed) {

@@ -17,10 +17,12 @@ export const RETENTION = {
   installAttemptsMs: DAY,
   /** D110: applied raids, in world ticks (96 a day); pending ones wait for their target. */
   appliedRaidTicks: 30 * 96,
+  /** P33: alert outbox rows, whatever their state. */
+  alertOutboxMs: 7 * DAY,
 } as const
 
-type Job = 'tickLogs' | 'receipts' | 'rateLimits' | 'deletionConfirmations' | 'reconnectAttempts' | 'installAttempts' | 'failures' | 'runs' | 'raids'
-const ORDER: readonly Job[] = ['tickLogs', 'receipts', 'rateLimits', 'deletionConfirmations', 'reconnectAttempts', 'installAttempts', 'failures', 'runs', 'raids']
+type Job = 'tickLogs' | 'receipts' | 'rateLimits' | 'deletionConfirmations' | 'reconnectAttempts' | 'installAttempts' | 'failures' | 'runs' | 'raids' | 'alerts'
+const ORDER: readonly Job[] = ['tickLogs', 'receipts', 'rateLimits', 'deletionConfirmations', 'reconnectAttempts', 'installAttempts', 'failures', 'runs', 'raids', 'alerts']
 
 export const cleanup = internalMutation({
   args: { job: v.optional(v.union(...ORDER.map((j) => v.literal(j)))) },
@@ -77,6 +79,12 @@ export const cleanup = internalMutation({
         const world = await ctx.db.query('worldState').withIndex('by_key', (q) => q.eq('key', 'world')).unique()
         const before = (world?.currentTick ?? 0) - RETENTION.appliedRaidTicks
         const rows = await ctx.db.query('raids').withIndex('by_state_and_tick', (q) => q.eq('state', 'applied').lt('tick', before)).take(BATCH)
+        for (const row of rows) await ctx.db.delete(row._id)
+        deleted = rows.length
+        break
+      }
+      case 'alerts': {
+        const rows = await ctx.db.query('alertOutbox').withIndex('by_createdAt', (q) => q.lt('createdAt', now - RETENTION.alertOutboxMs)).take(BATCH)
         for (const row of rows) await ctx.db.delete(row._id)
         deleted = rows.length
         break

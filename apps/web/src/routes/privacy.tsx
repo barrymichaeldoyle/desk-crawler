@@ -27,6 +27,7 @@ export const Route = createFileRoute('/privacy')({
       <ul>
         <li>Your sign-in identity from Clerk, our sign-in provider. Your email is copied into short-lived deletion confirmation requests only; we do not copy your real name or profile picture into the game database.</li>
         <li>Your public name, hero, items, adventure log and the recent XP used for rankings. Older accounts may also have a saved time zone from previous versions.</li>
+        <li>If you turn on Desk Crawler alerts: which alerts you want, your quiet hours and your browser's time zone (for example Europe/Dublin), and for each device you allow, the push address your browser gives us, its encryption keys and a label such as "Chrome on Android". We also keep a short record of each alert: which kind, when, and whether it was sent.</li>
         <li>
           For each TRMNL installation: the plugin instance ID, a hash of its access token and the settings link TRMNL gives us. We do not store your TRMNL
           name or email.
@@ -68,6 +69,7 @@ export const Route = createFileRoute('/privacy')({
         </li>
         <li><strong>PostHog EU</strong> handles optional usage analytics, error reports and masked session recordings for support and product improvements.</li>
         <li><strong>Sentry</strong> (United States) receives error reports from our website's server, and from your browser if you allow analytics, so we can find and fix bugs. A report holds the page path and the technical details of the error. It never includes your account, email address, IP address, cookies, form contents, URL query strings or installation codes and tokens.</li>
+        <li><strong>Your browser's push service</strong> (Google for Chrome and Android, Apple for Safari, Mozilla for Firefox) delivers Desk Crawler alerts if you turn them on. It receives the alert encrypted, so it can't read it, along with the push address your browser created.</li>
         <li><strong>Resend</strong> delivers the account deletion confirmation email to your verified primary address, the one launch email to the launch list, and feedback you send to the developer. It receives those addresses and the email contents.</li>
       </ul>
 
@@ -78,6 +80,7 @@ export const Route = createFileRoute('/privacy')({
         <li>Duplicate-request receipts: 24 hours. TRMNL connection attempts: under a day.</li>
         <li>Launch list: until the launch email is sent, then deleted. You can leave earlier with the link in that email, from the companion if you joined signed in, or by emailing us. Deleting your account removes an entry you joined with it.</li>
         <li>Feedback: until you delete your account, or earlier on request. Copies already emailed to the developer are deleted on request.</li>
+        <li>Alert settings and devices: until you turn alerts off, remove the device, or delete Desk Crawler or your account. A device whose push address stops working is removed automatically. Records of individual alerts: seven days.</li>
         <li>Backups: about a week, after which deleted data is gone from them too.</li>
         <li>Masked recordings: 30 days. Analytics events and support profiles: until account deletion or an earlier removal request.</li>
         <li>Error reports in Sentry: up to 90 days. They aren't linked to your account, so account deletion has nothing there to remove.</li>
@@ -96,7 +99,7 @@ export const Route = createFileRoute('/privacy')({
       <p>Removal of linked PostHog profiles, events and recordings is requested as part of account deletion and processed asynchronously by PostHog. Failed requests are retried and remain visible to the operator until resolved.</p>
 
       <h2>Deleting only a game</h2>
-      <p>In <Link to="/app/desk-crawler/settings">Desk Crawler settings</Link>, choose Delete Desk Crawler progress to remove that hero, history and connections. Your shared account and sign-in stay available. You can start again by installing the plugin after removal finishes. Other games are unaffected.</p>
+      <p>In <Link to="/app/desk-crawler/settings">Desk Crawler settings</Link>, choose Delete Desk Crawler progress to remove that hero, history, connections and alert settings and devices. Your shared account and sign-in stay available. You can start again by installing the plugin after removal finishes. Other games are unaffected.</p>
 
       <h2>Your choices</h2>
       <p>

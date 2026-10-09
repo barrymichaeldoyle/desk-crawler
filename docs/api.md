@@ -34,6 +34,7 @@ Failures are not receipts for successful operations. Transport retries are bound
 | `leaderboard.view` | board overall/recent_24h/recent_7d (default recent_7d), optional validated cohort | Scoped Top 100, own rank/score/delta if in selected group, period/cohort/group/global counts and as-of | Published set + own scoped row + selected generation + bounded privacy masking |
 | `trmnl.myConnections` | limit 1–20, cursor? | Instance page/continuation plus <=5 recent pending attempts; UUID/label/state and validated return link | Own instance page + bounded own pending-attempt index; never token/hash |
 | `profiles.view` | `alias` (2–20 after normalizing) | Unauthenticated. Opt-in hero page (D109): public name, hero name/class/level/status/floor, scene path, start date, all-time rank, five lifetime counts, highest earned tier per achievement family with rarity counts for those ids, and the raid record as counts (D110). Null for private, missing, suspended, name-repair or inactive heroes alike. The art route draws the same hero's social card at `/art/card/hero/<alias>.png` (1200x630 PNG from the internal `profiles.card`, 404 while private, an hour's cache). `leaderboard.view` rows carry `profile: true` for a visible hero whose page is public; the device ranking never does | Alias index, current hero, ≤5 logs, own rank row, publication tally, own unlock rows |
+| `alerts.mine` | none | D114: the VAPID public key (null until configured), the stored timezone, both switches, quiet hours, `offReason` and each device's id, label, creation time and endpoint fingerprint (never the endpoint); null without a hero | User + current hero + ≤6 subscription rows |
 | `admin.health` | none | operational run/cost/cleanup summary | Admin authority + bounded recent rows |
 
 No unbounded public hero lists, arbitrary hero-ID reads, or public token lookup function. Public hero pages (D109) are looked up by public name and only for heroes whose owner opted in.
@@ -82,6 +83,14 @@ Return-summary first visit/pending setup has no invented delta. Earned XP is the
 
 Potion sale and equipment swapping while dead/travelling are deferred. Bag equip/unequip/sell work in exploring/resting/sleeping so storage can be managed. Held gear must be claimed before equip/sale. Potion use, `changeBiome` and voluntary pause remain exploring/resting-only. Wake schedules next-tick eligibility, not an immediate encounter. A sleeping hero chooses its next biome through `resumeAdventures(biomeId)`: on the wake tick it begins travelling instead of rolling an encounter and arrives on the following tick, matching ordinary travel.
 
+D114 alert intents (operation-ID receipts, scope `desk-crawler`):
+
+| Function | Arguments (plus operation ID) | Behavior / result | Preconditions |
+| --- | --- | --- | --- |
+| `alerts.subscribe` | `endpoint` (https, ≤1,024), `p256dh`, `auth` (base64url), `label` | Stores this browser's push subscription. The same endpoint on the same account updates its keys. An endpoint saved by another account moves to this one, and that account's alerts turn off if it was their last device. A sixth device replaces the oldest. Clears `offReason` | Active user with a hero |
+| `alerts.setPreferences` | `asleep`, `merchant`, `quietStart`, `quietEnd` (0–23, different), `timezone` (IANA, `UTC` if invalid) | Saves both switches and the quiet hours, and rewrites `users.timezone` | Turning a kind on needs a device (`INVALID_STATE`); equal hours are `INVALID_INPUT` |
+| `alerts.removeDevice` | `deviceId` | Deletes one of the caller's devices; removing the last turns both kinds off | Own device; another account's id changes nothing |
+
 ## Public actions for TRMNL UI
 
 | Function | Authority | Input / output |
@@ -106,6 +115,7 @@ Management verification alone does not grant gameplay-mutation authority. The us
 | `trmnl.confirmInstance` | Idempotent authenticated success/first-render lifecycle; atomically activate an existing prepared hero under authorized install intent |
 | `heroes.activateForConfirmedInstallation` | Internal transaction helper shared by confirmation and the completed-attempt creation race; proof checks and first-activation baseline only |
 | `trmnl.recordUtcOffset` | D112: store the TRMNL `utc_offset` the screen route received on the owner (`users.trmnlUtcOffset`). The route calls it only when the payload query saw a different value; it rechecks and bounds the value to ±14 hours, and a missing or invalid offset never clears the stored one |
+| `alerts.claimDue`, `alerts.recordResults`, `alertsPush.deliver` | D114 sender: claim up to 50 due outbox rows and decide each (recheck, quiet hours, caps), push to each device with VAPID from a Node action, then record sent/retry/failed and delete devices the push service answered 404 or 410; each transaction schedules the next run for the earliest pending row |
 | `trmnl.uninstallInstance` | Tombstone UUID without deleting hero |
 | `trmnl.payloadForInstance` | Fixed-cost canonical payload query under trusted grant/instance authority |
 | `maintenance.cleanupBatch`, `purgeAccountBatch` | Bounded retention and durable game/provider deletion continuations |

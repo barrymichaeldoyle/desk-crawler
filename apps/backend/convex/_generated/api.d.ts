@@ -10,6 +10,8 @@
 
 import type * as achievements from "../achievements.js";
 import type * as admin from "../admin.js";
+import type * as alerts from "../alerts.js";
+import type * as alertsPush from "../alertsPush.js";
 import type * as analytics from "../analytics.js";
 import type * as connections from "../connections.js";
 import type * as crons from "../crons.js";
@@ -23,6 +25,7 @@ import type * as inventory from "../inventory.js";
 import type * as keepsakes from "../keepsakes.js";
 import type * as leaderboard from "../leaderboard.js";
 import type * as lib_achievements from "../lib/achievements.js";
+import type * as lib_alerts from "../lib/alerts.js";
 import type * as lib_deletionConfirmation from "../lib/deletionConfirmation.js";
 import type * as lib_errors from "../lib/errors.js";
 import type * as lib_gameProfile from "../lib/gameProfile.js";
@@ -55,6 +58,8 @@ import type {
 declare const fullApi: ApiFromModules<{
   achievements: typeof achievements;
   admin: typeof admin;
+  alerts: typeof alerts;
+  alertsPush: typeof alertsPush;
   analytics: typeof analytics;
   connections: typeof connections;
   crons: typeof crons;
@@ -68,6 +73,7 @@ declare const fullApi: ApiFromModules<{
   keepsakes: typeof keepsakes;
   leaderboard: typeof leaderboard;
   "lib/achievements": typeof lib_achievements;
+  "lib/alerts": typeof lib_alerts;
   "lib/deletionConfirmation": typeof lib_deletionConfirmation;
   "lib/errors": typeof lib_errors;
   "lib/gameProfile": typeof lib_gameProfile;

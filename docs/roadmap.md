@@ -14,8 +14,8 @@ Release order is a commitment; the dates are not. A release ends when its gate p
 
 - **v1.0** is deployed and submitted: plugin 564 went to TRMNL review on 2026-10-07 and the review email is sent. Marketplace approval is the one open gate.
 - **v1.0.x** live polish continues while review runs: device templates are at v50, and companion and layout polish ships through main.
-- **v1.1 Decisions** shipped in full on 2026-10-07, with help and analytics coverage added on 2026-10-08 (D101). Production now runs content v9 (the to-do list, D112, after the desk drawer, D111) and achievement catalog version 4. Of its stretch items, daily quests and lost-and-found are live; push alerts (P33) is specced and waits for Barry's go-ahead.
-- **Next task:** watch the to-do list (D112) and desk drawer (D111) on production, then build alerts (P33) if approved.
+- **v1.1 Decisions** shipped in full on 2026-10-07, with help and analytics coverage added on 2026-10-08 (D101). Production now runs content v9 (the to-do list, D112, after the desk drawer, D111) and achievement catalog version 4. All three stretch items are built: daily quests and lost-and-found are live, and push alerts (D114) were built on 2026-10-09 and go live once production has its VAPID keys.
+- **Next task:** set the production VAPID keys and receive a real alert on Android and on an iOS Home Screen install (D114), and watch the to-do list (D112) and desk drawer (D111) on production.
 - **Next release:** v1.2 Other people, unless the v1.0.x reorder trigger pulls v2.0 Depth ahead once live retention data exists. Two of its rows are done: desk raids (D110, [design](raids.md)) switched on with content v7 at 22:15 UTC on 2026-10-08 after all five slices, and public profiles (D109) finished on 2026-10-09. Meetings, friends/rivals, world events and additional classes remain.
 
 ## v1.0 — Submission (submitted 2026-10-07, awaiting marketplace approval)
@@ -60,7 +60,7 @@ Gate: no production reset, every player's progress preserved across each deploy,
 
 Goal: optional meaningful choices without a daily obligation.
 
-State: every core item is live (content v3 to v6, achievement catalog version 2, template v34 notice line), the help page explains each system and the companion reports the choice events (D101). The gate holds: expiry and defaults resolve without a hand, choose and default cannot both award (D79 tests), and the notice yields to any attention line. What stays open is measurement: whether the choices raise companion engagement is read from live analytics, not assumed. Stretch rows below are specced for review (2026-10-09), not built.
+State: every core item is live (content v3 to v6, achievement catalog version 2, template v34 notice line), the help page explains each system and the companion reports the choice events (D101). The gate holds: expiry and defaults resolve without a hand, choose and default cannot both award (D79 tests), and the notice yields to any attention line. What stays open is measurement: whether the choices raise companion engagement is read from live analytics, not assumed. The stretch rows below are built (D111, D112, D114).
 
 Core batch: stances, configurable rest/potion thresholds, a small set of event choices with an automatic default, a wandering merchant, prioritized device attention text. Continue gear/balance improvements.
 
@@ -75,7 +75,7 @@ Core batch: stances, configurable rest/potion thresholds, a small set of event c
 | Achievements (D65) | Shipped early, in v1.0 (2026-10-06). v1.1 families shipped 2026-10-07 as catalog version 2 (D82): purchases, merchants met, stance changes, decisions made, epic finds. See [achievements](achievements.md) |
 | Daily quests | Live 2026-10-09 as the office to-do list (D112, content v9, [quests](quests.md), [evidence](evidence/quests.md)): three place-aware tasks paying gold only, built in five slices with device template v50 and achievement catalog version 4 |
 | Lost-and-found | Live 2026-10-09 as the six-slot desk drawer (D111, [desk drawer](desk-drawer.md), content v8); extend the single held-find/inventory-sleep system only with a bounded migration; never reintroduce silent disposal |
-| Web push/email alerts | Stretch, specced 2026-10-09 for review as two opt-in web push kinds, hero asleep and an affordable merchant bag or pouch, no email (Barry, 2026-10-09) ([alerts](alerts.md), P33). Deferred by default; user opt-in and calmness review |
+| Web push/email alerts | Built 2026-10-09 (D114, [alerts](alerts.md)): two opt-in web push kinds, hero asleep and an affordable merchant bag or pouch, with quiet hours, a 2-a-day cap and no email (Barry, 2026-10-09). Live once production has its VAPID keys |
 
 Achievements are additive and independent of the choice systems, so they can ship first within v1.1. Prefer choices/merchant/stances as one coherent release and schedule quest/push scope separately. Salvage is not in this release: materials without a sink would be a hollow feature, so it ships with gear upgrades in v2.0.
 

@@ -95,6 +95,17 @@ export const merchantOffer = v.object({
 })
 export const merchantVisit = v.object({ offers: v.array(merchantOffer), expiresAtTick: v.number(), biomeId: v.string() })
 
+/** P33: the two alert kinds; a new kind needs its own decision row (alerts.md). */
+export const alertKind = v.union(v.literal('asleep'), v.literal('merchant'))
+export const alertPreferences = v.object({
+  asleep: v.boolean(),
+  merchant: v.boolean(),
+  quietStart: v.number(),
+  quietEnd: v.number(),
+  /** Set when the last device's subscription went stale and both kinds turned off; Settings says why. */
+  offReason: v.optional(v.literal('no_devices')),
+})
+
 export const logKind = v.union(
   v.literal('combat'),
   v.literal('loot'),
@@ -127,6 +138,8 @@ export default defineSchema({
     nameRepairRequired: v.optional(v.boolean()),
     /** P31: the last UTC offset in seconds a TRMNL screen request sent, written only when it changes; the stand-up and the tick read it. */
     trmnlUtcOffset: v.optional(v.number()),
+    /** P33: opt-in push alerts; absent means every kind off. Quiet hours are whole hours in `timezone`. */
+    alerts: v.optional(alertPreferences),
   })
     .index('by_tokenIdentifier', ['tokenIdentifier'])
     .index('by_normalizedAlias', ['normalizedAlias'])
@@ -482,6 +495,49 @@ export default defineSchema({
     .index('by_userId_and_operationId', ['userId', 'operationId'])
     .index('by_userId_and_scope', ['userId', 'scope'])
     .index('by_expiresAt', ['expiresAt']),
+
+  /** P33: one browser's Web Push subscription, at most five per account. */
+  pushSubscriptions: defineTable({
+    userId: v.id('users'),
+    endpoint: v.string(),
+    p256dh: v.string(),
+    auth: v.string(),
+    label: v.string(),
+    createdAt: v.number(),
+  })
+    .index('by_userId', ['userId'])
+    .index('by_endpoint', ['endpoint']),
+
+  /** P33: one alert per qualifying event, written by the tick and drained by the sender; kept 7 days. */
+  alertOutbox: defineTable({
+    userId: v.id('users'),
+    heroId: v.id('heroes'),
+    kind: alertKind,
+    /** `${heroId}:${kind}:${eventTick}`: one nap or one merchant visit is one alert. */
+    key: v.string(),
+    eventTick: v.number(),
+    offerId: v.optional(v.union(v.literal('bag'), v.literal('pouch'))),
+    offerName: v.optional(v.string()),
+    state: v.union(v.literal('pending'), v.literal('sending'), v.literal('sent'), v.literal('skipped'), v.literal('failed')),
+    reason: v.optional(v.string()),
+    notBefore: v.number(),
+    attempts: v.number(),
+    /** The owner's local date when the push went out, for the daily caps. */
+    localDay: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_key', ['key'])
+    .index('by_state_and_notBefore', ['state', 'notBefore'])
+    .index('by_userId_and_localDay', ['userId', 'localDay'])
+    .index('by_createdAt', ['createdAt']),
+
+  /** P33: the one scheduled sender run, so ticks never queue a second. */
+  alertSender: defineTable({
+    key: v.literal('sender'),
+    scheduledId: v.optional(v.id('_scheduled_functions')),
+    runAt: v.optional(v.number()),
+  }).index('by_key', ['key']),
 
   rateLimitBuckets: defineTable({
     key: v.string(),

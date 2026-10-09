@@ -10,8 +10,9 @@ import { seo } from '../../../lib/seo'
 import { Button, Card, LoadingState, NoticeBar, useFocusWithin, useNotice } from '../../../lib/ui'
 import { preload } from '../../../lib/preload'
 import { DeskKeepsakes } from './-keepsakes'
+import { AlertsCard } from './-alerts'
 
-export const Route = createFileRoute('/app/desk-crawler/settings')({ head: () => seo({ title: 'Settings', index: false }), loader: ({ context }) => preload(context, convexQuery(api.users.me, {}), convexQuery(api.heroes.mine, {}), convexQuery(api.connections.mine, {}), convexQuery(api.keepsakes.mine, {})), component: Settings })
+export const Route = createFileRoute('/app/desk-crawler/settings')({ head: () => seo({ title: 'Settings', index: false }), loader: ({ context }) => preload(context, convexQuery(api.users.me, {}), convexQuery(api.heroes.mine, {}), convexQuery(api.connections.mine, {}), convexQuery(api.keepsakes.mine, {}), convexQuery(api.alerts.mine, {})), component: Settings })
 
 function Settings() {
   const { data: me } = useQuery(convexQuery(api.users.me, {}))
@@ -84,6 +85,7 @@ function Settings() {
           </>
         )}
       </div></Card>
+      {hero.activationState === 'active' ? <AlertsCard notify={notify} /> : null}
       <DeskKeepsakes />
       <Card title="TRMNL installations" icon="plug">
         <p className="mb-3 text-sm text-muted">TRMNL plugin installations showing your hero.</p>

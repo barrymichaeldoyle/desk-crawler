@@ -20,6 +20,7 @@ import { Achievements } from './-achievements'
 import { KeepsakeCallout } from './-keepsakes'
 import { TodoCard, type TodoView } from './-todo'
 import { ConfirmSheet, Consequences, PauseConsequences } from './-confirm'
+import { AlertNudge } from './-alerts'
 
 const DevicePreview = lazy(() => import('./-devicePreview').then((module) => ({ default: module.DevicePreview })))
 
@@ -147,6 +148,7 @@ type HeroView = {
   /** D112: present once the world runs the to-do list and the hero has one. */
   todo?: TodoView | null
   merchantTicksLeft: number | null
+  wakeAtTick: number | null
   choice: Choice | null
   effects: Array<{ id: string; name: string; blurb: string; kind: 'boon' | 'bane'; ticksLeft: number }>
 }
@@ -213,6 +215,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
           </div>
         ) : null}
         {hero.effects.length > 0 ? <ul aria-label="Effects" className="flex flex-wrap gap-2 text-sm">{hero.effects.map((effect) => <li key={effect.id} className={`border-[3px] px-2 py-1 ${effect.kind === 'bane' ? 'border-hp-ink' : 'border-night'}`}><strong>{effect.name}</strong> · {effect.blurb} · {effect.ticksLeft === 1 ? 'one adventure' : `${effect.ticksLeft} adventures`} left</li>)}</ul> : null}
+        {hero.status === 'sleeping' && hero.wakeAtTick === null ? <AlertNudge /> : null}
         {hero.merchantTicksLeft !== null ? <p className="text-sm"><strong>A merchant is visiting.</strong> <Link to="/app/desk-crawler/inventory" className="underline underline-offset-4">See the offers in your bag</Link> within {hero.merchantTicksLeft === 1 ? 'one adventure' : `${hero.merchantTicksLeft} adventures`}.</p> : null}
         {!healthy ? <p className="text-sm">Paused for a service check. <Link to="/support" className="underline underline-offset-4">Contact support</Link> if it lasts.</p> : null}
       </section>

@@ -12,6 +12,7 @@ import { useAnalyticsView } from '../../lib/analyticsProvider'
 import { SwitchAccount } from '../../lib/switchAccount'
 import { WaitlistAccount } from '../../lib/waitlist'
 import { Glyph, type GlyphName } from '../../lib/glyphs'
+import { useAlertOpened } from './desk-crawler/-alerts'
 
 /** Companion shell: auth gate, setup states and mobile-first navigation (companion.md). */
 export const Route = createFileRoute('/app/desk-crawler')({
@@ -35,6 +36,8 @@ function SignedInApp() {
   const { data: me, isPending } = useQuery(convexQuery(api.users.me, {}))
   const setupState = !me?.hero ? (me?.hasActiveInstallation ? 'installation_without_hero' : 'not_enrolled') : me.hero.activationState === 'pending_trmnl' ? 'waiting_for_save' : 'active'
   useAnalyticsView(setupState === 'active' ? 'companion ready' : 'setup screen shown', { setup_state: setupState, has_active_installation: me?.hasActiveInstallation ?? false }, !isPending && me?.user?.state !== 'deleting' && me?.gameState !== 'deleting')
+  // P33: an alert's tap lands here with ?alert=<kind>; counted once identity is known.
+  useAlertOpened(!isPending)
   // The hero page spreads into two columns on wide screens; the other tabs keep a reading width.
   const wide = useLocation({ select: (location) => location.pathname.replace(/\/$/, '') === '/app/desk-crawler' })
   const settings = useLocation({ select: (location) => location.pathname.replace(/\/$/, '').endsWith('/settings') })

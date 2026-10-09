@@ -29,6 +29,7 @@ const CONTENTS: ReadonlyArray<readonly [string, string]> = [
   ['recaps', 'Recaps'],
   ['understanding-rankings', 'Understanding rankings'],
   ['sharing-your-hero', 'Sharing your hero'],
+  ['alerts', 'Alerts'],
   ['if-the-screen-looks-old', 'If the screen looks old'],
   ['disconnecting-and-removing', 'Disconnecting and removing'],
   ['help', 'Help'],
@@ -122,6 +123,14 @@ export const Route = createFileRoute('/help/desk-crawler')({
       <p>Paused and sleeping heroes keep their progress, but their recent XP ages out. After seven days without earned XP, they leave the weekly board until they earn XP again. Lifetime progress stays recorded.</p>
       <h2 id="sharing-your-hero">Sharing your hero</h2>
       <p>In Settings you can make a public page for your hero, with its level, rank, current floor, lifetime counts and achievements. Gear, gold and the adventure log are never shown. The page is off until you turn it on, and you can make it private again at any time. Once it's public, Settings has Share and Copy link buttons, a shared link shows a picture card of your hero with its name, level and rank, and your name links to the page from the companion's rankings.</p>
+      <h2 id="alerts">Alerts</h2>
+      <p>Your TRMNL is the main way to keep up with your hero, but Settings can also send a phone notification in two cases, each off until you turn it on:</p>
+      <ul>
+        <li><strong>Hero asleep:</strong> the bag{DRAWER > 0 ? ' and desk drawer are' : ' is'} full and adventures have stopped. It comes half an hour after the nap starts, so nothing arrives if you are already sorting out the bag, and once per nap.</li>
+        <li><strong>Merchant deal:</strong> a merchant is selling the next bag or pouch and your hero has the gold. At most once a day. A merchant with only potions never sends one.</li>
+      </ul>
+      <p>You get at most two alerts a day. Quiet hours run from 21:00 to 08:00 unless you change them: a nap alert waits until they end, and a merchant deal that turns up then is skipped. Before sending, the game checks that the alert still holds, so you never hear about a nap that is already over or an offer that has gone. Decisions, raids, knockouts, level-ups and keepsakes never send alerts.</p>
+      <p>Choose Allow on this device in Settings, then accept your browser’s prompt. On iPhone and iPad, first add TRMNL Games to your Home Screen (Share, then Add to Home Screen) and open it from there. Each device you allow is listed in Settings with a Remove button; removing the last one turns alerts off.</p>
       <h2 id="if-the-screen-looks-old">If the screen looks old</h2>
       <ul>
         <li>"Updates delayed" means the game service is running late. Nothing is lost and you don't need to do anything.</li>

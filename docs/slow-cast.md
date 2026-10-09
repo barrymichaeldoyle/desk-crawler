@@ -191,9 +191,10 @@ A Slow Cast catalog, versioned and appended as [achievements](achievements.md) r
 | Levels | `level` | 4 / 8 / 12 / 16 / 20 |
 | Waters | `watersVisited` | 2 / 3 |
 | Rods | `rodTier` | 2 / 3 / 4 |
+| Flies | `flyBox.totalCollected` | 1 / 6 / 12 / 24 |
 | Per species | `logbook[id].count`, `logbook[id].best` | First catch; a record over 75% of the species maximum |
 
-That is about 60 species tiers and 48 counter tiers. Names and one-line descriptions are written with the content, in the cosy register rather than the office one. New species in later content append their two tiers under a new catalog version.
+That is about 60 species tiers and 52 counter tiers. Names and one-line descriptions are written with the content, in the cosy register rather than the office one. New species in later content append their two tiers under a new catalog version.
 
 ### Platform profile and achievements
 
@@ -215,6 +216,17 @@ Angler poses: casting, waiting, reeling, holding a catch, paused (rod on the res
 ## Companion
 
 Routes under `/app/slow-cast`: Dock, Cooler, Shop, Logbook, Rankings, Achievements; Settings and Account are shared. The game switcher on the shell lists both games. Empty, pending, paused, travelling, disconnected and error states follow [companion](companion.md). Mobile first at 390 wide. Help at `/help/slow-cast`, public game page at `/games/slow-cast`.
+
+## Staying on the TRMNL: the fly box
+
+The game cannot and does not enforce that the plugin stays on a playlist: activation needs one verified install (D09), removal preserves progress, penalties and urgency are ruled out by [product](product.md), and no render can prove a physical display. The lever is the one Desk Crawler already uses, [desk keepsakes](playlist-retention.md) (D46), with a fishing skin.
+
+- The device footer shows a short weekly code, omitted from the companion preview. Claiming it in the companion adds one **fly** to a permanent fly box on the Dock page. One per account per week, cached-screen grace, no missed-week penalty, no XP or ranking effect, as D46.
+- Flies are cosmetic. A seasonal set gives the collection an end and a "full box" achievement family (Flies: 1 / 6 / 12 / 24).
+- The one addition over Desk Crawler: the most recently claimed fly is pinned to the angler's hat in the device scene, so the reward is visible where it was earned. Cosmetic only.
+- The device stays the better view by composition: the catch moment with the large sprite, the sky and weather, and the ambient lines are drawn for the screen; the companion lists the same facts. The companion is setup only, so it cannot become the place the game is played.
+
+Not done, deliberately: hiding the weather or forecast from the companion, a daily device-only bonus, or catch rates that depend on refresh activity.
 
 ## Alerts
 
@@ -245,6 +257,7 @@ Deleting Slow Cast progress revokes its installations, denies its authority and 
 - **Backend module** `apps/backend/convex/slowCast/` owning the `sw` tables, its crons, its screen route and its intents. Crons at UTC minutes 5, 20, 35 and 50 so the two worlds never tick in the same slot; its own watchdog and run guards; game-labelled health, notices and cost lines in operations.
 - **Shared engine.** Before any fishing code, the tick runner, cohort pagination, ranking publication, achievement tally, receipt and rate-limit helpers and the TRMNL lifecycle are lifted into `apps/backend/convex/lib/engine/` as functions parametrised by table names and the simulator adapter. Desk Crawler is switched to the lifted code with its tests unchanged and its production ticks unaffected. This is slice S0 and the main engineering risk of the project.
 - **Registry.** `packages/platform` adds `slow-cast` to `games` and `GameSlug`; `clientIdEnv` is `TRMNL_CLIENT_ID_SLOW_CAST` with its own secret. Per-game handoff cookies already exist.
+- **Lifecycle status.** Each game has a server-controlled `status`: `hidden`, `preview` or `live`, read by the companion from the backend, not from a build flag. Desk Crawler is `live`; Slow Cast starts `hidden`. While `hidden`, nothing on the site lists the game, and its companion, game page, help, install and manage routes return the ordinary not-found page for everyone except the D23 admin allowlist, so the game cannot be probed for. Its crons run against an empty world with the run guard engaged, so every slice deploys to production as it lands and the tick, watchdog and health lines are proven before any player exists. Barry tests on production with his own account and a private TRMNL plugin pointed at the Slow Cast install route, as Desk Crawler was tested before plugin 564. `preview` adds a "Coming soon" tile in the switcher and on the home page with the listing image, and widens the D105 waiting list with a game field; routes stay closed. It is switched on only once the device art exists. `live` lists the game everywhere and opens every route, flipped the day the marketplace approves the plugin. No open beta: the marketplace is the only install path.
 - **Considered and not chosen:** a Convex component per game. A component cannot reach `users` and the TRMNL grants directly, and the simulator differs per game, so the engine would need to cross the component boundary on every tick. The migration plan keeps that option for a game that needs stronger fault isolation.
 
 ## TRMNL
@@ -259,13 +272,13 @@ A separate marketplace plugin with its own OAuth client, listing image, knowledg
 
 | Slice | Content | Gate |
 | --- | --- | --- |
-| S0 Engine | Lift the shared engine out of Desk Crawler; registry entry; `gameSlug` unions | Desk Crawler's full test set passes unchanged; a production tick after deploy completes clean |
+| S0 Engine | Lift the shared engine out of Desk Crawler; registry entry with the lifecycle status and the admin-only gate for hidden games; `gameSlug` unions | Desk Crawler's full test set passes unchanged; a production tick after deploy completes clean |
 | S1 Core | Content v1 (waters, species, gear, weather, lines), pure core, four streams, harness | Harness over 30 days: 10 to 14 fish a day at the Millpond; level 4 in 2 to 3 days; Pier reachable in 10 to 16 days for a daily seller; each epic caught at least once in 30 days by a daily seller at the right water; bucket fills in 8 to 14 hours, crate in about 2 days; a never-visiting angler still levels and logs species |
 | S2 Backend | `sw` tables, profile, tick, intents, screen route, payload v1, deletion paths | convex-test matrix: tick, intents, duplicate receipts, cooler boundary, bait run-out, travel, activation, both deletion levels |
 | S3 Device | Art, scene composer, templates for four layouts on OG and X, recap line | Preview sweep clean in every state; no overflow |
 | S4 Companion | Pages, help, game page, switcher, 390-wide states | Playwright walkthrough with the test identity |
 | S5 Boards and badges | Rankings, achievement catalog v1, platform profile page and daily tally | Publication consistency tests; profile not-found parity |
-| S6 Alerts and analytics | Two alert kinds, events, privacy page | Alert tests by backend path; a real push on the dev keys |
+| S6 Alerts, flies and analytics | Two alert kinds, the fly box on the D46 machinery, events, privacy page | Alert tests by backend path; a real push on the dev keys |
 | S7 Listing | OAuth client, listing image, review email, submission (each an authorized action) | Live install, render and uninstall on Barry's device |
 
 Progress preservation applies from the first public install, as every release.
@@ -287,3 +300,5 @@ Barry asked on 2026-10-09 for the best player experience on each open question a
 3. **Shared weather stays.** It makes two desks feel like one world and gives the device something true to say, at no runtime cost.
 4. **No separate angler name.** The angler is the player, so the public alias is the name on the device and the profile. One fewer onboarding step and one fewer moderation surface.
 5. **Timing.** S0 (engine extraction) and S1 (core and harness) can start while plugin 564 awaits approval; S7 (the second listing) waits until Desk Crawler is approved so the reviewer sees a working platform.
+6. **Work in progress stays hidden.** Barry asked how the game should look in the companion while it is being built. Answer: the lifecycle status above, `hidden` with an admin-only gate, so slices deploy continuously to production without anyone else seeing them, `preview` for a coming-soon tile once art exists, and `live` on approval.
+7. **Keeping the plugin on the playlist is rewarded, not enforced.** Barry asked how to make sure players keep the game on their TRMNL rather than play through the companion. Answer: the fly box, Slow Cast's version of the D46 keepsakes, with the device as the better view by composition and the companion kept to setup only.

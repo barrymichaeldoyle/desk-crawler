@@ -68,7 +68,7 @@ export const Route = createFileRoute('/privacy')({
           <strong>TRMNL</strong> fetches your hero's screen from us. Your TRMNL account and device are covered by TRMNL's own privacy policy.
         </li>
         <li><strong>PostHog EU</strong> handles optional usage analytics, error reports and masked session recordings for support and product improvements.</li>
-        <li><strong>Sentry</strong> (United States) receives error reports from our website's server, and from your browser if you allow analytics, so we can find and fix bugs. A report holds the page path and the technical details of the error. It never includes your account, email address, IP address, cookies, form contents, URL query strings or installation codes and tokens.</li>
+        <li><strong>Sentry</strong> (United States) receives error reports from our website's server and the game backend, and from your browser if you allow analytics, so we can find and fix bugs. A report holds the page path or the name of the game function that failed, and the technical details of the error. It never includes your account, email address, IP address, cookies, form contents, URL query strings or installation codes and tokens.</li>
         <li><strong>Your browser's push service</strong> (Google for Chrome and Android, Apple for Safari, Mozilla for Firefox) delivers Desk Crawler alerts if you turn them on. It receives the alert encrypted, so it can't read it, along with the push address your browser created.</li>
         <li><strong>Resend</strong> delivers the account deletion confirmation email to your verified primary address, the one launch email to the launch list, and feedback you send to the developer. It receives those addresses and the email contents.</li>
       </ul>

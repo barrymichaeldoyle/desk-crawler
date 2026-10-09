@@ -14,6 +14,7 @@ export const KIND_TONE: Record<string, string> = {
   merchant: 'text-gold-ink',
   choice: 'text-sky-ink',
   raid: 'text-rare-ink',
+  todo: 'text-xp-ink',
   system: 'text-muted',
 }
 
@@ -44,6 +45,7 @@ export const KIND_BADGE: Record<string, string> = {
   travel: 'bg-sky-ink',
   trap: 'bg-rare-ink',
   raid: 'bg-rare-ink',
+  todo: 'bg-xp',
   system: 'bg-muted',
 }
 

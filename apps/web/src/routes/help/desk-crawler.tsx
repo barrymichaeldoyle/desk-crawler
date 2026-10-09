@@ -5,6 +5,9 @@ import { DESK_CRAWLER_OG, seo } from '../../lib/seo'
 
 /** D111: the desk drawer paragraph appears once the active catalog has a drawer. */
 const DRAWER = catalogs[ACTIVE_CONTENT].deskDrawer?.capacity ?? 0
+/** D112: the to-do list section appears once the active catalog has one. */
+const TODO = catalogs[ACTIVE_CONTENT].todo
+const STANDUP = TODO === undefined ? '' : `${String(TODO.refillHour).padStart(2, '0')}:00`
 
 export const Route = createFileRoute('/help/desk-crawler')({
   head: () => seo({ title: 'Desk Crawler help and setup', path: '/help/desk-crawler', description: 'Install Desk Crawler on TRMNL, choose a stance, meet the merchant, answer decisions, understand refresh timing, and fix a screen that looks out of date.', image: DESK_CRAWLER_OG }),
@@ -45,6 +48,18 @@ export const Route = createFileRoute('/help/desk-crawler')({
         <li>A raid can knock a hero out, exactly like a fight; in Office Cubicles your hero is rescued instead. Raids only find heroes who are exploring or resting, and a hero raided once is left alone for about six hours.</li>
         <li>If you'd rather lose fewer raids, pick Cautious: it raids least and wins most.</li>
       </ul>
+      {TODO !== undefined ? (
+        <>
+          <h2>To-do list</h2>
+          <p>Your hero keeps an office to-do list of three small tasks, such as “Defeat 4 Paper Imps”, “Find 2 pieces of gear” or “Explore the Server Room for 16 adventures”. It works through them by itself while exploring, and the Hero page shows each task's progress. When a task is done, your screen says “Ticked off” and your hero gets a little gold: {TODO.rewardByTier[1]}, {TODO.rewardByTier[2]} or {TODO.rewardByTier[3]} depending on the area. Tasks never give XP, so they never change the rankings.</p>
+          <ul>
+            <li>Every morning at {STANDUP} your TRMNL's local time, the stand-up gives new tasks for the ones that are done. Your screen lists them.</li>
+            <li>Tasks never expire and an unfinished task costs nothing. A task your hero can't get on with is swapped by itself after two stand-ups.</li>
+            <li>At least two of the three tasks can be done where your hero is. At most one asks for a trip to another area, if you want to send your hero there.</li>
+            <li>Once between stand-ups you can swap one unfinished task for a different one on the Hero page. That's optional; the list runs fine on its own.</li>
+          </ul>
+        </>
+      ) : null}
       <h2>Potions</h2>
       <p>A healing potion restores 40% of your hero's maximum HP, rounded up. Your hero drinks one automatically when HP falls below the stance's potion level while exploring, and the adventure log notes it. With no potions left, your hero rests below the stance's rest level and sets off again once recovered. You can also drink one yourself from the Hero page whenever your hero is exploring or resting and not at full HP. Potions are found while exploring and never take up bag space.</p>
       <p>Potions are kept in a pouch. A new hero carries a Thermos that holds 20. The pouch grows to a Lunchbox (30) at level 6, a Cooler Bag (40) at level 10 and a Vending Cart (60) at level 14. Your hero might find the next pouch early, or you can buy it on the Bag page for 120, 450 or 1,500 gold, up to one pouch ahead of those levels. When the pouch is full, a potion find becomes gold instead.</p>

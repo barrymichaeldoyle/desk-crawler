@@ -10,6 +10,7 @@
  *   choice=1 (pending decision)   effects=1   recap=1 (a return tally)   keepsake=done   long=1 (long item names)
  *   quiet=1 (empty log, no achievements)   ok=1 (mutations succeed)   raids=1 (desk raids on, with a record and raid log lines)   public=1 (hero page public)
  *   drawer=N (D111: the desk drawer on, holding N of 6, with the bag full when N > 0)
+ *   todo=1 (D112: the to-do list with a done task, an away task and the longest label, plus to-do log lines)   todo=used (the same, swap spent)
  *   /desk-crawler/heroes/<name> serves the public hero page (private=1 reads as not found)
  * The dev deployment's scene art is used when apps/web/.env.local sets VITE_CONVEX_SITE_URL.
  */
@@ -111,6 +112,18 @@ if (params.has('drawer')) {
   if (held) inventory.canResume = false;
   else if (hero.status === 'sleeping') inventory.canResume = inDrawer < 6;
   data.recap.inDrawer = inDrawer;
+}
+// D112: todo=1 gives the hero a to-do list with each state the card draws; todo=used spends the swap.
+if (params.has('todo')) {
+  hero.todo = { swapAvailable: params.get('todo') !== 'used', nextStandupAt: Date.now() + 36e5 * 14, refillHour: 7, tasks: [
+    { slot: 0, templateId: 'defeat_monster', label: 'Defeat 3 [[Legacy Mainframes]]', progress: 1, target: 3, reward: 16, done: false, biomeId: 'server_room', local: false },
+    { slot: 1, templateId: 'find_gear', label: 'Find 2 pieces of gear', progress: 2, target: 2, reward: 5, done: true, biomeId: null, local: true },
+    { slot: 2, templateId: 'explore_biome', label: 'Explore the [[Office Cubicles]] for 40 adventures', progress: 27, target: 40, reward: 5, done: false, biomeId: 'office_cubicles', local: true },
+  ] };
+  data.log.unshift(
+    { id: 'todo1', at: Date.now() - 6e5, tick: 910, kind: 'todo', summary: 'Ticked off: Find 2 pieces of gear.', source: 'tick', deltas: { xpEarned: 0, gold: 5, hp: 0 } },
+    { id: 'todo2', at: Date.now() - 36e5 * 3, tick: 899, kind: 'todo', summary: 'Stand-up: Defeat 3 [[Legacy Mainframes]]. Find 2 pieces of gear.', source: 'tick', deltas: { xpEarned: 0, gold: 0, hp: 0 } },
+  );
 }
 const queries = {
   'users:me': () => data.me,

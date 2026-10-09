@@ -90,3 +90,10 @@ describe('merchant and pouch chips (D77/D78)', () => {
     expect(logPresentation({ summary: 'Beat a [[Paper Imp]]. +14 XP, +5 gold. Found a [[Lunchbox]]! Holds 30 potions.', kind: 'combat', deltas: pouch }).changes).toEqual(['+14 XP', '+5 gold', '−4 HP', 'Pouch holds 30'])
   })
 })
+
+describe('to-do lines (D112)', () => {
+  it('keep every number in a label and show the reward as the only change', () => {
+    expect(present('Ticked off: Earn 50 gold adventuring.', { xpEarned: 0, gold: 16, hp: 0 }, 'todo')).toEqual({ narrative: 'Ticked off: Earn 50 gold adventuring.', changes: ['+16 gold'] })
+    expect(present('Stand-up: Dodge 2 traps. Earn 140 gold adventuring.', { xpEarned: 0, gold: 0, hp: 0 }, 'todo')).toEqual({ narrative: 'Stand-up: Dodge 2 traps. Earn 140 gold adventuring.', changes: [] })
+  })
+})

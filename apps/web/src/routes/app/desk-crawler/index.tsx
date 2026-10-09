@@ -17,6 +17,7 @@ import { Records } from './-records'
 import { Raids } from './-raids'
 import { Achievements } from './-achievements'
 import { KeepsakeCallout } from './-keepsakes'
+import { TodoCard, type TodoView } from './-todo'
 
 const DevicePreview = lazy(() => import('./-devicePreview').then((module) => ({ default: module.DevicePreview })))
 
@@ -140,6 +141,8 @@ type HeroView = {
   stance: StanceId
   stances: Stance[]
   raidsEnabled?: boolean
+  /** D112: present once the world runs the to-do list and the hero has one. */
+  todo?: TodoView | null
   merchantTicksLeft: number | null
   choice: Choice | null
   effects: Array<{ id: string; name: string; blurb: string; kind: 'boon' | 'bane'; ticksLeft: number }>
@@ -224,6 +227,8 @@ function HeroSheet({ hero }: { hero: HeroView }) {
           <p className="text-sm text-muted">Decides itself in {hero.choice.ticksLeft === 1 ? 'one adventure' : `${hero.choice.ticksLeft} adventures`}: {hero.choice.options.find((option) => option.id === hero.choice!.defaultOptionId)?.label ?? 'the default'}.</p>
         </section>
       ) : null}
+
+      {hero.todo ? <TodoCard todo={hero.todo} biomes={hero.biomes} healthy={healthy} notify={notify} /> : null}
 
       {hero.stances.length > 0 ? (
         <section aria-labelledby="stance-title" className="flex flex-col gap-3">

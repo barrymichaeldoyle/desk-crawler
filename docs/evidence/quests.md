@@ -66,3 +66,9 @@ The harness doesn't swap tasks or steer toward an away task. Visiting cohorts tr
 - `heroes.mine` returns the list with labels, progress, rewards, done flags, the place rule's local flag, whether the swap is free and the next stand-up time, once the world runs v9.
 
 Tests: `tests/convex/todo.test.ts` (first-tick fill and log order, nothing under v8, the stored offset moving the stand-up, offset writes only on change, duplicate swap receipts, refusals, the hero query).
+
+## Q3 companion and help
+
+- The Hero page's To-do card ([-todo.tsx](../../apps/web/src/routes/app/desk-crawler/-todo.tsx)), the Swap link and its `task swapped` event, a To-do filter in the quest log, the checkbox glyphs (`todo`, `todoOpen`) shared with the device, and the help page's To-do list section, shown once the active catalog has one.
+- Log presentation keeps to-do labels whole: before the fix, the amount stripper turned "Earn 50 gold adventuring" into "Earn gold adventuring", and a stand-up line showed "No effect". Both are covered in `tests/sim/log-presentation.test.ts`.
+- Phone check at 390 × 844 in the companion fixtures harness (`todo=1`, `todo=used`, with sleeping, raids, a decision and effects, and long names): no horizontal scroll in any state, the card 358 px wide inside the 16 px gutters, the longest label ("Explore the Office Cubicles for 40 adventures") wrapping cleanly, and the Swap link a 44 px tap target.

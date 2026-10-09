@@ -37,6 +37,10 @@ export function displayLogDeltas(entry: { readonly deltas: LogDeltas; readonly d
 export function logPresentation(entry: { readonly summary: string; readonly kind: string; readonly deltas?: LogDeltas }, options: { readonly compactGold?: boolean } = {}) {
   if (!entry.deltas || entry.kind === 'achievement') return { narrative: entry.summary, changes: [] as string[] }
   const deltas = entry.deltas
+  const signed = (value: number, unit: string) => `${value > 0 ? '+' : '−'}${Math.abs(value)} ${unit}`
+  // D112: to-do labels carry targets ("Earn 50 gold adventuring"), never changes, so they keep every number; a
+  // ticked-off line's reward is its gold chip and a stand-up changes nothing, so it stands alone.
+  if (entry.kind === 'todo') return { narrative: entry.summary, changes: deltas.gold ? [signed(deltas.gold, 'gold')] : [] }
   // Transform only plain runs: numbers/units inside marked item names are names.
   let narrative = markedRuns(entry.summary).map((run) => run.bold ? `[[${run.text}]]` : run.text
     .replace(/[+−-]\d+ (?:XP|gold|HP)(?:,\s*[+−-]\d+ (?:XP|gold|HP))*\.?/g, '')
@@ -48,7 +52,6 @@ export function logPresentation(entry: { readonly summary: string; readonly kind
     .replace(/\b\d+ gold\b/g, 'gold')
   ).join('').replace(/\s+/g, ' ').trim()
   if (!narrative) narrative = deltas.gold > 0 ? 'Found gold.' : 'Recovered.'
-  const signed = (value: number, unit: string) => `${value > 0 ? '+' : '−'}${Math.abs(value)} ${unit}`
   // D110: a raid can swing five-figure gold; the device's gold column holds four digits, so it reads "12k" from 10,000.
   const goldChange = (value: number) => (options.compactGold && Math.abs(value) >= 10_000 ? `${value > 0 ? '+' : '−'}${Math.floor(Math.abs(value) / 1000)}k gold` : signed(value, 'gold'))
   const changes = [

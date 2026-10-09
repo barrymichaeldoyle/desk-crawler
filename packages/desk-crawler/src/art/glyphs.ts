@@ -18,6 +18,10 @@ export const GLYPHS: Record<string, readonly string[]> = {
   raid: ['........', '........', '.######.', '########', '#..##..#', '########', '.##..##.', '........'],
   /** D111: a find that went in the desk drawer: a two-drawer pedestal with its handles. */
   drawer: ['########', '#......#', '#..##..#', '#......#', '########', '#......#', '#..##..#', '########'],
+  /** D112: a to-do task ticked off, and the stand-up's new tasks: a checkbox with its tick. */
+  todo: ['########', '#......#', '#.....##', '#....#.#', '##..#..#', '#.##...#', '#......#', '########'],
+  /** D112: an open to-do task in the companion: the empty checkbox. */
+  todoOpen: ['########', '#......#', '#......#', '#......#', '#......#', '#......#', '#......#', '########'],
   system: ['..####..', '.#....#.', '#..##..#', '#.#..#.#', '#.#..#.#', '#..##..#', '.#....#.', '..####..'],
 }
 

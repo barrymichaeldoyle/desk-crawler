@@ -14,6 +14,7 @@ const FILTERS = [
   { key: 'milestones', label: 'Milestones', kinds: ['levelup', 'achievement', 'death', 'revive', 'travel'] },
   { key: 'rest', label: 'Rest & traps', kinds: ['rest', 'trap'] },
   { key: 'raids', label: 'Raids', kinds: ['raid'] },
+  { key: 'todo', label: 'To-do', kinds: ['todo'] },
 ] as const
 
 type FilterKey = (typeof FILTERS)[number]['key']

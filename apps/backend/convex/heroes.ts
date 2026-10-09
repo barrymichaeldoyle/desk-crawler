@@ -49,12 +49,12 @@ export const mine = query({
     const world = await readWorld(ctx)
     // D80/D81: the stats the hero fights with, affixes and live effects included.
     const stats = effectiveStats(content, { ...hero, ...(hero.effects === undefined ? {} : { effects: hero.effects }) }, items.map((item) => ({ ...item, id: item._id })), world?.currentTick ?? 0)
-    // Achievement logs follow their gameplay event (D65); the scene keeps showing that event.
+    // Achievement logs (D65) and to-do lines (D112) follow their gameplay event; the scene keeps showing that event.
     const newest = (await ctx.db
       .query('tickLogs')
       .withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id))
       .order('desc')
-      .take(5)).find((log) => log.kind !== 'achievement')
+      .take(6)).find((log) => log.kind !== 'achievement' && log.kind !== 'todo')
     const scene = sceneFor(hero.status, hero.wakeAtTick !== undefined, newest ? { kind: newest.kind, ...('outcome' in newest.detail ? { outcome: newest.detail.outcome } : {}) } : null)
     return {
       id: hero._id,

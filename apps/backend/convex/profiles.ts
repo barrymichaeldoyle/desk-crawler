@@ -25,7 +25,7 @@ async function publicHero(ctx: QueryCtx, alias: string) {
   const hero = await currentHero(ctx, user)
   if (hero === null || hero.activationState !== 'active' || hero.publicProfile !== true) return null
   const world = await readWorld(ctx)
-  const newest = (await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id)).order('desc').take(5)).find((log) => log.kind !== 'achievement')
+  const newest = (await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id)).order('desc').take(6)).find((log) => log.kind !== 'achievement' && log.kind !== 'todo')
   const scene = sceneFor(hero.status, hero.wakeAtTick !== undefined, newest ? { kind: newest.kind, ...('outcome' in newest.detail ? { outcome: newest.detail.outcome } : {}) } : null)
   const publication = world?.publishedPublicationId ? await ctx.db.get(world.publishedPublicationId) : null
   const published = publication !== null && publication.state === 'published' ? publication : null

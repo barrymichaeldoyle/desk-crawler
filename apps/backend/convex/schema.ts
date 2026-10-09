@@ -1,10 +1,14 @@
 import { defineSchema, defineTable } from 'convex/server'
 import { v } from 'convex/values'
 import { logDetail, todoKind } from './lib/logDetail'
-import { DESK_CRAWLER_TABLES, engineTables } from './lib/engine/tables'
+import { DESK_CRAWLER_TABLES, SLOW_CAST_TABLES, engineTables } from './lib/engine/tables'
+import { accessId, anglerCounters, baitClass, logbookEntry, swLogDetail, swLogKind, waterId } from './slowCast/validators'
 
 /** Desk Crawler's engine tables (world, runs, score windows, leaderboard sets), from the shared factory (S0). */
 const deskCrawlerEngine = engineTables(DESK_CRAWLER_TABLES, ['deaths', 'levelUps', 'heldFinds'])
+
+/** Slow Cast's engine tables, prefixed `sw` so retention and deletion stay per game (slow-cast.md "Data"). */
+const slowCastEngine = engineTables(SLOW_CAST_TABLES, ['landed', 'released', 'gotAway', 'levelUps'])
 
 /**
  * Current-release schema only (data-model.md). Tables arrive with the work
@@ -148,6 +152,89 @@ export default defineSchema({
   leaderboardGenerations: deskCrawlerEngine.generations,
   heroRanks: deskCrawlerEngine.ranks,
   achievementStats: deskCrawlerEngine.achievementStats,
+
+  swWorldState: slowCastEngine.world,
+  swSimulationRuns: defineTable(slowCastEngine.runFields).index('by_tick', ['tick']).index('by_state_and_startedAt', ['state', 'startedAt']),
+  swSimulationFailures: slowCastEngine.failures,
+  swScoreWindows: slowCastEngine.scoreWindows,
+  swRankInputs: slowCastEngine.rankInputs,
+  swLeaderboardPublications: slowCastEngine.publications,
+  swLeaderboardGenerations: slowCastEngine.generations,
+  swRanks: slowCastEngine.ranks,
+  swAchievementStats: slowCastEngine.achievementStats,
+
+  /** One per user once they start Slow Cast (D115), like `deskCrawlerProfiles`. */
+  slowCastProfiles: defineTable({
+    userId: v.id('users'),
+    state: v.union(v.literal('active'), v.literal('deleting')),
+    anglerId: v.optional(v.id('anglers')),
+    createdAt: v.number(),
+  }).index('by_userId', ['userId']),
+
+  /** The Slow Cast player character. Engine tables call it `heroId` (lib/engine/tables.ts). */
+  anglers: defineTable({
+    userId: v.id('users'),
+    createdAt: v.number(),
+    isActive: v.boolean(),
+    activationState: v.union(v.literal('pending_trmnl'), v.literal('active')),
+    activatedAt: v.optional(v.number()),
+    level: v.number(),
+    xp: v.number(),
+    lifetimeXp: v.number(),
+    gold: v.number(),
+    lastLevelUpTick: v.number(),
+    status: v.union(v.literal('fishing'), v.literal('paused')),
+    waterId,
+    travelTo: v.optional(waterId),
+    rodTier: v.number(),
+    coolerTier: v.number(),
+    baitOnHook: v.optional(baitClass),
+    bait: v.record(v.string(), v.number()),
+    access: v.array(accessId),
+    logbook: v.record(v.string(), logbookEntry),
+    counters: anglerCounters,
+    quietTicks: v.number(),
+    publicProfile: v.optional(v.boolean()),
+    eligibleFromTick: v.number(),
+    lastTick: v.number(),
+    lastProgressTick: v.number(),
+    lastAdvancedAt: v.optional(v.number()),
+    logSequence: v.number(),
+    simulationState: v.union(v.literal('healthy'), v.literal('quarantined')),
+    quarantineReasonCode: v.optional(v.string()),
+    achievementsVersion: v.optional(v.number()),
+    scoreHour: v.optional(v.number()),
+    scoreHourXp: v.number(),
+  })
+    .index('by_userId_and_isActive', ['userId', 'isActive'])
+    .index('by_createdAt', ['createdAt'])
+    .index('by_simulationState', ['simulationState']),
+
+  /** Fish in an angler's cooler, at most the cooler's capacity (24 at the top tier). Sold explicitly. */
+  catches: defineTable({
+    anglerId: v.id('anglers'),
+    speciesId: v.string(),
+    grams: v.number(),
+    value: v.number(),
+    caughtTick: v.number(),
+    contentVersion: v.string(),
+    createdAt: v.number(),
+  }).index('by_anglerId', ['anglerId']),
+
+  swTickLogs: defineTable({
+    anglerId: v.id('anglers'),
+    source: v.union(v.literal('tick'), v.literal('command'), v.literal('lifecycle')),
+    tick: v.optional(v.number()),
+    runId: v.optional(v.id('swSimulationRuns')),
+    sequence: v.number(),
+    at: v.number(),
+    kind: swLogKind,
+    summary: v.string(),
+    detail: swLogDetail,
+    deltas: v.object({ xpEarned: v.number(), gold: v.number() }),
+  })
+    .index('by_anglerId_and_at_and_sequence', ['anglerId', 'at', 'sequence'])
+    .index('by_at', ['at']),
 
   users: defineTable({
     analyticsConsent: v.optional(v.boolean()),
@@ -487,7 +574,8 @@ export default defineSchema({
 
   operationalIncidents: defineTable({
     incidentKey: v.string(),
-    runId: v.id('simulationRuns'),
+    /** A Desk Crawler or Slow Cast run (D115). */
+    runId: v.union(v.id('simulationRuns'), v.id('swSimulationRuns')),
     state: v.union(v.literal('open'), v.literal('recovered')),
     openedAt: v.number(),
     recoveredAt: v.optional(v.number()),

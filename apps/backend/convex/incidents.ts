@@ -35,7 +35,9 @@ export const getIncident = internalQuery({
     const incident = await ctx.db.get(incidentId)
     if (incident === null) return null
     const run = await ctx.db.get(incident.runId)
-    return { incident, run: run ? { tick: run.tick, state: run.state, phase: run.state, contentVersion: run.contentVersion, simulationVersion: run.simulationVersion } : null }
+    // D115: a Slow Cast run lives in its own table.
+    const game = ctx.db.normalizeId('swSimulationRuns', incident.runId) === null ? 'Desk Crawler' : 'Slow Cast'
+    return { incident, game, run: run ? { tick: run.tick, state: run.state, phase: run.state, contentVersion: run.contentVersion, simulationVersion: run.simulationVersion } : null }
   },
 })
 
@@ -56,7 +58,8 @@ export const sendNotice = internalAction({
       return null
     }
     const tick = data.run?.tick ?? 'unknown'
-    const subject = notice === 'alert' ? `Desk Crawler: world tick ${tick} has stalled` : `Desk Crawler: world tick ${tick} recovered`
+    const game = data.game ?? 'Desk Crawler'
+    const subject = notice === 'alert' ? `${game}: world tick ${tick} has stalled` : `${game}: world tick ${tick} recovered`
     const text =
       notice === 'alert'
         ? `World tick ${tick} has made no progress for over five minutes. Opened ${new Date(data.incident.openedAt).toISOString()}. Run state: ${data.run?.state ?? 'unknown'}. Check the Convex dashboard. Player progress is safe; the watchdog keeps trying.`

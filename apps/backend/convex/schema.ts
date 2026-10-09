@@ -225,6 +225,14 @@ export default defineSchema({
     .index('by_createdAt', ['createdAt'])
     .index('by_simulationState', ['simulationState']),
 
+  /** Slow Cast's fly box (D115, the D46 shape): one fly a week from the device's code; cosmetic only. */
+  flyBoxes: defineTable({
+    userId: v.id('users'),
+    totalCollected: v.number(),
+    lastClaimWeek: v.number(),
+    lastClaimedAt: v.number(),
+  }).index('by_userId', ['userId']),
+
   /** One row per earned Slow Cast achievement, keyed by owner (D65 shape); bounded by the catalog. */
   swAchievements: defineTable({
     userId: v.id('users'),

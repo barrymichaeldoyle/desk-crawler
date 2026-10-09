@@ -57,6 +57,7 @@ import type * as sim_runs_tick from "../sim/runs/tick.js";
 import type * as slowCast_achievements from "../slowCast/achievements.js";
 import type * as slowCast_adapter from "../slowCast/adapter.js";
 import type * as slowCast_anglers from "../slowCast/anglers.js";
+import type * as slowCast_flies from "../slowCast/flies.js";
 import type * as slowCast_leaderboard from "../slowCast/leaderboard.js";
 import type * as slowCast_lifecycle from "../slowCast/lifecycle.js";
 import type * as slowCast_payload from "../slowCast/payload.js";
@@ -127,6 +128,7 @@ declare const fullApi: ApiFromModules<{
   "slowCast/achievements": typeof slowCast_achievements;
   "slowCast/adapter": typeof slowCast_adapter;
   "slowCast/anglers": typeof slowCast_anglers;
+  "slowCast/flies": typeof slowCast_flies;
   "slowCast/leaderboard": typeof slowCast_leaderboard;
   "slowCast/lifecycle": typeof slowCast_lifecycle;
   "slowCast/payload": typeof slowCast_payload;

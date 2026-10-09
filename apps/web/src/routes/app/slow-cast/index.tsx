@@ -6,10 +6,11 @@ import { useIntent } from '../../../lib/intent'
 import { preload } from '../../../lib/preload'
 import { BAIT_LABEL, BAND_LABEL, WEATHER_LABEL, type Dock } from '../../../lib/slowCast'
 import { Button, Card, Meter, NoticeBar, useNotice } from '../../../lib/ui'
+import { FlyBox } from './-flyBox'
 
 /** The dock: the angler's scene, progress, the bait on the hook, the waters and the latest stories. */
 export const Route = createFileRoute('/app/slow-cast/')({
-  loader: ({ context }) => preload(context, convexQuery(api.slowCast.anglers.dock, {}), convexQuery(api.slowCast.payload.preview, {})),
+  loader: ({ context }) => preload(context, convexQuery(api.slowCast.anglers.dock, {}), convexQuery(api.slowCast.payload.preview, {}), convexQuery(api.slowCast.flies.mine, {})),
   component: DockPage,
 })
 
@@ -92,6 +93,8 @@ function DockPage() {
         </ul>
         <p className="mt-3 text-sm text-muted">Weather is the same for every angler at a water and changes every six hours. Travelling takes one tick.</p>
       </Card>
+
+      <FlyBox notify={notify} />
 
       <Card title="Latest">
         <ol className="flex flex-col gap-2">

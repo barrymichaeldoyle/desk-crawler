@@ -3,11 +3,12 @@ import { qrInk } from '@trmnl-games/engine/art/qr'
 import type { TimeBand, WaterId, Weather } from '../sim/types'
 import { anglerPoses, type AnglerPose } from './angler'
 import { FISH_TRAITS } from './fish'
+import { FLIES } from '../content/flies'
 import { composeScene, SCENE_VERSION, type SceneKey } from './scene'
 
 /**
  * Slow Cast art paths, served by the Convex art route under `/art/sc/` (slow-cast.md "Device"):
- *   /art/sc/scene/v1/<water>/<band>/<weather>/<pose>/<fish|none>/<scale>.png
+ *   /art/sc/scene/v2/<water>/<band>/<weather>/<pose>/<fish|none>/<fly|nofly>/<scale>.png
  *   /art/sc/qr/v1/<target>/<scale>.png
  * Every part is allowlisted, so the route can never draw arbitrary text or mint arbitrary codes.
  */
@@ -24,20 +25,21 @@ export const QR_TARGETS = { home: '/sc', cooler: '/app/slow-cast/cooler' } as co
 export type QrTarget = keyof typeof QR_TARGETS
 
 export function sceneBase(key: SceneKey): string {
-  return `/art/sc/scene/v${SCENE_VERSION}/${key.water}/${key.band}/${key.weather}/${key.pose}/${key.pose === 'holding' && key.fish ? key.fish : 'none'}`
+  return `/art/sc/scene/v${SCENE_VERSION}/${key.water}/${key.band}/${key.weather}/${key.pose}/${key.pose === 'holding' && key.fish ? key.fish : 'none'}/${key.fly ?? 'nofly'}`
 }
 
 export const qrBase = (target: QrTarget) => `/art/sc/qr/v${QR_VERSION}/${target}`
 
 export function parseScenePath(path: string): (SceneKey & { scale: number }) | null {
-  const match = /^\/art\/sc\/scene\/v(\d+)\/([a-z_]+)\/([a-z]+)\/([a-z]+)\/([a-z]+)\/([a-z_]+)\/(\d+)\.png$/.exec(path)
+  const match = /^\/art\/sc\/scene\/v(\d+)\/([a-z_]+)\/([a-z]+)\/([a-z]+)\/([a-z]+)\/([a-z_]+)\/([a-z_]+)\/(\d+)\.png$/.exec(path)
   if (!match || Number(match[1]) !== SCENE_VERSION) return null
-  const [, , water, band, weather, pose, fish, scaleText] = match
+  const [, , water, band, weather, pose, fish, fly, scaleText] = match
+  if (fly !== 'nofly' && !FLIES.some((f) => f.id === fly)) return null
   const scale = Number(scaleText)
   if (!WATERS.has(water as WaterId) || !BANDS.has(band as TimeBand) || !WEATHERS.has(weather as Weather) || !(pose! in anglerPoses) || !SCENE_SCALES.has(scale)) return null
   if (fish !== 'none' && !(fish! in FISH_TRAITS)) return null
   if ((pose === 'holding') !== (fish !== 'none') && fish !== 'none') return null
-  return { water: water as WaterId, band: band as TimeBand, weather: weather as Weather, pose: pose as AnglerPose, fish: fish === 'none' ? null : fish!, scale }
+  return { water: water as WaterId, band: band as TimeBand, weather: weather as Weather, pose: pose as AnglerPose, fish: fish === 'none' ? null : fish!, fly: fly === 'nofly' ? null : fly!, scale }
 }
 
 export function renderSlowCastArt(path: string, origin: string): { png: Uint8Array; immutable: boolean } | null {

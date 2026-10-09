@@ -11,6 +11,8 @@ import { readEngineWorld } from '../lib/engine/world'
 import { currentAngler, slowCastProfile } from './profile'
 import { SLOW_CAST_RUNTIME, SLOW_CAST_SCHEDULE } from './runtime'
 import { readDeviceBoard } from './leaderboard'
+import { deviceFlyCode, flyTotal } from './flies'
+import { flyForClaim } from '@trmnl-games/slow-cast/content/flies'
 
 /**
  * Slow Cast's device payload for one authorized installation (trmnl.md "Query read budget"): fixed reads,
@@ -18,7 +20,7 @@ import { readDeviceBoard } from './leaderboard'
  */
 export const forInstance = internalQuery({
   args: { tokenHash: v.string(), uuid: v.string(), now: v.number(), utcOffset: v.optional(v.union(v.number(), v.null())) },
-  returns: v.union(v.null(), v.object({ outcome: v.literal('recoverable') }), v.object({ outcome: v.literal('payload'), payload: v.any(), recordOffsetFor: v.optional(v.id('users')) })),
+  returns: v.union(v.null(), v.object({ outcome: v.literal('recoverable') }), v.object({ outcome: v.literal('payload'), payload: v.any(), flyCode: v.union(v.string(), v.null()), recordOffsetFor: v.optional(v.id('users')) })),
   handler: async (ctx, args) => {
     const instance = await ctx.db.query('trmnlInstances').withIndex('by_uuid', (q) => q.eq('uuid', args.uuid)).unique()
     if (!instance) {
@@ -33,7 +35,9 @@ export const forInstance = internalQuery({
     if (user === null || user.state !== 'active' || (await slowCastProfile(ctx, user._id))?.state === 'deleting') return null
     const payload = await payloadFor(ctx, user, args.now, args.utcOffset ?? null)
     const offsetChanged = args.utcOffset !== undefined && args.utcOffset !== null && args.utcOffset !== user.trmnlUtcOffset
-    return { outcome: 'payload' as const, payload, ...(offsetChanged ? { recordOffsetFor: user._id } : {}) }
+    // Device envelope only: the companion's preview never carries the weekly fly code.
+    const flyCode = payload.status === 'fishing' || payload.status === 'paused' || payload.status === 'travelling' ? await deviceFlyCode(ctx, user._id, args.now) : null
+    return { outcome: 'payload' as const, payload, flyCode, ...(offsetChanged ? { recordOffsetFor: user._id } : {}) }
   },
 })
 
@@ -70,6 +74,7 @@ export async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number,
       ...(angler.baitOnHook === undefined ? {} : { baitOnHook: angler.baitOnHook }),
       bait: angler.bait,
       speciesLogged: Object.keys(angler.logbook).length,
+      fly: await flyTotal(ctx, user._id).then((total) => (total > 0 ? flyForClaim(total).id : null)),
     },
     coolerUsed,
     weather,

@@ -12,8 +12,8 @@ function keepsakeDigest(tokenHash: string, userId: string, week: number, tag: st
 }
 
 /** Six-digit owner/week code (D73), keyed with a private installation hash. Never returned to the companion. */
-export function keepsakeCode(tokenHash: string, userId: string, week: number): string {
-  const digest = keepsakeDigest(tokenHash, userId, week, 'desk-keepsake-v2')
+export function keepsakeCode(tokenHash: string, userId: string, week: number, tag = 'desk-keepsake-v2'): string {
+  const digest = keepsakeDigest(tokenHash, userId, week, tag)
   const value = new DataView(digest.buffer, digest.byteOffset, 4).getUint32(0) % 1_000_000
   const code = String(value).padStart(6, '0')
   return `${code.slice(0, 3)} ${code.slice(3)}`
@@ -45,5 +45,8 @@ export async function keepsakeGrant(ctx: QueryCtx, userId: Id<'users'>) {
   const grant = await ctx.db.get(instance.grantId)
   return grant && isDeskCrawler(grant) && grant.userId === userId && grant.state === 'active' ? grant : null
 }
+
+/** Slow Cast's weekly fly code (D115): the keepsake code under its own tag, keyed with the Slow Cast installation. */
+export const flyCode = (tokenHash: string, userId: string, week: number) => keepsakeCode(tokenHash, userId, week, 'slow-cast-fly-v1')
 
 export const normalizedKeepsakeCode = (code: string) => code.trim().toUpperCase().replace(/[\s-]/g, '')

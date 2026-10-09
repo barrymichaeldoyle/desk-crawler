@@ -15,19 +15,23 @@ const TITLE_ICON = svgDataUri(
     '<path d="M12 3v4"/><circle cx="12" cy="11" r="4"/><path d="M12 9v4" stroke="black"/><path d="M3 19c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg>',
 )
 
-const titleBar = (orientation: 'landscape' | 'portrait') => `
+/**
+ * The title bar with the weekly fly code. A narrow portrait column (side, quarter) cannot fit the name beside the
+ * code, so while a code shows it takes the name's place there with the short label, as Desk Crawler's keepsake does.
+ */
+const titleBar = (orientation: 'landscape' | 'portrait', narrow = false) => `
 <div class="title_bar ${orientation === 'landscape' ? 'portrait:hidden' : 'landscape:hidden'}">
   <img class="image image-stroke" src="${TITLE_ICON}" alt="">
-  <span class="title">Slow Cast</span>
-  {% if fly_code %}<span class="instance">Fly code {{ fly_code | escape }}</span>{% endif %}
+  <span class="title${narrow ? '{% if fly_code %} hidden lg:inline-block{% endif %}' : ''}">Slow Cast</span>
+  {% if fly_code %}<span class="instance">${narrow ? 'Fly' : 'Fly code'} {{ fly_code | escape }}</span>{% endif %}
 </div>`
 
 /** One layout in both orientations, each followed by its own title bar. */
-const oriented = (classes: string, landscape: string, portrait: string) => `
+const oriented = (classes: string, landscape: string, portrait: string, narrowPortrait = false) => `
 <div class="${classes} portrait:hidden">${landscape}
 </div>${titleBar('landscape')}
 <div class="${classes} landscape:hidden">${portrait}
-</div>${titleBar('portrait')}`
+</div>${titleBar('portrait', narrowPortrait)}`
 
 /** The scene at an OG scale and a larger X scale. */
 const scene = (og: number, x: number, classes = 'stretch-x') =>
@@ -142,6 +146,7 @@ const halfVertical = oriented(
     ${stories(4, 'description', 3)}
     <div class="grow"></div>
     <div class="no-shrink flex flex--row flex--center-x stretch-x">${qr(2, 4)}</div>`),
+  true,
 )
 
 const quadrant = oriented(
@@ -157,11 +162,13 @@ const quadrant = oriented(
     </div>
     {% if attention %}${attention('label lg:title--small', 2)}{% else %}${stories(1, 'description lg:title--small', 2)}{% endif %}`, true),
   ready(`
-    ${nameLine('title title--small')}
+    <div class="no-shrink flex flex--row stretch-x">${nameLine('title title--small')}</div>
     ${status('label')}
     <span class="label">{% if cooler_label %}Cooler {{ cooler_label }} · {{ gold }} gold{% endif %}</span>
     {% if attention %}${attention('label', 3)}{% else %}${stories(2, 'description', 3)}{% endif %}
+    <div class="grow"></div>
     <div class="no-shrink flex flex--row flex--center-x stretch-x">${qr(2, 4)}</div>`, true),
+  true,
 )
 
 export const screenMarkup = {

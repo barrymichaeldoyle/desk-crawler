@@ -15,7 +15,7 @@ import { SLOW_CAST_RUNTIME } from './runtime'
  */
 export const MAX_SW_UNLOCKS = 512
 
-export const stateOf = (a: Pick<Doc<'anglers'>, 'level' | 'rodTier' | 'counters' | 'logbook'>): AchievementState => ({ level: a.level, rodTier: a.rodTier, counters: a.counters, logbook: a.logbook })
+export const stateOf = (a: Pick<Doc<'anglers'>, 'level' | 'rodTier' | 'counters' | 'logbook'>, flies = 0): AchievementState => ({ level: a.level, rodTier: a.rodTier, counters: a.counters, logbook: a.logbook, flies })
 
 export async function awardAngler(ctx: MutationCtx, angler: Doc<'anglers'>, before: AchievementState, after: AchievementState, content: SlowCastCatalog, now: number, tick: number): Promise<AchievementDef[]> {
   const fullPass = needsFullPass(angler.achievementsVersion)
@@ -40,7 +40,9 @@ export async function awardAngler(ctx: MutationCtx, angler: Doc<'anglers'>, befo
 /** After an intent: compare the angler before it with its committed state. */
 export async function awardAfterAnglerIntent(ctx: MutationCtx, before: Doc<'anglers'>, content: SlowCastCatalog, tick: number): Promise<void> {
   const angler = await ctx.db.get(before._id)
-  if (angler) await awardAngler(ctx, angler, stateOf(before), stateOf(angler), content, Date.now(), tick)
+  if (!angler) return
+  const flies = (await ctx.db.query('flyBoxes').withIndex('by_userId', (q) => q.eq('userId', angler.userId)).unique())?.totalCollected ?? 0
+  await awardAngler(ctx, angler, stateOf(before, flies), stateOf(angler, flies), content, Date.now(), tick)
 }
 
 /** Publication runs: add one owner's unlocks to the run's rarity tally. */
@@ -66,7 +68,7 @@ export const mine = query({
     return {
       catalogVersion: ACHIEVEMENTS_VERSION,
       earnedCount: rows.length,
-      families: familyProgress(stateOf(angler), content, new Set(unlocked.keys())).map((f) => ({
+      families: familyProgress(stateOf(angler, (await ctx.db.query('flyBoxes').withIndex('by_userId', (q) => q.eq('userId', user._id)).unique())?.totalCollected ?? 0), content, new Set(unlocked.keys())).map((f) => ({
         family: f.family,
         name: f.name,
         category: f.category,

@@ -1,6 +1,6 @@
 # Slow Cast device layouts (S3)
 
-Recorded 2026-10-09 for D115. Template v1 (`packages/slow-cast/src/templates/screen.ts`), scene v1 and QR v1 (`packages/slow-cast/src/art/`).
+Recorded 2026-10-09 for D115. Template v1 (`packages/slow-cast/src/templates/screen.ts`), scene v2 and QR v1 (`packages/slow-cast/src/art/`).
 
 ## What was checked
 
@@ -25,4 +25,4 @@ A held fish is drawn at the angler's hands when the newest story is a catch or a
 - The pixel canvas, PNG encoder, font and QR drawing moved to `packages/engine/src/art/`; Desk Crawler re-exports them from its old paths and its art tests pass unchanged.
 - Each scene scale is a small 1-bit PNG and every scene URL is immutable.
 - The X draws images about 1.8 times their pixel size, so its scales are chosen to fit after that: 6x for the full scene.
-- The board's own row is the label itself, so its inverted text stays white. Not yet on the screen: the fly code in the title bar (S6). The quarter shows no scene or board, as the spec's simplification order allows.
+- The board's own row is the label itself, so its inverted text stays white. The weekly fly code sits in the title bar; narrow portrait columns (side, quarter) show it as "Fly 482 917" in the title's place while a code is showing, as Desk Crawler's keepsake does. The previews carry a code on every fishing screen. The newest fly is drawn on the angler's hat (scene v2). The quarter shows no scene or board, as the spec's simplification order allows.

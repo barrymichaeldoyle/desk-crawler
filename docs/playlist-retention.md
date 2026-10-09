@@ -32,3 +32,7 @@ A device-channel collectible gives the screen additional value without those fal
 See [keepsake evidence](evidence/playlist-retention.md). Integration tests cover authenticated HTTP delivery, preview secrecy, read-only generation, owner scope, weekly boundaries/grace, replay/concurrency, multiple grants, revoked/disconnected credentials, committed failed attempts, persistent bounded repeat collections and both deletion paths. Template tests render the code in all four sizes and omit it without the device-envelope field.
 
 The preview harness accepts `--keepsakes` after the art origin to supply a clearly fictional sample code for the layout matrix. Local screenshots are layout evidence, not proof of hardware delivery or Creator Fund impressions. Authorized production deployment and a successful live server render are recorded; Barry waived the remaining physical glance and real claim checks on 2026-10-05; they were not performed.
+
+## Slow Cast's fly box (D115)
+
+Slow Cast uses the same mechanism for its fly box: a weekly six-digit code in the device's title bar ("Fly code", or "Fly" in narrow portrait columns), minted with the keepsake HMAC under the tag `slow-cast-fly-v1` and keyed with the Slow Cast installation's token hash. One fly per account a week, last week's code accepted, ten wrong codes a day, no missed-week penalty, and no effect on catches, XP or rank. The newest fly is drawn on the angler's hat. Twelve designs fill a box; the Flies achievement family is 1, 6, 12 and 24.

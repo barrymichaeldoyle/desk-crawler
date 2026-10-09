@@ -27,6 +27,11 @@ export async function purgeAngler(ctx: MutationCtx, anglerId: Id<'anglers'>, bat
       await ctx.db.delete(row._id)
       removed += 1
     }
+    const box = await ctx.db.query('flyBoxes').withIndex('by_userId', (q) => q.eq('userId', angler.userId)).unique()
+    if (box) {
+      await ctx.db.delete(box._id)
+      removed += 1
+    }
     if (removed > 0) return removed
   }
   if (angler) {

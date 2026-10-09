@@ -165,6 +165,7 @@ const queries = {
   'slowCast/anglers:dock': () => scDock,
   'slowCast/anglers:logbook': () => scBook,
   'slowCast/payload:preview': () => ({ scene_base: '' }),
+  'slowCast/flies:mine': () => ({ totalCollected: 5, claimedThisWeek: params.get('fly') === 'done', nextAvailableAt: now + 864e5 * 3, connected: true, newest: 'red_tag', box: ['black_gnat', 'royal_coachman', 'mayfly', 'woolly_bugger', 'red_tag', 'blue_dun', 'march_brown', 'zulu', 'silver_doctor', 'greenwell', 'hares_ear', 'golden_olive'].map((id, i) => ({ id, name: id.replace(/_/g, ' '), count: i < 5 ? 1 : 0, rows: ['   #   ', '  ###  ', ' #:::# ', '  ###  ', ' # # # ', '   #   ', '  ##   '] })) }),
   'slowCast/leaderboard:view': () => ({ published: true, cohortLabel: 'Levels 4-7', totalPlayers: 41, globalTotalPlayers: 63, scoreAt: now, entries: [['Quillfeather_Longname', 7, 2410], ['Mo', 7, 2104], ['Barry', 6, 1980], ['Hidden player', 5, 1702], ['Bea', 6, 1660]].map(([name, level, score], i) => ({ rank: i + 1, name, level, score })), own: { rank: 3, rankDelta: 1, score: 1980 } }),
   'slowCast/achievements:mine': () => ({ earnedCount: 23, rarity: { counts: { catches_3: 12, logbook_2: 7, got_away_1: 30 }, totalPlayers: 41 }, families: [
     { family: 'catches', name: 'Catches', category: 'Fishing', tiers: 5, earned: { id: 'catches_3', name: 'Regular on the Bank', blurb: 'The heron nods as you arrive.', tier: 3 }, next: { id: 'catches_4', name: 'Old Hand', tier: 4 }, value: 412, target: 1000 },

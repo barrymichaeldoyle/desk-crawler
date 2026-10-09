@@ -147,7 +147,9 @@ async function simulateAnglerStep(ctx: MutationCtx, subject: Doc<'heroes'>, step
   // Achievements: diff lifetime state; an angler behind the catalog version gets one full pass.
   if (result.event !== undefined || result.extraEvents !== undefined || needsFullPass(angler.achievementsVersion)) {
     const updated = (await ctx.db.get(angler._id))!
-    await awardAngler(ctx, updated, stateOf(angler), stateOf(updated), content, now, run.tick)
+    // The fly count matters only on a full pass; a tick never changes it.
+    const flies = needsFullPass(angler.achievementsVersion) ? ((await ctx.db.query('flyBoxes').withIndex('by_userId', (q) => q.eq('userId', owner._id)).unique())?.totalCollected ?? 0) : 0
+    await awardAngler(ctx, updated, stateOf(angler, flies), stateOf(updated, flies), content, now, run.tick)
   }
   if (run.publishes) await publishInputs(ctx, angler, owner, step, credited.accumulator)
 

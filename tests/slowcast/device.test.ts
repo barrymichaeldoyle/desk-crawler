@@ -38,11 +38,11 @@ describe('Slow Cast scenes and codes', () => {
   })
 
   it('round-trips scene paths and refuses anything off the allowlist', () => {
-    const base = sceneBase({ water: 'river_bend', band: 'dusk', weather: 'rain', pose: 'holding', fish: 'salmon' })
-    expect(base).toBe('/art/sc/scene/v1/river_bend/dusk/rain/holding/salmon')
-    expect(parseScenePath(`${base}/5.png`)).toMatchObject({ water: 'river_bend', fish: 'salmon', scale: 5 })
-    expect(sceneBase({ water: 'millpond', band: 'day', weather: 'clear', pose: 'waiting', fish: 'roach' })).toBe('/art/sc/scene/v1/millpond/day/clear/waiting/none')
-    for (const bad of [`${base}/7.png`, '/art/sc/scene/v1/ocean/day/clear/waiting/none/5.png', '/art/sc/scene/v1/millpond/day/clear/waiting/shark/5.png', '/art/sc/scene/v2/millpond/day/clear/waiting/none/5.png', '/art/sc/qr/v1/anything/3.png'])
+    const base = sceneBase({ water: 'river_bend', band: 'dusk', weather: 'rain', pose: 'holding', fish: 'salmon', fly: 'zulu' })
+    expect(base).toBe('/art/sc/scene/v2/river_bend/dusk/rain/holding/salmon/zulu')
+    expect(parseScenePath(`${base}/5.png`)).toMatchObject({ water: 'river_bend', fish: 'salmon', fly: 'zulu', scale: 5 })
+    expect(sceneBase({ water: 'millpond', band: 'day', weather: 'clear', pose: 'waiting', fish: 'roach' })).toBe('/art/sc/scene/v2/millpond/day/clear/waiting/none/nofly')
+    for (const bad of [`${base}/7.png`, '/art/sc/scene/v2/ocean/day/clear/waiting/none/nofly/5.png', '/art/sc/scene/v2/millpond/day/clear/waiting/shark/nofly/5.png', '/art/sc/scene/v2/millpond/day/clear/waiting/none/dragonfly/5.png', '/art/sc/scene/v1/millpond/day/clear/waiting/none/5.png', '/art/sc/qr/v1/anything/3.png'])
       expect(renderSlowCastArt(bad, 'https://trmnlgames.com'), bad).toBeNull()
     expect(renderSlowCastArt('/art/sc/qr/v1/home/3.png', 'https://trmnlgames.com')?.immutable).toBe(false)
     expect(renderSlowCastArt(`${base}/2.png`, 'https://trmnlgames.com')?.immutable).toBe(true)
@@ -69,7 +69,7 @@ describe('Slow Cast payload', () => {
       bait_label: 'Maggots 34',
       attention: null,
       latest_catch: { species_id: 'barbel', name: 'Barbel', weight_label: '1.9 kg' },
-      scene_base: `${ART}/art/sc/scene/v1/river_bend/dusk/overcast/holding/barbel`,
+      scene_base: `${ART}/art/sc/scene/v2/river_bend/dusk/overcast/holding/barbel/red_tag`,
       qr_base: `${ART}/art/sc/qr/v1/home`,
       recap: 'Last 12 hours: 3 fish, best 1.9 kg Barbel, 1 got away',
     })
@@ -81,7 +81,7 @@ describe('Slow Cast payload', () => {
     expect(buildPayload(scenarios.stale!).attention).toBe('Updates delayed. Nothing is lost.')
     expect(buildPayload(scenarios.servicePaused!)).toMatchObject({ data_state: 'service_paused', attention: 'Paused for a service check. Nothing is lost.' })
     expect(buildPayload(scenarios.travelling!)).toMatchObject({ status: 'travelling', status_label: 'Heading to Harbour Pier' })
-    expect(buildPayload(scenarios.paused!).scene_base).toContain('/paused/none')
+    expect(buildPayload(scenarios.paused!).scene_base).toContain('/paused/none/red_tag')
   })
 
   it('asks for setup before the angler is active', () => {

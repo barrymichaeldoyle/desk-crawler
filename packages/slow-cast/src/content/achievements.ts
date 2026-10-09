@@ -6,7 +6,8 @@ import { contentV1 } from './v1'
  * families under a new version and never edits an existing id. Every predicate reads bounded angler state, so a
  * new achievement is earned retroactively at the next evaluation.
  */
-export const ACHIEVEMENTS_VERSION = 1
+/** v2 (S6) appends the Flies family. */
+export const ACHIEVEMENTS_VERSION = 2
 
 export type AchievementCategory = 'Fishing' | 'Logbook' | 'Trade' | 'Progress' | 'Species'
 
@@ -18,6 +19,7 @@ export type Predicate =
   | { readonly kind: 'waters'; readonly atLeast: number }
   | { readonly kind: 'first'; readonly speciesId: string }
   | { readonly kind: 'specimen'; readonly speciesId: string; readonly grams: number }
+  | { readonly kind: 'flies'; readonly atLeast: number }
 
 export interface AchievementDef {
   readonly id: string
@@ -118,7 +120,15 @@ const SPECIES: AchievementDef[] = contentV1.species.flatMap((s) => [
   { id: `specimen_${s.id}`, family: `species_${s.id}`, familyName: s.name, category: 'Species' as const, tier: 2, name: `Specimen ${s.name}`, blurb: `A ${s.name} over ${Math.round(((s.maxGrams * 0.75) / 1000) * 10) / 10} kg.`, predicate: { kind: 'specimen' as const, speciesId: s.id, grams: Math.ceil(s.maxGrams * 0.75) } },
 ])
 
-export const ACHIEVEMENTS: readonly AchievementDef[] = [...FAMILIES, ...SPECIES]
+/** Version 2: the fly box (S6). Two full boxes is the top tier. */
+const FLIES: AchievementDef[] = family('flies', 'Flies', 'Logbook', (n) => ({ kind: 'flies', atLeast: n }), [
+  [1, 'First Fly', 'Pinned to your hat for luck.'],
+  [6, 'Half a Box', 'Six patterns, all tied by hand.'],
+  [12, 'Full Fly Box', 'Every pattern in its own little slot.'],
+  [24, 'Second Box', 'One for the hat, one for the jacket.'],
+])
+
+export const ACHIEVEMENTS: readonly AchievementDef[] = [...FAMILIES, ...SPECIES, ...FLIES]
 export const ACHIEVEMENT_BY_ID: ReadonlyMap<string, AchievementDef> = new Map(ACHIEVEMENTS.map((a) => [a.id, a]))
 
 /** The bounded state predicates read. */
@@ -127,6 +137,8 @@ export interface AchievementState {
   readonly rodTier: number
   readonly counters: AnglerCounters
   readonly logbook: Readonly<Record<string, { readonly count: number; readonly bestGrams: number }>>
+  /** Flies collected from the device's weekly code; zero until the owner claims one. */
+  readonly flies: number
 }
 
 export function measure(predicate: Predicate, state: AchievementState, content: SlowCastCatalog): { value: number; target: number } {
@@ -147,6 +159,8 @@ export function measure(predicate: Predicate, state: AchievementState, content: 
       return { value: state.logbook[predicate.speciesId] ? 1 : 0, target: 1 }
     case 'specimen':
       return { value: state.logbook[predicate.speciesId]?.bestGrams ?? 0, target: predicate.grams }
+    case 'flies':
+      return { value: state.flies, target: predicate.atLeast }
   }
 }
 

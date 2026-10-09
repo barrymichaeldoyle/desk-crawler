@@ -22,6 +22,7 @@ const angler: PayloadAngler = {
   baitOnHook: 'maggots',
   bait: { maggots: 34, worms: 12 },
   speciesLogged: 14,
+  fly: 'red_tag',
 }
 
 const stories: PayloadStory[] = [

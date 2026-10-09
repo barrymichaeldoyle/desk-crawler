@@ -8,7 +8,8 @@ import { FISH_LARGE, fishSprite } from './fish'
  * the angler and the line, on the same 152x40 stage as Desk Crawler so layouts scale it the same way. A held catch
  * draws the large fish at the angler's hands. Deterministic per key, so each image URL is immutable.
  */
-export const SCENE_VERSION = 1
+/** v2 (S6) adds the newest fly on the angler's hat. */
+export const SCENE_VERSION = 2
 export const STAGE_WIDTH = 152
 export const STAGE_HEIGHT = 40
 export const FULL_SCALE = 5
@@ -241,6 +242,8 @@ export interface SceneKey {
   readonly pose: AnglerPose
   /** The held fish for the `holding` pose; ignored otherwise. */
   readonly fish: string | null
+  /** The newest fly from the fly box, pinned to the hat; null for none. */
+  readonly fly?: string | null
 }
 
 export function composeScene(key: SceneKey): Canvas {
@@ -252,6 +255,15 @@ export function composeScene(key: SceneKey): Canvas {
   const ax = key.water === 'harbour_pier' ? 26 : 18
   const ay = ground - angler.height
   drawSolid(c, angler, ax, ay)
+  if (key.fly) {
+    // A fly is three pixels on the hat band, with a tail: small, but it is the reward drawn where it was earned.
+    const hatRow = angler.rows.findIndex((row) => row.includes('########'))
+    const hx = ax + angler.rows[hatRow]!.indexOf('#') + 6
+    c.set(hx, ay + hatRow - 1, true)
+    c.set(hx + 1, ay + hatRow - 2, true)
+    c.set(hx + 1, ay + hatRow - 1, false)
+    c.set(hx + 2, ay + hatRow - 1, true)
+  }
   const [hx, hy] = ROD_HAND[key.pose]
   const handX = ax + hx
   const handY = ay + hy

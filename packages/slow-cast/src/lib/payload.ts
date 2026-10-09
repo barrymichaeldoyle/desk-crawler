@@ -34,6 +34,8 @@ export interface PayloadAngler {
   readonly baitOnHook?: BaitClass
   readonly bait: Readonly<Partial<Record<string, number>>>
   readonly speciesLogged: number
+  /** The newest fly from the fly box, drawn on the hat; null for none. */
+  readonly fly?: string | null
 }
 
 export interface PayloadStory {
@@ -122,7 +124,7 @@ export function buildPayload(input: SlowCastPayloadInput) {
   const toNext = xpToLeave(angler.level)
   const status = angler.status === 'paused' ? ('paused' as const) : travelling ? ('travelling' as const) : ('fishing' as const)
   const pose = poseFor(status, latest?.kind ?? null)
-  const scene = sceneBase({ water: (destination ?? water).id, band: input.band, weather: input.weather, pose, fish: latestCatch?.species_id ?? null })
+  const scene = sceneBase({ water: (destination ?? water).id, band: input.band, weather: input.weather, pose, fish: latestCatch?.species_id ?? null, fly: angler.fly ?? null })
   return {
     v: PAYLOAD_VERSION,
     game: 'slow-cast' as const,

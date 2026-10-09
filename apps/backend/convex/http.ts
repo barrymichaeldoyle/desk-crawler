@@ -124,7 +124,7 @@ http.route({
     }
     if (result === null || result.outcome !== 'payload') return notFound()
     if (result.recordOffsetFor !== undefined && utcOffset !== null) await ctx.runMutation(internal.trmnl.recordUtcOffset, { userId: result.recordOffsetFor, utcOffset })
-    return json(200, { ...slowCastMarkup, merge_variables: { ...result.payload, utc_offset: utcOffset } })
+    return json(200, { ...slowCastMarkup, merge_variables: { ...result.payload, fly_code: result.flyCode, utc_offset: utcOffset } })
   }),
 })
 

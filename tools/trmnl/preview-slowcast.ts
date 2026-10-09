@@ -35,7 +35,9 @@ for (const [name, input] of Object.entries(previewScenarios(LOCAL))) {
   if (filter && !name.includes(filter)) continue
   const payload = buildPayload(input)
   for (const layout of Object.keys(PREVIEW_LAYOUTS) as PreviewLayout[]) {
-    const inner = withArt(await liquid.parseAndRender(screenMarkup[layout], { ...payload, fly_code: null }))
+    // The weekly fly code sits in the title bar on every fishing screen (it is the longest title-bar text).
+    const flyCode = payload.status === 'fishing' || payload.status === 'paused' || payload.status === 'travelling' ? '482 917' : null
+    const inner = withArt(await liquid.parseAndRender(screenMarkup[layout], { ...payload, fly_code: flyCode }))
     for (const device of Object.keys(PREVIEW_DEVICES) as PreviewDevice[]) {
       for (const portrait of [false, true]) {
         const file = `.previews/sc-${name}--${device}${portrait ? '-portrait' : ''}--${layout}.html`

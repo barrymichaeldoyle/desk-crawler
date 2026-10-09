@@ -1,19 +1,32 @@
 import { Link } from '@tanstack/react-router'
 import { useEffect, useState, type ReactNode } from 'react'
 import { analyticsConfigured, openAnalyticsPreferences } from './analytics'
+import { PlatformHeader } from './platformHeader'
 
-export function ProsePage({ title, updated, children }: { title: string; updated?: string; children: ReactNode }) {
+/**
+ * A public reading page under the site header. `contents` adds a jump list of its sections under the title, for pages
+ * long enough to need one; each entry's id must match its section heading's id.
+ */
+export function ProsePage({ title, updated, contents, children }: { title: string; updated?: string; contents?: ReadonlyArray<readonly [string, string]>; children: ReactNode }) {
   return (
-    <main id="main" className="mx-auto flex max-w-2xl flex-col gap-4 px-4 py-12 leading-relaxed [&_h2]:mt-6 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-gold-ink [&_li]:ml-5 [&_li]:list-disc [&_a]:underline">
-      <Link to="/" className="flex items-center gap-2 font-display text-lg font-semibold no-underline">
-        <img src="/favicon.svg" alt="" width={24} height={24} className="[image-rendering:pixelated]" />
-        TRMNL Games
-      </Link>
-      <h1 className="font-display text-4xl font-bold">{title}</h1>
-      {updated ? <p className="text-sm text-muted">Last updated {updated}</p> : null}
-      {children}
-      <SiteLinks className="mt-8 border-t border-rule pt-4" />
-    </main>
+    <>
+      <PlatformHeader />
+      <main id="main" className="mx-auto flex max-w-2xl flex-col gap-4 px-4 py-10 leading-relaxed [&_h2]:mt-6 [&_h2]:scroll-mt-6 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-gold-ink [&_li]:ml-5 [&_li]:list-disc [&_a]:underline">
+        <h1 className="font-display text-4xl font-bold">{title}</h1>
+        {updated ? <p className="text-sm text-muted">Last updated {updated}</p> : null}
+        {contents ? (
+          <nav aria-labelledby="contents-title" className="window px-4 pt-3 pb-2 sm:px-5">
+            <h2 id="contents-title" className="!mt-0 !text-xl">On this page</h2>
+            {/* Two columns even on phones, so twenty sections stay about half a screen; each link keeps a 44px row so it is an easy tap. */}
+            <ul className="mt-1 grid grid-cols-2 gap-x-4 sm:gap-x-6">
+              {contents.map(([id, label]) => <li key={id} className="!ml-0 !list-none"><a href={`#${id}`} className="flex min-h-11 items-center py-1 text-sm leading-snug underline-offset-4">{label}</a></li>)}
+            </ul>
+          </nav>
+        ) : null}
+        {children}
+        <SiteLinks className="mt-8 border-t border-rule pt-4" />
+      </main>
+    </>
   )
 }
 
@@ -21,7 +34,8 @@ export function ProsePage({ title, updated, children }: { title: string; updated
 export function SiteLinks({ className = '' }: { className?: string }) {
   return (
     <footer className={`flex flex-col gap-4 text-sm ${className}`}>
-      <nav aria-label="Site" className="flex flex-wrap gap-4 underline underline-offset-4">
+      {/* Each link is a 44px tap target; the rows sit close because the targets carry their own height. */}
+      <nav aria-label="Site" className="flex flex-wrap gap-x-4 underline underline-offset-4 [&>*]:inline-flex [&>*]:min-h-11 [&>*]:items-center">
         <Link to="/app">My games</Link>
         <Link to="/account">Account</Link>
         <Link to="/help/desk-crawler">TRMNL help</Link>

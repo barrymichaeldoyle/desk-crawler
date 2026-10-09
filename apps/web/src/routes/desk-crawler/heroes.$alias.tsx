@@ -1,6 +1,7 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { PlatformHeader } from '../../lib/platformHeader'
 import { api } from '@trmnl-games/backend/api'
 import { tierLabel } from '@trmnl-games/desk-crawler/content/achievements'
 import { SiteLinks } from '../../lib/prose'
@@ -59,19 +60,21 @@ function HeroProfile() {
   const { data } = useQuery(profileQuery(alias))
   const profile = data as Profile | null | undefined
   return (
-    <main id="main" className="mx-auto flex min-h-screen max-w-2xl flex-col gap-8 px-4 py-16">
-      <Link to="/" className="flex items-center gap-2 font-display text-lg font-semibold no-underline"><img src="/favicon.svg" alt="" width={24} height={24} className="[image-rendering:pixelated]" />TRMNL Games</Link>
-      {profile ? <Found profile={profile} /> : (
-        <header className="flex flex-col gap-3">
-          <h1 className="font-display text-3xl font-bold">No hero here</h1>
-          <p>This hero's page is private, or there is no player by that name.</p>
-        </header>
-      )}
-      <div className="flex flex-wrap items-center gap-4">
-        <Link to="/games/desk-crawler" className="inline-flex min-h-11 items-center underline underline-offset-4">What is Desk Crawler?</Link>
-      </div>
-      <SiteLinks />
-    </main>
+    <>
+      <PlatformHeader />
+      <main id="main" className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-10">
+        {profile ? <Found profile={profile} /> : (
+          <header className="flex flex-col gap-3">
+            <h1 className="font-display text-3xl font-bold">No hero here</h1>
+            <p>This hero's page is private, or there is no player by that name.</p>
+          </header>
+        )}
+        <div className="flex flex-wrap items-center gap-4">
+          <Link to="/games/desk-crawler" className="inline-flex min-h-11 items-center underline underline-offset-4">What is Desk Crawler?</Link>
+        </div>
+        <SiteLinks />
+      </main>
+    </>
   )
 }
 

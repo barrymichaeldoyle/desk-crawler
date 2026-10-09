@@ -61,10 +61,11 @@ export function AnalyticsProvider() {
   const choose = (value: 'allowed' | 'declined') => { setAnalyticsConsent(value); setPreferencesOpen(false) }
   // Pinned to the foot of the screen, so it is seen on arrival and when reopened from the footer, not after the page.
   return <aside aria-label="Analytics preferences" className="fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-3xl px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-    <div className="border-2 border-edge bg-panel p-4 shadow-[0_0_0_4px_var(--color-night)]">
+    <div className="border-2 border-edge bg-panel p-3 sm:p-4 shadow-[0_0_0_4px_var(--color-night)]">
       <p className="font-semibold">Help us find problems</p>
       <p className="mt-2 text-sm">Allow usage analytics, error reports and masked session recordings? When signed in, these link to your account and email so we can help with support. You can play either way. <Link to="/privacy" className="underline underline-offset-4">Privacy details</Link></p>
-      <div className="mt-3 flex flex-wrap gap-3"><Button variant="secondary" onClick={() => choose('allowed')}>Allow analytics</Button><Button variant="secondary" onClick={() => choose('declined')}>No thanks</Button></div>
+      {/* One row of two equal answers: stacked, the panel covered about a third of a phone screen. */}
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3"><Button variant="secondary" className="px-2 sm:px-4" onClick={() => choose('allowed')}>Allow analytics</Button><Button variant="secondary" className="px-2 sm:px-4" onClick={() => choose('declined')}>No thanks</Button></div>
     </div>
   </aside>
 }

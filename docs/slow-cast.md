@@ -1,6 +1,6 @@
 # Slow Cast: a passive fishing game for TRMNL (P34)
 
-Proposed 2026-10-09 for Barry's review and revised the same day with its open questions settled (see [Decisions taken in this revision](#decisions-taken-in-this-revision)). Not approved, not built. This is the full specification for the second TRMNL Games title, a pixel art fishing simulator that plays itself on the desk display and is managed from the shared companion.
+Proposed 2026-10-09 for Barry's review and revised the same day with its open questions settled (see [Decisions taken in this revision](#decisions-taken-in-this-revision)). Approved as D115 on 2026-10-09 and in build; [Build log](#build-log) records each slice. This is the full specification for the second TRMNL Games title, a pixel art fishing simulator that plays itself on the desk display and is managed from the shared companion.
 
 Settled with Barry on 2026-10-09 before drafting: real-world outdoor waters and a cosy tone; the companion is setup only (pick the water, rod and bait, then sell, restock and upgrade), with no active reeling; launch content is three waters and about thirty species; the two games connect through the shared account profile and achievements only. Cosmetic nods between games (a lure skin or keepsake earned across games) can be built later but are **not part of the MVP**.
 
@@ -302,3 +302,7 @@ Barry asked on 2026-10-09 for the best player experience on each open question a
 5. **Timing.** S0 (engine extraction) and S1 (core and harness) can start while plugin 564 awaits approval; S7 (the second listing) waits until Desk Crawler is approved so the reviewer sees a working platform.
 6. **Work in progress stays hidden.** Barry asked how the game should look in the companion while it is being built. Answer: the lifecycle status above, `hidden` with an admin-only gate, so slices deploy continuously to production without anyone else seeing them, `preview` for a coming-soon tile once art exists, and `live` on approval.
 7. **Keeping the plugin on the playlist is rewarded, not enforced.** Barry asked how to make sure players keep the game on their TRMNL rather than play through the companion. Answer: the fly box, Slow Cast's version of the D46 keepsakes, with the device as the better view by composition and the companion kept to setup only.
+
+## Build log
+
+- 2026-10-09, S0 step 1: `packages/engine` holds the pure engine shared by both games: the Mulberry32 PRNG, the tick schedule with a per-game offset inside the quarter-hour (`makeSchedule`), recent-XP score windows, stream and shared-forecast seeds, the level curve and ranking bands. Desk Crawler re-exports each from its old path, so no import changed and all 484 tests pass; a pinned seed vector, checked against Node's own SHA-256, guards replay identity.

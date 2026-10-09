@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@noble/hashes": "^2.4.0",
+    "@trmnl-games/engine": "workspace:*",
     "fflate": "0.8.2",
     "qrcode-generator": "^2.0.4"
   },

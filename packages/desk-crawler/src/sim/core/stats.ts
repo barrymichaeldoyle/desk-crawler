@@ -4,8 +4,8 @@ import type { HeroState, ItemSnapshot } from './types'
 export const maxHp = (level: number): number => 100 + 12 * (level - 1)
 export const baseAttack = (level: number): number => 10 + 2 * (level - 1)
 export const baseDefense = (level: number): number => 4 + Math.floor(0.75 * (level - 1))
-/** XP required to leave level L. */
-export const xpToLeave = (level: number): number => Math.floor(50 * level ** 1.6)
+export { xpToLeave, cumulativeXpToReach, levelGroup } from '@trmnl-games/engine/levels'
+import { xpToLeave } from '@trmnl-games/engine/levels'
 
 export const pctOf = (value: number, pct: number): number => Math.ceil((value * pct) / 100)
 
@@ -51,17 +51,4 @@ export function applyXp(level: number, xp: number, granted: number): LevelResult
   }
 }
 
-/** Total XP needed from level 1 to reach `level` with zero current XP. */
-export function cumulativeXpToReach(level: number): number {
-  let total = 0
-  for (let l = 1; l < level; l += 1) total += xpToLeave(l)
-  return total
-}
 
-/** Recent-ranking level groups (ranking.md): 1–3, then four-level bands from 4. */
-export function levelGroup(level: number): { readonly key: string; readonly min: number; readonly max: number; readonly label: string } {
-  if (level <= 3) return { key: '1-3', min: 1, max: 3, label: 'Levels 1-3' }
-  const min = 4 + 4 * Math.floor((level - 4) / 4)
-  const max = min + 3
-  return { key: `${min}-${max}`, min, max, label: `Levels ${min}-${max}` }
-}

@@ -29,6 +29,7 @@
     }
   },
   "include": [
+    "packages/engine/src/**/*.ts",
     "packages/desk-crawler/src/**/*.ts",
     "tests/**/*.ts",
     "tools/**/*.ts"

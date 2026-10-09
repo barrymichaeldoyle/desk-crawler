@@ -1,0 +1,21 @@
+{
+  "name": "@trmnl-games/engine",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./rng": "./src/rng.ts",
+    "./schedule": "./src/schedule.ts",
+    "./score": "./src/score.ts",
+    "./seed": "./src/seed.ts",
+    "./levels": "./src/levels.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@noble/hashes": "^2.4.0"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3"
+  }
+}

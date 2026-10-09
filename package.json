@@ -55,6 +55,7 @@
     "@tanstack/react-start": "^1.168.60",
     "@trmnl-games/backend": "workspace:*",
     "@trmnl-games/desk-crawler": "workspace:*",
+    "@trmnl-games/engine": "workspace:*",
     "@trmnl-games/platform": "workspace:*",
     "convex": "^1.46.0",
     "jose": "^6.2.12",

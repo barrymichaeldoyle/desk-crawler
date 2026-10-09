@@ -15,6 +15,8 @@ type Summary = {
   newEvents: number | null
   counters: { combatWins: number; goldEarned: number; itemsFound: number; deaths: number } | null
   unequipped: number
+  /** D111: gear in the desk drawer; absent from summaries read before the drawer shipped. */
+  inDrawer?: number
   held: boolean
   status: string
 }
@@ -76,9 +78,9 @@ function Ledger({ summary }: { summary: Summary }) {
         Manage your bag
       </Link>
     </p>
-  ) : summary.unequipped > 0 ? (
+  ) : summary.unequipped > 0 || (summary.inDrawer ?? 0) > 0 ? (
     <p className="mt-3 text-sm text-muted">
-      {summary.unequipped} unequipped {summary.unequipped === 1 ? 'item' : 'items'} in your bag.{' '}
+      {summary.unequipped} unequipped {summary.unequipped === 1 ? 'item' : 'items'} in your bag{summary.inDrawer ? `, ${summary.inDrawer} in the desk drawer` : ''}.{' '}
       <Link to="/app/desk-crawler/inventory" className="underline underline-offset-4">
         Review gear
       </Link>

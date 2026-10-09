@@ -9,6 +9,7 @@
  *   status=paused|sleeping|dead|travelling|resting   held=1 (held find, bag full)   slots=30 (gear count)   merchant=1
  *   choice=1 (pending decision)   effects=1   recap=1 (a return tally)   keepsake=done   long=1 (long item names)
  *   quiet=1 (empty log, no achievements)   ok=1 (mutations succeed)   raids=1 (desk raids on, with a record and raid log lines)   public=1 (hero page public)
+ *   drawer=N (D111: the desk drawer on, holding N of 6, with the bag full when N > 0)
  *   /desk-crawler/heroes/<name> serves the public hero page (private=1 reads as not found)
  * The dev deployment's scene art is used when apps/web/.env.local sets VITE_CONVEX_SITE_URL.
  */
@@ -95,6 +96,22 @@ if (many > 0) {
   inventory.capacity = Math.max(inventory.capacity, many); inventory.used = many;
 }
 if (held) { inventory.gear.unshift({ id: 'held', kind: 'weapon', templateId: 'spork_halberd', name: 'Spork Halberd', label: 'Rare Spork Halberd', rarity: 'rare', requiredLevel: 4, attack: 11, defense: 0, saleValue: 19, affix: null, equipped: false, held: true }); inventory.heldItemId = 'held'; inventory.used = inventory.capacity; inventory.canResume = false }
+// D111: drawer=N turns the desk drawer on (six slots) and puts N finds in it; any N above 0 means the bag is full.
+inventory.gear.forEach((g) => { g.inDrawer = false });
+inventory.drawer = { capacity: 0, itemIds: [] };
+if (params.has('drawer')) {
+  const inDrawer = Math.min(6, Number(params.get('drawer')) || 0);
+  inventory.drawer = { capacity: 6, itemIds: [] };
+  if (inDrawer > 0) {
+    const spare = inventory.gear.filter((g) => !g.equipped && !g.held).length;
+    for (let i = spare; i < inventory.capacity; i++) { const t = templates[i % templates.length]; const kind = i % 12 < 6 ? 'weapon' : 'armor'; inventory.gear.push({ id: 'b' + i, kind, templateId: t, name: t.replace(/_/g, ' '), label: t.replace(/_/g, ' '), rarity: 'common', requiredLevel: 1, attack: kind === 'weapon' ? 3 : 0, defense: kind === 'armor' ? 2 : 0, saleValue: 5, affix: null, equipped: false, held: false, inDrawer: false }) }
+    inventory.used = inventory.capacity;
+  }
+  for (let i = 0; i < inDrawer; i++) { const t = templates[(i * 5 + 3) % templates.length]; const kind = (i * 5 + 3) % 12 < 6 ? 'weapon' : 'armor'; const rarity = ['uncommon', 'common', 'rare', 'common', 'epic', 'uncommon'][i]; inventory.gear.push({ id: 'd' + i, kind, templateId: t, name: t.replace(/_/g, ' '), label: (rarity === 'common' ? '' : rarity[0].toUpperCase() + rarity.slice(1) + ' ') + t.replace(/_/g, ' '), rarity, requiredLevel: i === 3 ? 12 : 1, attack: kind === 'weapon' ? 6 + i : 0, defense: kind === 'armor' ? 5 + i : 0, saleValue: 8 + i, affix: rarity === 'epic' ? { name: 'Vampiric', blurb: 'Heals a little on every hit.' } : null, equipped: false, held: false, inDrawer: true }); inventory.drawer.itemIds.push('d' + i) }
+  if (held) inventory.canResume = false;
+  else if (hero.status === 'sleeping') inventory.canResume = inDrawer < 6;
+  data.recap.inDrawer = inDrawer;
+}
 const queries = {
   'users:me': () => data.me,
   'heroes:mine': () => hero,

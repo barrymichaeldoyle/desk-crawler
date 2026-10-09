@@ -1,6 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { ACTIVE_CONTENT, catalogs } from '@trmnl-games/desk-crawler/content'
 import { ProsePage, SUPPORT_EMAIL } from '../../lib/prose'
 import { DESK_CRAWLER_OG, seo } from '../../lib/seo'
+
+/** D111: the desk drawer paragraph appears once the active catalog has a drawer. */
+const DRAWER = catalogs[ACTIVE_CONTENT].deskDrawer?.capacity ?? 0
 
 export const Route = createFileRoute('/help/desk-crawler')({
   head: () => seo({ title: 'Desk Crawler help and setup', path: '/help/desk-crawler', description: 'Install Desk Crawler on TRMNL, choose a stance, meet the merchant, answer decisions, understand refresh timing, and fix a screen that looks out of date.', image: DESK_CRAWLER_OG }),
@@ -60,11 +64,12 @@ export const Route = createFileRoute('/help/desk-crawler')({
       </ul>
       <h2>When your bag fills up</h2>
       <p>A new hero starts with a small paper bag that holds 6 pieces of gear. Equipped gear and potions don’t take up space. A full bag alone does not stop adventures: the next piece you find is held safely, then your hero sleeps until you make room. The held find is never automatically sold or discarded.</p>
+      {DRAWER > 0 ? <p>Your hero also has a desk drawer with {DRAWER} slots. When the bag is full, new finds go in the drawer and your hero keeps adventuring; it only stops when the drawer is full too. On the Bag page you can sell a drawer item, equip it, or move it into the bag when there’s a free slot. Nothing in the drawer is ever sold or thrown away for you.</p> : null}
       <h2>Bigger bags</h2>
       <p>Your bag grows as you play. Your hero finds a Tote Bag within the first couple of hours, then a bigger bag at levels 4, 8 and 12, up to 20 slots. Your hero might find the next bag early while exploring, or you can buy it with gold on the Bag page, up to one bag ahead of those levels.</p>
       <ol className="[&_li]:list-decimal">
         <li>Open Bag in the companion. Equip any upgrades and sell spare gear to free space.</li>
-        <li>If a find is being held, choose Claim find. Leave at least one free slot after claiming it so adventures can resume.</li>
+        <li>If a find is being held, choose Claim find{DRAWER > 0 ? ' (with the bag full, it goes in the desk drawer)' : ''}. Leave at least one free slot after claiming it so adventures can resume.</li>
         <li>Choose Resume adventures. You can pick an unlocked destination at the same time. Your hero wakes on the next game tick.</li>
       </ol>
       <p>Equipping gear does not free a slot. Selling gear or claiming a find does not wake your hero automatically. Bag sleep is separate from your TRMNL’s Sleep Mode; a sleeping display never stops the game.</p>

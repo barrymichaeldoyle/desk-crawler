@@ -31,6 +31,8 @@ type Gear = {
   affix: { name: string; blurb: string } | null
   equipped: boolean
   held: boolean
+  /** D111: in the desk drawer rather than the bag. */
+  inDrawer: boolean
 }
 type Biome = { id: string; name: string; unlocked: boolean }
 
@@ -43,7 +45,8 @@ const count = (n: number, noun: string) => `${n} ${n === 1 ? noun : `${noun}s`}`
  * The bag as a bag (D97): the two equipped slots and the potion stack, then every slot of the current bag with each
  * piece drawn in it. Tapping a piece opens its sheet with the comparison and its actions; Sell gear turns the grid into
  * a selection with a pinned total, and the review is a second sheet. Nothing on the page moves while an action runs:
- * feedback arrives in a pinned notice, and only the acting slot shows busy.
+ * feedback arrives in a pinned notice, and only the acting slot shows busy. Under a catalog with a desk drawer (D111) the
+ * drawer's six slots sit under the bag, and a sale can take pieces from both.
  */
 function Inventory() {
   const { data: bag } = useQuery(convexQuery(api.inventory.mine, {}))
@@ -66,6 +69,8 @@ function Inventory() {
   const unequip = useIntent(api.inventory.unequip, { onFeedback: notify })
   const sellMany = useIntent(api.inventory.sellMany, { onFeedback: notify })
   const claim = useIntent(api.inventory.claimHeld, { onFeedback: notify })
+  const equipDrawer = useIntent(api.inventory.equipFromDrawer, { onFeedback: notify })
+  const claimDrawer = useIntent(api.inventory.claimFromDrawer, { onFeedback: notify })
   const resume = useIntent(api.inventory.resumeAdventures, { onFeedback: notify })
   const buyBag = useIntent(api.inventory.buyBag, { onFeedback: notify })
   const buyPouch = useIntent(api.inventory.buyPouch, { onFeedback: notify })
@@ -80,21 +85,29 @@ function Inventory() {
   const reason = manageable ? null : hero.simulationState === 'quarantined' ? 'Gear changes are paused during a service check.' : hero.status === 'paused' ? 'Adventures are paused. Resume from Hero to change or sell gear.' : 'Gear changes open again once your hero is back from travelling or recovering.'
   const held = gear.find((item) => item.held) ?? null
   const sellable = gear.filter((item) => !item.equipped && !item.held)
+  const inBag = sellable.filter((item) => !item.inDrawer)
+  // The drawer keeps its own order, oldest first, so a piece stays where the player last saw it.
+  const drawerView: { capacity: number; itemIds: string[] } = bag.drawer ?? { capacity: 0, itemIds: [] }
+  const drawer = drawerView.itemIds.map((id: string) => gear.find((item) => item.id === id)).filter((item: Gear | undefined): item is Gear => item !== undefined)
+  const hasDrawer = drawerView.capacity > 0
+  const drawerRoom = drawer.length < drawerView.capacity
   const chosen = sellable.filter((item) => selected.has(item.id))
   const goldOf = (items: Gear[]) => items.reduce((sum, item) => sum + item.saleValue, 0)
   const rareOf = (items: Gear[]) => items.filter((item) => item.rarity === 'rare' || item.rarity === 'epic').length
   const validSale = sale === null || saleIsCurrent(sale, gear)
   const equippedOf = (kind: Gear['kind']) => gear.find((item) => item.equipped && item.kind === kind) ?? null
   const deltaOf = (item: Gear) => { const current = equippedOf(item.kind); return statOf(item) - (current ? statOf(current) : 0) }
-  const busy = equip.pending || unequip.pending || sellMany.pending || claim.pending || resume.pending || buyBag.pending || buyPouch.pending || buyOffer.pending
+  const busy = equip.pending || unequip.pending || sellMany.pending || claim.pending || equipDrawer.pending || claimDrawer.pending || resume.pending || buyBag.pending || buyPouch.pending || buyOffer.pending
   const full = bag.used >= bag.capacity
   // Quiet warning at 80% of the current bag (D61).
   const filling = bag.used >= Math.ceil(bag.capacity * 0.8)
+  // A held find can always be claimed somewhere while the bag or the drawer has a slot.
+  const claimBlocked = full && !drawerRoom
   const opened = openId === 'potions' ? null : gear.find((item) => item.id === openId) ?? null
   const slotLabel = (item: Gear) => {
     const delta = deltaOf(item)
     const compare = item.requiredLevel > hero.level ? `requires level ${item.requiredLevel}` : delta > 0 ? `${delta} better than equipped` : delta < 0 ? `${-delta} worse than equipped` : 'same as equipped'
-    return `${item.label}, ${item.rarity}, +${statOf(item)} ${statLabel(item)}, ${compare}${item.held ? ', held find' : ''}`
+    return `${item.label}, ${item.rarity}, +${statOf(item)} ${statLabel(item)}, ${compare}${item.held ? ', held find' : item.inDrawer ? ', in the desk drawer' : ''}`
   }
   const toggle = (id: string) => setSelected((current) => {
     const next = new Set(retainSellableSelection(current, gear))
@@ -121,21 +134,22 @@ function Inventory() {
     }
   }
 
-  const slots = Math.max(bag.capacity, sellable.length)
+  const slots = Math.max(bag.capacity, inBag.length)
+  const claimMessage = (item: Gear) => full ? `${item.label} is in the desk drawer.` : `${item.label} is in your bag. Keep one slot free, then resume.`
   return (
     <div className="flex min-w-0 flex-col gap-8">
       <header className="flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="font-display text-3xl font-bold">Your bag</h1>
-        <p className="text-sm tabular-nums text-muted">{bag.ladder.name} · {bag.used} of {bag.capacity} slots</p>
+        <p className="text-sm tabular-nums text-muted">{bag.ladder.name} · {bag.used} of {bag.capacity} slots{drawer.length > 0 ? ` · ${drawer.length} in the drawer` : ''}</p>
       </header>
       {hero.status === 'sleeping' ? (
         <Card title={hero.wakeAtTick !== null ? 'Resuming next adventure' : held ? 'A find is waiting' : 'Resume adventures'}>
           {held ? <>
-            <p><strong>{held.label}</strong> didn’t fit, so adventures stopped. Sell gear to free a slot, claim the find, then keep one slot free to resume.</p>
-            <Button className="mt-3" pending={claim.pending} busyLabel="Claiming…" disabled={!manageable || busy || full} onClick={() => act(held, claim, {}, `${held.label} is in your bag. Keep one slot free, then resume.`)}>Claim find</Button>
-            {full ? <p className="mt-2 text-sm">Sell an item or get a bigger bag first.</p> : null}
+            <p><strong>{held.label}</strong> didn’t fit, so adventures stopped. {hasDrawer ? 'Sell gear to free a bag or drawer slot, claim the find, then keep one slot free to resume.' : 'Sell gear to free a slot, claim the find, then keep one slot free to resume.'}</p>
+            <Button className="mt-3" pending={claim.pending} busyLabel="Claiming…" disabled={!manageable || busy || claimBlocked} onClick={() => act(held, claim, {}, claimMessage(held))}>{full && drawerRoom ? 'Put in drawer' : 'Claim find'}</Button>
+            {claimBlocked ? <p className="mt-2 text-sm">{hasDrawer ? 'Sell an item from the bag or the drawer first.' : 'Sell an item or get a bigger bag first.'}</p> : null}
           </> : hero.wakeAtTick !== null ? <ResumeAt /> : <>
-            <p>{bag.canResume ? 'Room for more finds. Resume here, or set out for another unlocked area.' : 'Sell one more item to keep a slot free, then resume.'}</p>
+            <p>{bag.canResume ? 'Room for more finds. Resume here, or set out for another unlocked area.' : hasDrawer ? 'Sell one more item from the bag or the drawer to keep a slot free, then resume.' : 'Sell one more item to keep a slot free, then resume.'}</p>
             <label className="mt-4 flex flex-col gap-2 text-sm">
               <span className="font-semibold">Resume in</span>
               <select value={destination} disabled={busy || !manageable} onChange={(event) => setDestination(event.target.value)} className="pixel-select min-h-11 border-2 border-edge pr-9 pl-3 text-base">
@@ -179,14 +193,28 @@ function Inventory() {
         <p className="mt-1 min-h-5 text-sm text-muted">
           {mode === 'sell'
             ? <>Tap gear to select it.{sellable.length > chosen.length ? <> <button type="button" className="font-semibold text-ink underline underline-offset-4" onClick={() => setSelected(new Set(sellable.slice(0, SALE_LIMIT).map((item) => item.id)))}>Select all</button></> : null}</>
-            : sellable.length === 0 ? 'No spare gear yet. Finds land here.' : full ? 'Bag full. The next find is held, and adventures stop until you make room.' : filling ? 'Bag nearly full. Sell gear you no longer need.' : 'Tap a piece to compare, equip or sell it.'}
+            : inBag.length === 0 ? 'No spare gear yet. Finds land here.' : full ? (drawerRoom ? 'Bag full. New finds go in the desk drawer.' : 'Bag full. The next find is held, and adventures stop until you make room.') : filling ? 'Bag nearly full. Sell gear you no longer need.' : 'Tap a piece to compare, equip or sell it.'}
         </p>
         <ul className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(4.5rem,1fr))] gap-2">
           {held ? <li><Slot item={held} held label={slotLabel(held)} busy={busyId === held.id} onClick={() => setOpenId(held.id)} /></li> : null}
-          {sellable.map((item) => <li key={item.id}><Slot item={item} label={slotLabel(item)} selectable={mode === 'sell'} selected={selected.has(item.id)} upgrade={deltaOf(item) > 0 && item.requiredLevel <= hero.level} lockedLevel={item.requiredLevel > hero.level ? item.requiredLevel : null} busy={busyId === item.id} onClick={() => tap(item)} /></li>)}
-          {Array.from({ length: Math.max(0, slots - sellable.length) }, (_, index) => <li key={`empty-${index}`}><EmptySlot /></li>)}
+          {inBag.map((item) => <li key={item.id}><Slot item={item} label={slotLabel(item)} selectable={mode === 'sell'} selected={selected.has(item.id)} upgrade={deltaOf(item) > 0 && item.requiredLevel <= hero.level} lockedLevel={item.requiredLevel > hero.level ? item.requiredLevel : null} busy={busyId === item.id} onClick={() => tap(item)} /></li>)}
+          {Array.from({ length: Math.max(0, slots - inBag.length) }, (_, index) => <li key={`empty-${index}`}><EmptySlot /></li>)}
         </ul>
       </section>
+
+      {hasDrawer ? <section aria-labelledby="drawer-title" className="window min-w-0 px-4 pt-3 pb-4 sm:px-5">
+        <div className="flex min-h-11 items-center justify-between gap-3">
+          <h2 id="drawer-title" className="min-w-0 truncate font-display text-xl font-bold sm:text-2xl">Desk drawer</h2>
+          <p className="shrink-0 text-sm tabular-nums text-muted">{drawer.length} of {drawerView.capacity}</p>
+        </div>
+        <p className="mt-1 min-h-5 text-sm text-muted">
+          {mode === 'sell' && drawer.length > 0 ? 'Tap gear to add it to the sale.' : drawer.length === 0 ? 'When the bag is full, finds go in here and your hero keeps adventuring.' : drawerRoom ? 'Finds that didn’t fit in the bag. Tap one to equip, move or sell it.' : 'Drawer full too. The next find is held, and adventures stop until you make room.'}
+        </p>
+        <ul className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(4.5rem,1fr))] gap-2">
+          {drawer.map((item: Gear) => <li key={item.id}><Slot item={item} label={slotLabel(item)} selectable={mode === 'sell'} selected={selected.has(item.id)} upgrade={deltaOf(item) > 0 && item.requiredLevel <= hero.level} lockedLevel={item.requiredLevel > hero.level ? item.requiredLevel : null} busy={busyId === item.id} onClick={() => tap(item)} /></li>)}
+          {Array.from({ length: Math.max(0, drawerView.capacity - drawer.length) }, (_, index) => <li key={`drawer-empty-${index}`}><EmptySlot /></li>)}
+        </ul>
+      </section> : null}
 
       {bag.merchant ? <Merchant visit={bag.merchant} gold={hero.gold} potions={bag.potions} cap={bag.pouch.cap} disabled={!manageable || busy} intent={buyOffer} /> : null}
       <div className="grid gap-8 sm:grid-cols-2">
@@ -212,7 +240,7 @@ function Inventory() {
       </Sheet>
 
       <Sheet open={openId !== null && openId !== 'potions'} onClose={() => setOpenId(null)} label="Gear">
-        {opened ? <ItemSheet item={opened} hero={hero} current={equippedOf(opened.kind)} manageable={manageable} reason={reason} busy={busy} full={full} intents={{ equip, unequip, claim }} onClose={() => setOpenId(null)} onEquip={() => act(opened, equip, { itemId: opened.id }, `${opened.label} equipped.`)} onUnequip={() => act(opened, unequip, { slot: opened.kind }, `${opened.label} unequipped.`)} onClaim={() => act(opened, claim, {}, `${opened.label} is in your bag. Keep one slot free, then resume.`)} onSell={() => { setOpenId(null); setSale([opened]) }} /> : <>
+        {opened ? <ItemSheet item={opened} hero={hero} current={equippedOf(opened.kind)} manageable={manageable} reason={reason} busy={busy} full={full} claimBlocked={claimBlocked} intents={{ equip: opened.inDrawer ? equipDrawer : equip, unequip, claim, move: claimDrawer }} onClose={() => setOpenId(null)} onEquip={() => act(opened, opened.inDrawer ? equipDrawer : equip, { itemId: opened.id }, opened.inDrawer && equippedOf(opened.kind) ? `${opened.label} equipped. The old piece went in the drawer.` : `${opened.label} equipped.`)} onUnequip={() => act(opened, unequip, { slot: opened.kind }, `${opened.label} unequipped.`)} onClaim={() => act(opened, claim, {}, claimMessage(opened))} onMove={() => act(opened, claimDrawer, { itemId: opened.id }, `${opened.label} moved into your bag.`)} onSell={() => { setOpenId(null); setSale([opened]) }} /> : <>
           <SheetTitle>Gone from your bag</SheetTitle>
           <p className="mt-2 text-sm">That piece was sold or moved from another screen.</p>
           <Button allowOffline variant="secondary" className="mt-4 w-full" onClick={() => setOpenId(null)}>Close</Button>
@@ -240,7 +268,7 @@ function Inventory() {
 }
 
 /** One piece: its icon, stats against the equipped piece, affix and sale value, then the actions open to it. */
-function ItemSheet({ item, hero, current, manageable, reason, busy, full, intents, onClose, onEquip, onUnequip, onClaim, onSell }: {
+function ItemSheet({ item, hero, current, manageable, reason, busy, full, claimBlocked, intents, onClose, onEquip, onUnequip, onClaim, onMove, onSell }: {
   item: Gear
   hero: { level: number }
   current: Gear | null
@@ -248,22 +276,26 @@ function ItemSheet({ item, hero, current, manageable, reason, busy, full, intent
   reason: string | null
   busy: boolean
   full: boolean
-  intents: { equip: { pending: boolean; error: string | null }; unequip: { pending: boolean; error: string | null }; claim: { pending: boolean; error: string | null } }
+  claimBlocked: boolean
+  intents: { equip: { pending: boolean; error: string | null }; unequip: { pending: boolean; error: string | null }; claim: { pending: boolean; error: string | null }; move: { pending: boolean; error: string | null } }
   onClose: () => void
   onEquip: () => void
   onUnequip: () => void
   onClaim: () => void
+  onMove: () => void
   onSell: () => void
 }) {
   const delta = statOf(item) - (current ? statOf(current) : 0)
   const canEquip = item.requiredLevel <= hero.level
-  const error = item.equipped ? intents.unequip.error : item.held ? intents.claim.error : intents.equip.error
+  const error = item.equipped ? intents.unequip.error : item.held ? intents.claim.error : intents.equip.error ?? (item.inDrawer ? intents.move.error : null)
+  // D111: Move to bag shows only while the bag has a free slot.
+  const movable = item.inDrawer && !full
   return <>
     <div className="flex items-start gap-3">
       <div className="w-16 shrink-0"><SlotPreview item={item} /></div>
       <div className="min-w-0 flex-1">
         <SheetTitle><span className={RARITY_TONE[item.rarity] ?? ''}>{item.label}</span></SheetTitle>
-        <p className="mt-1 text-sm text-muted">{item.rarity} {item.kind}, level {item.requiredLevel}{item.equipped ? ', equipped' : item.held ? ', held find' : ''}</p>
+        <p className="mt-1 text-sm text-muted">{item.rarity} {item.kind}, level {item.requiredLevel}{item.equipped ? ', equipped' : item.held ? ', held find' : item.inDrawer ? ', in the desk drawer' : ''}</p>
       </div>
     </div>
     <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
@@ -274,16 +306,17 @@ function ItemSheet({ item, hero, current, manageable, reason, busy, full, intent
       <dt className="caps text-muted">Sells for</dt>
       <dd className="tabular-nums text-gold-ink">{item.saleValue} gold</dd>
     </dl>
-    {!manageable && reason ? <p className="mt-3 text-sm">{reason}</p> : item.held && full ? <p className="mt-3 text-sm">Sell an item or get a bigger bag to claim this find.</p> : !item.equipped && !item.held && !canEquip ? <p className="mt-3 text-sm">Your hero can wear this from level {item.requiredLevel}. It can still be sold.</p> : null}
+    {!manageable && reason ? <p className="mt-3 text-sm">{reason}</p> : item.held && claimBlocked ? <p className="mt-3 text-sm">Sell an item or get a bigger bag to claim this find.</p> : !item.equipped && !item.held && !canEquip ? <p className="mt-3 text-sm">Your hero can wear this from level {item.requiredLevel}. It can still be sold.</p> : null}
     <div className="mt-3 empty:hidden"><ErrorNote message={error} /></div>
     <div className="mt-4 grid grid-cols-2 gap-2">
       {item.equipped
         ? <Button variant="secondary" disabled={!manageable || busy} pending={intents.unequip.pending} busyLabel="Removing…" onClick={onUnequip}>Unequip</Button>
         : item.held
-          ? <Button disabled={!manageable || busy || full} pending={intents.claim.pending} busyLabel="Claiming…" onClick={onClaim}>Claim find</Button>
+          ? <Button disabled={!manageable || busy || claimBlocked} pending={intents.claim.pending} busyLabel="Claiming…" onClick={onClaim}>{full && !claimBlocked ? 'Put in drawer' : 'Claim find'}</Button>
           : <>
             <Button variant={delta > 0 && canEquip ? 'primary' : 'secondary'} disabled={!manageable || busy || !canEquip} pending={intents.equip.pending} busyLabel="Equipping…" onClick={onEquip}>Equip</Button>
             <Button allowOffline variant="secondary" disabled={!manageable || busy} onClick={onSell}>Sell</Button>
+            {movable ? <Button variant="secondary" className="col-span-2" disabled={!manageable || busy} pending={intents.move.pending} busyLabel="Moving…" onClick={onMove}>Move to bag</Button> : null}
           </>}
       <Button allowOffline variant="quiet" className={item.equipped || item.held ? '' : 'col-span-2'} disabled={busy} onClick={onClose}>Close</Button>
     </div>

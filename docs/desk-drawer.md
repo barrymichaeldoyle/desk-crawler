@@ -1,6 +1,6 @@
 # Desk drawer (P32, the "lost-and-found" row)
 
-Proposed 2026-10-09 for Barry's review and revised the same day with the open questions settled (see [Decisions taken in this revision](#decisions-taken-in-this-revision)). Approved and being built as D111 on 2026-10-09: L1 (rules and harness) and L2 (backend) are done, [evidence](evidence/desk-drawer.md). This spec is the v1.1 "Lost-and-found" stretch row in the [roadmap](roadmap.md), which says to "extend the single held-find/inventory-sleep system only with a bounded migration; never reintroduce silent disposal". The roadmap row keeps the brief's name; the player-facing feature is the hero's **desk drawer**. Its companions are [quests](quests.md) (P31) and [alerts](alerts.md) (P33).
+Proposed 2026-10-09 for Barry's review and revised the same day with the open questions settled (see [Decisions taken in this revision](#decisions-taken-in-this-revision)). Approved and being built as D111 on 2026-10-09: L1 (rules and harness), L2 (backend) and L3 (companion and help) are done, [evidence](evidence/desk-drawer.md). This spec is the v1.1 "Lost-and-found" stretch row in the [roadmap](roadmap.md), which says to "extend the single held-find/inventory-sleep system only with a bounded migration; never reintroduce silent disposal". The roadmap row keeps the brief's name; the player-facing feature is the hero's **desk drawer**. Its companions are [quests](quests.md) (P31) and [alerts](alerts.md) (P33).
 
 ## The problem it solves
 

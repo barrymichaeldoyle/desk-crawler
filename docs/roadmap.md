@@ -14,8 +14,9 @@ Release order is a commitment; the dates are not. A release ends when its gate p
 
 - **v1.0** is deployed and submitted: plugin 564 went to TRMNL review on 2026-10-07 and the review email is sent. Marketplace approval is the one open gate.
 - **v1.0.x** live polish continues while review runs: device templates are at v48, and companion and layout polish ships through main.
-- **v1.1 Decisions** shipped in full on 2026-10-07, with help and analytics coverage added on 2026-10-08 (D101). Production now runs content v7 and achievement catalog version 3 (D110). Its stretch items (daily quests, lost-and-found, push/email) are not scheduled.
-- **Next:** v1.2 Other people, unless the v1.0.x reorder trigger pulls v2.0 Depth ahead once live retention data exists. Two of its rows are done: desk raids (D110, [design](raids.md)) switched on with content v7 at 22:15 UTC on 2026-10-08 after all five slices, and public profiles (D109) finished on 2026-10-09. Meetings, friends/rivals, world events and additional classes remain.
+- **v1.1 Decisions** shipped in full on 2026-10-07, with help and analytics coverage added on 2026-10-08 (D101). Production now runs content v7 and achievement catalog version 3 (D110). Its stretch items (daily quests, lost-and-found, push/email) are not built; speccing them is the next task (Barry, 2026-10-09).
+- **Next task:** spec the three v1.1 stretch items as design documents, like [raids](raids.md), with the open questions each row below names. Speccing only; building any of them is a separate go-ahead.
+- **Next release:** v1.2 Other people, unless the v1.0.x reorder trigger pulls v2.0 Depth ahead once live retention data exists. Two of its rows are done: desk raids (D110, [design](raids.md)) switched on with content v7 at 22:15 UTC on 2026-10-08 after all five slices, and public profiles (D109) finished on 2026-10-09. Meetings, friends/rivals, world events and additional classes remain.
 
 ## v1.0 — Submission (submitted 2026-10-07, awaiting marketplace approval)
 
@@ -59,7 +60,7 @@ Gate: no production reset, every player's progress preserved across each deploy,
 
 Goal: optional meaningful choices without a daily obligation.
 
-State: every core item is live (content v3 to v6, achievement catalog version 2, template v34 notice line), the help page explains each system and the companion reports the choice events (D101). The gate holds: expiry and defaults resolve without a hand, choose and default cannot both award (D79 tests), and the notice yields to any attention line. What stays open is measurement: whether the choices raise companion engagement is read from live analytics, not assumed. Stretch rows below are unscheduled.
+State: every core item is live (content v3 to v6, achievement catalog version 2, template v34 notice line), the help page explains each system and the companion reports the choice events (D101). The gate holds: expiry and defaults resolve without a hand, choose and default cannot both award (D79 tests), and the notice yields to any attention line. What stays open is measurement: whether the choices raise companion engagement is read from live analytics, not assumed. Stretch rows below are being specced (2026-10-09), not built.
 
 Core batch: stances, configurable rest/potion thresholds, a small set of event choices with an automatic default, a wandering merchant, prioritized device attention text. Continue gear/balance improvements.
 
@@ -72,9 +73,9 @@ Core batch: stances, configurable rest/potion thresholds, a small set of event c
 | Effects | Shipped 2026-10-07 (D80): three catalog effects with typed modifiers and durations, at most three per hero, knockout clears all, rest cleanses banes. Typed duration/modifier rules; death ordering and rest cleansing explicitly designed |
 | Affixes/Epic | Shipped 2026-10-07 (D81): epic at 1%, four affixes rolled on rare and epic gear under v6 only, older gear untouched, Bag page explains them. Versioned generation and owned-item compatibility; extend inventory UI |
 | Achievements (D65) | Shipped early, in v1.0 (2026-10-06). v1.1 families shipped 2026-10-07 as catalog version 2 (D82): purchases, merchants met, stance changes, decisions made, epic finds. See [achievements](achievements.md) |
-| Daily quests | Stretch, not scheduled; timezone/DST and timezone-change abuse design first |
-| Lost-and-found | Stretch, not scheduled; extend the single held-find/inventory-sleep system only with a bounded migration; never reintroduce silent disposal |
-| Web push/email alerts | Deferred by default; user opt-in, delivery cost and calmness review |
+| Daily quests | Stretch, spec next (2026-10-09); timezone/DST and timezone-change abuse design first |
+| Lost-and-found | Stretch, spec next (2026-10-09); extend the single held-find/inventory-sleep system only with a bounded migration; never reintroduce silent disposal |
+| Web push/email alerts | Stretch, spec next (2026-10-09). Deferred by default; user opt-in, delivery cost and calmness review |
 
 Achievements are additive and independent of the choice systems, so they can ship first within v1.1. Prefer choices/merchant/stances as one coherent release and schedule quest/push scope separately. Salvage is not in this release: materials without a sink would be a hollow feature, so it ships with gear upgrades in v2.0.
 

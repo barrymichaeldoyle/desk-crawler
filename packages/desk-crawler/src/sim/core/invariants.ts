@@ -1,6 +1,7 @@
 import { bagUsed, drawerCapacity } from './bag'
 import { potionCap } from './pouch'
 import { maxHp, xpToLeave } from './stats'
+import { todoProblems } from './todo'
 import type { ContentCatalog, HeroState, ItemSnapshot } from './types'
 
 /** A recognized pure-core failure. The adapter quarantines the hero; it never retries blindly. */
@@ -47,6 +48,11 @@ export function assertHeroInvariants(hero: HeroState, inventory: readonly ItemSn
   if (hero.potionCap !== undefined && !isCount(hero.potionCap)) fail('POUCH', 'invalid potion cap')
   if (hero.effects !== undefined && (hero.effects.length > 3 || hero.effects.some((effect) => typeof effect.id !== 'string' || !Number.isSafeInteger(effect.untilTick)))) fail('EFFECTS', 'invalid effects')
   if (hero.choice !== undefined && content.choices !== undefined && !content.choices.events.some((event) => event.id === hero.choice?.eventId)) fail('CHOICE', `unknown event ${hero.choice.eventId}`)
+  // P31: a stored list is checked only under a catalog that knows to-do rules; an earlier catalog carries it untouched.
+  if (hero.todo !== undefined && content.todo !== undefined) {
+    const problem = todoProblems(hero.todo, content)
+    if (problem !== undefined) fail('TODO', problem)
+  }
   const biomeIds = new Set(content.biomes.map((biome) => biome.id))
   if (!biomeIds.has(hero.biomeId)) fail('BIOME', `unknown biome ${hero.biomeId}`)
   if (hero.targetBiomeId !== undefined && !biomeIds.has(hero.targetBiomeId)) fail('TARGET', `unknown target ${hero.targetBiomeId}`)

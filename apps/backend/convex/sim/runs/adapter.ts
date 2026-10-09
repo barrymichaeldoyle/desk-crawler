@@ -32,6 +32,7 @@ export function toHeroState(hero: Doc<'heroes'>): HeroState {
     ...(hero.merchant === undefined ? {} : { merchant: hero.merchant }),
     ...(hero.choice === undefined ? {} : { choice: hero.choice }),
     ...(hero.effects === undefined ? {} : { effects: hero.effects }),
+    ...(hero.todo === undefined ? {} : { todo: hero.todo }),
   }
 }
 
@@ -87,6 +88,8 @@ export async function applyResult(
     merchant: next.merchant === undefined ? undefined : { ...next.merchant, offers: next.merchant.offers.map((offer) => ({ ...offer })) },
     choice: next.choice,
     effects: next.effects === undefined ? undefined : next.effects.map((effect) => ({ ...effect })),
+    // P31: an earlier catalog carries the list untouched, so this never clears one.
+    todo: next.todo === undefined ? undefined : { ...next.todo, tasks: next.todo.tasks.map((task) => ({ ...task })) },
     lastLevelUpTick: next.lastLevelUpTick,
     counters: next.counters,
   }
@@ -121,6 +124,7 @@ export function storedDetail(detail: LogDetail, changes: readonly ItemChange[] =
   } : detail.outcome.variant === 'merchant' ? { ...detail.outcome, offers: detail.outcome.offers.map((offer) => ({ ...offer })) }
     // D110: the rival's owner and name version let reads mask a name repaired after the raid.
     : detail.outcome.variant === 'raid' && rival !== undefined ? { ...detail.outcome, rivalUserId: rival.userId, rivalNameVersion: rival.nameVersion }
+    : detail.outcome.variant === 'todo' ? { ...detail.outcome, tasks: detail.outcome.tasks.map((task) => ({ ...task })) }
     : detail.outcome
   return { ...detail, outcome }
 }

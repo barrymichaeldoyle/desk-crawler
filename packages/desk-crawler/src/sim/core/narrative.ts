@@ -8,7 +8,7 @@ export type NarrativeVars = Readonly<Record<string, string | number>>
  */
 export const BOLD_OPEN = '[['
 export const BOLD_CLOSE = ']]'
-const BOLD_VARS = new Set(['monster', 'item', 'destination', 'rival'])
+const BOLD_VARS = new Set(['monster', 'monsters', 'biome', 'item', 'destination', 'rival'])
 
 export const bold = (text: string) => `${BOLD_OPEN}${text}${BOLD_CLOSE}`
 export const stripMarks = (text: string) => text.replaceAll(BOLD_OPEN, '').replaceAll(BOLD_CLOSE, '')

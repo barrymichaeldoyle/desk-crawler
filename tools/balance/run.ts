@@ -3,6 +3,8 @@
  * in memory; never touches a database. Usage:
  *   pnpm balance [--heroes 500] [--days 30] [--content v3] [--stance cautious|balanced|bold] [--drawer 6] [--json out.json]
  * `--drawer N` overrides the desk drawer size (P32) of a catalog that has one, for the size comparison.
+ * Under a catalog with to-do rules (P31) the report adds the to-do list, each hero lives in its own timezone, and a
+ * daily cohort that moves its TRMNL clock forward four hours every morning measures timezone abuse.
  */
 import { writeFileSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
@@ -12,7 +14,7 @@ import { nextEarlyTier } from '@trmnl-games/desk-crawler/sim/core/bag'
 import { simulateHero, SIMULATION_VERSION } from '@trmnl-games/desk-crawler/sim/core/simulate'
 import { starterHero, starterKit } from '@trmnl-games/desk-crawler/sim/core/starter'
 import { cumulativeXpToReach } from '@trmnl-games/desk-crawler/sim/core/stats'
-import type { ContentCatalog, HeroState, ItemSnapshot, StanceId } from '@trmnl-games/desk-crawler/sim/core/types'
+import type { ContentCatalog, HeroState, ItemSnapshot, StanceId, TodoKind } from '@trmnl-games/desk-crawler/sim/core/types'
 import { createRng } from '@trmnl-games/desk-crawler/sim/core/rng'
 import { ACHIEVEMENTS, ACHIEVEMENT_FAMILIES, rarityBand } from '@trmnl-games/desk-crawler/content/achievements'
 import { allSatisfied } from '@trmnl-games/desk-crawler/sim/core/achievements'
@@ -21,6 +23,9 @@ import { allSatisfied } from '@trmnl-games/desk-crawler/sim/core/achievements'
 const ACHIEVEMENT_DAYS = [1, 7, 30] as const
 
 const TICKS_PER_DAY = 96
+/** P31: the harness's tick 0 is midnight UTC; each hero's own offset decides its stand-up. */
+const HARNESS_EPOCH = Date.UTC(2026, 9, 1)
+const SLOT_MS = 15 * 60 * 1000
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] }
 
@@ -32,6 +37,8 @@ export interface Policy {
   readonly staySafe?: boolean
   /** D61: buy the next bag whenever affordable (default true for visiting cohorts). */
   readonly buyBags?: boolean
+  /** P31: move the TRMNL clock four hours forward every morning (wrapping from +14 to -12) to farm refills. */
+  readonly timezoneAbuse?: boolean
 }
 
 export const POLICIES: readonly Policy[] = [
@@ -42,6 +49,15 @@ export const POLICIES: readonly Policy[] = [
   { name: 'undergeared-three-day', everyDays: 3, equipGear: false },
   { name: 'safe-farming-three-day', everyDays: 3, staySafe: true },
 ]
+
+/** P31: run beside the cohorts above only under a catalog with to-do rules. */
+export const TIMEZONE_ABUSE: Policy = { name: 'daily-timezone-abuse', everyDays: 1, timezoneAbuse: true }
+
+/** A hero's UTC offset in seconds on a day: spread from -11 to +13 hours, or the abuser's daily jump. */
+export function harnessOffset(policy: Policy, heroIndex: number, day: number): number {
+  if (policy.timezoneAbuse) return ((((heroIndex % 7) + day * 4) % 26) - 12) * 3600
+  return (((heroIndex * 5) % 25) - 11) * 3600
+}
 
 export interface HeroLog {
   reachTick: Map<number, number>
@@ -78,6 +94,15 @@ export interface HeroLog {
   bagGoldSpent: number
   /** P32: gear finds the desk drawer caught. */
   drawerFinds: number
+  /** P31: tasks ticked off per 96-tick day, whether the hero spent most of that day asleep, and the gold they paid. */
+  tasksByDay: number[]
+  asleepDays: boolean[]
+  taskGold: number
+  /** P31: ticks from a task being written to being ticked off, by kind. */
+  taskTicks: Map<TodoKind, number[]>
+  tasksWritten: number
+  staleSwaps: number
+  refills: number
   /** D65: achievement ids satisfied at the end of each snapshot day. */
   achievementsByDay: Map<number, readonly string[]>
 }
@@ -105,7 +130,7 @@ function args() {
 function streams(heroIndex: number, tick: number) {
   const base = createRng((heroIndex * 0x9e3779b1 + tick * 0x85ebca77) >>> 0)
   const next = () => Math.floor(base.next() * 2 ** 32)
-  return { encounter: next(), combat: next(), reward: next(), narrative: next() }
+  return { encounter: next(), combat: next(), reward: next(), narrative: next(), quest: next() }
 }
 
 function bestInSlot(content: ContentCatalog): { attack: number; defense: number } {
@@ -202,8 +227,17 @@ export function simulateCohort(policy: Policy, heroes: number, days: number, con
       bagPurchases: 0,
       bagGoldSpent: 0,
       drawerFinds: 0,
+      tasksByDay: [],
+      asleepDays: [],
+      taskGold: 0,
+      taskTicks: new Map(),
+      tasksWritten: 0,
+      staleSwaps: 0,
+      refills: 0,
       achievementsByDay: new Map(),
     }
+    let dayTasks = 0
+    let daySleep = 0
     let dayXp = 0
     let recentSummaries: string[] = []
     const markDay = (map: Map<string, Set<number>>, biome: string, day: number) => {
@@ -227,7 +261,34 @@ export function simulateCohort(policy: Policy, heroes: number, days: number, con
       const biomeBefore = hero.biomeId
       const day = Math.floor((tick - 1) / TICKS_PER_DAY)
       if (hero.status === 'exploring' || hero.status === 'resting') markDay(log.eligibleDaysByBiome, biomeBefore, day)
-      const result = simulateHero({ hero, inventory, tick, content, simulationVersion: SIMULATION_VERSION, streams: streams(index, tick), recentSummaries })
+      const utcOffsetSeconds = harnessOffset(policy, index, day)
+      const before = hero.todo?.tasks
+      const result = simulateHero({ hero, inventory, tick, content, simulationVersion: SIMULATION_VERSION, streams: streams(index, tick), recentSummaries, tickAt: HARNESS_EPOCH + tick * SLOT_MS, utcOffsetSeconds })
+      if (hero.status === 'sleeping') daySleep += 1
+      for (const extra of result.extraEvents ?? []) {
+        const outcome = extra.detail.outcome
+        if (outcome.variant !== 'todo') continue
+        if (outcome.phase === 'done') {
+          dayTasks += outcome.tasks.length
+          log.taskGold += extra.deltas.gold
+        } else {
+          log.tasksWritten += outcome.tasks.length
+        }
+      }
+      const after = result.nextHero.todo?.tasks ?? []
+      // Time to finish from the list the tick started with: a task ticked off now may already be refilled.
+      const ticked = (result.extraEvents ?? []).flatMap((e) => (e.detail.outcome.variant === 'todo' && e.detail.outcome.phase === 'done' ? e.detail.outcome.tasks.map((t) => t.templateId) : []))
+      for (const task of before ?? []) {
+        if (task.doneTick !== undefined || !ticked.includes(task.templateId)) continue
+        const list = log.taskTicks.get(task.templateId) ?? []
+        list.push(tick - task.addedTick)
+        log.taskTicks.set(task.templateId, list)
+      }
+      if (result.metrics.todoRefills) {
+        log.refills += 1
+        // A slot rewritten this tick whose old task was not ticked off was a stale swap.
+        if (before !== undefined) after.forEach((task, i) => { if (task.addedTick === tick && before[i]!.doneTick === undefined && !(result.extraEvents ?? []).some((e) => e.detail.outcome.variant === 'todo' && e.detail.outcome.phase === 'done' && e.detail.outcome.tasks.some((t) => t.templateId === before[i]!.templateId))) log.staleSwaps += 1 })
+      }
       if (result.event) recentSummaries = [result.event.summary, ...recentSummaries].slice(0, 2)
       if (result.metrics.encounter !== 'none') {
         log.exploringTicksByBiome.set(biomeBefore, (log.exploringTicksByBiome.get(biomeBefore) ?? 0) + 1)
@@ -280,6 +341,10 @@ export function simulateCohort(policy: Policy, heroes: number, days: number, con
       if (tick % TICKS_PER_DAY === 0) {
         log.dailyXp.push(dayXp)
         dayXp = 0
+        log.tasksByDay.push(dayTasks)
+        log.asleepDays.push(daySleep * 2 > TICKS_PER_DAY)
+        dayTasks = 0
+        daySleep = 0
       }
     }
     if (ticks % TICKS_PER_DAY !== 0) log.dailyXp.push(dayXp)
@@ -353,6 +418,7 @@ export function summarize(policy: Policy, logs: HeroLog[], totalDays: number, co
     bestInSlot: censored(logs.map((l) => l.bestInSlotTick)),
     goldDayEnd: { median: pct(logs.map((l) => l.finalGold), 0.5), p90: pct(logs.map((l) => l.finalGold), 0.9) },
     goldDay30: totalDays >= 30 ? pct(logs.map((l) => l.goldDay30 ?? 0), 0.5) : null,
+    todo: content.todo === undefined ? null : todoReport(logs, totalDays),
     jackpotGoldShare: Math.round((sum((l) => l.jackpotGold) / Math.max(1, sum((l) => l.goldEarned))) * 1000) / 10,
     elitesPerHeroDay: Math.round((sum((l) => l.elites) / logs.length / totalDays) * 100) / 100,
     bag: {
@@ -364,6 +430,41 @@ export function summarize(policy: Policy, logs: HeroLog[], totalDays: number, co
     xpLastDay: spread(lastDay),
     xpLast7Days: spread(last7),
     achievements: achievementShares(logs),
+  }
+}
+
+/**
+ * P31 reports: tasks finished per hero-day (all days, and days the hero spent mostly awake), the share of hero-days
+ * with at least two, task gold as a share of every other gold earned, hours to finish by kind, stale swaps per task
+ * written, and refills per hero-day.
+ */
+function todoReport(logs: HeroLog[], totalDays: number) {
+  const days = logs.flatMap((l) => l.tasksByDay.map((tasks, i) => ({ tasks, asleep: l.asleepDays[i]! })))
+  const awake = days.filter((d) => !d.asleep)
+  const share = (list: typeof days, atLeast: number) => (list.length === 0 ? null : Math.round((list.filter((d) => d.tasks >= atLeast).length / list.length) * 1000) / 10)
+  const mean = (list: typeof days) => (list.length === 0 ? null : round1(list.reduce((sum, d) => sum + d.tasks, 0) / list.length))
+  const taskGold = logs.reduce((sum, l) => sum + l.taskGold, 0)
+  const otherGold = logs.reduce((sum, l) => sum + l.goldEarned - l.taskGold, 0)
+  const kinds = [...new Set(logs.flatMap((l) => [...l.taskTicks.keys()]))].sort()
+  const hours = Object.fromEntries(
+    kinds.map((kind) => {
+      const ticks = logs.flatMap((l) => l.taskTicks.get(kind) ?? [])
+      return [kind, { finished: ticks.length, p10: pct(ticks, 0.1) / 4, median: pct(ticks, 0.5) / 4, p90: pct(ticks, 0.9) / 4 }]
+    }),
+  )
+  const written = logs.reduce((sum, l) => sum + l.tasksWritten, 0)
+  return {
+    tasksPerHeroDay: mean(days),
+    tasksPerAwakeHeroDay: mean(awake),
+    awakeDaySharePct: Math.round((awake.length / Math.max(1, days.length)) * 1000) / 10,
+    daysWithTwoPlusPct: share(days, 2),
+    awakeDaysWithTwoPlusPct: share(awake, 2),
+    taskGoldSharePct: otherGold > 0 ? round1((taskGold / otherGold) * 100) : null,
+    taskGoldPerHeroDay: round1(taskGold / logs.length / totalDays),
+    hoursToFinish: hours,
+    staleSwapsPerTaskWrittenPct: written > 0 ? round1((logs.reduce((sum, l) => sum + l.staleSwaps, 0) / written) * 100) : null,
+    refillsPerHeroDay: Math.round((logs.reduce((sum, l) => sum + l.refills, 0) / logs.length / totalDays) * 1000) / 1000,
+    maxRefillsPerDay: Math.round(Math.max(...logs.map((l) => l.refills / totalDays)) * 1000) / 1000,
   }
 }
 
@@ -412,7 +513,8 @@ function main() {
   const started = Date.now()
   const ticks = options.ticks ?? options.days * TICKS_PER_DAY
   const totalDays = ticks / TICKS_PER_DAY
-  const reports = POLICIES.map((policy) => summarize(policy, simulateCohort(policy, options.heroes, totalDays, content, ticks, options.stance), totalDays, content))
+  const policies = content.todo === undefined ? POLICIES : [...POLICIES, TIMEZONE_ABUSE]
+  const reports = policies.map((policy) => summarize(policy, simulateCohort(policy, options.heroes, totalDays, content, ticks, options.stance), totalDays, content))
   const meta = { reportVersion: 2, contentVersion: content.contentVersion, stance: options.stance ?? null, deskDrawer: content.deskDrawer?.capacity ?? null, simulationVersion: SIMULATION_VERSION, heroes: options.heroes, days: totalDays, ticks, seconds: (Date.now() - started) / 1000, cumulativeXpToLevel8: cumulativeXpToReach(8), deathDenominator: 'hero-days with at least one exploring/resting tick in the biome; multiple deaths count once for probability', uncertainty: 'Wilson 95% descriptive interval; repeated days per seeded hero are correlated, not a player forecast' }
   if (options.json) writeFileSync(options.json, JSON.stringify({ meta, reports }, null, 2) + '\n')
   console.log(JSON.stringify(meta))
@@ -423,6 +525,11 @@ function main() {
     console.log(`  state % ${JSON.stringify(r.stateSharePct)}; first sleep ${JSON.stringify(r.firstInventorySleep)}; drawer finds/hero ${r.drawerFindsPerHero}`)
     console.log(`  gear/day ${r.gearPerDay}; best-in-slot ${JSON.stringify(r.bestInSlot)}; gold end ${JSON.stringify(r.goldDayEnd)}; gold day 30 median ${r.goldDay30}`)
     console.log(`  jackpot gold share ${r.jackpotGoldShare}%; elites/hero-day ${r.elitesPerHeroDay}`)
+    if (r.todo) {
+      const t = r.todo
+      console.log(`  to-do: tasks/hero-day ${t.tasksPerHeroDay} (awake ${t.tasksPerAwakeHeroDay}, ${t.awakeDaySharePct}% of days awake); days with 2+ ${t.daysWithTwoPlusPct}% (awake ${t.awakeDaysWithTwoPlusPct}%); task gold ${t.taskGoldSharePct}% of other gold (${t.taskGoldPerHeroDay}/hero-day)`)
+      console.log(`  to-do: stale swaps ${t.staleSwapsPerTaskWrittenPct}% of tasks written; refills/hero-day ${t.refillsPerHeroDay} (max hero ${t.maxRefillsPerDay}); hours to finish ${Object.entries(t.hoursToFinish).map(([k, h]) => `${k} ${h.median}h (p10 ${h.p10}, p90 ${h.p90}, n ${h.finished})`).join('; ')}`)
+    }
     console.log(`  potions ${JSON.stringify(r.potions)}; useful gear/day ${r.usefulGearPerDay}; equipped upgrades/hero ${r.equippedUpgradesPerHero}`)
     console.log(`  bag ${r.bag.reach.map((b) => `${b.capacity}: ${b.median}d (p10 ${b.p10}, p90 ${b.p90})`).join('; ')}; finds/hero ${r.bag.findsPerHero}; buys/hero ${r.bag.purchasesPerHero}; gold spent median ${r.bag.goldSpentMedian}`)
     console.log(`  XP last day ${JSON.stringify(r.xpLastDay)}; last 7 days ${JSON.stringify(r.xpLast7Days)}`)

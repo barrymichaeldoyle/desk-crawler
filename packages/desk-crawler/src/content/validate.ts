@@ -124,6 +124,44 @@ export function validateCatalog(content: ContentCatalog): string[] {
       for (const [, name] of line.matchAll(/\{(\w+)\}/g)) if (name !== 'item') problems.push(`desk drawer narrative uses {${name}}: ${line}`)
     }
   }
+  const todo = content.todo
+  if (todo) {
+    // P31: one template per kind, enough kinds to fill three slots at level 1, a target for every tier a task can name.
+    const kinds = todo.templates.map((t) => t.kind)
+    if (new Set(kinds).size !== kinds.length) problems.push('to-do templates must have one per kind')
+    const tiers = [...new Set(content.biomes.map((b) => b.tier))]
+    const levelOne = todo.templates.filter((t) => (t.minLevel ?? 1) <= 1 && (t.kind === 'defeat_monster' || t.kind === 'explore_biome' || t.target[1] !== undefined))
+    if (levelOne.length < 3) problems.push('a level-1 hero needs three to-do kinds')
+    for (const template of todo.templates) {
+      const biomeKind = template.kind === 'defeat_monster' || template.kind === 'explore_biome'
+      for (const tier of tiers) {
+        const range = template.target[tier]
+        if (range === undefined) {
+          if (biomeKind) problems.push(`to-do ${template.kind} needs a target for tier ${tier}`)
+          continue
+        }
+        if (!Number.isSafeInteger(range.min) || !Number.isSafeInteger(range.max) || range.min < 1 || range.max < range.min) problems.push(`to-do ${template.kind} tier ${tier} target range is invalid`)
+      }
+      const allowed = template.kind === 'defeat_monster' ? ['target', 'monster', 'monsters'] : template.kind === 'explore_biome' ? ['target', 'biome'] : ['target']
+      for (const line of [template.label, template.labelOne]) {
+        for (const [, name] of line.matchAll(/\{(\w+)\}/g)) if (!allowed.includes(name!)) problems.push(`to-do ${template.kind} label uses {${name}}: ${line}`)
+      }
+      if (!template.label.includes('{target}')) problems.push(`to-do ${template.kind} label needs {target}`)
+    }
+    for (const tier of tiers) {
+      const reward = todo.rewardByTier[tier]
+      if (reward === undefined || !Number.isSafeInteger(reward) || reward < 1) problems.push(`to-do reward for tier ${tier} must be a positive integer`)
+    }
+    if (!Number.isSafeInteger(todo.refillHour) || todo.refillHour < 0 || todo.refillHour > 23) problems.push('to-do refill hour must be 0 to 23')
+    // The 20-hour floor (80 ticks) is the timezone-abuse bound; a day-long floor would push every refill late.
+    if (!Number.isSafeInteger(todo.minRefillGapTicks) || todo.minRefillGapTicks < 1 || todo.minRefillGapTicks > 95) problems.push('to-do refill floor must be 1 to 95 ticks')
+    if (!Number.isSafeInteger(todo.staleAfterRefills) || todo.staleAfterRefills < 1) problems.push('to-do stale swap needs at least one refill')
+    percent('to-do away chance', todo.awayPct)
+    for (const monster of content.monsters) {
+      const plural = todo.monsterPlurals[monster.id]
+      if (plural === undefined || [...plural].length > CONTENT_LIMITS.monsterName + 2) problems.push(`to-do needs a short plural for ${monster.id}`)
+    }
+  }
   if (content.merchant) {
     if (!(content.merchant.potionPrice >= 1 && content.merchant.maxPotionsOffered >= 1 && content.merchant.maxPotionsOffered <= 10)) problems.push('merchant potion offer out of bounds')
     if (!(content.merchant.staysForTicks >= 1 && content.merchant.staysForTicks <= 8)) problems.push('merchant must stay between 1 and 8 ticks')

@@ -1,6 +1,6 @@
 # Office to-do list: daily quests (P31)
 
-Proposed 2026-10-09 for Barry's review and revised the same day with the open questions settled (see [Decisions taken in this revision](#decisions-taken-in-this-revision)); not approved, nothing built. This spec is the v1.1 "Daily quests" stretch row in the [roadmap](roadmap.md). Its companions are the [desk drawer](desk-drawer.md) (P32) and [alerts](alerts.md) (P33).
+Proposed 2026-10-09 for Barry's review and revised the same day with the open questions settled (see [Decisions taken in this revision](#decisions-taken-in-this-revision)). Approved and being built as D112 on 2026-10-09, as content v9: Q1 (rules and harness) is done, [evidence](evidence/quests.md). [Changes while building](#changes-while-building) lists where the build differs from this spec. This spec is the v1.1 "Daily quests" stretch row in the [roadmap](roadmap.md). Its companions are the [desk drawer](desk-drawer.md) (P32) and [alerts](alerts.md) (P33).
 
 Source: the original brief listed "three local-day quests, shards/keys" and parked them until the timezone, DST and abuse rules were designed ([source brief](source-brief.md)). Two product rules shape this design. [Product](product.md) rules out streak penalties, expiring rewards and daily login requirements, and [TRMNL experience](trmnl-experience.md) rules out urgency and streak pressure. A quest system that punishes a missed day breaks the game's promise, so this one doesn't.
 
@@ -107,3 +107,14 @@ Barry asked on 2026-10-09 for the three stretch specs to be revised for the best
 2. **Rewards are gold only.** Gold is the reward players can spend, it helps the bag ladder, and keeping XP out of tasks keeps the boards about adventuring and removes the only way to turn swaps into a ranking lever. The board-share gate from the first draft is gone because there is nothing to gate.
 3. **Tasks name monsters, and the list is place-aware.** Two of three tasks are finishable where the hero stands and at most one names another biome, so the charm of named monsters costs an unattended hero nothing. Stale swap moves from three refills to two for the same reason.
 4. **Added the stand-up log line**, so the device shows the day's tasks once, at the same moment the Night recap appears.
+
+## Changes while building
+
+The harness and the build changed these points, each for a measured or structural reason:
+
+1. **Rewards are 5, 16 and 30 gold** by biome tier, not 35 at tier 1. Encounters pay about 75 gold a day at tier 1, so 35 a task added 58% to 110%. At 5/16/30, three tasks add 13.9% to 14.4% for daily, three-day and seven-day players. The extremes are 11.9% for a hero farming the Office and 15.7% for an unattended one ([evidence](evidence/quests.md)).
+2. **The 20-hour floor is measured from the last stand-up's 07:00, not the refill tick.** Measured from the tick, a hero that came back from a pause at 23:00 would refill at 23:00, then 19:00, 15:00 and 11:00 before getting back to 07:00. Anchored on the stand-up it was due at, a late refill never delays the next morning. The abuse bound is unchanged at one refill per 20 hours of wall time. The list stores `lastStandupAt` (UTC milliseconds of that 07:00) beside `lastRefillTick`, and the simulator takes the tick's wall slot as input, so it stays pure.
+3. **A morning slept through on a full bag doesn't age a task.** Otherwise an unattended hero's list churned every two days while it couldn't move (71% of its tasks were stale-swapped). The refill still runs and still fills finished slots.
+4. **Task shape.** `params` became explicit `biomeId` and `monsterId` fields, and each task stores its `reward` when written, so a later catalog never changes what a written task pays.
+5. **Labels** are short enough that most stand-ups name every task: "Explore the Server Room for 16 adventures", "Earn 50 gold adventuring", "Beat an elite". A line that would exceed the 90-character summary falls back to the count ("Stand-up: 3 new tasks."), and the log detail keeps every label for layouts with room.
+6. **Elite tasks** are offered from level 4 in the Server Room and Cafeteria Depths only. In the Office an elite takes about 28 hours of exploring.

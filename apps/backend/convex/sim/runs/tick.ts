@@ -156,7 +156,8 @@ export const simulateBatch = internalMutation({
       }
       let result
       const recentLogs = (await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', hero._id)).order('desc').take(4))
-        .filter((log) => log.kind !== 'achievement')
+        // Achievements and P31 to-do lines are not stories, so they never steer the next variant.
+        .filter((log) => log.kind !== 'achievement' && log.kind !== 'todo')
         .slice(0, 2)
       try {
         result = simulateHero({
@@ -169,6 +170,8 @@ export const simulateBatch = internalMutation({
           recentSummaries: recentLogs.map((log) => log.summary),
           ...(pick === undefined ? {} : { raidTarget: pick.target }),
           ...(pending === undefined ? {} : { incomingRaid: pending.incoming }),
+          // P31: the stand-up turns on the run's wall slot, never the clock.
+          tickAt: run.wallSlot,
         })
       } catch (error) {
         // Only recognized pure-core failures are isolated; anything else rolls back the page.
@@ -202,9 +205,9 @@ export const simulateBatch = internalMutation({
         markers.lastProgressTick = run.tick
         markers.lastAdvancedAt = now
       }
+      let sequence = hero.logSequence
       if (result.event) {
-        const sequence = hero.logSequence + 1
-        markers.logSequence = sequence
+        sequence += 1
         await ctx.db.insert('tickLogs', {
           heroId: hero._id,
           source: 'tick',
@@ -218,6 +221,12 @@ export const simulateBatch = internalMutation({
           deltas: result.event.deltas,
         })
       }
+      // P31: tasks ticked off, then the stand-up, logged after the tick's story.
+      for (const extra of result.extraEvents ?? []) {
+        sequence += 1
+        await ctx.db.insert('tickLogs', { heroId: hero._id, source: 'tick', tick: run.tick, runId, sequence, at: now, kind: extra.kind, summary: extra.summary, detail: storedDetail(extra.detail), deltas: extra.deltas })
+      }
+      if (sequence !== hero.logSequence) markers.logSequence = sequence
       // Credit this tick's granted XP to the current-hour accumulator (D31).
       const credited = creditTick(
         { scoreHourXp: hero.scoreHourXp, ...(hero.scoreHour === undefined ? {} : { scoreHour: hero.scoreHour }) },
@@ -229,7 +238,7 @@ export const simulateBatch = internalMutation({
       markers.scoreHour = credited.accumulator.scoreHour
       await ctx.db.patch(hero._id, markers)
       // D65: diff lifetime state for new achievements; a hero behind the catalog gets one full pass.
-      if (result.event !== undefined || needsFullPass(hero.achievementsVersion)) {
+      if (result.event !== undefined || result.extraEvents !== undefined || needsFullPass(hero.achievementsVersion)) {
         const keepsakes = needsFullPass(hero.achievementsVersion) ? await keepsakeTotal(ctx, owner._id) : 0
         const updated = (await ctx.db.get(hero._id))!
         await awardAchievements(ctx, updated, achievementState(hero, keepsakes), achievementState(updated, keepsakes), content, now, run.tick)

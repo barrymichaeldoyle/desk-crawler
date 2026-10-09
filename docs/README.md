@@ -18,7 +18,7 @@ Implementation was authorized on 2026-10-03. This index includes the original pl
 | [Roadmap](roadmap.md) | Named releases: v1.0 submission scope, continuous iteration after submission, later versions, guardrails for future systems |
 | [Gameplay](gameplay.md) | State machine, simulation rules, initial balance and content |
 | [Raids](raids.md) | Desk raids: passive, unavoidable, chance-driven hero-versus-hero raids, stance-only odds, ledger application, work slices (D110) |
-| [Quests](quests.md) | Proposed (P31): daily quests as a passive, place-aware office to-do list paying gold only; refill and timezone rules |
+| [Quests](quests.md) | Approved (D112, content v9): daily quests as a passive, place-aware office to-do list paying gold only; refill and timezone rules |
 | [Desk drawer](desk-drawer.md) | Proposed (P32, the lost-and-found row): a six-slot drawer that delays inventory sleep, intents and migration |
 | [Alerts](alerts.md) | Proposed (P33): opt-in web push only for a stopped hero and an affordable merchant bag or pouch |
 | [Architecture](architecture.md) | Service boundaries, planned file structure, implementation spikes |

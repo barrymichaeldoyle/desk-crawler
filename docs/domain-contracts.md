@@ -94,6 +94,8 @@ The core returns held-create intent and sleep status, never a database ID for th
 
 D111 widens this to the desk drawer: under content v8 the core returns a `drawer` create destination for an overflow find while the drawer has room, and the adapter appends the new id to `heroes.drawer` in the same transaction. The core never rewrites the drawer list (output validation rejects any change outside a create), and its invariants require drawer ids to be owned, unequipped, unheld gear, each listed once, within the catalog size. A due wake requires the held slot empty and room in the bag or the drawer.
 
+D112 adds `extraEvents` to the core result: under content v9, the to-do lines logged after the tick's story, tasks ticked off first and then the stand-up. Each moves gold only (its deltas carry the task rewards; the story's deltas leave them out, so the encounter line and its chips are unchanged). The adapter writes them as `todo` log rows with the next sequence numbers. The core takes the run's wall slot (`tickAt`) and the owner's offset (`utcOffsetSeconds`) as inputs, so the stand-up stays pure, and requires the `quest` seed under a catalog with to-do rules.
+
 At each publication, quarantined/paused/sleeping/waiting heroes still age score history at `scoreAt` and capture eligible ranks (dormant heroes on lifetime only); no earned XP is fabricated. Creation/commands never credit recent scores. Whole-batch failure rolls back items, XP history and rank inputs together.
 
 ## Rendering projection

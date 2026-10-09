@@ -24,6 +24,17 @@ const status = v.union(
   v.literal('sleeping'),
 )
 
+/** P31: the kinds of to-do task (content v9). */
+export const todoKind = v.union(
+  v.literal('defeat_monster'),
+  v.literal('defeat_any'),
+  v.literal('explore_biome'),
+  v.literal('find_gear'),
+  v.literal('earn_gold'),
+  v.literal('avoid_traps'),
+  v.literal('elite'),
+)
+
 const outcome = v.union(
   v.object({
     variant: v.literal('combat'),
@@ -95,6 +106,12 @@ const outcome = v.union(
     /** Adapter annotation: the rival's owner and public-name version, so reads can mask a repaired name. */
     rivalUserId: v.optional(v.string()),
     rivalNameVersion: v.optional(v.number()),
+  }),
+  /** P31: to-do tasks ticked off, or the tasks a stand-up wrote. */
+  v.object({
+    variant: v.literal('todo'),
+    phase: v.union(v.literal('done'), v.literal('standup')),
+    tasks: v.array(v.object({ templateId: todoKind, label: v.string(), reward: v.number() })),
   }),
 )
 

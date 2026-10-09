@@ -7,6 +7,7 @@ import { assertHeroInvariants, SimulationInvariantError } from './invariants'
 import { codePoints, composeSummary, fill, rarityLabel, variant, withArticle, type NarrativeVars } from './narrative'
 import { drawRaidPlan, raidGoldLoss, raidHpLoss, raidStream, raidWinChance } from './raid'
 import { createRng, pickOne, pickWeighted, type Rng } from './rng'
+import { applyTodo } from './todo'
 import { applyXp, deriveStats, maxHp, pctOf } from './stats'
 import type {
   BagTier,
@@ -61,6 +62,8 @@ const ZERO_METRICS: TickMetrics = {
   effectsGained: 0,
   raidsLaunched: 0,
   raidsApplied: 0,
+  tasksCompleted: 0,
+  todoRefills: 0,
 }
 
 interface Streams {
@@ -77,7 +80,8 @@ export function simulateHero(input: SimulationInput): SimulationResult {
   }
   if (!Number.isSafeInteger(input.tick) || input.tick < 0) throw new SimulationInvariantError('TICK', `invalid tick ${input.tick}`)
   assertHeroInvariants(input.hero, input.inventory, input.content)
-  const result = new TickRun(input).run()
+  // P31: the to-do list reads the finished tick and adds its own lines after the tick's story.
+  const result = applyTodo(input, new TickRun(input).run())
   validateOutput(input, result)
   return result
 }
@@ -914,6 +918,16 @@ function validateOutput(input: SimulationInput, result: SimulationResult): void 
     fail('SUMMARY_LENGTH', result.event.summary)
   }
   if (result.event && result.event.summary.trim() === '') fail('SUMMARY_EMPTY', 'event without summary')
+  for (const extra of result.extraEvents ?? []) {
+    if (extra.kind !== 'todo' || extra.deltas.xpEarned !== 0 || extra.deltas.hp !== 0) fail('TODO_EVENT', 'to-do lines move gold only')
+    if (codePoints(extra.summary) > input.content.constants.summaryMaxCodePoints) fail('SUMMARY_LENGTH', extra.summary)
+  }
+  if (input.content.todo === undefined && (out.todo !== hero.todo || result.extraEvents !== undefined)) fail('TODO', 'no to-do list without to-do rules')
+  const taskGold = (result.extraEvents ?? []).reduce((sum, extra) => sum + extra.deltas.gold, 0)
+  // A task ticked off this tick may already be refilled by the stand-up, so count the lines, not the list.
+  const ticked = (result.extraEvents ?? []).reduce((sum, extra) => sum + (extra.detail.outcome.variant === 'todo' && extra.detail.outcome.phase === 'done' ? extra.detail.outcome.tasks.length : 0), 0)
+  if (out.counters.tasksCompleted - hero.counters.tasksCompleted !== ticked) fail('TODO_COUNT', 'tasks completed must match the tasks ticked off this tick')
+  if (taskGold < 0) fail('TODO_GOLD', 'task rewards cannot take gold')
   if (out.status === 'sleeping' && hero.status !== 'sleeping' && applied.hero.heldItemId === undefined) {
     fail('SLEEP_WITHOUT_FIND', 'inventory sleep requires a held find')
   }

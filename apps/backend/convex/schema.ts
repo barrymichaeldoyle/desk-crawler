@@ -1,6 +1,6 @@
 import { defineSchema, defineTable } from 'convex/server'
 import { v } from 'convex/values'
-import { logDetail } from './lib/logDetail'
+import { logDetail, todoKind } from './lib/logDetail'
 
 /**
  * Current-release schema only (data-model.md). Tables arrive with the work
@@ -61,6 +61,28 @@ export const heroCounters = v.object({
   raidsLost: v.optional(v.number()),
   /** P32: gear finds the desk drawer caught. */
   drawerFinds: v.optional(v.number()),
+  /** P31: to-do tasks ticked off. */
+  tasksCompleted: v.optional(v.number()),
+})
+
+/** P31: the office to-do list, three tasks written by the simulator and swapped by `heroes.swapTask`. */
+export const todoList = v.object({
+  tasks: v.array(
+    v.object({
+      templateId: todoKind,
+      biomeId: v.optional(v.string()),
+      monsterId: v.optional(v.string()),
+      target: v.number(),
+      progress: v.number(),
+      reward: v.number(),
+      addedTick: v.number(),
+      refillsSeen: v.number(),
+      doneTick: v.optional(v.number()),
+    }),
+  ),
+  lastRefillTick: v.number(),
+  lastStandupAt: v.number(),
+  swapUsedTick: v.optional(v.number()),
 })
 
 /** D78 merchant offers: at most three, each bought at most once. */
@@ -86,6 +108,7 @@ export const logKind = v.union(
   v.literal('merchant'),
   v.literal('choice'),
   v.literal('raid'),
+  v.literal('todo'),
   v.literal('system'),
 )
 
@@ -195,6 +218,8 @@ export default defineSchema({
     publicProfile: v.optional(v.boolean()),
     /** D110: this hero's row in the raid pool, created at its first evaluation under a catalog with raids. */
     raidPoolId: v.optional(v.id('raidPool')),
+    /** P31: the office to-do list, written at the hero's first evaluation under a catalog with to-do rules. */
+    todo: v.optional(todoList),
     eligibleFromTick: v.number(),
     lastTick: v.number(),
     lastProgressTick: v.number(),

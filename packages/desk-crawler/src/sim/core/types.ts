@@ -3,9 +3,12 @@
  * No Convex, auth, connection or wall-clock types belong here.
  */
 
-export type StreamName = 'encounter' | 'combat' | 'reward' | 'narrative' | 'raid'
-/** The `raid` stream (D110) is drawn only under a catalog with raid rules; without its seed no raid can launch. */
-export type StreamSeeds = Readonly<Record<Exclude<StreamName, 'raid'>, number> & { raid?: number }>
+export type StreamName = 'encounter' | 'combat' | 'reward' | 'narrative' | 'raid' | 'quest'
+/**
+ * The `raid` stream (D110) is drawn only under a catalog with raid rules; without its seed no raid can launch.
+ * The `quest` stream (P31) is drawn only under a catalog with to-do rules, which require it.
+ */
+export type StreamSeeds = Readonly<Record<Exclude<StreamName, 'raid' | 'quest'>, number> & { raid?: number; quest?: number }>
 
 export type HeroStatus = 'exploring' | 'resting' | 'travelling' | 'dead' | 'paused' | 'sleeping'
 export type EncounterKind = 'combat' | 'loot' | 'trap' | 'rest'
@@ -27,6 +30,7 @@ export type LogKind =
   | 'merchant'
   | 'choice'
   | 'raid'
+  | 'todo'
   | 'system'
 
 // ---------------------------------------------------------------- content
@@ -298,6 +302,43 @@ export interface DeskDrawerRule {
   readonly firstDrop: readonly string[]
 }
 
+/** P31: what a to-do task counts, always something the pure core already resolves in a tick. */
+export type TodoKind = 'defeat_monster' | 'defeat_any' | 'explore_biome' | 'find_gear' | 'earn_gold' | 'avoid_traps' | 'elite'
+
+/** One task template; the template id is its kind, so no two tasks on a list share one. */
+export interface TodoTemplate {
+  readonly kind: TodoKind
+  /** Placeholders: {target} {monster} {monsters} {biome}. */
+  readonly label: string
+  /** The label when the target is 1. */
+  readonly labelOne: string
+  /** Target range by biome tier: the named biome's, or for a biome-free kind the hero's. */
+  readonly target: Readonly<Record<number, Range>>
+  /** Offered only from this level. */
+  readonly minLevel?: number
+}
+
+/**
+ * P31: the office to-do list. Every hero carries three tasks that progress while it explores and pay gold when
+ * done; the 07:00 stand-up refills finished slots only, at least `minRefillGapTicks` after the last refill.
+ */
+export interface TodoRule {
+  /** Ordered; index order is part of the content version. */
+  readonly templates: readonly TodoTemplate[]
+  /** Gold per finished task by the task's biome tier. */
+  readonly rewardByTier: Readonly<Record<number, number>>
+  /** Local hour of the morning stand-up (D84's Night recap boundary). */
+  readonly refillHour: number
+  /** The floor between two refills: 80 ticks is 20 hours. */
+  readonly minRefillGapTicks: number
+  /** An unfinished task is swapped at the refill that makes this many it has seen. */
+  readonly staleAfterRefills: number
+  /** Chance in percent that a generated biome task names another unlocked biome, when the list allows one. */
+  readonly awayPct: number
+  /** Plural monster names for {monsters}. */
+  readonly monsterPlurals: Readonly<Record<string, string>>
+}
+
 export interface RaidNarrative {
   /** The raider won. */
   readonly raidWon: readonly string[]
@@ -423,6 +464,8 @@ export interface ContentCatalog {
   readonly raids?: RaidRule
   /** Absent before v8 (P32): without it a find that overflows the bag is held at once, as before. */
   readonly deskDrawer?: DeskDrawerRule
+  /** Absent before v9 (P31): without it a hero has no to-do list and draws nothing from the `quest` stream. */
+  readonly todo?: TodoRule
   readonly narrative: Readonly<{ biomes: Readonly<Record<string, BiomeNarrative>>; shared: SharedNarrative; monsters: Readonly<Record<string, MonsterNarrative>> }>
 }
 
@@ -474,6 +517,8 @@ export interface HeroCounters {
   readonly raidsLost: number
   /** Gear finds that went in the desk drawer because the bag was full (P32). */
   readonly drawerFinds: number
+  /** To-do tasks ticked off (P31). */
+  readonly tasksCompleted: number
 }
 
 /** Counter names that hold one number (everything except `monsterWins`). */
@@ -514,6 +559,41 @@ export interface HeroState {
   readonly choice?: PendingChoice
   /** Active temporary effects (D80), at most three; expired ones are dropped on the next evaluation. */
   readonly effects?: readonly ActiveEffect[]
+  /** P31: the office to-do list; absent until the hero's first evaluation under a catalog with to-do rules. */
+  readonly todo?: TodoList
+}
+
+/** One to-do task. The biome and monster it names, its target and its reward are fixed when it is written. */
+export interface TodoTask {
+  /** The template's kind. */
+  readonly templateId: TodoKind
+  /** The biome an `explore_biome` or `defeat_monster` task names. */
+  readonly biomeId?: string
+  /** The monster a `defeat_monster` task names. */
+  readonly monsterId?: string
+  readonly target: number
+  /** Never above the target and never down. */
+  readonly progress: number
+  /** Gold paid when it is ticked off. */
+  readonly reward: number
+  readonly addedTick: number
+  /** Refills this task has seen unfinished while the hero was awake. */
+  readonly refillsSeen: number
+  /** Set when ticked off; the next refill replaces it. */
+  readonly doneTick?: number
+}
+
+export interface TodoList {
+  /** Exactly three. */
+  readonly tasks: readonly TodoTask[]
+  readonly lastRefillTick: number
+  /**
+   * UTC milliseconds of the local 07:00 that began the last refill's stand-up day. The next refill waits for a
+   * 07:00 at least 20 hours after it, so a late refill never pushes later mornings back.
+   */
+  readonly lastStandupAt: number
+  /** Set by the swap intent; a swap is used while this is at or after the last refill. */
+  readonly swapUsedTick?: number
 }
 
 export interface ItemSnapshot {
@@ -556,6 +636,10 @@ export interface SimulationInput {
   readonly raidTarget?: RaidTarget
   /** D110: the oldest pending raid against this hero; applied as the tick's event when the hero is exploring or resting. */
   readonly incomingRaid?: IncomingRaid
+  /** P31: the tick's wall slot in UTC milliseconds; absent means `tick` quarter-hours after the epoch. */
+  readonly tickAt?: number
+  /** P31: the owner's last TRMNL UTC offset in seconds; absent means UTC (D106). */
+  readonly utcOffsetSeconds?: number
 }
 
 export type Disposition =
@@ -628,6 +712,12 @@ export type OutcomeDetail =
       readonly raidTick: number
       readonly outcome: 'survived' | 'death' | 'rescue'
     }
+  | {
+      readonly variant: 'todo'
+      /** `done`: tasks ticked off this tick; `standup`: the tasks the refill wrote. */
+      readonly phase: 'done' | 'standup'
+      readonly tasks: readonly { readonly templateId: TodoKind; readonly label: string; readonly reward: number }[]
+    }
 
 export interface LogDetail {
   readonly v: 1
@@ -687,6 +777,8 @@ export interface TickMetrics {
   readonly effectsGained: number
   readonly raidsLaunched: number
   readonly raidsApplied: number
+  readonly tasksCompleted: number
+  readonly todoRefills: number
 }
 
 export interface SimulationResult {
@@ -699,4 +791,6 @@ export interface SimulationResult {
   readonly raidLaunch?: RaidLaunch
   /** D110: the incoming raid was applied this tick; the adapter marks the ledger row applied. */
   readonly raidApplied?: boolean
+  /** P31: to-do log lines logged after `event`, in order: tasks ticked off, then the stand-up. Never the tick's only story unless nothing else happened. */
+  readonly extraEvents?: readonly TickEvent[]
 }

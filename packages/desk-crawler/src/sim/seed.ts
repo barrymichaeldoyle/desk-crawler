@@ -3,7 +3,7 @@ import type { StreamName, StreamSeeds } from './core/types'
 
 export const SEED_VERSION = 1
 
-const STREAMS: readonly StreamName[] = ['encounter', 'combat', 'reward', 'narrative', 'raid']
+const STREAMS: readonly StreamName[] = ['encounter', 'combat', 'reward', 'narrative', 'raid', 'quest']
 
 /**
  * Seed v1 (simulation.md): SHA-256 of the UTF-8 JSON encoding of
@@ -30,9 +30,9 @@ export function deriveStreamSeeds(
   tick: number,
   simulationVersion: number,
 ): StreamSeeds {
-  // Each stream hashes on its own name, so adding the D110 `raid` stream leaves the first four seeds unchanged.
-  const [encounter, combat, reward, narrative, raid] = STREAMS.map((stream) =>
+  // Each stream hashes on its own name, so adding the D110 `raid` and P31 `quest` streams leaves the earlier seeds unchanged.
+  const [encounter, combat, reward, narrative, raid, quest] = STREAMS.map((stream) =>
     deriveStreamSeed(worldSeed, heroId, tick, simulationVersion, stream),
-  ) as [number, number, number, number, number]
-  return { encounter, combat, reward, narrative, raid }
+  ) as [number, number, number, number, number, number]
+  return { encounter, combat, reward, narrative, raid, quest }
 }

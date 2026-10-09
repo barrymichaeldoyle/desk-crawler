@@ -36,7 +36,12 @@ describe('seed v1', () => {
     const pinned = deriveStreamSeed('world-seed', 'hero-1', 120, 1, 'encounter')
     expect(pinned).toBe(deriveStreamSeed('world-seed', 'hero-1', 120, 1, 'encounter'))
     const all = Object.values(deriveStreamSeeds('world-seed', 'hero-1', 120, 1))
-    expect(new Set(all).size).toBe(5)
+    expect(new Set(all).size).toBe(6)
+    // Each stream hashes on its own name, so the P31 quest stream leaves the earlier five seeds unchanged.
+    const named = deriveStreamSeeds('world-seed', 'hero-1', 120, 1)
+    expect(named.encounter).toBe(pinned)
+    expect(named.raid).toBe(deriveStreamSeed('world-seed', 'hero-1', 120, 1, 'raid'))
+    expect(named.quest).toBe(deriveStreamSeed('world-seed', 'hero-1', 120, 1, 'quest'))
     expect(deriveStreamSeed('world-seed', 'hero-1', 121, 1, 'encounter')).not.toBe(pinned)
     expect(Number.isSafeInteger(pinned) && pinned >= 0 && pinned < 2 ** 32).toBe(true)
   })

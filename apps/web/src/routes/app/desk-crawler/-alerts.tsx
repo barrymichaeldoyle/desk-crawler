@@ -8,7 +8,10 @@ import { useIntent } from '../../../lib/intent'
 import { currentSubscription, deviceLabel, endpointFingerprint, pushSupport, subscribePush, type PushSupport } from '../../../lib/push'
 import { Button, Card, LoadingState } from '../../../lib/ui'
 
-type Prefs = { asleep: boolean; merchant: boolean; quietStart: number; quietEnd: number }
+/** The switches a game's card owns (D115: each game shows its own kinds; devices and quiet hours are shared). */
+type KindId = 'asleep' | 'merchant' | 'coolerFull' | 'baitOut'
+type Prefs = Partial<Record<KindId, boolean>> & { quietStart: number; quietEnd: number }
+export type AlertKindCopy = { readonly id: KindId; readonly name: string; readonly blurb: string }
 
 type Notify = (feedback: { error: string | null; message: string | null }) => void
 
@@ -16,23 +19,23 @@ const HOURS = Array.from({ length: 24 }, (_, hour) => hour)
 const clock = (hour: number) => `${String(hour).padStart(2, '0')}:00`
 
 /** The two kinds (alerts.md), each saying what it is and how often it can arrive. */
-const KINDS = [
+const KINDS: readonly AlertKindCopy[] = [
   { id: 'asleep', name: 'Hero asleep', blurb: 'The bag and drawer are full and adventures have stopped. Once per nap.' },
   { id: 'merchant', name: 'Merchant deal', blurb: 'A bag or pouch you can afford is on sale for about an hour. At most once a day.' },
-] as const
+]
 
 /**
  * Settings → Alerts (P33): off by default, the browser prompt only after a tap, a device list and two switches with
  * quiet hours. The device remains the surface that always works, and the card says so.
  */
-export function AlertsCard({ notify }: { notify: Notify }) {
+export function AlertsCard({ notify, kinds = KINDS, intro = 'Get a nudge on this phone when your hero needs you.', quietNote = 'A nap alert waits until quiet hours end; a merchant deal that turns up then is skipped, since it is gone by morning.' }: { notify: Notify; kinds?: readonly AlertKindCopy[]; intro?: string; quietNote?: string }) {
   const { data: alerts } = useQuery(convexQuery(api.alerts.mine, {}))
   const subscribe = useIntent(api.alerts.subscribe, { onFeedback: notify })
   const save = useIntent(api.alerts.setPreferences, {
     onFeedback: notify,
-    optimisticUpdate: (store, { asleep, merchant, quietStart, quietEnd }) => {
+    optimisticUpdate: (store, { asleep, merchant, coolerFull, baitOut, quietStart, quietEnd }) => {
       const current = store.getQuery(api.alerts.mine, {})
-      if (current) store.setQuery(api.alerts.mine, {}, { ...current, asleep, merchant, quietStart, quietEnd, offReason: null })
+      if (current) store.setQuery(api.alerts.mine, {}, { ...current, ...(asleep === undefined ? {} : { asleep }), ...(merchant === undefined ? {} : { merchant }), ...(coolerFull === undefined ? {} : { coolerFull }), ...(baitOut === undefined ? {} : { baitOut }), quietStart, quietEnd, offReason: null })
     },
   })
   // Removing a device drops it from the list on the tap; the last one turns both kinds off, as the server does.
@@ -42,7 +45,7 @@ export function AlertsCard({ notify }: { notify: Notify }) {
       const current = store.getQuery(api.alerts.mine, {})
       if (!current) return
       const devices = current.devices.filter((device) => device.id !== deviceId)
-      store.setQuery(api.alerts.mine, {}, { ...current, devices, ...(devices.length === 0 ? { asleep: false, merchant: false } : {}) })
+      store.setQuery(api.alerts.mine, {}, { ...current, devices, ...(devices.length === 0 ? { asleep: false, merchant: false, coolerFull: false, baitOut: false } : {}) })
     },
   })
   // Switches and quiet hours show the player's choice at once (the draft) and save in order, latest wins;
@@ -68,7 +71,8 @@ export function AlertsCard({ notify }: { notify: Notify }) {
   const timezone = (typeof Intl !== 'undefined' && Intl.DateTimeFormat().resolvedOptions().timeZone) || alerts.timezone
   const thisDevice = alerts.devices.find((device) => device.fingerprint === thisFingerprint)
   const busy = subscribe.pending || remove.pending || asking
-  const shown: Prefs = draft ?? { asleep: alerts.asleep, merchant: alerts.merchant, quietStart: alerts.quietStart, quietEnd: alerts.quietEnd }
+  // Only this card's switches travel with a save, so the other game's stay as stored.
+  const shown: Prefs = draft ?? { ...Object.fromEntries(kinds.map((kind) => [kind.id, alerts[kind.id]])), quietStart: alerts.quietStart, quietEnd: alerts.quietEnd }
 
   const update = async (patch: Partial<Prefs>, message: string) => {
     const next = { ...shown, ...patch }
@@ -88,7 +92,7 @@ export function AlertsCard({ notify }: { notify: Notify }) {
         queued.current = null
         break
       }
-      captureAnalytics('alerts changed', { asleep: prefs.asleep, merchant: prefs.merchant })
+      captureAnalytics('alerts changed', Object.fromEntries(kinds.map((kind) => [kind.id, prefs[kind.id] === true])))
     }
     saving.current = false
     // The query already holds the saved values when the save resolves, so the draft can go.
@@ -114,7 +118,7 @@ export function AlertsCard({ notify }: { notify: Notify }) {
 
   return (
     <Card title="Alerts" icon="bell"><div id="alerts" className="flex flex-col gap-3">
-      <p>Get a nudge on this phone when your hero needs you. Off until you turn it on, and never more than two a day. Your TRMNL keeps showing everything either way.</p>
+      <p>{intro} Off until you turn it on, and never more than two a day across your games. Your TRMNL keeps showing everything either way.</p>
       {alerts.offReason === 'no_devices' ? <p className="text-sm font-semibold">Alerts turned off because no device could receive them any more. Allow this device to turn them back on.</p> : null}
       {thisDevice ? null : !alerts.vapidPublicKey ? (
         <p className="text-sm text-muted">Alerts are not available yet.</p>
@@ -131,9 +135,9 @@ export function AlertsCard({ notify }: { notify: Notify }) {
         <>
           <fieldset className="flex flex-col gap-2">
             <legend className="sr-only">Alert kinds</legend>
-            {KINDS.map((kind) => (
+            {kinds.map((kind) => (
               <label key={kind.id} className="flex min-h-11 cursor-pointer items-start gap-3 py-1">
-                <input type="checkbox" className="mt-1 size-6 shrink-0 accent-gold" checked={shown[kind.id]} onChange={(event) => update({ [kind.id]: event.target.checked }, event.target.checked ? `${kind.name} alerts on.` : `${kind.name} alerts off.`)} />
+                <input type="checkbox" className="mt-1 size-6 shrink-0 accent-gold" checked={shown[kind.id] === true} onChange={(event) => update({ [kind.id]: event.target.checked }, event.target.checked ? `${kind.name} alerts on.` : `${kind.name} alerts off.`)} />
                 <span><strong>{kind.name}</strong><span className="block text-sm">{kind.blurb}</span></span>
               </label>
             ))}
@@ -150,7 +154,7 @@ export function AlertsCard({ notify }: { notify: Notify }) {
                 </label>
               ))}
             </div>
-            <p className="text-sm text-muted">In {timezone}. A nap alert waits until quiet hours end; a merchant deal that turns up then is skipped, since it is gone by morning.</p>
+            <p className="text-sm text-muted">In {timezone}, shared by your games. {quietNote}</p>
           </div>
           <div>
             <p className="font-semibold">Devices</p>

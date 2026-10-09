@@ -104,10 +104,13 @@ export const merchantOffer = v.object({
 export const merchantVisit = v.object({ offers: v.array(merchantOffer), expiresAtTick: v.number(), biomeId: v.string() })
 
 /** P33: the two alert kinds; a new kind needs its own decision row (alerts.md). */
-export const alertKind = v.union(v.literal('asleep'), v.literal('merchant'))
+export const alertKind = v.union(v.literal('asleep'), v.literal('merchant'), v.literal('cooler_full'), v.literal('bait_out'))
 export const alertPreferences = v.object({
   asleep: v.boolean(),
   merchant: v.boolean(),
+  /** D115: Slow Cast's kinds; absent means off. Devices and quiet hours are shared by both games. */
+  coolerFull: v.optional(v.boolean()),
+  baitOut: v.optional(v.boolean()),
   quietStart: v.number(),
   quietEnd: v.number(),
   /** Set when the last device's subscription went stale and both kinds turned off; Settings says why. */
@@ -487,7 +490,9 @@ export default defineSchema({
   /** P33: one alert per qualifying event, written by the tick and drained by the sender; kept 7 days. */
   alertOutbox: defineTable({
     userId: v.id('users'),
-    heroId: v.id('heroes'),
+    /** Desk Crawler rows carry the hero, Slow Cast rows the angler (D115). */
+    heroId: v.optional(v.id('heroes')),
+    anglerId: v.optional(v.id('anglers')),
     kind: alertKind,
     /** `${heroId}:${kind}:${eventTick}`: one nap or one merchant visit is one alert. */
     key: v.string(),

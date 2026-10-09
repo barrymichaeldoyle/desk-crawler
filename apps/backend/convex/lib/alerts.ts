@@ -26,6 +26,13 @@ export const ALERTS = {
 export type AlertKind = Doc<'alertOutbox'>['kind']
 export type AlertPreferences = NonNullable<Doc<'users'>['alerts']>
 
+/** The preference switch for each kind. */
+export const PREF_FOR: Readonly<Record<AlertKind, 'asleep' | 'merchant' | 'coolerFull' | 'baitOut'>> = { asleep: 'asleep', merchant: 'merchant', cooler_full: 'coolerFull', bait_out: 'baitOut' }
+export const kindOn = (prefs: AlertPreferences | undefined, kind: AlertKind) => prefs?.[PREF_FOR[kind]] === true
+/** Desk Crawler's kinds and Slow Cast's (D115). */
+export const DESK_CRAWLER_KINDS: readonly AlertKind[] = ['asleep', 'merchant']
+export const SLOW_CAST_KINDS: readonly AlertKind[] = ['cooler_full', 'bait_out']
+
 const STEP_MS = 15 * 60_000
 
 function parts(at: number, timeZone: string): { day: string; hour: number } {
@@ -113,8 +120,29 @@ export async function ensureSender(ctx: MutationCtx, at: number): Promise<void> 
   else await ctx.db.insert('alertSender', { key: 'sender', scheduledId, runAt })
 }
 
+/**
+ * Slow Cast tick hook (D115): a cooler that filled on this cast (held 30 minutes, like a nap) and a bait that ran out.
+ * Reads nothing unless the owner turned the kind on.
+ */
+export async function queueSlowCastAlerts(ctx: MutationCtx, args: { owner: Doc<'users'>; anglerId: Doc<'anglers'>['_id']; filledCooler: boolean; ranOut: boolean; tick: number; now: number }): Promise<void> {
+  const { owner, anglerId, tick, now } = args
+  const prefs = owner.alerts
+  if (prefs === undefined) return
+  const rows: Array<{ kind: AlertKind; notBefore: number }> = []
+  if (args.filledCooler && prefs.coolerFull) rows.push({ kind: 'cooler_full', notBefore: now + ALERTS.asleepDelayMs })
+  if (args.ranOut && prefs.baitOut) rows.push({ kind: 'bait_out', notBefore: now })
+  for (const row of rows) {
+    const key = `${anglerId}:${row.kind}:${tick}`
+    if (await ctx.db.query('alertOutbox').withIndex('by_key', (q) => q.eq('key', key)).first()) continue
+    await ctx.db.insert('alertOutbox', { userId: owner._id, anglerId, key, eventTick: tick, state: 'pending', attempts: 0, createdAt: now, updatedAt: now, ...row })
+    await ensureSender(ctx, row.notBefore)
+  }
+}
+
 /** One sentence in the game's voice, with nothing private on a lock screen, and the page it opens. */
 export function alertMessage(row: Pick<Doc<'alertOutbox'>, 'kind' | 'offerName'>, heroName: string): { title: string; body: string; url: string } {
+  if (row.kind === 'cooler_full') return { title: 'Your cooler is full', body: 'New catches are going back. Sell your catch to keep the gold coming.', url: '/app/slow-cast/cooler?alert=cooler_full' }
+  if (row.kind === 'bait_out') return { title: 'Out of bait', body: 'Your angler is fishing a bare hook. Restock in the tackle shop.', url: '/app/slow-cast/shop?alert=bait_out' }
   if (row.kind === 'asleep') {
     return { title: `${heroName} is napping`, body: `${heroName}'s bag is full and they've sat down for a nap. Make some room to send them back out.`, url: '/app/desk-crawler/inventory?alert=asleep' }
   }

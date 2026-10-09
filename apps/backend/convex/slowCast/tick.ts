@@ -10,6 +10,8 @@ import { fromAnglerState, progressed, storedDetail, toAnglerState } from './adap
 import { currentAngler } from './profile'
 import { awardAngler, stateOf, tallyAnglerUnlocks } from './achievements'
 import { needsFullPass } from '@trmnl-games/slow-cast/content/achievements'
+import { coolerOf } from '@trmnl-games/slow-cast/sim'
+import { queueSlowCastAlerts } from '../lib/alerts'
 import { SLOW_CAST_RUNTIME } from './runtime'
 
 /**
@@ -108,6 +110,12 @@ async function simulateAnglerStep(ctx: MutationCtx, subject: Doc<'heroes'>, step
 
   if (result.catch) {
     await ctx.db.insert('catches', { anglerId: angler._id, ...result.catch, contentVersion: run.contentVersion, createdAt: now })
+  }
+  // D115 alerts: the cooler filled on this cast, or the bait on the hook ran out.
+  if (owner.alerts !== undefined) {
+    const filledCooler = result.catch !== undefined && coolerCount + 1 >= coolerOf(content, angler.coolerTier).capacity
+    const ranOut = (result.extraEvents ?? []).some((event) => event.kind === 'bait_out')
+    if (filledCooler || ranOut) await queueSlowCastAlerts(ctx, { owner, anglerId: angler._id, filledCooler, ranOut, tick: run.tick, now })
   }
   const patch: Partial<Doc<'anglers'>> = { ...fromAnglerState(result.angler), lastTick: run.tick }
   if (progressed(result)) {

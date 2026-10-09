@@ -6,7 +6,8 @@ import { api } from '@trmnl-games/backend/api'
 import { useIntent } from '../../../lib/intent'
 import { preload } from '../../../lib/preload'
 import type { Dock } from '../../../lib/slowCast'
-import { ActionFeedback, Button, Card } from '../../../lib/ui'
+import { ActionFeedback, Button, Card, NoticeBar, useNotice } from '../../../lib/ui'
+import { AlertsCard, type AlertKindCopy } from '../desk-crawler/-alerts'
 
 /** Slow Cast settings: pause, the public profile switch and deleting Slow Cast progress alone. */
 export const Route = createFileRoute('/app/slow-cast/settings')({
@@ -14,7 +15,13 @@ export const Route = createFileRoute('/app/slow-cast/settings')({
   component: SettingsPage,
 })
 
+const SLOW_CAST_ALERTS: readonly AlertKindCopy[] = [
+  { id: 'coolerFull', name: 'Cooler full', blurb: 'New catches are going back. Sent half an hour after it fills, once per fill.' },
+  { id: 'baitOut', name: 'Out of bait', blurb: 'The bait on the hook ran out and the angler is fishing a bare hook.' },
+]
+
 function SettingsPage() {
+  const { notice, notify, dismiss } = useNotice()
   const { data } = useQuery(convexQuery(api.slowCast.anglers.dock, {}))
   const dock = data as Dock | undefined
   const pause = useIntent(api.slowCast.anglers.pause)
@@ -51,6 +58,7 @@ function SettingsPage() {
           <ActionFeedback error={profile.error} message={profile.message} />
         </Card>
       ) : null}
+      {active ? <AlertsCard notify={notify} kinds={SLOW_CAST_ALERTS} intro="Get a nudge on this phone when your angler needs you." quietNote="A cooler alert waits until quiet hours end; an out-of-bait alert that turns up then is skipped." /> : null}
       <Card title="Delete Slow Cast progress">
         <p>This removes your angler, cooler, logbook and Slow Cast connections. Your TRMNL Games account and your other games stay. It cannot be undone.</p>
         <label className="mt-3 flex flex-col gap-1">
@@ -63,6 +71,7 @@ function SettingsPage() {
         <ActionFeedback error={deletion.error} message={deletion.message} />
       </Card>
       <p className="text-sm"><Link to="/account" className="underline underline-offset-4">Account settings</Link> cover your public name, analytics and deleting your whole account.</p>
+      <NoticeBar notice={notice} onDismiss={dismiss} />
     </>
   )
 }

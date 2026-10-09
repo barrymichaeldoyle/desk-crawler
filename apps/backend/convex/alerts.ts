@@ -6,7 +6,10 @@ import { appError } from './lib/errors'
 import { sha256Hex } from './lib/hash'
 import { currentUser, runIntent } from './lib/intent'
 import { validateTimezone } from './lib/names'
-import { ALERTS, alertMessage, ensureSender, inQuietHours, localDay, quietEndsAt } from './lib/alerts'
+import { ALERTS, alertMessage, DESK_CRAWLER_KINDS, ensureSender, inQuietHours, kindOn, localDay, PREF_FOR, quietEndsAt, SLOW_CAST_KINDS, type AlertKind } from './lib/alerts'
+import { currentAngler } from './slowCast/profile'
+import { coolerOf } from '@trmnl-games/slow-cast/sim'
+import { contentV1 } from '@trmnl-games/slow-cast/content'
 import { readWorld } from './world'
 
 /** P33 hero alerts: preferences, this account's push devices and the sender's two transactions (alerts.md). */
@@ -18,10 +21,17 @@ const intentResult = v.object({ operationId: v.string(), changed: v.boolean() })
 const defaults = (prefs: Doc<'users'>['alerts']) => ({
   asleep: prefs?.asleep ?? false,
   merchant: prefs?.merchant ?? false,
+  coolerFull: prefs?.coolerFull ?? false,
+  baitOut: prefs?.baitOut ?? false,
   quietStart: prefs?.quietStart ?? ALERTS.quietStart,
   quietEnd: prefs?.quietEnd ?? ALERTS.quietEnd,
   offReason: prefs?.offReason ?? null,
 })
+
+/** Alerts need a player character in some game: a hero or an angler (D115). */
+async function playsAGame(ctx: QueryCtx, user: Doc<'users'>): Promise<boolean> {
+  return (await currentHero(ctx, user)) !== null || (await currentAngler(ctx, user)) !== null
+}
 
 /** A short, stable fingerprint of an endpoint, so the companion can tell which listed device it is without the endpoint itself. */
 export const endpointFingerprint = (endpoint: string) => sha256Hex(`push:${endpoint}`).slice(0, 16)
@@ -40,6 +50,8 @@ export const mine = query({
       timezone: v.string(),
       asleep: v.boolean(),
       merchant: v.boolean(),
+      coolerFull: v.boolean(),
+      baitOut: v.boolean(),
       quietStart: v.number(),
       quietEnd: v.number(),
       offReason: v.union(v.literal('no_devices'), v.null()),
@@ -48,7 +60,7 @@ export const mine = query({
   ),
   handler: async (ctx) => {
     const user = await currentUser(ctx)
-    if (user === null || (await currentHero(ctx, user)) === null) return null
+    if (user === null || !(await playsAGame(ctx, user))) return null
     const devices = await devicesOf(ctx, user._id)
     return {
       vapidPublicKey: process.env.VAPID_PUBLIC_KEY ?? null,
@@ -66,18 +78,27 @@ const hour = (value: number) => Number.isInteger(value) && value >= 0 && value <
  * device that can receive it; quiet hours can move but never disappear, so start and end must differ.
  */
 export const setPreferences = mutation({
-  args: { operationId: v.string(), asleep: v.boolean(), merchant: v.boolean(), quietStart: v.number(), quietEnd: v.number(), timezone: v.string() },
+  // Each game's card sends its own switches; a switch left out keeps its stored value (D115).
+  args: { operationId: v.string(), asleep: v.optional(v.boolean()), merchant: v.optional(v.boolean()), coolerFull: v.optional(v.boolean()), baitOut: v.optional(v.boolean()), quietStart: v.number(), quietEnd: v.number(), timezone: v.string() },
   returns: intentResult,
   handler: async (ctx, args) => {
     const { operationId, ...input } = args
     const result = await runIntent(ctx, operationId, 'alerts.setPreferences', input, async (user) => {
-      if ((await currentHero(ctx, user)) === null) throw appError('HERO_NOT_FOUND', 'No hero yet.')
+      if (!(await playsAGame(ctx, user))) throw appError('HERO_NOT_FOUND', 'No hero yet.')
       if (!hour(input.quietStart) || !hour(input.quietEnd) || input.quietStart === input.quietEnd) throw appError('INVALID_INPUT', 'Quiet hours need a different start and end hour.')
-      if ((input.asleep || input.merchant) && (await devicesOf(ctx, user._id)).length === 0) throw appError('INVALID_STATE', 'Allow alerts on this device first.')
-      const timezone = validateTimezone(input.timezone)
-      const next = { asleep: input.asleep, merchant: input.merchant, quietStart: input.quietStart, quietEnd: input.quietEnd }
       const current = user.alerts
-      const same = current !== undefined && current.offReason === undefined && current.asleep === next.asleep && current.merchant === next.merchant && current.quietStart === next.quietStart && current.quietEnd === next.quietEnd
+      const stored = defaults(current)
+      const next = {
+        asleep: input.asleep ?? stored.asleep,
+        merchant: input.merchant ?? stored.merchant,
+        coolerFull: input.coolerFull ?? stored.coolerFull,
+        baitOut: input.baitOut ?? stored.baitOut,
+        quietStart: input.quietStart,
+        quietEnd: input.quietEnd,
+      }
+      if ((next.asleep || next.merchant || next.coolerFull || next.baitOut) && (await devicesOf(ctx, user._id)).length === 0) throw appError('INVALID_STATE', 'Allow alerts on this device first.')
+      const timezone = validateTimezone(input.timezone)
+      const same = current !== undefined && current.offReason === undefined && stored.asleep === next.asleep && stored.merchant === next.merchant && stored.coolerFull === next.coolerFull && stored.baitOut === next.baitOut && current.quietStart === next.quietStart && current.quietEnd === next.quietEnd
       if (same && user.timezone === timezone) return { changed: false }
       await ctx.db.patch(user._id, { alerts: next, timezone })
       return { changed: true }
@@ -95,7 +116,7 @@ export const subscribe = mutation({
   handler: async (ctx, args) => {
     const { operationId, ...input } = args
     const result = await runIntent(ctx, operationId, 'alerts.subscribe', input, async (user) => {
-      if ((await currentHero(ctx, user)) === null) throw appError('HERO_NOT_FOUND', 'No hero yet.')
+      if (!(await playsAGame(ctx, user))) throw appError('HERO_NOT_FOUND', 'No hero yet.')
       let url: URL
       try {
         url = new URL(input.endpoint)
@@ -149,9 +170,9 @@ async function removeSubscription(ctx: MutationCtx, device: Doc<'pushSubscriptio
   await ctx.db.delete(device._id)
   if ((await devicesOf(ctx, device.userId)).length > 0) return
   const owner = await ctx.db.get(device.userId)
-  if (owner?.alerts === undefined || (!owner.alerts.asleep && !owner.alerts.merchant)) return
+  if (owner?.alerts === undefined || (!owner.alerts.asleep && !owner.alerts.merchant && !owner.alerts.coolerFull && !owner.alerts.baitOut)) return
   const { offReason: _old, ...rest } = owner.alerts
-  await ctx.db.patch(owner._id, { alerts: { ...rest, asleep: false, merchant: false, ...(reason === undefined ? {} : { offReason: reason }) } })
+  await ctx.db.patch(owner._id, { alerts: { ...rest, asleep: false, merchant: false, coolerFull: false, baitOut: false, ...(reason === undefined ? {} : { offReason: reason }) } })
 }
 
 const sendValidator = v.object({
@@ -180,11 +201,22 @@ export const claimDue = internalMutation({
       const owner = await ctx.db.get(row.userId)
       if (owner === null || owner.state !== 'active') { await skip(row, 'account'); continue }
       const prefs = owner.alerts
-      if (prefs === undefined || !prefs[row.kind]) { await skip(row, 'kind_off'); continue }
-      const hero = await currentHero(ctx, owner)
-      if (hero === null || hero._id !== row.heroId) { await skip(row, 'hero_gone'); continue }
+      if (prefs === undefined || !kindOn(prefs, row.kind)) { await skip(row, 'kind_off'); continue }
       // An alert never tells the player something that is already over.
       let ttlSeconds = 12 * 60 * 60
+      let name = owner.publicAlias
+      if (row.kind === 'cooler_full' || row.kind === 'bait_out') {
+        // D115: Slow Cast rechecks its angler; the cooler must still be full, or the hook still bare.
+        const angler = await currentAngler(ctx, owner)
+        if (angler === null || angler._id !== row.anglerId || angler.status === 'paused') { await skip(row, 'angler_gone'); continue }
+        if (row.kind === 'cooler_full') {
+          const held = (await ctx.db.query('catches').withIndex('by_anglerId', (q) => q.eq('anglerId', angler._id)).take(32)).length
+          if (held < coolerOf(contentV1, angler.coolerTier).capacity) { await skip(row, 'sold'); continue }
+        } else if (angler.baitOnHook !== undefined && (angler.bait[angler.baitOnHook] ?? 0) > 0) { await skip(row, 'restocked'); continue }
+      } else {
+      const hero = await currentHero(ctx, owner)
+      if (hero === null || hero._id !== row.heroId) { await skip(row, 'hero_gone'); continue }
+      name = hero.name
       if (row.kind === 'asleep') {
         if (hero.status !== 'sleeping' || hero.wakeAtTick !== undefined) { await skip(row, 'woke'); continue }
       } else {
@@ -195,11 +227,12 @@ export const claimDue = internalMutation({
         if (hero.gold < offer.price) { await skip(row, 'cant_afford'); continue }
         ttlSeconds = (visit.expiresAtTick - tick) * SLOT_MINUTES * 60
       }
+      }
       const devices = await devicesOf(ctx, owner._id)
       if (devices.length === 0) { await skip(row, 'no_devices'); continue }
       if (inQuietHours(now, owner.timezone, prefs)) {
-        // The nap is still on in the morning; the merchant is not.
-        if (row.kind === 'merchant') await skip(row, 'quiet_hours')
+        // The nap and a full cooler are still on in the morning; the merchant and a bait alert are not worth waking for.
+        if (row.kind === 'merchant' || row.kind === 'bait_out') await skip(row, 'quiet_hours')
         else await ctx.db.patch(row._id, { notBefore: quietEndsAt(now, owner.timezone, prefs), updatedAt: now })
         continue
       }
@@ -209,7 +242,7 @@ export const claimDue = internalMutation({
       if (today.length >= ALERTS.dailyCap) { await skip(row, 'daily_cap'); continue }
       if (row.kind === 'merchant' && today.filter((other) => other.kind === 'merchant').length >= ALERTS.merchantDailyCap) { await skip(row, 'merchant_cap'); continue }
       await ctx.db.patch(row._id, { state: 'sending', localDay: day, attempts: row.attempts + 1, updatedAt: now })
-      const message = alertMessage(row, hero.name)
+      const message = alertMessage(row, name)
       sends.push({
         outboxId: row._id,
         ttlSeconds,
@@ -265,6 +298,25 @@ export const devicesForTest = internalQuery({
     return (await devicesOf(ctx, user._id)).map((device) => ({ id: device._id, endpoint: device.endpoint, p256dh: device.p256dh, auth: device.auth }))
   },
 })
+
+/**
+ * Deleting one game's progress (D115): that game's outbox rows and switches go. Devices and quiet hours stay while the
+ * other game still has a character to alert about; otherwise everything goes, as D114 removed it with Desk Crawler.
+ * Returns how many rows went.
+ */
+export async function purgeGameAlertRows(ctx: MutationCtx, userId: Id<'users'>, game: 'desk-crawler' | 'slow-cast', batch: number): Promise<number> {
+  const owner = await ctx.db.get(userId)
+  const otherGame = owner === null ? null : game === 'slow-cast' ? await currentHero(ctx, owner) : await currentAngler(ctx, owner)
+  if (otherGame === null) return await purgeAlertRows(ctx, userId, batch)
+  const kinds: readonly AlertKind[] = game === 'slow-cast' ? SLOW_CAST_KINDS : DESK_CRAWLER_KINDS
+  const rows = (await ctx.db.query('alertOutbox').withIndex('by_userId_and_localDay', (q) => q.eq('userId', userId)).take(batch * 4)).filter((row) => kinds.includes(row.kind)).slice(0, batch)
+  for (const row of rows) await ctx.db.delete(row._id)
+  if (rows.length === 0) {
+    const user = await ctx.db.get(userId)
+    if (user?.alerts !== undefined && kinds.some((kind) => user.alerts![PREF_FOR[kind]] === true)) await ctx.db.patch(userId, { alerts: { ...user.alerts, ...Object.fromEntries(kinds.map((kind) => [PREF_FOR[kind], false])) } })
+  }
+  return rows.length
+}
 
 /** Deletion (D22): every alert row of the account, in bounded batches. Returns how many rows went. */
 export async function purgeAlertRows(ctx: MutationCtx, userId: Id<'users'>, batch: number): Promise<number> {

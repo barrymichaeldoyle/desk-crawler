@@ -4,7 +4,7 @@ import { slowCastProfile } from './slowCast/profile'
 import { purgeAngler } from './slowCast/purge'
 import { gameSlug as gameSlugValidator } from './schema'
 import { purgeRaidRows } from './lib/raids'
-import { purgeAlertRows } from './alerts'
+import { purgeAlertRows, purgeGameAlertRows } from './alerts'
 import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import type { Doc, Id, TableNames } from './_generated/dataModel'
@@ -133,7 +133,7 @@ export const purgeGameStep = internalMutation({
         await ctx.db.patch(profile._id, { anglerId: undefined })
       }
       const receipts = await ctx.db.query('operationReceipts').withIndex('by_userId_and_scope', (q) => q.eq('userId', job.userId).eq('scope', 'slow-cast')).take(BATCH)
-      if ((await deleteBatch(ctx, receipts)) > 0) return await again()
+      if ((await deleteBatch(ctx, receipts)) + (await purgeGameAlertRows(ctx, job.userId, 'slow-cast', BATCH)) > 0) return await again()
       if (profile) await ctx.db.patch(profile._id, { state: 'active' })
       await ctx.db.patch(jobId, { state: 'completed', phase: 'done', completedAt: now, lastProgressAt: now })
       return null
@@ -152,8 +152,8 @@ export const purgeGameStep = internalMutation({
     if (user?.activeHeroId) await ctx.db.patch(user._id, { activeHeroId: undefined })
     const keepsakes = await ctx.db.query('deskKeepsakes').withIndex('by_userId', (q) => q.eq('userId', job.userId)).take(BATCH)
     const unlocks = await ctx.db.query('heroAchievements').withIndex('by_userId_and_achievementId', (q) => q.eq('userId', job.userId)).take(BATCH)
-    // P33: alert preferences, push devices and outbox rows are Desk Crawler's.
-    if (await deleteBatch(ctx, keepsakes) + await deleteBatch(ctx, unlocks) + await purgeAlertRows(ctx, job.userId, BATCH) > 0) return await again()
+    // P33: Desk Crawler's alert switches and outbox rows; devices and quiet hours are shared with Slow Cast (D115).
+    if (await deleteBatch(ctx, keepsakes) + await deleteBatch(ctx, unlocks) + await purgeGameAlertRows(ctx, job.userId, 'desk-crawler', BATCH) > 0) return await again()
     const receipts = await ctx.db.query('operationReceipts').withIndex('by_userId_and_scope', (q) => q.eq('userId', job.userId).eq('scope', DESK_CRAWLER)).take(BATCH)
     const legacy = await ctx.db.query('operationReceipts').withIndex('by_userId_and_scope', (q) => q.eq('userId', job.userId).eq('scope', undefined)).take(BATCH)
     if (await deleteBatch(ctx, receipts) + await deleteBatch(ctx, legacy) > 0) return await again()

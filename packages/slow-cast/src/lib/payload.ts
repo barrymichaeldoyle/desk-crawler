@@ -56,6 +56,15 @@ export interface SlowCastPayloadInput {
   readonly stories: readonly PayloadStory[]
   /** The Convex site origin that serves `/art/sc/`; null leaves image fields empty. */
   readonly artBaseUrl: string | null
+  /** The seven-day board for the angler's level group, from the published set; null before the first one. */
+  readonly board?: PayloadBoard | null
+}
+
+export interface PayloadBoard {
+  readonly rank: number | null
+  readonly cohortLabel: string
+  readonly totalPlayers: number
+  readonly top: ReadonlyArray<{ readonly rank: number; readonly name: string; readonly level: number; readonly score: number; readonly own: boolean }>
 }
 
 const BAND_WORD: Readonly<Record<TimeBand, string>> = { dawn: 'dawn', day: 'day', dusk: 'dusk', night: 'night' }
@@ -141,6 +150,17 @@ export function buildPayload(input: SlowCastPayloadInput) {
     species_total: content.species.length,
     stories: stories.map((s) => ({ kind: s.kind, summary: s.summary })),
     recap,
+    // The board shows the group's first rows; an angler outside them gets its own row appended.
+    board: input.board
+      ? {
+          label: `${input.board.cohortLabel}, 7 days`,
+          rank_label: input.board.rank === null ? 'Ranked at the next hourly update' : `#${input.board.rank} of ${input.board.totalPlayers}`,
+          rows: [
+            ...input.board.top.map((row) => ({ rank: row.rank, name: row.name, level: row.level, score: row.score, own: row.own })),
+            ...(input.board.rank !== null && !input.board.top.some((row) => row.own) ? [{ rank: input.board.rank, name: angler.alias, level: angler.level, score: null, own: true }] : []),
+          ],
+        }
+      : null,
     latest_catch: latestCatch,
     attention,
     // A full cooler sends the code to the cooler page; otherwise to the dock.

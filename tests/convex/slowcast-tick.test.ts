@@ -57,6 +57,12 @@ describe('Slow Cast tick on the shared engine (D115, S2)', () => {
     expect(sets.world?.publishedPublicationId).toBe(sets.published.at(-1)!._id)
     expect(sets.inputs.at(-1)).toMatchObject({ heroId: anglerId, heroName: 'Reel', ownerAlias: 'Reel' })
     expect(sets.generations.some((g) => g.board === 'overall' && g.entries[0]?.heroId === anglerId)).toBe(true)
+    // The companion and device read the same set, with the alias as the name and the angler's own row.
+    const { api } = await import('@trmnl-games/backend/api')
+    const view = await t.withIdentity({ issuer: 'issuer', subject: 'Reel' }).query(api.slowCast.leaderboard.view, { board: 'overall' })
+    expect(view).toMatchObject({ published: true, cohortLabel: 'All anglers', entries: [{ rank: 1, name: 'Reel' }], own: { rank: 1 } })
+    const preview = await t.withIdentity({ issuer: 'issuer', subject: 'Reel' }).query(api.slowCast.payload.preview, {})
+    expect(preview.board).toMatchObject({ rank_label: '#1 of 1', rows: [{ rank: 1, name: 'Reel', own: true }] })
   })
 
   it('skips a paused angler between publications without writing', async () => {

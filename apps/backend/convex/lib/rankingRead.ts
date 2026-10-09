@@ -7,17 +7,20 @@ import { TOP_ROWS, type PayloadRanking } from '@trmnl-games/desk-crawler/payload
 
 export type Board = 'overall' | 'recent_24h' | 'recent_7d'
 
-const labelFor = (cohortKey: string) => {
+export const labelFor = (cohortKey: string) => {
   if (cohortKey === 'all') return 'All heroes'
   const [min, max] = cohortKey.split('-')
   return `Levels ${min}-${max}`
 }
 
+/** The owner's current player character in the board's game; Desk Crawler's hero unless a game passes its own. */
+type CurrentSubject = (ctx: QueryCtx, owner: Doc<'users'> | null) => Promise<{ _id: string; publicProfile?: boolean } | null>
+
 /** Mask copied public names whose owner is gone, suspended/deleting, or renamed since the snapshot (leaderboards.md). */
-export async function maskedEntries(ctx: QueryCtx, entries: Doc<'leaderboardGenerations'>['entries'], limit: number, options: { profiles?: boolean } = {}) {
+export async function maskedEntries(ctx: QueryCtx, entries: Doc<'leaderboardGenerations'>['entries'], limit: number, options: { profiles?: boolean; current?: CurrentSubject } = {}) {
   const rows = entries.slice(0, limit)
   const owners = await Promise.all(rows.map((row) => ctx.db.get(row.userId)))
-  const heroes = await Promise.all(owners.map((owner) => currentHero(ctx, owner ?? null)))
+  const heroes = await Promise.all(owners.map((owner) => (options.current ?? currentHero)(ctx, owner ?? null)))
   return rows.map((row, index) => {
     const owner = owners[index]
     const visible = owner !== null && owner !== undefined && owner.state === 'active' && owner.publicNameVersion === row.publicNameVersion && heroes[index]?._id === row.heroId

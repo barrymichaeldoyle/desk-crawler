@@ -30,8 +30,8 @@ const oriented = (classes: string, landscape: string, portrait: string) => `
 </div>${titleBar('portrait')}`
 
 /** The scene at an OG scale and a larger X scale. */
-const scene = (og: number, x: number, classes = '') =>
-  `{% if scene_base != "" %}<div class="${classes} no-shrink flex flex--row flex--center-x stretch-x"><img class="image lg:hidden" src="{{ scene_base }}/${og}.png" alt=""><img class="image hidden lg:block" src="{{ scene_base }}/${x}.png" alt=""></div>{% endif %}`
+const scene = (og: number, x: number, classes = 'stretch-x') =>
+  `{% if scene_base != "" %}<div class="${classes} no-shrink flex flex--row flex--center-x"><img class="image lg:hidden" src="{{ scene_base }}/${og}.png" alt=""><img class="image hidden lg:block" src="{{ scene_base }}/${x}.png" alt=""></div>{% endif %}`
 
 const qr = (og: number, x: number) =>
   `{% if qr_base != "" %}<div class="no-shrink" data-companion-qr="true"><img class="image lg:hidden" src="{{ qr_base }}/${og}.png" alt=""><img class="image hidden lg:block" src="{{ qr_base }}/${x}.png" alt=""></div>{% endif %}`
@@ -50,6 +50,12 @@ const xpLine = (classes = 'label lg:title--small') => `{% if xp_to_next %}<span 
 
 const attention = (classes = 'label lg:title--small', clamp = 2) =>
   `{% if attention %}<span class="${classes} label--underline no-shrink" data-clamp="${clamp}">{{ attention | escape }}</span>{% endif %}`
+
+/**
+ * The seven-day Top 5 of the angler's level group. Each row is itself the label, so an inverted own row keeps its
+ * text white (a `.label` child would set its own colour), as Desk Crawler's board does.
+ */
+const board = (rows: number) => `{% if board %}<div class="no-shrink flex flex--col gap--xsmall w--full" data-board="true"><span class="label lg:title--small w--full" data-clamp="2">{{ board.label | escape }} · {{ board.rank_label | escape }}</span>{% for row in board.rows limit:${rows} %}<div class="label lg:title--small flex flex--row flex--between flex--center-y gap--small w--full{% if row.own %} label--inverted{% endif %}" data-rank-row="{{ row.rank }}"><span class="grow w--min-0" data-clamp="1">{{ row.rank }}. {{ row.name | escape }}</span><span class="no-shrink">L{{ row.level }}</span></div>{% endfor %}</div>{% endif %}`
 
 /** The twelve-hour recap, outlined at the foot of the tall layouts. */
 const recap = (classes = 'label lg:title--small') => `{% if recap %}<span class="${classes} label--outline no-shrink" data-clamp="1" data-recap="true">{{ recap | escape }}</span>{% endif %}`
@@ -83,14 +89,16 @@ const header = (qrOg: number, qrX: number) => `
 const full = oriented(
   'layout layout--col layout--top layout--stretch-x gap--small',
   ready(`${header(2, 4)}
-    ${scene(5, 10)}
+    <div class="lg:hidden no-shrink stretch-x">{% if board %}<div class="flex flex--row flex--top gap--small stretch-x">${scene(4, 4, '')}<div class="grow w--min-0">${board(6)}</div></div>{% else %}${scene(5, 5)}{% endif %}</div>
+    <div class="hidden lg:flex flex--col gap--small stretch-x no-shrink">${scene(6, 6)}${board(6)}</div>
     ${attention()}
     ${stories(3, 'description lg:title--small', 1)}
     ${recap()}`),
   ready(`${header(2, 4)}
     ${scene(3, 8)}
     ${attention('label lg:title--small', 3)}
-    ${stories(5)}
+    ${stories(4)}
+    ${board(6)}
     ${recap()}`),
 )
 

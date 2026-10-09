@@ -59,6 +59,7 @@ import type * as slowCast_leaderboard from "../slowCast/leaderboard.js";
 import type * as slowCast_lifecycle from "../slowCast/lifecycle.js";
 import type * as slowCast_payload from "../slowCast/payload.js";
 import type * as slowCast_profile from "../slowCast/profile.js";
+import type * as slowCast_purge from "../slowCast/purge.js";
 import type * as slowCast_runtime from "../slowCast/runtime.js";
 import type * as slowCast_tick from "../slowCast/tick.js";
 import type * as slowCast_validators from "../slowCast/validators.js";
@@ -126,6 +127,7 @@ declare const fullApi: ApiFromModules<{
   "slowCast/lifecycle": typeof slowCast_lifecycle;
   "slowCast/payload": typeof slowCast_payload;
   "slowCast/profile": typeof slowCast_profile;
+  "slowCast/purge": typeof slowCast_purge;
   "slowCast/runtime": typeof slowCast_runtime;
   "slowCast/tick": typeof slowCast_tick;
   "slowCast/validators": typeof slowCast_validators;

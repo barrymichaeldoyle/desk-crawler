@@ -4,9 +4,9 @@ Recorded 2026-10-09 for D115. Template v1 (`packages/slow-cast/src/templates/scr
 
 ## What was checked
 
-`pnpm preview:slowcast` renders 14 device states through the real payload builder and templates, with the art drawn locally, for the OG, the X and the BWRY panel in landscape and portrait, in all four layouts: 336 pages. `pnpm sweep:trmnl <out> --filter sc-` loaded each in the pinned framework 3.4.0 and checked that nothing runs past the view or under the title bar, no image is broken and no unclamped text overflows. Result: **336 pages, 0 failures** ([results](slow-cast-layout-results.json)). The full layout, the half and side views and the quarter were also inspected by eye on the OG and the X in both orientations.
+`pnpm preview:slowcast` renders 16 device states through the real payload builder and templates, with the art drawn locally, for the OG, the X and the BWRY panel in landscape and portrait, in all four layouts: 384 pages. `pnpm sweep:trmnl <out> --filter sc-` loaded each in the pinned framework 3.4.0 and checked that nothing runs past the view or under the title bar, no image is broken and no unclamped text overflows. Result: **384 pages, 0 failures** ([results](slow-cast-layout-results.json)). The full layout, the half and side views and the quarter were also inspected by eye on the OG and the X in both orientations.
 
-States: bareHook, catch, coolerFull, gotAway, longText, millpondDawn, paused, pending, pier, servicePaused, stale, travelling, unlinked, waiting.
+States: bareHook, catch, coolerFull, gotAway, longText, millpondDawn, outsideTop, paused, pending, pier, servicePaused, stale, travelling, unlinked, unranked, waiting.
 
 ## Layouts
 

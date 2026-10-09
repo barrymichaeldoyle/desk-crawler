@@ -44,6 +44,7 @@ function DockPage() {
           {here ? <span className="text-muted"> · {BAND_LABEL[here.band]}, {WEATHER_LABEL[here.weather]?.toLowerCase()} · {here.bitePercent}% a bite each cast</span> : null}
         </p>
         {dock.nextTickAt ? <p className="text-sm text-muted">Next cast at {time(dock.nextTickAt)}.</p> : null}
+        <p className="text-sm"><Link to="/app/slow-cast/rankings" className="underline underline-offset-4">Rankings</Link></p>
         <div className="grid gap-4 sm:grid-cols-2">
           <Meter label="XP" value={angler.xp} max={angler.xpToNext} tone="xp" />
           <Meter label={angler.cooler.name} value={angler.cooler.used} max={angler.cooler.capacity} tone="gold" />

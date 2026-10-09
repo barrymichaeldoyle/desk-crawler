@@ -10,6 +10,7 @@ import { currentUser } from '../lib/intent'
 import { readEngineWorld } from '../lib/engine/world'
 import { currentAngler, slowCastProfile } from './profile'
 import { SLOW_CAST_RUNTIME, SLOW_CAST_SCHEDULE } from './runtime'
+import { readDeviceBoard } from './leaderboard'
 
 /**
  * Slow Cast's device payload for one authorized installation (trmnl.md "Query read budget"): fixed reads,
@@ -74,6 +75,7 @@ export async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number,
     weather,
     band,
     artBaseUrl: process.env.CONVEX_SITE_URL ?? null,
+    board: angler && angler.activationState === 'active' ? await readDeviceBoard(ctx, angler) : null,
     stories: logs.map((log) => ({ kind: log.kind, summary: log.summary, at: log.at, ...(log.detail.speciesId === undefined ? {} : { speciesId: log.detail.speciesId }), ...(log.detail.grams === undefined ? {} : { grams: log.detail.grams }) })),
   })
 }

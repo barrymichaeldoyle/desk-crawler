@@ -38,6 +38,7 @@ import { Route as AppDeskCrawlerSettingsRouteImport } from './routes/app/desk-cr
 import { Route as AppSlowCastIndexRouteImport } from './routes/app/slow-cast/index'
 import { Route as AppSlowCastCoolerRouteImport } from './routes/app/slow-cast/cooler'
 import { Route as AppSlowCastLogbookRouteImport } from './routes/app/slow-cast/logbook'
+import { Route as AppSlowCastRankingsRouteImport } from './routes/app/slow-cast/rankings'
 import { Route as AppSlowCastSettingsRouteImport } from './routes/app/slow-cast/settings'
 import { Route as AppSlowCastShopRouteImport } from './routes/app/slow-cast/shop'
 import { Route as DeskCrawlerHeroesAliasRouteImport } from './routes/desk-crawler/heroes.$alias'
@@ -191,6 +192,11 @@ const AppSlowCastLogbookRoute = AppSlowCastLogbookRouteImport.update({
   path: '/logbook',
   getParentRoute: () => AppSlowCastRoute,
 } as any)
+const AppSlowCastRankingsRoute = AppSlowCastRankingsRouteImport.update({
+  id: '/rankings',
+  path: '/rankings',
+  getParentRoute: () => AppSlowCastRoute,
+} as any)
 const AppSlowCastSettingsRoute = AppSlowCastSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -253,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/app/desk-crawler/settings': typeof AppDeskCrawlerSettingsRoute
   '/app/slow-cast/cooler': typeof AppSlowCastCoolerRoute
   '/app/slow-cast/logbook': typeof AppSlowCastLogbookRoute
+  '/app/slow-cast/rankings': typeof AppSlowCastRankingsRoute
   '/app/slow-cast/settings': typeof AppSlowCastSettingsRoute
   '/app/slow-cast/shop': typeof AppSlowCastShopRoute
   '/desk-crawler/heroes/$alias': typeof DeskCrawlerHeroesAliasRoute
@@ -287,6 +294,7 @@ export interface FileRoutesByTo {
   '/app/desk-crawler/settings': typeof AppDeskCrawlerSettingsRoute
   '/app/slow-cast/cooler': typeof AppSlowCastCoolerRoute
   '/app/slow-cast/logbook': typeof AppSlowCastLogbookRoute
+  '/app/slow-cast/rankings': typeof AppSlowCastRankingsRoute
   '/app/slow-cast/settings': typeof AppSlowCastSettingsRoute
   '/app/slow-cast/shop': typeof AppSlowCastShopRoute
   '/desk-crawler/heroes/$alias': typeof DeskCrawlerHeroesAliasRoute
@@ -325,6 +333,7 @@ export interface FileRoutesById {
   '/app/desk-crawler/settings': typeof AppDeskCrawlerSettingsRoute
   '/app/slow-cast/cooler': typeof AppSlowCastCoolerRoute
   '/app/slow-cast/logbook': typeof AppSlowCastLogbookRoute
+  '/app/slow-cast/rankings': typeof AppSlowCastRankingsRoute
   '/app/slow-cast/settings': typeof AppSlowCastSettingsRoute
   '/app/slow-cast/shop': typeof AppSlowCastShopRoute
   '/desk-crawler/heroes/$alias': typeof DeskCrawlerHeroesAliasRoute
@@ -364,6 +373,7 @@ export interface FileRouteTypes {
     | '/app/desk-crawler/settings'
     | '/app/slow-cast/cooler'
     | '/app/slow-cast/logbook'
+    | '/app/slow-cast/rankings'
     | '/app/slow-cast/settings'
     | '/app/slow-cast/shop'
     | '/desk-crawler/heroes/$alias'
@@ -398,6 +408,7 @@ export interface FileRouteTypes {
     | '/app/desk-crawler/settings'
     | '/app/slow-cast/cooler'
     | '/app/slow-cast/logbook'
+    | '/app/slow-cast/rankings'
     | '/app/slow-cast/settings'
     | '/app/slow-cast/shop'
     | '/desk-crawler/heroes/$alias'
@@ -435,6 +446,7 @@ export interface FileRouteTypes {
     | '/app/desk-crawler/settings'
     | '/app/slow-cast/cooler'
     | '/app/slow-cast/logbook'
+    | '/app/slow-cast/rankings'
     | '/app/slow-cast/settings'
     | '/app/slow-cast/shop'
     | '/desk-crawler/heroes/$alias'
@@ -676,6 +688,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSlowCastLogbookRouteImport
       parentRoute: typeof AppSlowCastRoute
     }
+    '/app/slow-cast/rankings': {
+      id: '/app/slow-cast/rankings'
+      path: '/rankings'
+      fullPath: '/app/slow-cast/rankings'
+      preLoaderRoute: typeof AppSlowCastRankingsRouteImport
+      parentRoute: typeof AppSlowCastRoute
+    }
     '/app/slow-cast/settings': {
       id: '/app/slow-cast/settings'
       path: '/settings'
@@ -742,6 +761,7 @@ const AppDeskCrawlerRouteWithChildren = AppDeskCrawlerRoute._addFileChildren(
 interface AppSlowCastRouteChildren {
   AppSlowCastCoolerRoute: typeof AppSlowCastCoolerRoute
   AppSlowCastLogbookRoute: typeof AppSlowCastLogbookRoute
+  AppSlowCastRankingsRoute: typeof AppSlowCastRankingsRoute
   AppSlowCastSettingsRoute: typeof AppSlowCastSettingsRoute
   AppSlowCastShopRoute: typeof AppSlowCastShopRoute
   AppSlowCastIndexRoute: typeof AppSlowCastIndexRoute
@@ -750,6 +770,7 @@ interface AppSlowCastRouteChildren {
 const AppSlowCastRouteChildren: AppSlowCastRouteChildren = {
   AppSlowCastCoolerRoute: AppSlowCastCoolerRoute,
   AppSlowCastLogbookRoute: AppSlowCastLogbookRoute,
+  AppSlowCastRankingsRoute: AppSlowCastRankingsRoute,
   AppSlowCastSettingsRoute: AppSlowCastSettingsRoute,
   AppSlowCastShopRoute: AppSlowCastShopRoute,
   AppSlowCastIndexRoute: AppSlowCastIndexRoute,

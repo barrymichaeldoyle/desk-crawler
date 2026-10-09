@@ -13,6 +13,8 @@
  *   todo=1 (D112: the to-do list with a done task, an away task and the longest label, plus to-do log lines)   todo=used (the same, swap spent)
  *   alerts=on (P33: two devices, both kinds on)   alerts=gone (turned off because the last device went stale)   alerts=none (no VAPID key yet)
  *   /desk-crawler/heroes/<name> serves the public hero page (private=1 reads as not found)
+ * Slow Cast (D115): /app/slow-cast, /cooler, /shop, /logbook, /settings, with sc=full (cooler full), sc=empty (empty cooler, no bait here),
+ *   sc=paused, sc=pending, sc=none (not started), sc=rich (level 11 at the pier with every pass)
  * The dev deployment's scene art is used when apps/web/.env.local sets VITE_CONVEX_SITE_URL.
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -34,6 +36,8 @@ const snapshot = () => location.pathname + location.search + location.hash;
 export const useLocation = (options) => { const key = useSyncExternalStore(subscribe, snapshot, snapshot); const loc = { pathname: location.pathname, search: location.search, hash: location.hash, href: key }; return options?.select ? options.select(loc) : loc };
 export const createFileRoute = () => (options) => ({ options, useParams: () => ({ alias: decodeURIComponent(location.pathname.replace(/\\/$/, '').split('/').pop()) }) });
 export const createRootRouteWithContext = () => (options) => ({ options });
+export const notFound = () => new Error('not found');
+export const redirect = () => new Error('redirect');
 export const useRouter = () => ({ invalidate: async () => {} });
 export const useNavigate = () => (to) => { history.pushState(null, '', typeof to === 'string' ? to : to.to); notify() };
 const same = (a, b) => a.replace(/\\/$/, '') === b.replace(/\\/$/, '');
@@ -126,8 +130,41 @@ if (params.has('todo')) {
     { id: 'todo2', at: Date.now() - 36e5 * 3, tick: 899, kind: 'todo', summary: 'Stand-up: Defeat 3 [[Legacy Mainframes]]. Find 2 pieces of gear.', source: 'tick', deltas: { xpEarned: 0, gold: 0, hp: 0 } },
   );
 }
+// D115: Slow Cast's dock, logbook and preview from a fictional angler, varied by ?sc=.
+const sc = params.get('sc');
+const now = Date.now();
+const bait = (cls, name, units, tub, price) => ({ class: cls, name, units, tubSize: tub, price, tubsThatFit: Math.max(0, Math.floor((72 - units) / tub)) });
+const scCatches = [['barbel', 'Barbel', 1900, 96], ['chub', 'Chub', 410, 41], ['dace', 'Dace', 230, 22], ['gudgeon', 'Gudgeon', 60, 18], ['chub', 'Chub', 1240, 53], ['grayling', 'Grayling', 820, 72], ['brown_trout', 'Brown Trout', 1500, 103]];
+const scDock = sc === 'none' ? { gameState: null, angler: null } : {
+  gameState: 'active',
+  angler: { alias: 'Barry', activationState: sc === 'pending' ? 'pending_trmnl' : 'active', status: sc === 'paused' ? 'paused' : 'fishing', level: sc === 'rich' ? 11 : 6, xp: 312, xpToNext: sc === 'rich' ? 2318 : 879, gold: sc === 'rich' ? 18450 : 1240, waterId: sc === 'rich' ? 'harbour_pier' : 'river_bend', travelTo: null,
+    rod: { tier: sc === 'rich' ? 4 : 2, name: sc === 'rich' ? 'Beachcaster' : 'Fibreglass Rod', limitGrams: sc === 'rich' ? 30000 : 4000 },
+    cooler: { tier: 3, name: 'Chest Cooler', capacity: 18, used: sc === 'full' ? 18 : sc === 'empty' ? 0 : 7 },
+    baitOnHook: sc === 'rich' ? 'strip' : 'maggots',
+    bait: [bait('worms', 'Worms', 12, 12, 25), bait('bread', 'Bread', 0, 12, 20), bait('maggots', 'Maggots', sc === 'empty' ? 0 : 34, 12, 30), bait('spinner', 'Spinner', 0, 72, 240), bait('ragworm', 'Ragworm', 24, 12, 60), bait('strip', 'Mackerel strip', sc === 'rich' ? 48 : 0, 12, 75)],
+    access: sc === 'rich' ? ['waders', 'pier_permit'] : ['waders'], counters: {}, publicProfile: false, speciesLogged: sc === 'rich' ? 26 : 14, speciesTotal: 30 },
+  catches: sc === 'empty' ? [] : Array.from({ length: sc === 'full' ? 18 : 7 }, (_, i) => { const [speciesId, name, grams, value] = scCatches[i % scCatches.length]; return { id: 'c' + i, speciesId, name, grams: grams + i * 10, value, caughtTick: 900 - i } }),
+  waters: [
+    { id: 'millpond', name: 'Millpond', unlockLevel: 1, access: null, open: true, weather: 'clear', band: 'dusk', bitePercent: 17, baits: ['worms', 'bread', 'spinner'], weatherUntil: now + 36e5 * 2 },
+    { id: 'river_bend', name: 'River Bend', unlockLevel: 4, access: 'waders', open: true, weather: 'overcast', band: 'dusk', bitePercent: 21, baits: ['worms', 'maggots', 'spinner'], weatherUntil: now + 36e5 * 2 },
+    { id: 'harbour_pier', name: 'Harbour Pier', unlockLevel: 8, access: 'pier_permit', open: sc === 'rich', weather: 'fog', band: 'dusk', bitePercent: 18, baits: ['ragworm', 'strip', 'spinner'], weatherUntil: now + 36e5 * 2 },
+  ],
+  shop: { rod: sc === 'rich' ? null : { name: 'Carbon Rod', price: 700, limitGrams: 10000, biteBonusPercent: 10 }, cooler: { name: 'Dockside Crate', price: 1500, capacity: 24 }, access: [{ id: 'waders', name: 'Waders', price: 250, water: 'river_bend', owned: true }, { id: 'pier_permit', name: 'Pier Permit', price: 900, water: 'harbour_pier', owned: sc === 'rich' }] },
+  logs: [['A 1.9 kg Barbel took the maggots at dusk. A new personal best.', 96], ['A kingfisher flashes past, low and blue.', 0], ['A 410 g Chub took the maggots in the day.', 41], ['Something heavy took the maggots and kept going.', 0], ['Sold 6 fish for 312 gold.', 0]].map(([summary, xp], i) => ({ id: 'l' + i, at: now - i * 36e5, kind: 'catch', summary, xp, gold: 0 })),
+  nextTickAt: now + 6e5,
+};
+if (sc === 'empty' && scDock.angler) scDock.angler.baitOnHook = 'maggots';
+const species = (water, list) => ({ water, species: list.map(([id, name, rarity, count, best, max, baits, times, weather]) => count ? { id, seen: true, name, rarity, count, bestGrams: best, maxGrams: max, baits, times, weather } : { id, seen: false, rarity }) });
+const scBook = [
+  species({ id: 'millpond', name: 'Millpond' }, [['minnow', 'Minnow', 'common', 12, 48, 50, ['worms', 'bread'], null, null], ['roach', 'Roach', 'common', 30, 590, 600, ['worms', 'bread'], null, null], ['perch', 'Perch', 'common', 9, 1210, 1400, ['worms', 'spinner'], null, null], ['bream', 'Bream', 'uncommon', 3, 2200, 3500, ['bread', 'worms'], ['dawn', 'dusk', 'night'], null], ['eel', 'Eel', 'rare', 0], ['golden_carp', 'Golden Carp', 'epic', 0]]),
+  species({ id: 'river_bend', name: 'River Bend' }, [['chub', 'Chub', 'common', 22, 2100, 2500, ['worms', 'maggots'], null, null], ['grayling', 'Grayling', 'uncommon', 4, 1100, 1500, ['maggots'], null, ['overcast', 'rain']], ['pike', 'Pike', 'rare', 0], ['salmon', 'Salmon', 'epic', 0]]),
+];
 const queries = {
   'users:me': () => data.me,
+  'platform:list': () => ({ admin: true, games: [{ slug: 'desk-crawler', status: 'live', canOpen: true }, { slug: 'slow-cast', status: params.get('status') === 'live' ? 'live' : 'hidden', canOpen: true }] }),
+  'slowCast/anglers:dock': () => scDock,
+  'slowCast/anglers:logbook': () => scBook,
+  'slowCast/payload:preview': () => ({ scene_base: '' }),
   'heroes:mine': () => hero,
   'inventory:mine': () => inventory,
   'heroes:returnSummary': () => data.recap,
@@ -144,8 +181,10 @@ const queries = {
   'profiles:view': (args) => flag('private') ? null : { alias: args.alias, heroName: hero.name, heroClass: 'warrior', level: hero.level, status: hero.status, biome: 'Server Room', scenePath: hero.scenePath, adventuringSince: Date.now() - 86400000 * 12, rank: { rank: 3, totalPlayers: 41 }, lifetime: { combatWins: hero.counters.combatWins, itemsFound: hero.counters.itemsFound, trips: hero.counters.trips ?? 4, rescues: hero.counters.rescues, epicFinds: hero.counters.epicFinds ?? 1 }, raids: raidsOn ? { won: 5, failed: 4, repelled: 4, lost: 3 } : { won: 0, failed: 0, repelled: 0, lost: 0 }, achievements: data.achievements.families.filter((f) => f.earned).slice(0, 4).map((f) => ({ id: f.earned.id, tier: f.earned.tier, name: f.earned.name, blurb: f.earned.blurb, family: f.name })), rarity: null, achievementCount: data.achievements.unlocked.length },
 };
 if (raidsOn) data.leaderboard.recent_24h?.entries?.forEach((row, i) => { row.profile = i % 2 === 0 });
-export const api = new Proxy({}, { get: (_, module) => new Proxy({}, { get: (_, fn) => module + ':' + fn }) });
-export const convexQuery = (fn, args = {}) => ({ queryKey: ['convexQuery', fn, args] });
+// A nested path proxy: api.users.me reads 'users:me' and api.slowCast.anglers.dock reads 'slowCast/anglers:dock'.
+const path = (parts) => new Proxy(function () {}, { get: (_, key) => (key === Symbol.toPrimitive || key === 'toString' ? () => parts.slice(0, -1).join('/') + ':' + parts.at(-1) : path([...parts, key])) });
+export const api = path([]);
+export const convexQuery = (fn, args = {}) => ({ queryKey: ['convexQuery', String(fn), args] });
 export const keepPreviousData = (previous) => previous;
 export const useQuery = (options) => { const [, fn, args] = options.queryKey; const data = queries[fn] ? queries[fn](args) : undefined; return { data, isPending: false, isPlaceholderData: false, isError: false, refetch: async () => ({ data }) } };
 const settle = () => new Promise((resolveIt, reject) => setTimeout(() => (flag('ok') ? resolveIt({ outcome: 'collected', totalCollected: 1 }) : reject(new Error('Synthetic QA: all server mutations are disabled'))), flag('ok') ? 800 : 1200));
@@ -178,16 +217,23 @@ import { Route as Bag } from '../../apps/web/src/routes/app/desk-crawler/invento
 import { Route as Ranks } from '../../apps/web/src/routes/app/desk-crawler/leaderboard';
 import { Route as Settings } from '../../apps/web/src/routes/app/desk-crawler/settings';
 import { Route as Profile } from '../../apps/web/src/routes/desk-crawler/heroes.$alias';
+import { Route as ScShell } from '../../apps/web/src/routes/app/slow-cast';
+import { Route as ScDock } from '../../apps/web/src/routes/app/slow-cast/index';
+import { Route as ScCooler } from '../../apps/web/src/routes/app/slow-cast/cooler';
+import { Route as ScShop } from '../../apps/web/src/routes/app/slow-cast/shop';
+import { Route as ScLogbook } from '../../apps/web/src/routes/app/slow-cast/logbook';
+import { Route as ScSettings } from '../../apps/web/src/routes/app/slow-cast/settings';
 import { AuthShell } from '../../apps/web/src/lib/platformShell';
 import { NetworkProvider } from '../../apps/web/src/lib/network';
 import { OutletContext, useLocation } from './router.jsx';
 import './styles.css';
-const pages = { '/app/desk-crawler': Hero.options.component, '/app/desk-crawler/inventory': Bag.options.component, '/app/desk-crawler/leaderboard': Ranks.options.component, '/app/desk-crawler/settings': Settings.options.component };
+const pages = { '/app/desk-crawler': Hero.options.component, '/app/desk-crawler/inventory': Bag.options.component, '/app/desk-crawler/leaderboard': Ranks.options.component, '/app/desk-crawler/settings': Settings.options.component,
+  '/app/slow-cast': ScDock.options.component, '/app/slow-cast/cooler': ScCooler.options.component, '/app/slow-cast/shop': ScShop.options.component, '/app/slow-cast/logbook': ScLogbook.options.component, '/app/slow-cast/settings': ScSettings.options.component };
 const publicPage = location.pathname.startsWith('/desk-crawler/heroes/');
 if (!publicPage && !pages[location.pathname.replace(/\\/$/, '')]) history.replaceState(null, '', '/app/desk-crawler' + location.search);
 function App() {
   const pathname = useLocation({ select: (l) => l.pathname.replace(/\\/$/, '') });
-  const AppShell = Shell.options.component;
+  const AppShell = (pathname.startsWith('/app/slow-cast') ? ScShell : Shell).options.component;
   return <OutletContext.Provider value={pages[pathname] ?? pages['/app/desk-crawler']}><AuthShell><AppShell /></AuthShell></OutletContext.Provider>;
 }
 document.body.className = 'bg-ground text-ink';

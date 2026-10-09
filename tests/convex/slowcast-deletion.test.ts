@@ -33,6 +33,8 @@ describe('Slow Cast deletion (D115, S2)', () => {
     t = convexTest(schema, modules)
     await seedWorld(t)
     await runSlowCastTick(t)
+    // These tests play Slow Cast as an ordinary player, so the game is live.
+    await t.mutation(internal.platform.setGameStatusInternal, { slug: 'slow-cast', status: 'live' })
   })
   afterEach(() => {
     vi.useRealTimers()

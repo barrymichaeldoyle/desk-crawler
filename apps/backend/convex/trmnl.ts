@@ -2,6 +2,8 @@ import { currentHero, gameProfile, setCurrentHero, DESK_CRAWLER } from './lib/ga
 import { deskCrawlerDeleting, isGame, SLOW_CAST_HOOKS } from './lib/gameHooks'
 import { gameSlug as gameSlugValidator } from './schema'
 import type { GameSlug } from '@trmnl-games/platform'
+import { isAdminIdentity } from './lib/adminAccess'
+import { gameStatusOf } from './platform'
 import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import type { Doc, Id } from './_generated/dataModel'
@@ -98,6 +100,8 @@ export const linkInstall = internalMutation({
   handler: async (ctx, args) => {
     const now = Date.now()
     const slug = args.gameSlug ?? DESK_CRAWLER
+    // D115: a game that is not live yet installs for admins only, enforced here rather than in the web app.
+    if ((await gameStatusOf(ctx, slug)) !== 'live' && !isAdminIdentity(args.tokenIdentifier)) throw appError('GAME_UNAVAILABLE', `${gameLabel(slug)} is not open yet.`)
     // Deleted accounts: replayed Clerk tokens and old TRMNL codes/tokens never regain authority (D22/V09).
     assertNotRevoked(await ctx.db.query('revokedAuthIdentities').withIndex('by_identityHash', (q) => q.eq('identityHash', identityHash(args.tokenIdentifier))).first())
     if (await ctx.db.query('revokedTrmnlCredentials').withIndex('by_tokenHash', (q) => q.eq('tokenHash', args.tokenHash)).first()) {

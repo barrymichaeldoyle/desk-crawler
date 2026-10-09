@@ -28,14 +28,22 @@ import { Route as DeskCrawlerWaitingListRouteImport } from './routes/desk-crawle
 import { Route as DevDeskCrawlerRouteImport } from './routes/dev/desk-crawler'
 import { Route as DevOgRouteImport } from './routes/dev/og'
 import { Route as GamesDeskCrawlerRouteImport } from './routes/games/desk-crawler'
+import { Route as GamesSlowCastRouteImport } from './routes/games/slow-cast'
 import { Route as HelpDeskCrawlerRouteImport } from './routes/help/desk-crawler'
+import { Route as HelpSlowCastRouteImport } from './routes/help/slow-cast'
 import { Route as AppDeskCrawlerIndexRouteImport } from './routes/app/desk-crawler/index'
 import { Route as AppDeskCrawlerInventoryRouteImport } from './routes/app/desk-crawler/inventory'
 import { Route as AppDeskCrawlerLeaderboardRouteImport } from './routes/app/desk-crawler/leaderboard'
 import { Route as AppDeskCrawlerSettingsRouteImport } from './routes/app/desk-crawler/settings'
+import { Route as AppSlowCastIndexRouteImport } from './routes/app/slow-cast/index'
+import { Route as AppSlowCastCoolerRouteImport } from './routes/app/slow-cast/cooler'
+import { Route as AppSlowCastLogbookRouteImport } from './routes/app/slow-cast/logbook'
+import { Route as AppSlowCastSettingsRouteImport } from './routes/app/slow-cast/settings'
+import { Route as AppSlowCastShopRouteImport } from './routes/app/slow-cast/shop'
 import { Route as DeskCrawlerHeroesAliasRouteImport } from './routes/desk-crawler/heroes.$alias'
 import { Route as ConnectTrmnlDeskCrawlerInstallRouteImport } from './routes/connect/trmnl/desk-crawler/install'
 import { Route as ConnectTrmnlDeskCrawlerManageRouteImport } from './routes/connect/trmnl/desk-crawler/manage'
+import { Route as ConnectTrmnlSlowCastInstallRouteImport } from './routes/connect/trmnl/slow-cast/install'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -132,9 +140,19 @@ const GamesDeskCrawlerRoute = GamesDeskCrawlerRouteImport.update({
   path: '/games/desk-crawler',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesSlowCastRoute = GamesSlowCastRouteImport.update({
+  id: '/games/slow-cast',
+  path: '/games/slow-cast',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HelpDeskCrawlerRoute = HelpDeskCrawlerRouteImport.update({
   id: '/help/desk-crawler',
   path: '/help/desk-crawler',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpSlowCastRoute = HelpSlowCastRouteImport.update({
+  id: '/help/slow-cast',
+  path: '/help/slow-cast',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppDeskCrawlerIndexRoute = AppDeskCrawlerIndexRouteImport.update({
@@ -158,6 +176,31 @@ const AppDeskCrawlerSettingsRoute = AppDeskCrawlerSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AppDeskCrawlerRoute,
 } as any)
+const AppSlowCastIndexRoute = AppSlowCastIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppSlowCastRoute,
+} as any)
+const AppSlowCastCoolerRoute = AppSlowCastCoolerRouteImport.update({
+  id: '/cooler',
+  path: '/cooler',
+  getParentRoute: () => AppSlowCastRoute,
+} as any)
+const AppSlowCastLogbookRoute = AppSlowCastLogbookRouteImport.update({
+  id: '/logbook',
+  path: '/logbook',
+  getParentRoute: () => AppSlowCastRoute,
+} as any)
+const AppSlowCastSettingsRoute = AppSlowCastSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppSlowCastRoute,
+} as any)
+const AppSlowCastShopRoute = AppSlowCastShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
+  getParentRoute: () => AppSlowCastRoute,
+} as any)
 const DeskCrawlerHeroesAliasRoute = DeskCrawlerHeroesAliasRouteImport.update({
   id: '/desk-crawler/heroes/$alias',
   path: '/desk-crawler/heroes/$alias',
@@ -175,6 +218,12 @@ const ConnectTrmnlDeskCrawlerManageRoute =
     path: '/connect/trmnl/desk-crawler/manage',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ConnectTrmnlSlowCastInstallRoute =
+  ConnectTrmnlSlowCastInstallRouteImport.update({
+    id: '/connect/trmnl/slow-cast/install',
+    path: '/connect/trmnl/slow-cast/install',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -189,21 +238,29 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/account/delete': typeof AccountDeleteRoute
   '/app/desk-crawler': typeof AppDeskCrawlerRouteWithChildren
-  '/app/slow-cast': typeof AppSlowCastRoute
+  '/app/slow-cast': typeof AppSlowCastRouteWithChildren
   '/desk-crawler/unsubscribe': typeof DeskCrawlerUnsubscribeRoute
   '/desk-crawler/waiting-list': typeof DeskCrawlerWaitingListRoute
   '/dev/desk-crawler': typeof DevDeskCrawlerRoute
   '/dev/og': typeof DevOgRoute
   '/games/desk-crawler': typeof GamesDeskCrawlerRoute
+  '/games/slow-cast': typeof GamesSlowCastRoute
   '/help/desk-crawler': typeof HelpDeskCrawlerRoute
+  '/help/slow-cast': typeof HelpSlowCastRoute
   '/app/': typeof AppIndexRoute
   '/app/desk-crawler/inventory': typeof AppDeskCrawlerInventoryRoute
   '/app/desk-crawler/leaderboard': typeof AppDeskCrawlerLeaderboardRoute
   '/app/desk-crawler/settings': typeof AppDeskCrawlerSettingsRoute
+  '/app/slow-cast/cooler': typeof AppSlowCastCoolerRoute
+  '/app/slow-cast/logbook': typeof AppSlowCastLogbookRoute
+  '/app/slow-cast/settings': typeof AppSlowCastSettingsRoute
+  '/app/slow-cast/shop': typeof AppSlowCastShopRoute
   '/desk-crawler/heroes/$alias': typeof DeskCrawlerHeroesAliasRoute
   '/app/desk-crawler/': typeof AppDeskCrawlerIndexRoute
+  '/app/slow-cast/': typeof AppSlowCastIndexRoute
   '/connect/trmnl/desk-crawler/install': typeof ConnectTrmnlDeskCrawlerInstallRoute
   '/connect/trmnl/desk-crawler/manage': typeof ConnectTrmnlDeskCrawlerManageRoute
+  '/connect/trmnl/slow-cast/install': typeof ConnectTrmnlSlowCastInstallRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -216,21 +273,28 @@ export interface FileRoutesByTo {
   '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
   '/account/delete': typeof AccountDeleteRoute
-  '/app/slow-cast': typeof AppSlowCastRoute
   '/desk-crawler/unsubscribe': typeof DeskCrawlerUnsubscribeRoute
   '/desk-crawler/waiting-list': typeof DeskCrawlerWaitingListRoute
   '/dev/desk-crawler': typeof DevDeskCrawlerRoute
   '/dev/og': typeof DevOgRoute
   '/games/desk-crawler': typeof GamesDeskCrawlerRoute
+  '/games/slow-cast': typeof GamesSlowCastRoute
   '/help/desk-crawler': typeof HelpDeskCrawlerRoute
+  '/help/slow-cast': typeof HelpSlowCastRoute
   '/app': typeof AppIndexRoute
   '/app/desk-crawler/inventory': typeof AppDeskCrawlerInventoryRoute
   '/app/desk-crawler/leaderboard': typeof AppDeskCrawlerLeaderboardRoute
   '/app/desk-crawler/settings': typeof AppDeskCrawlerSettingsRoute
+  '/app/slow-cast/cooler': typeof AppSlowCastCoolerRoute
+  '/app/slow-cast/logbook': typeof AppSlowCastLogbookRoute
+  '/app/slow-cast/settings': typeof AppSlowCastSettingsRoute
+  '/app/slow-cast/shop': typeof AppSlowCastShopRoute
   '/desk-crawler/heroes/$alias': typeof DeskCrawlerHeroesAliasRoute
   '/app/desk-crawler': typeof AppDeskCrawlerIndexRoute
+  '/app/slow-cast': typeof AppSlowCastIndexRoute
   '/connect/trmnl/desk-crawler/install': typeof ConnectTrmnlDeskCrawlerInstallRoute
   '/connect/trmnl/desk-crawler/manage': typeof ConnectTrmnlDeskCrawlerManageRoute
+  '/connect/trmnl/slow-cast/install': typeof ConnectTrmnlSlowCastInstallRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -246,21 +310,29 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/account_/delete': typeof AccountDeleteRoute
   '/app/desk-crawler': typeof AppDeskCrawlerRouteWithChildren
-  '/app/slow-cast': typeof AppSlowCastRoute
+  '/app/slow-cast': typeof AppSlowCastRouteWithChildren
   '/desk-crawler/unsubscribe': typeof DeskCrawlerUnsubscribeRoute
   '/desk-crawler/waiting-list': typeof DeskCrawlerWaitingListRoute
   '/dev/desk-crawler': typeof DevDeskCrawlerRoute
   '/dev/og': typeof DevOgRoute
   '/games/desk-crawler': typeof GamesDeskCrawlerRoute
+  '/games/slow-cast': typeof GamesSlowCastRoute
   '/help/desk-crawler': typeof HelpDeskCrawlerRoute
+  '/help/slow-cast': typeof HelpSlowCastRoute
   '/app/': typeof AppIndexRoute
   '/app/desk-crawler/inventory': typeof AppDeskCrawlerInventoryRoute
   '/app/desk-crawler/leaderboard': typeof AppDeskCrawlerLeaderboardRoute
   '/app/desk-crawler/settings': typeof AppDeskCrawlerSettingsRoute
+  '/app/slow-cast/cooler': typeof AppSlowCastCoolerRoute
+  '/app/slow-cast/logbook': typeof AppSlowCastLogbookRoute
+  '/app/slow-cast/settings': typeof AppSlowCastSettingsRoute
+  '/app/slow-cast/shop': typeof AppSlowCastShopRoute
   '/desk-crawler/heroes/$alias': typeof DeskCrawlerHeroesAliasRoute
   '/app/desk-crawler/': typeof AppDeskCrawlerIndexRoute
+  '/app/slow-cast/': typeof AppSlowCastIndexRoute
   '/connect/trmnl/desk-crawler/install': typeof ConnectTrmnlDeskCrawlerInstallRoute
   '/connect/trmnl/desk-crawler/manage': typeof ConnectTrmnlDeskCrawlerManageRoute
+  '/connect/trmnl/slow-cast/install': typeof ConnectTrmnlSlowCastInstallRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -283,15 +355,23 @@ export interface FileRouteTypes {
     | '/dev/desk-crawler'
     | '/dev/og'
     | '/games/desk-crawler'
+    | '/games/slow-cast'
     | '/help/desk-crawler'
+    | '/help/slow-cast'
     | '/app/'
     | '/app/desk-crawler/inventory'
     | '/app/desk-crawler/leaderboard'
     | '/app/desk-crawler/settings'
+    | '/app/slow-cast/cooler'
+    | '/app/slow-cast/logbook'
+    | '/app/slow-cast/settings'
+    | '/app/slow-cast/shop'
     | '/desk-crawler/heroes/$alias'
     | '/app/desk-crawler/'
+    | '/app/slow-cast/'
     | '/connect/trmnl/desk-crawler/install'
     | '/connect/trmnl/desk-crawler/manage'
+    | '/connect/trmnl/slow-cast/install'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -304,21 +384,28 @@ export interface FileRouteTypes {
     | '/support'
     | '/terms'
     | '/account/delete'
-    | '/app/slow-cast'
     | '/desk-crawler/unsubscribe'
     | '/desk-crawler/waiting-list'
     | '/dev/desk-crawler'
     | '/dev/og'
     | '/games/desk-crawler'
+    | '/games/slow-cast'
     | '/help/desk-crawler'
+    | '/help/slow-cast'
     | '/app'
     | '/app/desk-crawler/inventory'
     | '/app/desk-crawler/leaderboard'
     | '/app/desk-crawler/settings'
+    | '/app/slow-cast/cooler'
+    | '/app/slow-cast/logbook'
+    | '/app/slow-cast/settings'
+    | '/app/slow-cast/shop'
     | '/desk-crawler/heroes/$alias'
     | '/app/desk-crawler'
+    | '/app/slow-cast'
     | '/connect/trmnl/desk-crawler/install'
     | '/connect/trmnl/desk-crawler/manage'
+    | '/connect/trmnl/slow-cast/install'
   id:
     | '__root__'
     | '/'
@@ -339,15 +426,23 @@ export interface FileRouteTypes {
     | '/dev/desk-crawler'
     | '/dev/og'
     | '/games/desk-crawler'
+    | '/games/slow-cast'
     | '/help/desk-crawler'
+    | '/help/slow-cast'
     | '/app/'
     | '/app/desk-crawler/inventory'
     | '/app/desk-crawler/leaderboard'
     | '/app/desk-crawler/settings'
+    | '/app/slow-cast/cooler'
+    | '/app/slow-cast/logbook'
+    | '/app/slow-cast/settings'
+    | '/app/slow-cast/shop'
     | '/desk-crawler/heroes/$alias'
     | '/app/desk-crawler/'
+    | '/app/slow-cast/'
     | '/connect/trmnl/desk-crawler/install'
     | '/connect/trmnl/desk-crawler/manage'
+    | '/connect/trmnl/slow-cast/install'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -367,10 +462,13 @@ export interface RootRouteChildren {
   DevDeskCrawlerRoute: typeof DevDeskCrawlerRoute
   DevOgRoute: typeof DevOgRoute
   GamesDeskCrawlerRoute: typeof GamesDeskCrawlerRoute
+  GamesSlowCastRoute: typeof GamesSlowCastRoute
   HelpDeskCrawlerRoute: typeof HelpDeskCrawlerRoute
+  HelpSlowCastRoute: typeof HelpSlowCastRoute
   DeskCrawlerHeroesAliasRoute: typeof DeskCrawlerHeroesAliasRoute
   ConnectTrmnlDeskCrawlerInstallRoute: typeof ConnectTrmnlDeskCrawlerInstallRoute
   ConnectTrmnlDeskCrawlerManageRoute: typeof ConnectTrmnlDeskCrawlerManageRoute
+  ConnectTrmnlSlowCastInstallRoute: typeof ConnectTrmnlSlowCastInstallRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -508,11 +606,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesDeskCrawlerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/slow-cast': {
+      id: '/games/slow-cast'
+      path: '/games/slow-cast'
+      fullPath: '/games/slow-cast'
+      preLoaderRoute: typeof GamesSlowCastRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/help/desk-crawler': {
       id: '/help/desk-crawler'
       path: '/help/desk-crawler'
       fullPath: '/help/desk-crawler'
       preLoaderRoute: typeof HelpDeskCrawlerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help/slow-cast': {
+      id: '/help/slow-cast'
+      path: '/help/slow-cast'
+      fullPath: '/help/slow-cast'
+      preLoaderRoute: typeof HelpSlowCastRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/desk-crawler/': {
@@ -543,6 +655,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDeskCrawlerSettingsRouteImport
       parentRoute: typeof AppDeskCrawlerRoute
     }
+    '/app/slow-cast/': {
+      id: '/app/slow-cast/'
+      path: '/'
+      fullPath: '/app/slow-cast/'
+      preLoaderRoute: typeof AppSlowCastIndexRouteImport
+      parentRoute: typeof AppSlowCastRoute
+    }
+    '/app/slow-cast/cooler': {
+      id: '/app/slow-cast/cooler'
+      path: '/cooler'
+      fullPath: '/app/slow-cast/cooler'
+      preLoaderRoute: typeof AppSlowCastCoolerRouteImport
+      parentRoute: typeof AppSlowCastRoute
+    }
+    '/app/slow-cast/logbook': {
+      id: '/app/slow-cast/logbook'
+      path: '/logbook'
+      fullPath: '/app/slow-cast/logbook'
+      preLoaderRoute: typeof AppSlowCastLogbookRouteImport
+      parentRoute: typeof AppSlowCastRoute
+    }
+    '/app/slow-cast/settings': {
+      id: '/app/slow-cast/settings'
+      path: '/settings'
+      fullPath: '/app/slow-cast/settings'
+      preLoaderRoute: typeof AppSlowCastSettingsRouteImport
+      parentRoute: typeof AppSlowCastRoute
+    }
+    '/app/slow-cast/shop': {
+      id: '/app/slow-cast/shop'
+      path: '/shop'
+      fullPath: '/app/slow-cast/shop'
+      preLoaderRoute: typeof AppSlowCastShopRouteImport
+      parentRoute: typeof AppSlowCastRoute
+    }
     '/desk-crawler/heroes/$alias': {
       id: '/desk-crawler/heroes/$alias'
       path: '/desk-crawler/heroes/$alias'
@@ -562,6 +709,13 @@ declare module '@tanstack/react-router' {
       path: '/connect/trmnl/desk-crawler/manage'
       fullPath: '/connect/trmnl/desk-crawler/manage'
       preLoaderRoute: typeof ConnectTrmnlDeskCrawlerManageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/connect/trmnl/slow-cast/install': {
+      id: '/connect/trmnl/slow-cast/install'
+      path: '/connect/trmnl/slow-cast/install'
+      fullPath: '/connect/trmnl/slow-cast/install'
+      preLoaderRoute: typeof ConnectTrmnlSlowCastInstallRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -585,15 +739,35 @@ const AppDeskCrawlerRouteWithChildren = AppDeskCrawlerRoute._addFileChildren(
   AppDeskCrawlerRouteChildren,
 )
 
+interface AppSlowCastRouteChildren {
+  AppSlowCastCoolerRoute: typeof AppSlowCastCoolerRoute
+  AppSlowCastLogbookRoute: typeof AppSlowCastLogbookRoute
+  AppSlowCastSettingsRoute: typeof AppSlowCastSettingsRoute
+  AppSlowCastShopRoute: typeof AppSlowCastShopRoute
+  AppSlowCastIndexRoute: typeof AppSlowCastIndexRoute
+}
+
+const AppSlowCastRouteChildren: AppSlowCastRouteChildren = {
+  AppSlowCastCoolerRoute: AppSlowCastCoolerRoute,
+  AppSlowCastLogbookRoute: AppSlowCastLogbookRoute,
+  AppSlowCastSettingsRoute: AppSlowCastSettingsRoute,
+  AppSlowCastShopRoute: AppSlowCastShopRoute,
+  AppSlowCastIndexRoute: AppSlowCastIndexRoute,
+}
+
+const AppSlowCastRouteWithChildren = AppSlowCastRoute._addFileChildren(
+  AppSlowCastRouteChildren,
+)
+
 interface AppRouteChildren {
   AppDeskCrawlerRoute: typeof AppDeskCrawlerRouteWithChildren
-  AppSlowCastRoute: typeof AppSlowCastRoute
+  AppSlowCastRoute: typeof AppSlowCastRouteWithChildren
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppDeskCrawlerRoute: AppDeskCrawlerRouteWithChildren,
-  AppSlowCastRoute: AppSlowCastRoute,
+  AppSlowCastRoute: AppSlowCastRouteWithChildren,
   AppIndexRoute: AppIndexRoute,
 }
 
@@ -616,10 +790,13 @@ const rootRouteChildren: RootRouteChildren = {
   DevDeskCrawlerRoute: DevDeskCrawlerRoute,
   DevOgRoute: DevOgRoute,
   GamesDeskCrawlerRoute: GamesDeskCrawlerRoute,
+  GamesSlowCastRoute: GamesSlowCastRoute,
   HelpDeskCrawlerRoute: HelpDeskCrawlerRoute,
+  HelpSlowCastRoute: HelpSlowCastRoute,
   DeskCrawlerHeroesAliasRoute: DeskCrawlerHeroesAliasRoute,
   ConnectTrmnlDeskCrawlerInstallRoute: ConnectTrmnlDeskCrawlerInstallRoute,
   ConnectTrmnlDeskCrawlerManageRoute: ConnectTrmnlDeskCrawlerManageRoute,
+  ConnectTrmnlSlowCastInstallRoute: ConnectTrmnlSlowCastInstallRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

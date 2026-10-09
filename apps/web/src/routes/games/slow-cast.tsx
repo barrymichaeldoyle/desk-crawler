@@ -1,0 +1,36 @@
+import { Link, createFileRoute } from '@tanstack/react-router'
+import { games } from '@trmnl-games/platform'
+import { requireOpenGame } from '../../lib/gameAccess'
+import { PlatformHeader } from '../../lib/platformHeader'
+import { SiteLinks } from '../../lib/prose'
+import { seo } from '../../lib/seo'
+import { BUTTON_SECONDARY, LINK_BUTTON } from '../../lib/ui'
+
+/** Slow Cast's public game page (slow-cast.md "Companion"). Hidden with the game until it is live (D115). */
+export const Route = createFileRoute('/games/slow-cast')({
+  loader: ({ context }) => requireOpenGame(context, 'slow-cast'),
+  head: () => seo({ title: 'Slow Cast', path: '/games/slow-cast', description: 'Slow Cast is a fishing game that plays itself on your TRMNL: your angler casts every fifteen minutes and the screen shows the catch.', index: false }),
+  component: () => (
+    <>
+      <PlatformHeader />
+      <main id="main" className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-10">
+        <header className="flex flex-col gap-3">
+          <h1 className="font-display text-4xl font-bold sm:text-5xl">{games['slow-cast'].name}</h1>
+          <p className="text-lg text-muted">
+            {games['slow-cast'].description} Every fifteen minutes your angler casts. The species depends on the water, the bait, the hour and the weather, and the screen on your desk shows what bit. Every day or two you open the companion to sell the cooler, restock bait and buy the rod that lands the one that got away.
+          </p>
+        </header>
+        <ul className="flex flex-col gap-2 [&_li]:ml-5 [&_li]:list-disc">
+          <li>Three waters and thirty species to log, from minnows to a thornback ray.</li>
+          <li>Weather shared by every angler at a water, changing every six hours.</li>
+          <li>Nothing spoils and nothing is lost. A full cooler just means released fish.</li>
+        </ul>
+        <div className="flex flex-wrap items-center gap-4">
+          <Link to="/help/slow-cast" className={`${LINK_BUTTON} ${BUTTON_SECONDARY}`}>How it plays</Link>
+          <Link to="/app/slow-cast" className="inline-flex min-h-11 items-center underline underline-offset-4">Open companion</Link>
+        </div>
+        <SiteLinks />
+      </main>
+    </>
+  ),
+})

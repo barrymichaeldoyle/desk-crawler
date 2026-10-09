@@ -39,16 +39,19 @@ function Library() {
   )
 }
 
-/** Games that are not live yet: a "Coming soon" tile in preview, and for admins a hidden game's build page (D115). */
+/** Slow Cast in the library (D115): its angler's state once started, a "Coming soon" tile in preview, and a hidden-status mark for admins. */
 function UpcomingGames() {
   const { data } = useQuery(gamesQuery)
-  const upcoming = data?.games.filter((game) => game.slug !== 'desk-crawler' && game.status !== 'live') ?? []
-  return upcoming.map((game) => (
-    <section key={game.slug} className="window flex flex-col gap-3 p-5" aria-labelledby={`library-${game.slug}`}>
-      <h2 id={`library-${game.slug}`} className="font-display text-2xl font-bold">{games[game.slug].name}</h2>
-      <p className="text-muted">{games[game.slug].description}</p>
-      <p className="label-px self-start">{game.status === 'hidden' ? 'Hidden: only admins can see this' : 'Coming soon'}</p>
-      {game.canOpen ? <Link to={games[game.slug].companionPath} className="self-start underline underline-offset-4">Open the build page</Link> : null}
+  const game = data?.games.find((g) => g.slug === 'slow-cast')
+  const { data: dock } = useQuery({ ...convexQuery(api.slowCast.anglers.dock, {}), enabled: game?.canOpen === true })
+  if (!game) return null
+  const angler = (dock as { angler?: { activationState: string; status: string; level: number } | null } | undefined)?.angler
+  return (
+    <section className="window flex flex-col gap-3 p-5" aria-labelledby="library-sc">
+      <h2 id="library-sc" className="font-display text-2xl font-bold">{games['slow-cast'].name}</h2>
+      <p className="text-muted">{angler ? `Level ${angler.level} · ${angler.activationState !== 'active' ? 'Waiting for TRMNL Save' : angler.status === 'paused' ? 'Paused' : 'Fishing'}` : games['slow-cast'].description}</p>
+      {game.status !== 'live' ? <p className="label-px self-start">{game.status === 'hidden' ? 'Hidden: only admins can see this' : 'Coming soon'}</p> : null}
+      {game.canOpen ? <Link to="/app/slow-cast" className={`self-start ${LINK_BUTTON} ${BUTTON_PRIMARY}`}>{angler ? 'Open Slow Cast' : 'About Slow Cast'}</Link> : null}
     </section>
-  ))
+  )
 }

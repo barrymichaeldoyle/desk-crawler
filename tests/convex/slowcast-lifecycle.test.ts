@@ -26,6 +26,8 @@ describe('Slow Cast TRMNL lifecycle (D115, S2)', () => {
     t = convexTest(schema, modules)
     await seedWorld(t)
     await runSlowCastTick(t)
+    // These tests play Slow Cast as an ordinary player, so the game is live.
+    await t.mutation(internal.platform.setGameStatusInternal, { slug: 'slow-cast', status: 'live' })
   })
   afterEach(() => vi.useRealTimers())
 
@@ -100,5 +102,13 @@ describe('Slow Cast TRMNL lifecycle (D115, S2)', () => {
     expect(state.instance?.state).toBe('uninstalled')
     expect(state.angler?.activationState).toBe('active')
     expect((await screen(t, 'sc-tok-ana', UUID_A)).status).toBe(404)
+  })
+
+  it('installs a game that is not live for admins only', async () => {
+    await t.mutation(internal.platform.setGameStatusInternal, { slug: 'slow-cast', status: 'hidden' })
+    await expect(link(t, 'Ana', 'sc-tok-ana')).rejects.toThrow(/not open yet/)
+    vi.stubEnv('ADMIN_TOKEN_IDENTIFIERS', 'issuer|Boss')
+    expect(await link(t, 'Boss', 'sc-tok-boss')).toEqual({ activationState: 'pending_trmnl', heroCreated: true })
+    vi.unstubAllEnvs()
   })
 })

@@ -8,7 +8,8 @@ import { seo } from '../../../../lib/seo'
 import { SwitchAccount } from '../../../../lib/switchAccount'
 import { captureInstall, finishInstall, getPendingInstall } from '../../../../server/installFns'
 import { BUTTON_PRIMARY, LINK_BUTTON, Button, LoadingState } from '../../../../lib/ui'
-import { captureAnalytics, captureAnalyticsException, readAnalyticsConsent } from '../../../../lib/analytics'
+import { captureAnalytics, readAnalyticsConsent } from '../../../../lib/analytics'
+import { reportError } from '../../../../lib/errorReporting'
 import { useAnalyticsView } from '../../../../lib/analyticsProvider'
 
 type Search = { code?: string; installation_callback_url?: string; invalid?: boolean }
@@ -99,7 +100,7 @@ function ConnectForm() {
       setError(result.message)
     } catch (caught) {
       captureAnalytics('installation failed', { error_code: 'NETWORK_OR_SERVER_ERROR' })
-      captureAnalyticsException(caught, 'installation')
+      reportError(caught, 'installation')
       setError('We couldn’t finish connecting. Check your connection and try again.')
     } finally { inFlight.current = false; setSubmitting(false) }
   }

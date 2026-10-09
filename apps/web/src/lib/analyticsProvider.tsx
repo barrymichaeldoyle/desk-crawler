@@ -6,6 +6,7 @@ import { useMutation } from 'convex/react'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { analyticsClient, analyticsConfigured, analyticsIdentityKey, captureAnalytics, CONSENT_EVENT, IDENTITY_EVENT, PREFERENCES_EVENT, readAnalyticsConsent, setAnalyticsConsent, setAnalyticsIdentity, stopAnalytics, type AnalyticsConsent } from './analytics'
+import { startErrorReporting } from './errorReporting'
 import { Button } from './ui'
 
 /** Mounted inside Clerk/Convex. SSR and development never initialize analytics. */
@@ -33,6 +34,8 @@ export function AnalyticsProvider() {
     window.addEventListener(PREFERENCES_EVENT, open)
     return () => { window.removeEventListener(CONSENT_EVENT, refresh); window.removeEventListener('storage', refresh); window.removeEventListener(PREFERENCES_EVENT, open) }
   }, [])
+  // Sentry browser error reports share the Allow analytics choice (D113); it is checked again on every event.
+  useEffect(() => { if (ready && consent === 'allowed') void startErrorReporting() }, [consent, ready])
   useEffect(() => {
     if (!ready || !isLoaded || !analyticsConfigured()) return
     const currentRevision = ++revision.current

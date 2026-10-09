@@ -45,6 +45,8 @@ Replay is enabled at 100% of consenting production sessions, with 30-day retenti
 
 The funnel is ordered, per person, with a 24-hour window; intervening pageviews/sign-in events are allowed. Reinstalling an already active hero emits connection, but no new activation. Counts cover consenting players only (`admin:engagement` in [operations](operations.md) counts every active hero's v1.1 choices and D110 raids from game data; raids happen in the simulation, so they add no browser event) and can miss blocked scripts, offline/abandoned submissions, delayed delivery or telemetry failures. Activation confirms a server lifecycle transition, not a physical device render. PostHog failure never changes gameplay, blocks navigation or fails a valid installation. No simulation/poll telemetry is added.
 
+Browser errors the app catches (`reportError`) and unhandled browser errors also go to Sentry under the same consent, without identity; server errors always go to Sentry. See [error reporting](error-reporting.md) (D113).
+
 ## Supporting a player
 
 Open the dashboard and investigate `installation_without_hero`, failure reasons or conversion drop-offs. Find the affected person from an insight or search People by their support email/Clerk ID. Read their event timeline, then inspect an available masked replay. Text is intentionally unreadable; structured events supply the step/state/reason. Use the signed-in account shown on setup to distinguish a missing hero from signing in with another email/provider.

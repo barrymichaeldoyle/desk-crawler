@@ -35,6 +35,7 @@ Implementation was authorized on 2026-10-03. This index includes the original pl
 | [TRMNL integration](trmnl.md) | OAuth, lifecycle, payload fields, layout plans, publication |
 | [Companion app](companion.md) | Web flows, responsive UI, auth and empty/error states |
 | [Operations](operations.md) | CI/CD, environments, runbooks, security, cost model |
+| [Error reporting](error-reporting.md) | Sentry for production errors (D113): what reports, consent and privacy boundary, source maps |
 | [Quality](quality.md) | Tests, balance harness, contract and hardware acceptance |
 | [Work packages](work-packages.md) | Assignable implementation tasks and dependency graph |
 | [Traceability](traceability.md) | Requirement → specification → work package → verification |

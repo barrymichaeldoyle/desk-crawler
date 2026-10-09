@@ -1,4 +1,5 @@
 import { cloudflare } from '@cloudflare/vite-plugin'
+import { sentryTanstackStart } from '@sentry/tanstackstart-react/vite'
 import tailwindcss from '@tailwindcss/vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
@@ -16,8 +17,16 @@ const buildManifest = (): Plugin => ({
   },
 })
 
+/**
+ * Source maps for Sentry (D113): only when the build has SENTRY_AUTH_TOKEN (Workers Builds). The maps are uploaded under
+ * the same release the SDKs report (BUILD_ID) and deleted afterwards, so neither the Worker nor the site serves them.
+ */
+const sentrySourceMaps = (): Plugin[] => process.env.SENTRY_AUTH_TOKEN
+  ? sentryTanstackStart({ org: 'barry-michael-doyle', project: 'trmnl-games', release: { name: BUILD_ID }, autoInstrumentMiddleware: false, telemetry: false })
+  : []
+
 export default defineConfig({
   resolve: { tsconfigPaths: true },
   define: { 'import.meta.env.VITE_BUILD_ID': JSON.stringify(BUILD_ID) },
-  plugins: [cloudflare({ viteEnvironment: { name: 'ssr' } }), tailwindcss(), tanstackStart(), viteReact(), buildManifest()],
+  plugins: [cloudflare({ viteEnvironment: { name: 'ssr' } }), tailwindcss(), tanstackStart(), viteReact(), buildManifest(), ...sentrySourceMaps()],
 })

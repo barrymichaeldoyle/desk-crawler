@@ -42,7 +42,7 @@ export const Route = createFileRoute('/privacy')({
       <p>No ads and no selling or sharing of your data for marketing. The game has no purchases, so we hold no payment details.</p>
 
       <h2>Optional analytics and support</h2>
-      <p>If you allow analytics, PostHog records the pages you visit, setup steps, game-action failures and browser errors. When you sign in, these records link to your Clerk account ID, email address, public name and hero name so we can investigate support requests and fix problems.</p>
+      <p>If you allow analytics, PostHog records the pages you visit, setup steps, game-action failures and browser errors. When you sign in, these records link to your Clerk account ID, email address, public name and hero name so we can investigate support requests and fix problems. Browser errors also go to Sentry, without your account, email or IP address.</p>
       <p>PostHog also records masked sessions so we can see where a flow gets stuck. Text and form inputs are masked, sign-in and account details are blocked, and we do not record network bodies, headers or console output. Installation codes, access tokens, management JWTs and URL query strings are excluded.</p>
       <p>You can decline and keep playing. Use Analytics preferences in the site footer to change your choice. Turning analytics off stops new collection in that browser; it does not erase earlier records. Contact us to remove those records, or delete your TRMNL Games account to request removal of its linked PostHog profile, events and recordings.</p>
 
@@ -67,6 +67,7 @@ export const Route = createFileRoute('/privacy')({
           <strong>TRMNL</strong> fetches your hero's screen from us. Your TRMNL account and device are covered by TRMNL's own privacy policy.
         </li>
         <li><strong>PostHog EU</strong> handles optional usage analytics, error reports and masked session recordings for support and product improvements.</li>
+        <li><strong>Sentry</strong> (United States) receives error reports from our website's server, and from your browser if you allow analytics, so we can find and fix bugs. A report holds the page path and the technical details of the error. It never includes your account, email address, IP address, cookies, form contents, URL query strings or installation codes and tokens.</li>
         <li><strong>Resend</strong> delivers the account deletion confirmation email to your verified primary address, the one launch email to the launch list, and feedback you send to the developer. It receives those addresses and the email contents.</li>
       </ul>
 
@@ -79,6 +80,7 @@ export const Route = createFileRoute('/privacy')({
         <li>Feedback: until you delete your account, or earlier on request. Copies already emailed to the developer are deleted on request.</li>
         <li>Backups: about a week, after which deleted data is gone from them too.</li>
         <li>Masked recordings: 30 days. Analytics events and support profiles: until account deletion or an earlier removal request.</li>
+        <li>Error reports in Sentry: up to 90 days. They aren't linked to your account, so account deletion has nothing there to remove.</li>
       </ul>
 
       <h2>Deleting your account</h2>

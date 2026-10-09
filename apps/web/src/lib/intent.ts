@@ -4,7 +4,8 @@ import type { FunctionReference } from 'convex/server'
 import { useRef, useState } from 'react'
 import { ExpiredSubmission, Submission } from './submission'
 import { getFunctionName } from 'convex/server'
-import { captureAnalytics, captureAnalyticsException, intentAnalytics } from './analytics'
+import { captureAnalytics, intentAnalytics } from './analytics'
+import { reportError } from './errorReporting'
 
 /** User-safe message from a structured Convex error (api.md error contract). */
 export function errorMessage(error: unknown): string {
@@ -51,7 +52,7 @@ export function useIntent<Args extends { operationId: string }>(fn: FunctionRefe
     } catch (caught) {
       const code = caught instanceof ConvexError && caught.data && typeof caught.data === 'object' && 'code' in caught.data ? String(caught.data.code) : caught instanceof ExpiredSubmission ? 'SUBMISSION_EXPIRED' : 'UNKNOWN'
       captureAnalytics('intent failed', { intent: getFunctionName(fn), error_code: code })
-      if (!(caught instanceof ConvexError) && !(caught instanceof ExpiredSubmission)) captureAnalyticsException(caught, 'intent')
+      if (!(caught instanceof ConvexError) && !(caught instanceof ExpiredSubmission)) reportError(caught, 'intent')
       fail(errorMessage(caught))
       return false
     } finally {

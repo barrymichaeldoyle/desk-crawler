@@ -1,13 +1,13 @@
 import { Link, useRouter, type ErrorComponentProps } from '@tanstack/react-router'
 import { useEffect, useRef, useState } from 'react'
 import { Button } from './ui'
-import { captureAnalyticsException } from './analytics'
+import { reportError } from './errorReporting'
 
 export function RouteError({ reset, error }: ErrorComponentProps) {
   const router = useRouter()
   const [retrying, setRetrying] = useState(false)
   const [retryFailed, setRetryFailed] = useState(false)
-  useEffect(() => { captureAnalyticsException(error, 'route') }, [error])
+  useEffect(() => { reportError(error, 'route') }, [error])
   // Inside a shell the error sits in its <main>; at the top level it is the page, so it takes the skip link's target.
   const section = useRef<HTMLElement>(null)
   useEffect(() => { if (section.current && !document.getElementById('main')) section.current.id = 'main' }, [])

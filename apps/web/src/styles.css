@@ -95,6 +95,16 @@
   line-height: 1.4;
 }
 
+/*
+ * Pixelify Sans headings without ligatures and at 400: its fi and fl ligatures draw one A-like glyph ("Pause
+ * Ashing"), and from 500 up the C's opening closes until it reads as O ("Ooolar"). Pinning the axis keeps
+ * font-bold headings at the weight where every letter stays distinct.
+ */
+.font-display {
+  font-variant-ligatures: none;
+  font-variation-settings: "wght" 400;
+}
+
 /* Arcade lettering for nav, buttons and counters: always uppercase. */
 @utility hud {
   font-family: var(--font-hud);

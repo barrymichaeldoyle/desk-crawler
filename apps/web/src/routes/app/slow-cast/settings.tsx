@@ -17,7 +17,7 @@ export const Route = createFileRoute('/app/slow-cast/settings')({
 
 const SLOW_CAST_ALERTS: readonly AlertKindCopy[] = [
   { id: 'coolerFull', name: 'Cooler full', blurb: 'New catches are being released. Sent half an hour after the cooler fills, once each time.' },
-  { id: 'baitOut', name: 'Out of bait', blurb: 'The bait on the hook ran out and the angler is fishing a bare hook.' },
+  { id: 'baitOut', name: 'Out of bait', blurb: 'Your angler used up the bait they were fishing with and is on a bare hook.' },
 ]
 
 function SettingsPage() {

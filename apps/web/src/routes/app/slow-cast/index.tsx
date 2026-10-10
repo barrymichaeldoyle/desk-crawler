@@ -4,11 +4,11 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { api } from '@trmnl-games/backend/api'
 import { useIntent } from '../../../lib/intent'
 import { preload } from '../../../lib/preload'
-import { BAIT_LABEL, BAND_LABEL, WEATHER_LABEL, type Dock } from '../../../lib/slowCast'
+import { BAIT_LABEL, BAND_LABEL, WEATHER_LABEL, biteOdds, type Dock } from '../../../lib/slowCast'
 import { Button, Card, Meter, NoticeBar, useNotice } from '../../../lib/ui'
 import { FlyBox } from './-flyBox'
 
-/** The dock: the angler's scene, progress, the bait on the hook, the waters and the latest stories. */
+/** The dock: the angler's scene, progress, the bait in use, the waters and the latest stories. */
 export const Route = createFileRoute('/app/slow-cast/')({
   loader: ({ context }) => preload(context, convexQuery(api.slowCast.anglers.dock, {}), convexQuery(api.slowCast.payload.preview, {}), convexQuery(api.slowCast.flies.mine, {})),
   component: DockPage,
@@ -40,11 +40,14 @@ function DockPage() {
           <span className="label-px text-muted">Level {angler.level} · {angler.gold} gold</span>
         </div>
         {scene ? <img src={scene} alt={`${angler.alias} fishing at ${here?.name ?? 'the water'}`} width={456} height={120} className="w-full border-2 border-edge bg-white [image-rendering:pixelated]" /> : null}
-        <p className="text-lg">
-          {angler.status === 'paused' ? 'Fishing is paused.' : destination ? `Heading to ${destination.name}. First cast there within 30 minutes.` : `Casting at ${here?.name ?? 'the water'}`}
-          {here ? <span className="text-muted"> · {BAND_LABEL[here.band]}, {WEATHER_LABEL[here.weather]?.toLowerCase()} · {here.bitePercent}% a bite each cast</span> : null}
-        </p>
-        {dock.nextTickAt ? <p className="text-sm text-muted">Next cast at {time(dock.nextTickAt)}.</p> : null}
+        {/* Status, conditions and timing on their own lines: run together, a phone wrapped them mid-phrase. */}
+        <div className="flex flex-col gap-1">
+          <p className="text-lg font-semibold">
+            {angler.status === 'paused' ? 'Fishing is paused.' : destination ? `Heading to ${destination.name}. First cast there within 30 minutes.` : `Casting at ${here?.name ?? 'the water'}.`}
+          </p>
+          {here ? <p className="text-muted">{BAND_LABEL[here.band]}, {WEATHER_LABEL[here.weather]?.toLowerCase()}. {biteOdds(here.bitePercent)}</p> : null}
+          {dock.nextTickAt ? <p className="text-sm text-muted">Next cast at {time(dock.nextTickAt)}.</p> : null}
+        </div>
         <p className="text-sm"><Link to="/app/slow-cast/rankings" className="underline underline-offset-4">Rankings</Link></p>
         <div className="grid gap-4 sm:grid-cols-2">
           <Meter label="XP" value={angler.xp} max={angler.xpToNext} tone="xp" />
@@ -57,7 +60,8 @@ function DockPage() {
         ) : null}
       </section>
 
-      <Card title="On the hook">
+      <Card title="Bait">
+        <p className="mb-3">Choose what your angler fishes with. Each water takes its own baits, and the bait decides which fish can bite.</p>
         {usable.length === 0 ? <p>None of your bait is used here. <Link to="/app/slow-cast/shop" className="underline underline-offset-4">Buy bait</Link> for {here?.name}.</p> : null}
         <div className="flex flex-wrap gap-2">
           {usable.map((bait) => (
@@ -66,13 +70,13 @@ function DockPage() {
               variant={angler.baitOnHook === bait.class ? 'primary' : 'secondary'}
               aria-pressed={angler.baitOnHook === bait.class}
               disabled={chooseBait.pending}
-              onClick={() => { if (angler.baitOnHook !== bait.class) void chooseBait.run({ bait: bait.class as never }, `${bait.name} on the hook from the next cast.`) }}
+              onClick={() => { if (angler.baitOnHook !== bait.class) void chooseBait.run({ bait: bait.class as never }, `Fishing with ${bait.name.toLowerCase()} from the next cast.`) }}
             >
               {bait.name} · {bait.units}
             </Button>
           ))}
         </div>
-        <p className="mt-3 text-sm text-muted">A fish you keep, or one that gets away, takes one bait. A quiet cast takes none, and with the cooler full the bait stays on the hook. With no bait the angler fishes a bare hook, which bites less and catches only small fish.</p>
+        <p className="mt-3 text-sm text-muted">Each fish you keep, or that gets away, uses one bait. A cast with no bite uses none, and neither does a fish released from a full cooler. With no bait the angler fishes a bare hook, which gets fewer bites and only small fish.</p>
       </Card>
 
       <Card title="Waters">
@@ -81,9 +85,12 @@ function DockPage() {
             <li key={water.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-rule pb-3 last:border-b-0">
               <div className="min-w-0">
                 <p className="font-semibold">{water.name}{water.id === angler.waterId ? ' (here)' : ''}</p>
-                <p className="text-sm text-muted">
-                  {water.open ? `${BAND_LABEL[water.band]}, ${WEATHER_LABEL[water.weather]?.toLowerCase()} until ${time(water.weatherUntil)} · bait: ${water.baits.map((b) => BAIT_LABEL[b]).join(', ')}` : `Opens at level ${water.unlockLevel}${water.access ? ` with the ${water.access === 'waders' ? 'Waders' : 'Pier Permit'}` : ''}`}
-                </p>
+                {water.open ? (
+                  <>
+                    <p className="text-sm text-muted">{BAND_LABEL[water.band]}, {WEATHER_LABEL[water.weather]?.toLowerCase()} until {time(water.weatherUntil)}</p>
+                    <p className="text-sm text-muted">Bait: {water.baits.map((b) => BAIT_LABEL[b]).join(', ')}</p>
+                  </>
+                ) : <p className="text-sm text-muted">Opens at level {water.unlockLevel}{water.access ? ` with the ${water.access === 'waders' ? 'Waders' : 'Pier Permit'}` : ''}</p>}
               </div>
               {water.open && water.id !== angler.waterId && water.id !== angler.travelTo ? (
                 <Button variant="secondary" disabled={travel.pending} onClick={() => void travel.run({ waterId: water.id as never }, `Heading to ${water.name}.`)}>Fish here</Button>

@@ -76,7 +76,6 @@ function DockPage() {
       </section>
 
       <Card title="Bait">
-        <p className="mb-3">Choose what your angler fishes with. Each water takes its own baits, and the bait decides which fish can bite.</p>
         {usable.length === 0 ? <p className="mb-3 font-semibold text-hp-ink">You have no bait for {baitWater?.name}, so your angler {destination ? 'will fish' : 'is fishing'} a bare hook. <Link to="/app/slow-cast/shop" className="underline underline-offset-4">Buy bait</Link>.</p> : null}
         {usable.length > 0 && !fishing ? <p className="mb-3 font-semibold text-hp-ink">Your angler is fishing a bare hook. Choose a bait below{usable.every((b) => b.units === 0) ? <>, or <Link to="/app/slow-cast/shop" className="underline underline-offset-4">buy some</Link></> : null}.</p> : null}
         <div className="flex flex-wrap gap-2">
@@ -92,7 +91,11 @@ function DockPage() {
             </Button>
           ))}
         </div>
-        <p className="mt-3 text-sm text-muted">Each fish you keep, or that gets away, uses one bait. A cast with no bite uses none, and neither does a fish released from a full cooler. With no bait the angler fishes a bare hook, which gets fewer bites and only small fish.</p>
+        <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+          <dt className="text-muted">Uses</dt><dd>One per fish kept or lost</dd>
+          <dt className="text-muted">No bait</dt><dd>Fewer bites, small fish only</dd>
+        </dl>
+        <p className="mt-3 text-sm"><Link to="/app/slow-cast/shop" className="underline underline-offset-4">What each bait catches</Link></p>
       </Card>
 
       <Card title="Waters">

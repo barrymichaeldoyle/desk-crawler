@@ -5,13 +5,14 @@ import { useState, type ReactNode } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { useIntent } from '../../../lib/intent'
 import { preload } from '../../../lib/preload'
-import { BAIT_BLURB, formatWeight, type Dock } from '../../../lib/slowCast'
+import { contentV1 } from '@trmnl-games/slow-cast/content'
+import { baitCatches, fishList, formatWeight, type Dock } from '../../../lib/slowCast'
 import { Button, Card, NoticeBar, useNotice } from '../../../lib/ui'
 import { ConfirmSheet } from '../desk-crawler/-confirm'
 
 /** The tackle shop: the next rod and cooler, the passes and bait tubs, each at a fixed price and confirmed before buying. */
 export const Route = createFileRoute('/app/slow-cast/shop')({
-  loader: ({ context }) => preload(context, convexQuery(api.slowCast.anglers.dock, {})),
+  loader: ({ context }) => preload(context, convexQuery(api.slowCast.anglers.dock, {}), convexQuery(api.slowCast.anglers.logbook, {})),
   component: ShopPage,
 })
 
@@ -23,6 +24,9 @@ type Offer = { title: string; price: number; detail: ReactNode; buy: () => Promi
 function ShopPage() {
   const { data } = useQuery(convexQuery(api.slowCast.anglers.dock, {}))
   const dock = data as Dock | undefined
+  const { data: book } = useQuery(convexQuery(api.slowCast.anglers.logbook, {}))
+  // Fish are named only once caught, as in the logbook.
+  const seen = new Set((book as Array<{ species: Array<{ id: string; seen: boolean }> }> | null | undefined)?.flatMap((w) => w.species).filter((f) => f.seen).map((f) => f.id))
   const { notice, notify, dismiss } = useNotice()
   const rod = useIntent(api.slowCast.anglers.buyNextRod, { onFeedback: notify })
   const cooler = useIntent(api.slowCast.anglers.buyNextCooler, { onFeedback: notify })
@@ -43,14 +47,19 @@ function ShopPage() {
   const laterBait = angler.bait.filter((b) => !usableBait.includes(b))
   const baitRow = (b: (typeof angler.bait)[number]) => {
     const waters = dock.waters?.filter((w) => w.baits.includes(b.class)).map((w) => w.name) ?? []
+    const catches = baitCatches(contentV1.species, b.class, seen)
     return (
-      <li key={b.class} className="flex flex-col gap-2 border-b border-rule pb-3 last:border-b-0">
+      <li key={b.class} className="flex flex-col gap-2 border-b border-rule pb-4 last:border-b-0">
         <div className="flex flex-wrap items-baseline justify-between gap-x-3">
           <p className="font-semibold">{b.name}</p>
           <p className="text-sm text-muted">{b.units} held</p>
         </div>
-        <p className="text-sm">{BAIT_BLURB[b.class]}</p>
-        <p className="text-sm text-muted">Used at {waters.join(', ')}. A tub of {b.tubSize} costs {b.price} gold.</p>
+        <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+          <dt className="text-muted">Waters</dt><dd>{waters.join(', ')}</dd>
+          {catches.only.names.length + catches.only.unseen > 0 ? <><dt className="text-muted">Only bait for</dt><dd>{fishList(catches.only)}</dd></> : null}
+          {catches.also.names.length + catches.also.unseen > 0 ? <><dt className="text-muted">Also catches</dt><dd>{fishList(catches.also)}</dd></> : null}
+          <dt className="text-muted">Tub</dt><dd>{b.tubSize} for {b.price} gold</dd>
+        </dl>
         <div className="flex flex-wrap gap-2">
           {[1, 3].filter((n) => n <= b.tubsThatFit).map((n) => (
             <Button key={n} variant="secondary" disabled={gold < b.price * n || buying} onClick={() => setOffer({ title: `Buy ${n === 1 ? 'a tub' : `${n} tubs`} of ${b.name.toLowerCase()}?`, price: b.price * n, detail: <p>{b.tubSize * n} {b.name.toLowerCase()}, for {b.units + b.tubSize * n} in all.</p>, buy: () => bait.run({ bait: b.class as never, tubs: n }, `Bought ${n} ${n === 1 ? 'tub' : 'tubs'} of ${b.name.toLowerCase()}.`) })}>
@@ -129,7 +138,7 @@ function ShopPage() {
             <ul className="flex flex-col gap-3">{laterBait.map(baitRow)}</ul>
           </>
         ) : null}
-        <p className="mt-3 text-sm text-muted">You can hold up to 72 of each bait. Bait never spoils.</p>
+        <p className="mt-3 text-sm text-muted">Up to 72 of each. Bait never spoils.</p>
       </Card>
       <ConfirmSheet
         open={offer !== null}

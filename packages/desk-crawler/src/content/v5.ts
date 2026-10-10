@@ -64,7 +64,7 @@ export const contentV5: ContentCatalog = {
         title: 'A stuck vending machine',
         prompt: 'The vending machine ate a coin and a snack is stuck behind the glass.',
         options: [
-          { id: 'kick', label: 'Kick it', story: 'Kicked the vending machine: two snacks, some change and a bruised toe.', effect: { goldPerTier: 6, hpPct: -5 } },
+          { id: 'kick', label: 'Kick it', story: 'Kicked the vending machine: two snacks, some change and a sore toe.', effect: { goldPerTier: 6, hpPct: -5 } },
           { id: 'walk_on', label: 'Walk on', story: 'Left the vending machine alone.', effect: {} },
         ],
         defaultOptionId: 'walk_on',

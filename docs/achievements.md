@@ -59,9 +59,9 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 | Tier | Wins | Name | Blurb |
 | --- | --- | --- | --- |
 | I | 1 | Flipped It | Like a turtle, but with more beeping. |
-| II | 5 | Bin Emptier | Someone had to do it. |
+| II | 5 | Bin Emptier | Emptied its dust bin. |
 | III | 25 | Roomba Wrangler | Twenty-five roombas flipped. |
-| IV | 100 | Floor Supervisor | Every carpet tile answers to you. |
+| IV | 100 | Floor Supervisor | A hundred roombas flipped. |
 | V | 500 | Clean Sweep | The cleaners sent a thank-you card. |
 
 **Stapler Mimic** (Office Cubicles)
@@ -69,7 +69,7 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 | Tier | Wins | Name | Blurb |
 | --- | --- | --- | --- |
 | I | 1 | Unjammed | Permanently this time. |
-| II | 5 | Staple Remover | The little metal jaws fear you. |
+| II | 5 | Staple Remover | Pulled the staples out. |
 | III | 25 | Mimic Spotter | You check every stapler twice. |
 | IV | 100 | Supplies Auditor | You have opened every drawer on the floor. |
 | V | 500 | Red Stapler | It is yours. Nobody will take it. |
@@ -108,10 +108,10 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 
 | Tier | Wins | Name | Blurb |
 | --- | --- | --- | --- |
-| I | 1 | Port 443 | Got through. Encrypted, naturally. |
+| I | 1 | Port 443 | Got through on HTTPS. |
 | II | 5 | Patch Tuesday | Reboot required. |
 | III | 25 | Deny All | Then allow exactly what you mean. |
-| IV | 100 | Zero Trust | Not even the gremlins trust the gremlins. |
+| IV | 100 | Zero Trust | Every port closed by default. |
 | V | 500 | Air Gapped | The safest network is the one you unplugged. |
 
 **Legacy Mainframe** (Server Room)
@@ -139,7 +139,7 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 | Tier | Wins | Name | Blurb |
 | --- | --- | --- | --- |
 | I | 1 | Dustpan | Swept into the bin. |
-| II | 5 | Crumb Collector | The pigeons are furious. |
+| II | 5 | Crumb Collector | Not a crumb left for the pigeons. |
 | III | 25 | Table Wiper | Every table in the canteen. |
 | IV | 100 | Five-Second Rule | Not applicable to golems. |
 | V | 500 | Breadwinner | You earned the loaf. |
@@ -183,13 +183,13 @@ Set pieces are recomputed when the catalog version changes, so adding a biome in
 | Family | Counter | Tier | Threshold | Name | Blurb |
 | --- | --- | --- | --- | --- | --- |
 | Elites | `eliteWins` | I | 1 | The Floor Clapped | Took down an elite. Someone whistled. |
-| | | II | 5 | Elite Problem | They keep sending senior ones. |
+| | | II | 5 | Elite Problem | Five elites beaten. |
 | | | III | 25 | Senior Exterminator | Title confirmed by email. |
 | | | IV | 100 | Head of Department | Elites are your department. |
 | Jackpots | `jackpots` | I | 1 | Lucky Break | Ten times the gold from one find. |
 | | | II | 5 | Expense Approved | No receipts required. |
 | | | III | 25 | Petty Cash Tin | You know where it is kept. |
-| Rare finds | `rareFinds` | I | 1 | Shiny | Rare gear. Hold it up to the light. |
+| Rare finds | `rareFinds` | I | 1 | Shiny | Found your first rare piece of gear. |
 | | | II | 5 | Collector | A small, strange and growing pile. |
 | | | III | 25 | Curator | Labelled, catalogued, insured. |
 | | | IV | 100 | The Vault | Nobody else has a drawer like this. |
@@ -209,7 +209,7 @@ Set pieces are recomputed when the catalog version changes, so adding a biome in
 | Levels | `level` | I | 4 | Promoted | The Server Room is open. |
 | | | II | 8 | Team Lead | The Cafeteria Depths are open. |
 | | | III | 12 | Middle Management | Rolling Suitcase territory. |
-| | | IV | 16 | Director | Nobody is quite sure what you do. |
+| | | IV | 16 | Director | Your calendar is all meetings. |
 | | | V | 20 | Corner Office | It has a window, and the blind works. |
 | Knock-outs | `deaths` | I | 1 | Out Cold | Back in two hours, a little poorer. |
 | | | II | 5 | Sick Note | Signed by the first-aider. |

@@ -44,7 +44,7 @@ const FAMILIES: AchievementDef[] = [
   ...family('catches', 'Catches', 'Fishing', counter('fishCaught'), [
     [1, 'First Bite', 'Something on the end of the line.'],
     [10, 'Tight Lines', 'Ten fish on the float.'],
-    [100, 'Regular on the Bank', 'The heron nods as you arrive.'],
+    [100, 'Regular on the Bank', 'A hundred fish from the bank.'],
     [1000, 'Old Hand', 'You can tie a knot in the dark.'],
     [10000, 'Legend of the Water', 'They name a swim after you.'],
   ]),
@@ -56,7 +56,7 @@ const FAMILIES: AchievementDef[] = [
   ]),
   ...family('rare_catches', 'Rare catches', 'Fishing', counter('rareCaught'), [
     [1, 'Something Special', 'Not a fish you see every day.'],
-    [10, 'Rare Form', 'You know where the good ones hide.'],
+    [10, 'Rare Form', 'Ten rare fish landed.'],
     [100, 'Collector', 'A hundred rare fish in the net.'],
   ]),
   ...family('epic_catches', 'Epic catches', 'Fishing', counter('epicCaught'), [
@@ -65,7 +65,7 @@ const FAMILIES: AchievementDef[] = [
   ]),
   ...family('got_away', 'Got away', 'Fishing', counter('gotAway'), [
     [1, 'The One That Got Away', 'The line went slack.'],
-    [10, 'Snapped Again', 'A better rod is calling.'],
+    [10, 'Snapped Again', 'Ten fish lost to a snapped line.'],
     [50, 'Tall Tales', 'Fifty lost to a snapped line.'],
   ]),
   ...family('night_fishing', 'Night fishing', 'Fishing', counter('nightCatches'), [
@@ -104,7 +104,7 @@ const FAMILIES: AchievementDef[] = [
     [100, 'Pocket Money', 'Enough for a tub of worms or four.'],
     [1000, 'Market Stall', 'The fishmonger saves you a spot.'],
     [10000, 'Fishmonger', 'A van with your name on it.'],
-    [100000, 'Fish Baron', 'You own the market.'],
+    [100000, 'Fish Baron', 'A hundred thousand gold from fish.'],
   ]),
   ...family('sales', 'Sales', 'Trade', counter('fishSold'), [
     [1, 'First Sale', 'Fresh today.'],

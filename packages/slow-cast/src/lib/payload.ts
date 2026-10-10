@@ -101,7 +101,7 @@ export function buildPayload(input: SlowCastPayloadInput) {
   const hook = angler.baitOnHook ? content.baits.find((b) => b.class === angler.baitOnHook) : undefined
   const hookUnits = hook ? (angler.bait[hook.class] ?? 0) : 0
   const hookUsedHere = hook !== undefined && water.baits.includes(hook.class) && hookUnits > 0
-  const statusLabel = angler.status === 'paused' ? 'Rod on the rest' : destination ? `Heading to ${destination.name}` : `Casting at ${water.the}`
+  const statusLabel = angler.status === 'paused' ? 'Fishing paused' : destination ? `Heading to ${destination.name}` : `Casting at ${water.the}`
   let attention: string | null = null
   if (angler.quarantined || servicePaused) attention = 'Paused for a service check. Nothing is lost.'
   else if (stale) attention = 'Updates delayed. Nothing is lost.'

@@ -73,14 +73,14 @@ monster('paper_imp', 'Paper Imp', 'Office Cubicles', [
 ])
 monster('rogue_roomba', 'Rogue Roomba', 'Office Cubicles', [
   ['Flipped It', 'Like a turtle, but with more beeping.'],
-  ['Bin Emptier', 'Someone had to do it.'],
+  ['Bin Emptier', 'Emptied its dust bin.'],
   ['Roomba Wrangler', 'Twenty-five roombas flipped.'],
-  ['Floor Supervisor', 'Every carpet tile answers to you.'],
+  ['Floor Supervisor', 'A hundred roombas flipped.'],
   ['Clean Sweep', 'The cleaners sent a thank-you card.'],
 ])
 monster('stapler_mimic', 'Stapler Mimic', 'Office Cubicles', [
   ['Unjammed', 'Permanently this time.'],
-  ['Staple Remover', 'The little metal jaws fear you.'],
+  ['Staple Remover', 'Pulled the staples out.'],
   ['Mimic Spotter', 'You check every stapler twice.'],
   ['Supplies Auditor', 'You have opened every drawer on the floor.'],
   ['Red Stapler', 'It is yours. Nobody will take it.'],
@@ -107,10 +107,10 @@ monster('overheated_rack', 'Overheated Rack', 'Server Room', [
   ['Absolute Zero', 'The thermostat reads 18.'],
 ])
 monster('firewall_gremlin', 'Firewall Gremlin', 'Server Room', [
-  ['Port 443', 'Got through. Encrypted, naturally.'],
+  ['Port 443', 'Got through on HTTPS.'],
   ['Patch Tuesday', 'Reboot required.'],
   ['Deny All', 'Then allow exactly what you mean.'],
-  ['Zero Trust', 'Not even the gremlins trust the gremlins.'],
+  ['Zero Trust', 'Every port closed by default.'],
   ['Air Gapped', 'The safest network is the one you unplugged.'],
 ])
 monster('legacy_mainframe', 'Legacy Mainframe', 'Server Room', [
@@ -129,7 +129,7 @@ monster('coffee_slime', 'Coffee Slime', 'Cafeteria Depths', [
 ])
 monster('crumb_golem', 'Crumb Golem', 'Cafeteria Depths', [
   ['Dustpan', 'Swept into the bin.'],
-  ['Crumb Collector', 'The pigeons are furious.'],
+  ['Crumb Collector', 'Not a crumb left for the pigeons.'],
   ['Table Wiper', 'Every table in the canteen.'],
   ['Five-Second Rule', 'Not applicable to golems.'],
   ['Breadwinner', 'You earned the loaf.'],
@@ -161,7 +161,7 @@ family('floor_cleared_3', 'Cafeteria Cleared', 'Set piece', [['Cafeteria Cleared
 
 counter('elites', 'Elites', 'Lifetime', 'eliteWins', [1, 5, 25, 100], [
   ['The Floor Clapped', 'Took down an elite. Someone whistled.'],
-  ['Elite Problem', 'They keep sending senior ones.'],
+  ['Elite Problem', 'Five elites beaten.'],
   ['Senior Exterminator', 'Title confirmed by email.'],
   ['Head of Department', 'Elites are your department.'],
 ])
@@ -171,7 +171,7 @@ counter('jackpots', 'Jackpots', 'Lifetime', 'jackpots', [1, 5, 25], [
   ['Petty Cash Tin', 'You know where it is kept.'],
 ])
 counter('rare_finds', 'Rare finds', 'Lifetime', 'rareFinds', [1, 5, 25, 100], [
-  ['Shiny', 'Rare gear. Hold it up to the light.'],
+  ['Shiny', 'Found your first rare piece of gear.'],
   ['Collector', 'A small, strange and growing pile.'],
   ['Curator', 'Labelled, catalogued, insured.'],
   ['The Vault', 'Nobody else has a drawer like this.'],
@@ -199,7 +199,7 @@ family('levels', 'Levels', 'Lifetime', [
   ['Promoted', 'The Server Room is open.'],
   ['Team Lead', 'The Cafeteria Depths are open.'],
   ['Middle Management', 'Rolling Suitcase territory.'],
-  ['Director', 'Nobody is quite sure what you do.'],
+  ['Director', 'Your calendar is all meetings.'],
   ['Corner Office', 'It has a window, and the blind works.'],
 ], (i) => ({ kind: 'level', atLeast: [4, 8, 12, 16, 20][i]! }))
 counter('knockouts', 'Knock-outs', 'Lifetime', 'deaths', [1, 5, 25, 100], [
@@ -263,14 +263,14 @@ family('keepsakes', 'Keepsakes', 'Lifetime', [
 // ---------------------------------------------------------------- v1.1 Decisions (catalog version 2; appended, never edited)
 
 counter('purchases', 'Purchases', 'Decisions', 'purchases', [1, 5, 25], [
-  ['Impulse Buy', 'The merchant had a nice smile.'],
+  ['Impulse Buy', 'Bought from the merchant.'],
   ['Loyalty Card', 'Fifth stamp. The sixth is not free.'],
   ['Preferred Customer', 'The merchant waves from across the floor.'],
 ])
 counter('merchants', 'Merchants met', 'Decisions', 'merchantVisits', [1, 10, 50], [
   ['Trestle Table', 'A cart, a cloth and a price list.'],
   ['Market Day', 'Ten visits and counting.'],
-  ['Trade Route', 'The merchant plans the rounds around you.'],
+  ['Trade Route', 'The merchant stops by your desk first.'],
 ])
 counter('stances', 'Stance changes', 'Decisions', 'stanceChanges', [1, 5, 25], [
   ['New Posture', 'Tried a different approach.'],

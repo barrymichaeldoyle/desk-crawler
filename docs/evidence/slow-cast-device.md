@@ -1,6 +1,6 @@
 # Slow Cast device layouts (S3)
 
-Recorded 2026-10-09 for D115. Template v1 (`packages/slow-cast/src/templates/screen.ts`), scene v2 and QR v1 (`packages/slow-cast/src/art/`).
+Recorded 2026-10-09 for D115 and updated 2026-10-10 for template v2 (`packages/slow-cast/src/templates/screen.ts`), with scene v2, QR v1 and fish v1 (`packages/slow-cast/src/art/`).
 
 ## What was checked
 
@@ -10,14 +10,20 @@ States: bareHook, catch, coolerFull, gotAway, longText, millpondDawn, outsideTop
 
 ## Layouts
 
+Template v2 sets the counters behind 1-bit marks (`art/marks.ts`) instead of words: a pin for the place, marks for the time of day and the weather, then the cooler, the hook and bait left, gold and the logbook. XP is ten half-step ticks like Desk Crawler's. Every story leads with its kind's glyph (a fish kept, a fish released, the one that got away, wildlife, travel, out of bait, an achievement, a star for a level-up). The attention line is inverted behind its mark. The board heads with a trophy and shows each angler's 7-day XP. The recap sits at the foot as Desk Crawler's ribbon: a rule, "Last 12 hours", then each fact behind its mark.
+
 | Layout | Landscape | Portrait |
 | --- | --- | --- |
-| Full | Name, level, XP, status with time and weather, the counters line and the code in the header; on the OG the scene at 4x beside the seven-day Top 5 (5x without a board), on the X the scene at 6x over the board; the attention line; three stories; the twelve-hour recap | The same header; the scene at 3x (8x on the X); four stories; the board; the recap |
-| Half | Scene at 2x (4x on the X) beside the name, status, counters and the newest story or the attention line, code at the right | Name and code, scene at 2x, status, counters, two stories |
-| Side | Name and code, scene at 2x (5x on the X), status, counters, attention, three stories, recap | Name, scene at 1x (4x on the X), status, counters, four stories, code at the foot |
-| Quarter | Name, status, cooler and gold beside the code; the newest story or the attention line | The same stacked, code at the foot |
+| Full | Name, level and XP ticks, place with time and weather, the counters and the code in the header. On the OG the scene at 4x beside the board, then the attention line and five stories (four beside an attention line). On the X the scene at 6x, then the stories beside the board with the newest catch under it. The recap at the foot | The same header; the scene at 3x (8x on the X); five stories; the newest catch; the board; the recap |
+| Half | Scene at 2x (4x on the X) beside the name and XP, place and conditions, cooler, bait and gold, and the newest story or the attention line; code at the right | Name and code, scene at 2x, place, counters, two stories |
+| Side | Name and code, scene at 2x (5x on the X), XP, place, counters, attention, three stories, recap | Name, scene at 1x (4x on the X), XP, place, cooler, bait and gold, three stories, the board, code at the foot |
+| Quarter | Name and level, place, cooler and gold beside the code; the newest story or the attention line | The same stacked, code at the foot |
+
+The newest-catch panel draws the fish alone (`/art/sc/fish/v1/<species>/<scale>.png`, the 30x12 sprite) beside "Newest catch" or "Released", its name and weight. On the X landscape it shows only without an attention line and with five board rows or fewer, which is what fits.
 
 A held fish is drawn at the angler's hands when the newest story is a catch or a release; one that got away bends the rod. The code opens the dock, or the cooler when it is full. Attention lines, most urgent first: a service pause, delayed updates, a full cooler, a bare hook.
+
+**Parity and lint.** `pnpm crosscheck:trmnl` now renders every Slow Cast scenario, with and without a fly code, in liquidjs and in Ruby Liquid through `trmnlp`: all 524 renders of both games match. `pnpm lint:trmnl` runs the official linter over both games' templates: both pass.
 
 ## Notes
 

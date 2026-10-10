@@ -2,7 +2,8 @@ import { encodePng1Bit } from '@trmnl-games/engine/art/png'
 import { qrInk } from '@trmnl-games/engine/art/qr'
 import type { TimeBand, WaterId, Weather } from '../sim/types'
 import { anglerPoses, type AnglerPose } from './angler'
-import { FISH_TRAITS } from './fish'
+import { Canvas } from '@trmnl-games/engine/art/canvas'
+import { FISH_LARGE, FISH_TRAITS, fishSprite } from './fish'
 import { FLIES } from '../content/flies'
 import { composeScene, SCENE_VERSION, type SceneKey } from './scene'
 
@@ -10,6 +11,7 @@ import { composeScene, SCENE_VERSION, type SceneKey } from './scene'
  * Slow Cast art paths, served by the Convex art route under `/art/sc/` (slow-cast.md "Device"):
  *   /art/sc/scene/v2/<water>/<band>/<weather>/<pose>/<fish|none>/<fly|nofly>/<scale>.png
  *   /art/sc/qr/v1/<target>/<scale>.png
+ *   /art/sc/fish/v1/<species>/<scale>.png   (template v2's newest-catch panel)
  * Every part is allowlisted, so the route can never draw arbitrary text or mint arbitrary codes.
  */
 const WATERS = new Set<WaterId>(['millpond', 'river_bend', 'harbour_pier'])
@@ -29,6 +31,11 @@ export function sceneBase(key: SceneKey): string {
 }
 
 export const qrBase = (target: QrTarget) => `/art/sc/qr/v${QR_VERSION}/${target}`
+
+export const FISH_VERSION = 1
+/** The large catalogue sprite (30x12) at whole-number scales: 3 for the OG's portrait panel up to 8 for the X. */
+export const FISH_SCALES = new Set([2, 3, 4, 5, 6, 8])
+export const fishBase = (speciesId: string) => `/art/sc/fish/v${FISH_VERSION}/${speciesId}`
 
 export function parseScenePath(path: string): (SceneKey & { scale: number }) | null {
   const match = /^\/art\/sc\/scene\/v(\d+)\/([a-z_]+)\/([a-z]+)\/([a-z]+)\/([a-z]+)\/([a-z_]+)\/([a-z_]+)\/(\d+)\.png$/.exec(path)
@@ -50,6 +57,15 @@ export function renderSlowCastArt(path: string, origin: string): { png: Uint8Arr
     if (Number(qr[1]) !== QR_VERSION || !(target in QR_TARGETS) || !QR_SCALES.has(scale)) return null
     const { size, ink } = qrInk(`${origin}${QR_TARGETS[target]}`, scale)
     return { png: encodePng1Bit(size, size, ink), immutable: false }
+  }
+  const fish = /^\/art\/sc\/fish\/v(\d+)\/([a-z_]+)\/(\d)\.png$/.exec(path)
+  if (fish) {
+    const scale = Number(fish[3])
+    if (Number(fish[1]) !== FISH_VERSION || !(fish[2]! in FISH_TRAITS) || !FISH_SCALES.has(scale)) return null
+    const canvas = new Canvas(FISH_LARGE.width, FISH_LARGE.height)
+    canvas.draw(fishSprite(fish[2]!, FISH_LARGE.width, FISH_LARGE.height), 0, 0)
+    const { width, height, ink } = canvas.scaled(scale)
+    return { png: encodePng1Bit(width, height, ink), immutable: true }
   }
   const parsed = parseScenePath(path)
   if (!parsed) return null

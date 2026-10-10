@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { Liquid } from 'liquidjs'
 import { contentV1 } from '@trmnl-games/slow-cast/content'
 import { buildPayload } from '@trmnl-games/slow-cast/payload'
-import { parseScenePath, renderSlowCastArt, sceneBase, SCENE_SCALES } from '@trmnl-games/slow-cast/art/route'
+import { fishBase, parseScenePath, renderSlowCastArt, sceneBase, SCENE_SCALES } from '@trmnl-games/slow-cast/art/route'
+import { SC_MARKS, STORY_GLYPHS } from '@trmnl-games/slow-cast/art/marks'
 import { composeScene, poseFor, STAGE_HEIGHT, STAGE_WIDTH } from '@trmnl-games/slow-cast/art/scene'
 import { FISH_TRAITS, fishSprite } from '@trmnl-games/slow-cast/art/fish'
 import { screenMarkup } from '@trmnl-games/slow-cast/templates/screen'
@@ -49,6 +50,20 @@ describe('Slow Cast scenes and codes', () => {
     expect([...SCENE_SCALES]).toEqual([1, 2, 3, 4, 5, 6, 8, 10])
   })
 
+  it('draws any species alone for the catch panel, and nothing off the allowlist', () => {
+    const png = renderSlowCastArt(`${fishBase('barbel')}/4.png`, 'https://trmnlgames.com')
+    expect(png?.immutable).toBe(true)
+    for (const bad of [`${fishBase('kraken')}/4.png`, `${fishBase('barbel')}/7.png`, '/art/sc/fish/v2/barbel/4.png']) expect(renderSlowCastArt(bad, 'https://trmnlgames.com'), bad).toBeNull()
+  })
+
+  it('keeps every screen mark on its grid', () => {
+    for (const [name, rows] of Object.entries(SC_MARKS)) {
+      expect(rows.every((row) => row.length === rows[0]!.length && /^[#.]+$/.test(row)), name).toBe(true)
+      expect(rows.join(''), name).toMatch(/#/)
+    }
+    for (const kind of STORY_GLYPHS) expect(SC_MARKS[kind]).toBeDefined()
+  })
+
   it('holds up a kept or released fish, bends the rod for one that got away', () => {
     expect(poseFor('fishing', 'catch')).toBe('holding')
     expect(poseFor('fishing', 'release')).toBe('holding')
@@ -73,6 +88,21 @@ describe('Slow Cast payload', () => {
       qr_base: `${ART}/art/sc/qr/v1/home`,
       recap: 'Last 12 hours: 3 fish, best 1.9 kg Barbel, 1 got away',
     })
+  })
+
+  it('gives the v2 screen its counters, recap facts and newest catch', () => {
+    expect(buildPayload(scenarios.catch!)).toMatchObject({
+      bait_name: 'Maggots',
+      bait_count: 34,
+      attention_kind: null,
+      recap_items: [{ k: 'catch', text: '3 fish' }, { k: 'best', text: 'Best 1.9 kg Barbel' }, { k: 'got_away', text: '1 got away' }],
+      newest_catch: { name: 'Barbel', weight_label: '1.9 kg', released: false, fish_base: `${ART}/art/sc/fish/v1/barbel` },
+    })
+    // The newest fish is found past a story that is not a catch, and a release says so.
+    expect(buildPayload(scenarios.waiting!).newest_catch).toMatchObject({ name: 'Chub' })
+    expect(buildPayload(scenarios.coolerFull!)).toMatchObject({ attention_kind: 'cooler', newest_catch: { name: 'Chub', released: true } })
+    expect(buildPayload(scenarios.bareHook!)).toMatchObject({ bait_name: 'Bare hook', bait_count: null, attention_kind: 'bait' })
+    expect(buildPayload(scenarios.stale!).attention_kind).toBe('service')
   })
 
   it('says what needs a hand, most urgent first', () => {
@@ -117,6 +147,20 @@ describe('Slow Cast markup', () => {
       expect(html).not.toContain('<b>x</b>')
       expect(html).toContain('&lt;b&gt;x&lt;/b&gt;')
     }
+  })
+
+  it('leads each story with its glyph and sets the recap as facts', async () => {
+    const html = await liquid.parseAndRender(screenMarkup.markup, { ...buildPayload(scenarios.catch!), fly_code: null })
+    expect(html).toContain('data-story="catch"')
+    expect(html).toContain('data-story="ambient"')
+    expect(html).toContain('data-story="got_away"')
+    expect(html).toContain('data-recap-item="best"')
+    expect(html).toContain('data-band="dusk"')
+    expect(html).toContain('data-weather="overcast"')
+    expect(html).toContain('data-catch="true"')
+    expect(html).toMatch(/data-xp-ticks="7"/)
+    const full = await liquid.parseAndRender(screenMarkup.markup, { ...buildPayload(scenarios.coolerFull!), fly_code: null })
+    expect(full).toContain('data-attention="cooler"')
   })
 
   it('renders every preview state in every layout without Liquid errors', async () => {

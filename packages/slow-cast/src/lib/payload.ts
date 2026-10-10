@@ -1,5 +1,5 @@
 import { xpToLeave } from '@trmnl-games/engine/levels'
-import { qrBase, sceneBase } from '../art/route'
+import { fishBase, qrBase, sceneBase } from '../art/route'
 import { poseFor } from '../art/scene'
 import { WEATHER_WORD } from '../sim/conditions'
 import { formatWeight } from '../sim/progress'
@@ -103,10 +103,12 @@ export function buildPayload(input: SlowCastPayloadInput) {
   const hookUsedHere = hook !== undefined && water.baits.includes(hook.class) && hookUnits > 0
   const statusLabel = angler.status === 'paused' ? 'Fishing paused' : destination ? `Heading to ${destination.name}` : `Casting at ${water.the}`
   let attention: string | null = null
-  if (angler.quarantined || servicePaused) attention = 'Paused for a service check. Nothing is lost.'
-  else if (stale) attention = 'Updates delayed. Nothing is lost.'
-  else if (coolerFull) attention = 'Cooler full: sell in the companion.'
-  else if (!hookUsedHere) attention = hook && hookUnits === 0 ? `Out of ${hook.name.toLowerCase()}: bare hook.` : 'Fishing a bare hook.'
+  /** Which mark leads the attention line (template v2). */
+  let attentionKind: 'service' | 'cooler' | 'bait' | null = null
+  if (angler.quarantined || servicePaused) [attention, attentionKind] = ['Paused for a service check. Nothing is lost.', 'service']
+  else if (stale) [attention, attentionKind] = ['Updates delayed. Nothing is lost.', 'service']
+  else if (coolerFull) [attention, attentionKind] = ['Cooler full: sell in the companion.', 'cooler']
+  else if (!hookUsedHere) [attention, attentionKind] = [hook && hookUnits === 0 ? `Out of ${hook.name.toLowerCase()}: bare hook.` : 'Fishing a bare hook.', 'bait']
   const stories = input.stories.slice(0, MAX_STORIES)
   // Twelve-hour recap: fish landed (kept or released), the heaviest, and any that got away.
   const recent = input.stories.filter((story) => now - story.at <= RECAP_MS)
@@ -116,10 +118,26 @@ export function buildPayload(input: SlowCastPayloadInput) {
   const bestName = best?.speciesId ? content.species.find((s) => s.id === best.speciesId)?.name : undefined
   const recapParts = [`${landed.length} ${landed.length === 1 ? 'fish' : 'fish'}`, ...(best && bestName && best.grams !== undefined ? [`best ${formatWeight(best.grams)} ${bestName}`] : []), ...(gotAway ? [`${gotAway} got away`] : [])]
   const recap = landed.length + gotAway > 0 ? `Last 12 hours: ${recapParts.join(', ')}` : null
+  // The same facts one by one, each behind its mark on the device (template v2).
+  const recapItems =
+    recap === null
+      ? null
+      : [
+          { k: 'catch', text: `${landed.length} fish` },
+          ...(best && bestName && best.grams !== undefined ? [{ k: 'best', text: `Best ${formatWeight(best.grams)} ${bestName}` }] : []),
+          ...(gotAway ? [{ k: 'got_away', text: `${gotAway} got away` }] : []),
+        ]
   const latest = stories[0]
   const latestCatch =
     latest && (latest.kind === 'catch' || latest.kind === 'release') && latest.speciesId
       ? { species_id: latest.speciesId, name: content.species.find((s) => s.id === latest.speciesId)?.name ?? latest.speciesId, weight_label: latest.grams === undefined ? null : formatWeight(latest.grams) }
+      : null
+  // The newest fish landed among the stories shown, for the catch panel (template v2).
+  const newest = stories.find((story) => (story.kind === 'catch' || story.kind === 'release') && story.speciesId !== undefined)
+  const newestSpecies = newest ? content.species.find((s) => s.id === newest.speciesId) : undefined
+  const newestCatch =
+    newest && newestSpecies
+      ? { name: newestSpecies.name, weight_label: newest.grams === undefined ? null : formatWeight(newest.grams), released: newest.kind === 'release', fish_base: input.artBaseUrl ? `${input.artBaseUrl}${fishBase(newestSpecies.id)}` : '' }
       : null
   const toNext = xpToLeave(angler.level)
   const status = angler.status === 'paused' ? ('paused' as const) : travelling ? ('travelling' as const) : ('fishing' as const)
@@ -148,10 +166,13 @@ export function buildPayload(input: SlowCastPayloadInput) {
     cooler_full: coolerFull,
     cooler_label: `${input.coolerUsed}/${cooler.capacity}`,
     bait_label: hookUsedHere ? `${hook!.name} ${hookUnits}` : 'Bare hook',
+    bait_name: hookUsedHere ? hook!.name : 'Bare hook',
+    bait_count: hookUsedHere ? hookUnits : null,
     species_logged: angler.speciesLogged,
     species_total: content.species.length,
     stories: stories.map((s) => ({ kind: s.kind, summary: s.summary })),
     recap,
+    recap_items: recapItems,
     // The board shows the group's first rows; an angler outside them gets its own row appended.
     board: input.board
       ? {
@@ -164,7 +185,9 @@ export function buildPayload(input: SlowCastPayloadInput) {
         }
       : null,
     latest_catch: latestCatch,
+    newest_catch: newestCatch,
     attention,
+    attention_kind: attentionKind,
     // A full cooler sends the code to the cooler page; otherwise to the dock.
     qr: coolerFull ? ('cooler' as const) : ('app' as const),
     qr_base: input.artBaseUrl ? `${input.artBaseUrl}${qrBase(coolerFull ? 'cooler' : 'home')}` : '',

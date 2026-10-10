@@ -4,7 +4,8 @@
  * rendered by both engines from the same context and the markup must match
  * exactly. Ruby runs with strict filters, so a filter liquidjs knows but TRMNL
  * lacks fails here instead of silently passing through on TRMNL. Neither engine
- * replaces the live TRMNL render check.  Usage: pnpm crosscheck:trmnl
+ * replaces the live TRMNL render check. Slow Cast's templates are checked the same way over its preview scenarios
+ * (D115, template v2).  Usage: pnpm crosscheck:trmnl
  */
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -12,6 +13,9 @@ import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { Liquid } from 'liquidjs'
 import { screenMarkup } from '@trmnl-games/desk-crawler/templates/screen'
+import { screenMarkup as slowCastMarkup } from '@trmnl-games/slow-cast/templates/screen'
+import { previewScenarios } from '@trmnl-games/slow-cast/templates/previewScenarios'
+import { buildPayload } from '@trmnl-games/slow-cast/payload'
 import type { PreviewLayout } from '@trmnl-games/desk-crawler/templates/preview'
 import { bundle, requireBundle, root } from './bundle'
 
@@ -31,22 +35,33 @@ try {
     cases.push(...dumped.map(({ name, layout, context }) => ({ id: `${flags.join(' ')} ${name} ${layout}`, layout, context })))
   }
 
+  // Slow Cast: every preview scenario, with and without the weekly fly code.
+  const slowCastCases = Object.entries(previewScenarios('https://local-art.invalid')).flatMap(([name, input]) =>
+    [null, '482 917'].flatMap((flyCode) =>
+      (Object.keys(slowCastMarkup) as PreviewLayout[]).map((layout) => ({ id: `slow-cast ${name}${flyCode ? ' fly' : ''} ${layout}`, layout, context: JSON.parse(JSON.stringify({ ...buildPayload(input), fly_code: flyCode })) as Record<string, unknown> })),
+    ),
+  )
+
   // TRMNL renders in UTC; the preview's liquidjs and the Ruby process both use it.
-  const ruby = bundle(['exec', 'ruby', join(root, 'tools/trmnl/crosscheck.rb')], {
-    input: JSON.stringify({ templates: screenMarkup, cases }),
-    stdio: ['pipe', 'pipe', 'inherit'],
-    maxBuffer: 256 * 1024 * 1024,
-    env: { TZ: 'UTC' },
-  })
-  if (ruby.status !== 0) throw new Error('Ruby render failed')
-  const rubyHtml = JSON.parse(ruby.stdout.toString()) as Record<string, string>
+  const renderRuby = (templates: Record<string, string>, set: typeof cases) => {
+    const ruby = bundle(['exec', 'ruby', join(root, 'tools/trmnl/crosscheck.rb')], {
+      input: JSON.stringify({ templates, cases: set }),
+      stdio: ['pipe', 'pipe', 'inherit'],
+      maxBuffer: 256 * 1024 * 1024,
+      env: { TZ: 'UTC' },
+    })
+    if (ruby.status !== 0) throw new Error('Ruby render failed')
+    return JSON.parse(ruby.stdout.toString()) as Record<string, string>
+  }
+  const rubyHtml = { ...renderRuby(screenMarkup, cases), ...renderRuby(slowCastMarkup, slowCastCases) }
 
   const liquid = new Liquid({ timezoneOffset: 0 })
   const out = join(root, '.previews/crosscheck')
   rmSync(out, { recursive: true, force: true })
   let mismatches = 0
-  for (const { id, layout, context } of cases) {
-    const js = await liquid.parseAndRender(screenMarkup[layout], context)
+  const allCases = [...cases.map((c) => ({ ...c, templates: screenMarkup as Record<string, string> })), ...slowCastCases.map((c) => ({ ...c, templates: slowCastMarkup as Record<string, string> }))]
+  for (const { id, layout, context, templates } of allCases) {
+    const js = await liquid.parseAndRender(templates[layout]!, context)
     const rb = rubyHtml[id] ?? 'RUBY ERROR: no output'
     if (js === rb) continue
     mismatches++
@@ -60,7 +75,7 @@ try {
     writeFileSync(`${base}.liquidjs.html`, js)
     writeFileSync(`${base}.ruby.html`, rb)
   }
-  console.log(mismatches ? `\n${mismatches} of ${cases.length} renders differ; full outputs in .previews/crosscheck/` : `${cases.length} renders identical in liquidjs and Ruby Liquid (trmnlp)`)
+  console.log(mismatches ? `\n${mismatches} of ${allCases.length} renders differ; full outputs in .previews/crosscheck/` : `${allCases.length} renders identical in liquidjs and Ruby Liquid (trmnlp)`)
   process.exitCode = mismatches ? 1 : 0
 } finally {
   rmSync(dir, { recursive: true, force: true })

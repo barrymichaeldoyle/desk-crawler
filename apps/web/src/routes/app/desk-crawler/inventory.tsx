@@ -1,7 +1,7 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { nextSlotAfter } from '@trmnl-games/desk-crawler/sim/schedule'
 import { POTION_HEAL_PCT } from '@trmnl-games/desk-crawler/content/sustain'
 import { pctOf } from '@trmnl-games/desk-crawler/sim/core/stats'
@@ -16,7 +16,7 @@ import { retainSellableSelection, saleIsCurrent } from '../../../lib/bagSelectio
 import { RARITY_TONE } from '../../../lib/palette'
 import { EmptySlot, Gem, PotionSlot, Sheet, SheetTitle, Slot, SlotPreview } from './-bagSlots'
 import { useNow } from './-pulse'
-import { ConfirmButtons, Consequences } from './-confirm'
+import { ConfirmButtons, ConfirmSheet, Consequences } from './-confirm'
 
 export const Route = createFileRoute('/app/desk-crawler/inventory')({ head: () => seo({ title: 'Bag', index: false }), loader: ({ context }) => preload(context, convexQuery(api.inventory.mine, {}), convexQuery(api.heroes.mine, {})), component: Inventory })
 
@@ -360,13 +360,17 @@ type PurchaseIntent<A> = { pending: boolean; run: (args: A, message?: string) =>
 function PotionPouch({ pouch, potions, gold, disabled, intent }: { pouch: Pouch; potions: number; gold: number; disabled: boolean; intent: PurchaseIntent<{ tierId: string }> }) {
   const next = pouch.next
   const affordable = next?.price != null && gold >= next.price
+  const [asking, setAsking] = useState(false)
   return <Card title={pouch.name} icon="potion">
     <p className="tabular-nums">Holds <strong>{pouch.cap}</strong> potions. You have <strong>{potions}</strong>.</p>
     {next ? <>
       <p className="mt-3"><strong>Next: {next.name}</strong>, {next.cap} potions</p>
       <p className="mt-1 text-sm text-muted">Yours at level {next.milestoneLevel}, or sooner if your hero finds one or the merchant has one.</p>
       {next.price !== null ? next.buyable ? <>
-        <Button className="mt-3" variant={affordable ? 'primary' : 'secondary'} disabled={disabled || !affordable} pending={intent.pending} icon="coin" busyLabel="Buying…" onClick={() => intent.run({ tierId: next.id }, `${next.name} bought. It holds ${next.cap} potions.`)}>Buy for {next.price} gold</Button>
+        <Button className="mt-3" variant={affordable ? 'primary' : 'secondary'} disabled={disabled || !affordable} pending={intent.pending} icon="coin" busyLabel="Buying…" onClick={() => setAsking(true)}>Buy for {next.price} gold</Button>
+        <BuySheet open={asking} title={`Buy the ${next.name}?`} price={next.price} gold={gold} pending={intent.pending} onClose={() => setAsking(false)} onConfirm={() => intent.run({ tierId: next.id }, `${next.name} bought. It holds ${next.cap} potions.`)}>
+          <li>Holds {next.cap} potions instead of {pouch.cap}.</li>
+        </BuySheet>
         {!affordable ? <p className="mt-2 text-sm tabular-nums">You have <span className="text-gold-ink">{gold} gold</span>.</p> : null}
       </> : <p className="mt-2 text-sm">{next.lockedUntilLevel !== null ? `You can buy it from level ${next.lockedUntilLevel}.` : 'You can buy it after your next pouch milestone.'}</p> : null}
     </> : <p className="mt-3 text-sm text-muted">This is the biggest pouch for now.</p>}
@@ -375,6 +379,7 @@ function PotionPouch({ pouch, potions, gold, disabled, intent }: { pouch: Pouch;
 
 /** D78: the visiting merchant's offers, each sold once, open for a few adventures. */
 function Merchant({ visit, gold, potions, cap, disabled, intent }: { visit: Visit; gold: number; potions: number; cap: number; disabled: boolean; intent: PurchaseIntent<{ offerId: Offer['id'] }> }) {
+  const [asking, setAsking] = useState<Offer | null>(null)
   return <Card title="Wandering Merchant" icon="merchant">
     <p className="text-sm">Leaves in {visit.ticksLeft === 1 ? 'one adventure' : `${visit.ticksLeft} adventures`}. Each offer sells once.</p>
     <ul className="mt-3 flex flex-col gap-3">
@@ -383,25 +388,44 @@ function Merchant({ visit, gold, potions, cap, disabled, intent }: { visit: Visi
         const overflow = offer.id === 'potions' && potions + offer.quantity > cap
         return <li key={offer.id} className="flex flex-wrap items-center justify-between gap-2 border-t-2 border-faint pt-3 first:border-t-0 first:pt-0">
           <span><strong>{offer.name}</strong>{overflow ? <span className="block text-sm text-muted">Your pouch holds {cap}; make room first.</span> : null}</span>
-          <Button variant={affordable && !overflow ? 'primary' : 'secondary'} disabled={disabled || !affordable || overflow} pending={intent.pending} icon="coin" busyLabel="Buying…" onClick={() => intent.run({ offerId: offer.id }, `${offer.name} bought.`)}>Buy for {offer.price} gold</Button>
+          <Button variant={affordable && !overflow ? 'primary' : 'secondary'} disabled={disabled || !affordable || overflow} pending={intent.pending} icon="coin" busyLabel="Buying…" onClick={() => setAsking(offer)}>Buy for {offer.price} gold</Button>
         </li>
       })}
     </ul>
     {visit.offers.some((offer) => gold < offer.price) ? <p className="mt-2 text-sm tabular-nums">You have <span className="text-gold-ink">{gold} gold</span>.</p> : null}
+    <BuySheet open={asking !== null} title={asking ? `Buy ${asking.name}?` : ''} price={asking?.price ?? 0} gold={gold} pending={intent.pending} onClose={() => setAsking(null)} onConfirm={() => (asking ? intent.run({ offerId: asking.id }, `${asking.name} bought.`) : Promise.resolve(false))}>
+      <li>The merchant sells each offer once.</li>
+    </BuySheet>
   </Card>
+}
+
+/** Every purchase asks first: a stray tap only opens this sheet, which says what changes and the gold left. */
+function BuySheet({ open, title, price, gold, pending, onConfirm, onClose, children }: { open: boolean; title: string; price: number; gold: number; pending: boolean; onConfirm: () => Promise<boolean>; onClose: () => void; children: ReactNode }) {
+  return (
+    <ConfirmSheet open={open} title={title} confirmLabel={`Buy for ${price} gold`} busyLabel="Buying…" cancelLabel="Cancel" pending={pending} onClose={onClose} onConfirm={async () => { if (pending) return; await onConfirm(); onClose() }}>
+      <Consequences>
+        {children}
+        <li>Costs {price} gold, leaving you {gold - price}.</li>
+      </Consequences>
+    </ConfirmSheet>
+  )
 }
 
 /** D61: the current bag, the next one and the three ways to get it. */
 function BagLadder({ ladder, capacity, gold, disabled, intent }: { ladder: Ladder; capacity: number; gold: number; disabled: boolean; intent: PurchaseIntent<{ tierId: string }> }) {
   const next = ladder.next
   const affordable = next?.price != null && gold >= next.price
+  const [asking, setAsking] = useState(false)
   return <Card title="Bigger bags" icon="bag">
     <p className="tabular-nums">Your <strong>{ladder.name}</strong> holds <strong>{capacity}</strong> pieces of gear. Equipped gear and potions don’t take up space.</p>
     {next ? <>
       <p className="mt-3"><strong>Next: {next.name}</strong>, {next.capacity} slots</p>
       <p className="mt-1 text-sm text-muted">{next.milestoneAdventures !== null ? `Yours after ${next.milestoneAdventures} adventures` : `Yours at level ${next.milestoneLevel}`}, or sooner if your hero finds one.</p>
       {next.price !== null ? next.buyable ? <>
-        <Button className="mt-3" variant={affordable ? 'primary' : 'secondary'} disabled={disabled || !affordable} pending={intent.pending} icon="coin" busyLabel="Buying…" onClick={() => intent.run({ tierId: next.id }, `${next.name} bought. It holds ${next.capacity}.`)}>Buy for {next.price} gold</Button>
+        <Button className="mt-3" variant={affordable ? 'primary' : 'secondary'} disabled={disabled || !affordable} pending={intent.pending} icon="coin" busyLabel="Buying…" onClick={() => setAsking(true)}>Buy for {next.price} gold</Button>
+        <BuySheet open={asking} title={`Buy the ${next.name}?`} price={next.price} gold={gold} pending={intent.pending} onClose={() => setAsking(false)} onConfirm={() => intent.run({ tierId: next.id }, `${next.name} bought. It holds ${next.capacity}.`)}>
+          <li>Holds {next.capacity} pieces of gear instead of {capacity}.</li>
+        </BuySheet>
         {!affordable ? <p className="mt-2 text-sm tabular-nums">You have <span className="text-gold-ink">{gold} gold</span>.</p> : null}
       </> : <p className="mt-2 text-sm">{next.lockedUntilLevel !== null ? `You can buy it from level ${next.lockedUntilLevel}.` : 'You can buy it after your next bag milestone.'}</p> : null}
     </> : <p className="mt-3 text-sm text-muted">This is the biggest bag for now.</p>}

@@ -368,8 +368,8 @@ export function buildPayload(input: PayloadInput) {
   })()
 
   let attention: string | null = null
-  if (hero.quarantined || servicePaused) attention = 'Paused for a service check. Nothing is lost.'
-  else if (stale) attention = 'Updates delayed. Nothing is lost.'
+  if (hero.quarantined || servicePaused) attention = 'Paused for a service check.'
+  else if (stale) attention = 'Updates are delayed.'
   else if (hero.status === 'dead') attention = 'Revives automatically with all XP and gear.'
   else if (hero.status === 'sleeping' && hero.wakeAtTick === undefined) attention = 'Make room in your bag in the companion, then resume.'
   // D78: a merchant visit is a cheerful notice, never an attention line (attention collapses the stories), and only while its offers are open.

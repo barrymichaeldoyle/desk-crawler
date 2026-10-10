@@ -31,7 +31,6 @@ function AchievementsPage() {
         <h1 className="font-display text-3xl font-bold">Achievements</h1>
         <span className="label-px text-muted">{mine.earnedCount} earned</span>
       </div>
-      <p className="text-sm"><Link to="/app/slow-cast/logbook" className="underline underline-offset-4">Back to the logbook</Link></p>
       {CATEGORIES.map((category) => {
         const families = mine.families.filter((f) => f.category === category)
         if (category === 'Species') {

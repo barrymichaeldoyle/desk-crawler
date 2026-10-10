@@ -11,7 +11,7 @@ import { Gem, SpriteIcon } from '../desk-crawler/-bagSlots'
 import { FlyBox } from './-flyBox'
 import { FishName } from './-fish'
 
-/** The logbook: every species by water, then the fly box. A caught fish shows its count, best weight and where to find it; an unseen one is a silhouette. */
+/** The logbook: every species by water, then the fly box. A caught fish shows its count, best weight and where to find it; an unseen one is a silhouette with its bait (epics give nothing away). */
 export const Route = createFileRoute('/app/slow-cast/logbook')({
   loader: ({ context }) => preload(context, convexQuery(api.slowCast.anglers.logbook, {}), convexQuery(api.slowCast.flies.mine, {})),
   component: LogbookPage,
@@ -19,7 +19,7 @@ export const Route = createFileRoute('/app/slow-cast/logbook')({
 
 type Entry =
   | { id: string; seen: true; name: string; rarity: string; count: number; bestGrams: number; maxGrams: number; baits: string[]; times: string[] | null; weather: string[] | null }
-  | { id: string; seen: false; rarity: string }
+  | { id: string; seen: false; rarity: string; baits?: string[] | null }
 
 /** An unseen fish: its outline in full ink, so the shape hints without naming it. */
 function silhouette(id: string) {
@@ -66,7 +66,7 @@ function LogbookPage() {
                         {s.weather ? ` · ${s.weather.map((w) => WEATHER_LABEL[w]).join(' or ')}` : ''}
                       </p>
                     </>
-                  ) : <p className="text-sm text-muted">{s.rarity === 'epic' ? 'An epic fish. It needs the right bait, hour and weather.' : `A ${s.rarity} fish of ${water.name}.`}</p>}
+                  ) : <p className="text-sm text-muted">{s.baits ? `Bait: ${s.baits.map((b) => BAIT_LABEL[b]).join(' or ')}` : s.rarity === 'epic' ? 'Needs the right bait, hour and weather.' : `A ${s.rarity} fish of ${water.name}.`}</p>}
                 </div>
               </li>
             ))}

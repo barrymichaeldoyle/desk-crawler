@@ -8,6 +8,7 @@ import { preload } from '../../../lib/preload'
 import type { Dock } from '../../../lib/slowCast'
 import { ActionFeedback, Button, Card, NoticeBar, useNotice } from '../../../lib/ui'
 import { AlertsCard, type AlertKindCopy } from '../desk-crawler/-alerts'
+import { ConfirmSheet, Consequences } from '../desk-crawler/-confirm'
 
 /** The More tab: links to rankings, achievements and help, then settings (pause, public profile, alerts, deleting Slow Cast progress alone). */
 export const Route = createFileRoute('/app/slow-cast/settings')({
@@ -35,6 +36,7 @@ function SettingsPage() {
   const profile = useIntent(api.slowCast.anglers.setPublicProfile)
   const deletion = useIntent(api.deletion.requestGameDeletion)
   const [confirm, setConfirm] = useState('')
+  const [askingPause, setAskingPause] = useState(false)
   const angler = dock?.angler
   if (!angler) return null
   const active = angler.activationState === 'active'
@@ -60,7 +62,7 @@ function SettingsPage() {
           <div className="mt-3">
             {angler.status === 'paused'
               ? <Button pending={resume.pending} onClick={() => void resume.run({}, 'Fishing resumed.')}>Resume fishing</Button>
-              : <Button variant="secondary" pending={pause.pending} onClick={() => void pause.run({}, 'Fishing paused.')}>Pause fishing</Button>}
+              : <Button variant="secondary" disabled={pause.pending} onClick={() => setAskingPause(true)}>Pause fishing</Button>}
           </div>
           <ActionFeedback error={pause.error ?? resume.error} message={pause.message ?? resume.message} />
         </Card>
@@ -90,6 +92,26 @@ function SettingsPage() {
         <ActionFeedback error={deletion.error} message={deletion.message} />
       </Card>
       <p className="text-sm"><Link to="/account" className="underline underline-offset-4">Account settings</Link> cover your public name, analytics and deleting your whole account.</p>
+      <ConfirmSheet
+        open={askingPause}
+        title="Pause fishing?"
+        confirmLabel="Pause fishing"
+        busyLabel="Pausing…"
+        cancelLabel="Keep fishing"
+        pending={pause.pending}
+        onClose={() => setAskingPause(false)}
+        onConfirm={async () => {
+          if (pause.pending) return
+          await pause.run({}, 'Fishing paused.')
+          setAskingPause(false)
+        }}
+      >
+        <Consequences>
+          <li>No casts, fish or XP until you resume, and missed casts are not made up later.</li>
+          <li>Your 24-hour and 7-day XP keeps ageing out, so you can drop down those boards.</li>
+          <li>Your cooler, bait and gold stay as they are. Resume any time.</li>
+        </Consequences>
+      </ConfirmSheet>
       <NoticeBar notice={notice} onDismiss={dismiss} />
     </>
   )

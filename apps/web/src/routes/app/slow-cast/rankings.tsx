@@ -39,7 +39,7 @@ function RankingsPage() {
       ) : (
         <Card title={view.cohortLabel}>
           <p className="mb-3 text-sm text-muted">
-            {view.own ? `You are #${view.own.rank} of ${view.totalPlayers}.` : `${view.totalPlayers} anglers in this group.`} Updated hourly; {view.globalTotalPlayers} anglers fished this week.
+            {view.own ? <>You are #{view.own.rank} of {view.totalPlayers}{view.own.rankDelta ? <>, <span className={view.own.rankDelta > 0 ? 'text-xp-ink' : 'text-hp-ink'}>{view.own.rankDelta > 0 ? 'up' : 'down'} {Math.abs(view.own.rankDelta)}</span> since the last update</> : null}.</> : `${view.totalPlayers} anglers in this group.`} Updated hourly; {view.globalTotalPlayers} anglers fished this week.
           </p>
           <ol className="flex flex-col">
             {view.entries.map((row) => (

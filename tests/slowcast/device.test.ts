@@ -121,10 +121,10 @@ describe('Slow Cast payload', () => {
   })
 
   it('says what needs a hand, most urgent first', () => {
-    expect(buildPayload(scenarios.coolerFull!)).toMatchObject({ cooler_full: true, attention: 'Cooler full: sell in the companion.', qr_base: `${ART}/art/sc/qr/v1/cooler` })
-    expect(buildPayload(scenarios.bareHook!)).toMatchObject({ bait_label: 'Bare hook', attention: 'Out of maggots: bare hook.' })
-    expect(buildPayload(scenarios.stale!).attention).toBe('Updates delayed. Nothing is lost.')
-    expect(buildPayload(scenarios.servicePaused!)).toMatchObject({ data_state: 'service_paused', attention: 'Paused for a service check. Nothing is lost.' })
+    expect(buildPayload(scenarios.coolerFull!)).toMatchObject({ cooler_full: true, attention: 'Cooler full. Sell in the companion.', qr_base: `${ART}/art/sc/qr/v1/cooler` })
+    expect(buildPayload(scenarios.bareHook!)).toMatchObject({ bait_label: 'Bare hook', attention: 'Out of maggots, fishing a bare hook.' })
+    expect(buildPayload(scenarios.stale!).attention).toBe('Updates are delayed.')
+    expect(buildPayload(scenarios.servicePaused!)).toMatchObject({ data_state: 'service_paused', attention: 'Paused for a service check.' })
     expect(buildPayload(scenarios.travelling!)).toMatchObject({ status: 'travelling', status_label: 'Heading to Harbour Pier' })
     expect(buildPayload(scenarios.paused!).scene_base).toContain('/paused/none/red_tag')
   })

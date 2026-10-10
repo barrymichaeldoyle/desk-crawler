@@ -23,7 +23,7 @@ export interface Dock {
     readonly speciesLogged: number
     readonly speciesTotal: number
   }
-  readonly catches?: ReadonlyArray<{ id: Id<'catches'>; speciesId: string; name: string; grams: number; value: number; caughtTick: number }>
+  readonly catches?: ReadonlyArray<{ id: Id<'catches'>; speciesId: string; name: string; grams: number; value: number; caughtTick: number; record?: boolean }>
   readonly waters?: ReadonlyArray<{ id: string; name: string; unlockLevel: number; access: string | null; open: boolean; weather: string; band: string; bitePercent: number; baits: readonly string[]; weatherUntil: number }>
   readonly shop?: {
     readonly rod: { name: string; price: number; limitGrams: number; biteBonusPercent: number } | null
@@ -31,6 +31,7 @@ export interface Dock {
     readonly access: ReadonlyArray<{ id: 'waders' | 'pier_permit'; name: string; price: number; water: string; owned: boolean }>
   }
   readonly logs?: ReadonlyArray<{ id: string; at: number; kind: string; summary: string; xp: number; gold: number }>
+  readonly recap?: { landed: number; released: number; records: number; firsts: number; xp: number; best: { speciesId: string; grams: number } | null; gotAway: number; awayGrams: number[] }
   readonly nextTickAt?: number
 }
 

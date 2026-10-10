@@ -24,7 +24,7 @@ export function FlyBox({ notify }: { notify: Notify }) {
   const next = box.nextAvailableAt ? new Date(box.nextAvailableAt).toLocaleDateString([], { weekday: 'long' }) : null
   return (
     <Card title="Fly box">
-      <p>Your TRMNL shows a <strong>Fly code</strong> in its title bar each week. Enter it here for a fly; the newest one goes on your angler's hat. Flies are decoration and never change a catch.</p>
+      <p>Each week your TRMNL shows a <strong>Fly code</strong> in its title bar. Enter it to add a fly to the box. Your angler wears the newest one on their hat.</p>
       {box.claimedThisWeek ? (
         <p className="mt-3 text-sm font-semibold">This week's fly is in the box. A new code appears on {next}.</p>
       ) : box.connected ? (

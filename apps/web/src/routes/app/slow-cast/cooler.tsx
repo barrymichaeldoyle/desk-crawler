@@ -11,6 +11,7 @@ import { Button, Card, NoticeBar, useNotice } from '../../../lib/ui'
 import { SpriteIcon } from '../desk-crawler/-bagSlots'
 import { ConfirmSheet } from '../desk-crawler/-confirm'
 import { FishName } from './-fish'
+import { Rows } from './-rows'
 
 /** The cooler: choose fish to sell, or sell them all after a confirmation. Nothing is ever sold automatically. */
 export const Route = createFileRoute('/app/slow-cast/cooler')({
@@ -56,7 +57,7 @@ function CoolerPage() {
                   <input type="checkbox" className="pixel-check size-5 shrink-0" checked={chosen.has(fish.id)} onChange={() => toggle(fish.id)} />
                   <SpriteIcon sprite={fishSprite(fish.speciesId, FISH_SMALL.width, FISH_SMALL.height)} scale={3} />
                   {/* Name over weight: inline, a phone's narrow row split the weight across lines. */}
-                  <span className="flex min-w-0 flex-1 flex-col leading-tight"><FishName id={fish.speciesId}>{fish.name}</FishName>{' '}<span className="text-sm whitespace-nowrap text-muted">{formatWeight(fish.grams)}</span></span>
+                  <span className="flex min-w-0 flex-1 flex-col leading-tight"><FishName id={fish.speciesId}>{fish.name}</FishName>{' '}<span className="text-sm whitespace-nowrap text-muted">{formatWeight(fish.grams)}{fish.record ? <span className="text-gold-ink"> · personal best</span> : null}</span></span>
                   <span className="shrink-0 tabular-nums text-gold-ink">{fish.value} gold</span>
                 </label>
               </li>
@@ -68,7 +69,7 @@ function CoolerPage() {
             </Button>
             <Button variant="secondary" disabled={sell.pending} onClick={() => setAskingAll(true)}>Sell all for {total(catches)} gold</Button>
           </div>
-          <p className="mt-3 text-sm text-muted">A fish is worth more the heavier it is, up to double its base price. When the cooler is full, new catches are released. They still count for XP and the logbook, but earn no gold.</p>
+          <Rows className="mt-3" rows={[['Price', 'Heavier fish sell for more, up to double'], ['Cooler full', 'New catches are released. They still give XP, but no gold']]} />
         </Card>
       )}
       <ConfirmSheet
@@ -85,7 +86,7 @@ function CoolerPage() {
           setAskingAll(false)
         }}
       >
-        <p>Every fish in the {dock.angler.cooler.name.toLowerCase()} goes, and you get {total(catches)} gold. Your logbook and personal bests stay as they are.</p>
+        <p>Every fish in the {dock.angler.cooler.name.toLowerCase()} goes, and you get {total(catches)} gold. Your logbook keeps every personal best, even once the fish is sold.</p>
       </ConfirmSheet>
       <NoticeBar notice={notice} onDismiss={dismiss} />
     </>

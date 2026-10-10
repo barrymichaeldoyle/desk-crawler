@@ -4,9 +4,10 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { api } from '@trmnl-games/backend/api'
 import { useIntent } from '../../../lib/intent'
 import { preload } from '../../../lib/preload'
-import { BAIT_LABEL, BAND_LABEL, WEATHER_LABEL, type Dock } from '../../../lib/slowCast'
+import { BAIT_LABEL, BAND_LABEL, WEATHER_LABEL, formatWeight, type Dock } from '../../../lib/slowCast'
 import { Button, Card, Meter, NoticeBar, useNotice } from '../../../lib/ui'
-import { FishText } from './-fish'
+import { FishName, FishText } from './-fish'
+import { Rows } from './-rows'
 
 /** The dock: the angler's scene, progress, the bait in use, the waters and the latest stories. The fly box lives in the logbook. */
 export const Route = createFileRoute('/app/slow-cast/')({
@@ -45,6 +46,11 @@ function DockPage() {
   const fishing = angler.bait.find((b) => b.class === angler.baitOnHook && (baitWater?.baits ?? []).includes(b.class) && b.units > 0)
   // Travelling spends the next cast on the move, so the first cast at the new water is the one after.
   const firstCastThere = dock.nextTickAt ? time(dock.nextTickAt + 15 * 60_000) : null
+  const recap = dock.recap
+  const nextRod = dock.shop?.rod ?? null
+  // Fish that broke free and the next rod would have held: the clearest reason to upgrade.
+  const rodWouldLand = nextRod ? (recap?.awayGrams ?? []).filter((g) => g <= nextRod.limitGrams).length : 0
+  const goal = nextGoal(dock)
 
   return (
     <>
@@ -69,12 +75,29 @@ function DockPage() {
         {!coolerFull && catches.length > 0 ? (
           <p className="text-sm"><Link to="/app/slow-cast/cooler" className="underline underline-offset-4">Sell {catches.length} fish for {coolerValue} gold</Link></p>
         ) : null}
+        {goal ? <p className="text-sm"><span className="text-muted">Next goal</span> · <Link to="/app/slow-cast/shop" className="underline underline-offset-4">{goal}</Link></p> : null}
         {coolerFull ? (
           <p className="font-semibold text-hp-ink">
             The cooler is full, so new catches are released. <Link to="/app/slow-cast/cooler" className="underline underline-offset-4">Sell your catch</Link>.
           </p>
         ) : null}
       </section>
+
+      {recap && recap.landed + recap.gotAway > 0 ? (
+        <Card title="Last 12 hours">
+          <Rows rows={[
+            ['Landed', `${recap.landed} fish${recap.released ? ` (${recap.released} released, cooler full)` : ''}`],
+            recap.best ? ['Heaviest', <>{formatWeight(recap.best.grams)} <FishName id={recap.best.speciesId} /></>] : null,
+            recap.records ? ['Personal bests', `${recap.records}`] : null,
+            recap.firsts ? ['New species', `${recap.firsts}`] : null,
+            recap.xp ? ['XP', <span className="text-xp-ink">+{recap.xp}</span>] : null,
+            recap.gotAway ? ['Got away', `${recap.gotAway}, too heavy for the ${angler.rod.name}`] : null,
+          ]} />
+          {nextRod && rodWouldLand > 0 ? (
+            <p className="mt-3 text-sm">The {nextRod.name} would have landed {rodWouldLand === recap.gotAway ? (rodWouldLand === 1 ? 'it' : 'all of them') : `${rodWouldLand} of them`}. <Link to="/app/slow-cast/shop" className="underline underline-offset-4">{nextRod.price} gold in the shop</Link>.</p>
+          ) : null}
+        </Card>
+      ) : null}
 
       <Card title="Bait">
         {usable.length === 0 ? <p className="mb-3 font-semibold text-hp-ink">You have no bait for {baitWater?.name}, so your angler {destination ? 'will fish' : 'is fishing'} a bare hook. <Link to="/app/slow-cast/shop" className="underline underline-offset-4">Buy bait</Link>.</p> : null}
@@ -138,4 +161,23 @@ function DockPage() {
       <NoticeBar notice={notice} onDismiss={dismiss} />
     </>
   )
+}
+
+/**
+ * The one thing to work towards next: the nearest locked water (its level, then its pass), else the next rod, else
+ * the next cooler. Null once everything is owned.
+ */
+function nextGoal(dock: Dock): string | null {
+  const angler = dock.angler!
+  const gold = angler.gold
+  const afford = (price: number) => (gold >= price ? `${price} gold (you have it)` : `${price - gold} gold to go`)
+  const locked = dock.waters?.filter((w) => !w.open).sort((a, b) => a.unlockLevel - b.unlockLevel)[0]
+  if (locked) {
+    const pass = dock.shop?.access.find((a) => a.water === locked.id && !a.owned)
+    if (angler.level < locked.unlockLevel) return `${locked.name} at level ${locked.unlockLevel}${pass ? ` and the ${pass.name} (${pass.price} gold)` : ''}`
+    if (pass) return `${pass.name} to fish ${locked.name}, ${afford(pass.price)}`
+  }
+  if (dock.shop?.rod) return `${dock.shop.rod.name}, ${afford(dock.shop.rod.price)}`
+  if (dock.shop?.cooler) return `${dock.shop.cooler.name}, ${afford(dock.shop.cooler.price)}`
+  return null
 }

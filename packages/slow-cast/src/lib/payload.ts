@@ -138,10 +138,10 @@ export function buildPayload(input: SlowCastPayloadInput) {
   let attention: string | null = null
   /** Which mark leads the attention line (template v2). */
   let attentionKind: 'service' | 'cooler' | 'bait' | null = null
-  if (angler.quarantined || servicePaused) [attention, attentionKind] = ['Paused for a service check. Nothing is lost.', 'service']
-  else if (stale) [attention, attentionKind] = ['Updates delayed. Nothing is lost.', 'service']
-  else if (coolerFull) [attention, attentionKind] = ['Cooler full: sell in the companion.', 'cooler']
-  else if (!hookUsedHere) [attention, attentionKind] = [hook && hookUnits === 0 ? `Out of ${hook.name.toLowerCase()}: bare hook.` : 'Fishing a bare hook.', 'bait']
+  if (angler.quarantined || servicePaused) [attention, attentionKind] = ['Paused for a service check.', 'service']
+  else if (stale) [attention, attentionKind] = ['Updates are delayed.', 'service']
+  else if (coolerFull) [attention, attentionKind] = ['Cooler full. Sell in the companion.', 'cooler']
+  else if (!hookUsedHere) [attention, attentionKind] = [hook && hookUnits === 0 ? `Out of ${hook.name.toLowerCase()}, fishing a bare hook.` : 'Fishing a bare hook.', 'bait']
   const stories = deviceStories(input.stories).slice(0, MAX_STORIES)
   // Twelve-hour recap: fish landed (kept or released), the heaviest, and any that got away.
   const recent = input.stories.filter((story) => now - story.at <= RECAP_MS)

@@ -143,7 +143,7 @@ const scDock = sc === 'none' ? { gameState: null, angler: null } : {
     baitOnHook: sc === 'rich' ? 'strip' : 'maggots',
     bait: [bait('worms', 'Worms', 12, 12, 25), bait('bread', 'Bread', 0, 12, 20), bait('maggots', 'Maggots', sc === 'empty' ? 0 : 34, 12, 30), bait('spinner', 'Spinner', 0, 72, 240), bait('ragworm', 'Ragworm', 24, 12, 60), bait('strip', 'Mackerel strip', sc === 'rich' ? 48 : 0, 12, 75)],
     access: sc === 'rich' ? ['waders', 'pier_permit'] : ['waders'], counters: {}, publicProfile: false, speciesLogged: sc === 'rich' ? 26 : 14, speciesTotal: 30 },
-  catches: sc === 'empty' ? [] : Array.from({ length: sc === 'full' ? 18 : 7 }, (_, i) => { const [speciesId, name, grams, value] = scCatches[i % scCatches.length]; return { id: 'c' + i, speciesId, name, grams: grams + i * 10, value, caughtTick: 900 - i } }),
+  catches: sc === 'empty' ? [] : Array.from({ length: sc === 'full' ? 18 : 7 }, (_, i) => { const [speciesId, name, grams, value] = scCatches[i % scCatches.length]; return { id: 'c' + i, speciesId, name, grams: grams + i * 10, value, caughtTick: 900 - i, record: i === 0 } }),
   waters: [
     { id: 'millpond', name: 'Millpond', unlockLevel: 1, access: null, open: true, weather: 'clear', band: 'dusk', bitePercent: 17, baits: ['worms', 'bread', 'spinner'], weatherUntil: now + 36e5 * 2 },
     { id: 'river_bend', name: 'River Bend', unlockLevel: 4, access: 'waders', open: true, weather: 'overcast', band: 'dusk', bitePercent: 21, baits: ['worms', 'maggots', 'spinner'], weatherUntil: now + 36e5 * 2 },
@@ -151,13 +151,14 @@ const scDock = sc === 'none' ? { gameState: null, angler: null } : {
   ],
   shop: { rod: sc === 'rich' ? null : { name: 'Carbon Rod', price: 700, limitGrams: 10000, biteBonusPercent: 10 }, cooler: { name: 'Dockside Crate', price: 1500, capacity: 24 }, access: [{ id: 'waders', name: 'Waders', price: 250, water: 'river_bend', owned: true }, { id: 'pier_permit', name: 'Pier Permit', price: 900, water: 'harbour_pier', owned: sc === 'rich' }] },
   logs: [['A 1.9 kg Barbel took the maggots at dusk. A new personal best.', 96], ['A kingfisher flashes past, low and blue.', 0], ['A 410 g Chub took the maggots in the day.', 41], ['Something heavy took the maggots and kept going.', 0], ['Sold 6 fish for 312 gold.', 0]].map(([summary, xp], i) => ({ id: 'l' + i, at: now - i * 36e5, kind: 'catch', summary, xp, gold: 0 })),
+  recap: sc === 'empty' ? { landed: 0, released: 0, records: 0, firsts: 0, xp: 0, best: null, gotAway: 0, awayGrams: [] } : { landed: 9, released: sc === 'full' ? 3 : 0, records: 1, firsts: 1, xp: 412, best: { speciesId: 'barbel', grams: 1900 }, gotAway: 2, awayGrams: [5200, 11800] },
   nextTickAt: now + 6e5,
 };
 if (sc === 'empty' && scDock.angler) scDock.angler.baitOnHook = 'maggots';
-const species = (water, list) => ({ water, species: list.map(([id, name, rarity, count, best, max, baits, times, weather]) => count ? { id, seen: true, name, rarity, count, bestGrams: best, maxGrams: max, baits, times, weather } : { id, seen: false, rarity }) });
+const species = (water, list) => ({ water, species: list.map(([id, name, rarity, count, best, max, baits, times, weather]) => count ? { id, seen: true, name, rarity, count, bestGrams: best, maxGrams: max, baits, times, weather } : { id, seen: false, rarity, baits: rarity === 'epic' ? null : baits ?? null }) });
 const scBook = [
-  species({ id: 'millpond', name: 'Millpond' }, [['minnow', 'Minnow', 'common', 12, 48, 50, ['worms', 'bread'], null, null], ['roach', 'Roach', 'common', 30, 590, 600, ['worms', 'bread'], null, null], ['perch', 'Perch', 'common', 9, 1210, 1400, ['worms', 'spinner'], null, null], ['bream', 'Bream', 'uncommon', 3, 2200, 3500, ['bread', 'worms'], ['dawn', 'dusk', 'night'], null], ['eel', 'Eel', 'rare', 0], ['golden_carp', 'Golden Carp', 'epic', 0]]),
-  species({ id: 'river_bend', name: 'River Bend' }, [['chub', 'Chub', 'common', 22, 2100, 2500, ['worms', 'maggots'], null, null], ['grayling', 'Grayling', 'uncommon', 4, 1100, 1500, ['maggots'], null, ['overcast', 'rain']], ['pike', 'Pike', 'rare', 0], ['salmon', 'Salmon', 'epic', 0]]),
+  species({ id: 'millpond', name: 'Millpond' }, [['minnow', 'Minnow', 'common', 12, 48, 50, ['worms', 'bread'], null, null], ['roach', 'Roach', 'common', 30, 590, 600, ['worms', 'bread'], null, null], ['perch', 'Perch', 'common', 9, 1210, 1400, ['worms', 'spinner'], null, null], ['bream', 'Bream', 'uncommon', 3, 2200, 3500, ['bread', 'worms'], ['dawn', 'dusk', 'night'], null], ['eel', 'Eel', 'rare', 0, 0, 0, ['worms']], ['golden_carp', 'Golden Carp', 'epic', 0]]),
+  species({ id: 'river_bend', name: 'River Bend' }, [['chub', 'Chub', 'common', 22, 2100, 2500, ['worms', 'maggots'], null, null], ['grayling', 'Grayling', 'uncommon', 4, 1100, 1500, ['maggots'], null, ['overcast', 'rain']], ['pike', 'Pike', 'rare', 0, 0, 0, ['spinner']], ['salmon', 'Salmon', 'epic', 0]]),
 ];
 const queries = {
   'users:me': () => data.me,

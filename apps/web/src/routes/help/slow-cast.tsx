@@ -52,7 +52,7 @@ export const Route = createFileRoute('/help/slow-cast')({
       </ul>
       <p>Moving skips one cast, then the angler fishes the new water. If the bait you are using does not work there, the angler switches to the bait you hold most of that does. You can go back whenever you like.</p>
       <h2 id="the-logbook">The logbook</h2>
-      <p>Every species you land is logged with its count and your best weight, and the logbook says which bait, hours and weather it takes. Fish you have not caught show as silhouettes. Three epic fish need the right bait, hour and weather together.</p>
+      <p>Every species you land is logged with its count and your best weight, and the logbook says which bait, hours and weather it takes. Fish you have not caught show as silhouettes with their bait, except the epics. Three epic fish need the right bait, hour and weather together.</p>
       <h2 id="rankings">Rankings</h2>
       <p>Slow Cast has its own leaderboards by XP, separate from your other games. Released fish earn full XP, so an angler you leave alone still climbs.</p>
       <h2 id="pausing-and-removing">Pausing and removing</h2>

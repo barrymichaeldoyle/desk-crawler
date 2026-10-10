@@ -15,6 +15,7 @@ import { currentAngler, slowCastProfile } from './profile'
 import { SLOW_CAST_RUNTIME, SLOW_CAST_SCHEDULE } from './runtime'
 import { awardAfterAnglerIntent } from './achievements'
 import { accessId, baitClass, waterId } from './validators'
+import { MAX_RECAP_STORIES, RECAP_MS } from '@trmnl-games/slow-cast/payload'
 
 /**
  * Slow Cast companion API (slow-cast.md "Selling and the shop"). Every change is
@@ -194,8 +195,9 @@ export const setPublicProfile = mutation({
 })
 
 /**
- * The signed-in owner's dock: angler, cooler, bait, shop, forecast, recent stories. Fixed bounded reads
- * (the angler, at most 24 catches, 20 logs, the world). Null when signed out or before the angler exists.
+ * The signed-in owner's dock: angler, cooler, bait, shop, forecast, recent stories and the device's twelve-hour
+ * recap. Fixed bounded reads (the angler, at most 32 catches, 60 logs, the world). Null when signed out or before
+ * the angler exists.
  */
 export const dock = query({
   args: {},
@@ -209,7 +211,14 @@ export const dock = query({
     const now = Date.now()
     const state = toAnglerState(angler)
     const catches = await ctx.db.query('catches').withIndex('by_anglerId', (q) => q.eq('anglerId', angler._id)).take(32)
-    const logs = await ctx.db.query('swTickLogs').withIndex('by_anglerId_and_at_and_sequence', (q) => q.eq('anglerId', angler._id)).order('desc').take(20)
+    // The recap reads as many stories as the device's (MAX_RECAP_STORIES); the Latest list shows the newest 20.
+    const recentLogs = await ctx.db.query('swTickLogs').withIndex('by_anglerId_and_at_and_sequence', (q) => q.eq('anglerId', angler._id)).order('desc').take(MAX_RECAP_STORIES)
+    const logs = recentLogs.slice(0, 20)
+    const window = recentLogs.filter((l) => l.source === 'tick' && now - l.at <= RECAP_MS)
+    const landed = window.filter((l) => l.kind === 'catch' || l.kind === 'release')
+    const away = window.filter((l) => l.kind === 'got_away')
+    const heaviest = (rows: typeof window) => rows.reduce<(typeof window)[number] | null>((top, l) => (l.detail.grams !== undefined && (top === null || l.detail.grams > (top.detail.grams ?? 0)) ? l : top), null)
+    const best = heaviest(landed)
     const cooler = coolerOf(content, angler.coolerTier)
     const rod = rodOf(content, angler.rodTier)
     const slot = SLOW_CAST_SCHEDULE.wallSlotFor(now)
@@ -254,7 +263,8 @@ export const dock = query({
         speciesTotal: content.species.length,
       },
       catches: catches
-        .map((c) => ({ id: c._id, speciesId: c.speciesId, name: content.species.find((s) => s.id === c.speciesId)?.name ?? c.speciesId, grams: c.grams, value: c.value, caughtTick: c.caughtTick }))
+        // `record`: this fish is the species' heaviest in the logbook, so selling it sells the personal best.
+        .map((c) => ({ id: c._id, speciesId: c.speciesId, name: content.species.find((s) => s.id === c.speciesId)?.name ?? c.speciesId, grams: c.grams, value: c.value, caughtTick: c.caughtTick, record: angler.logbook[c.speciesId]?.bestGrams === c.grams }))
         .sort((a, b) => b.caughtTick - a.caughtTick),
       waters,
       shop: {
@@ -263,6 +273,17 @@ export const dock = query({
         access: content.access.map((a) => ({ id: a.id, name: a.name, price: a.price, water: a.water, owned: angler.access.includes(a.id) })),
       },
       logs: logs.map((l) => ({ id: l._id, at: l.at, kind: l.kind, summary: l.summary, xp: l.deltas.xpEarned, gold: l.deltas.gold })),
+      // The device's twelve-hour recap (payload.ts), with fish that broke free for the rod nudge.
+      recap: {
+        landed: landed.length,
+        released: landed.filter((l) => l.kind === 'release').length,
+        records: landed.filter((l) => l.detail.record === true).length,
+        firsts: landed.filter((l) => l.detail.firstOfSpecies === true).length,
+        xp: window.reduce((sum, l) => sum + l.deltas.xpEarned, 0),
+        best: best?.detail.speciesId && best.detail.grams !== undefined ? { speciesId: best.detail.speciesId, grams: best.detail.grams } : null,
+        gotAway: away.length,
+        awayGrams: away.flatMap((l) => (l.detail.grams === undefined ? [] : [l.detail.grams])),
+      },
       nextTickAt: SLOW_CAST_SCHEDULE.nextSlotAfter(now),
       worldTick: world?.currentTick ?? 0,
     }
@@ -286,7 +307,8 @@ export const logbook = query({
           const entry = angler.logbook[s.id]
           return entry
             ? { id: s.id, seen: true as const, name: s.name, rarity: s.rarity, count: entry.count, bestGrams: entry.bestGrams, maxGrams: s.maxGrams, baits: s.baits, times: s.times ?? null, weather: s.weather ?? null }
-            : { id: s.id, seen: false as const, rarity: s.rarity }
+            // An uncaught fish hints its bait, except the epics, which stay a puzzle.
+            : { id: s.id, seen: false as const, rarity: s.rarity, baits: s.rarity === 'epic' ? null : s.baits }
         }),
     }))
   },

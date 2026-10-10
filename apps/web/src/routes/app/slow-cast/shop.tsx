@@ -1,7 +1,7 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { Fragment, useState, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { useIntent } from '../../../lib/intent'
 import { preload } from '../../../lib/preload'
@@ -9,6 +9,7 @@ import { formatWeight, type Dock } from '../../../lib/slowCast'
 import { Button, Card, NoticeBar, useNotice } from '../../../lib/ui'
 import { ConfirmSheet } from '../desk-crawler/-confirm'
 import { FishList, baitCatches } from './-fish'
+import { Rows } from './-rows'
 
 /** The tackle shop: the next rod and cooler, the passes and bait tubs, each at a fixed price and confirmed before buying. */
 export const Route = createFileRoute('/app/slow-cast/shop')({
@@ -20,15 +21,6 @@ const WATER_NAME: Record<string, string> = { river_bend: 'River Bend', harbour_p
 
 /** A purchase waiting for its confirmation: a stray tap only opens the sheet. Rows say what changes, as label and value. */
 type Offer = { title: string; price: number; rows: ReadonlyArray<readonly [string, ReactNode]>; buy: () => Promise<boolean> }
-
-/** Label and value pairs in two columns, the shop's way of saying what an item does. */
-function Rows({ rows }: { rows: ReadonlyArray<readonly [string, ReactNode]> }) {
-  return (
-    <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
-      {rows.map(([label, value]) => <Fragment key={label}><dt className="text-muted">{label}</dt><dd>{value}</dd></Fragment>)}
-    </dl>
-  )
-}
 
 function ShopPage() {
   const { data } = useQuery(convexQuery(api.slowCast.anglers.dock, {}))
@@ -88,10 +80,13 @@ function ShopPage() {
       </div>
 
       <Card title="Rod">
-        <p>You fish with the <strong>{angler.rod.name}</strong>, which lands fish up to {formatWeight(angler.rod.limitGrams)}. Anything heavier gets away.</p>
+        <Rows rows={[
+          ['Yours', <><strong>{angler.rod.name}</strong>, lands up to {formatWeight(angler.rod.limitGrams)}</>],
+          nextRod ? ['Next', <><strong>{nextRod.name}</strong>, lands up to {formatWeight(nextRod.limitGrams)}, +{nextRod.biteBonusPercent}% bite chance</>] : null,
+        ]} />
+        <p className="mt-2 text-sm text-muted">A fish heavier than your rod can land gets away.</p>
         {nextRod ? (
           <>
-            <p className="mt-3">Next: the <strong>{nextRod.name}</strong>. It lands fish up to {formatWeight(nextRod.limitGrams)} and gets {nextRod.biteBonusPercent}% more bites than a cane rod.</p>
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <Button disabled={gold < nextRod.price || buying} onClick={() => setOffer({ title: `Buy the ${nextRod.name}?`, price: nextRod.price, rows: [['Replaces', `the ${angler.rod.name}`], ['Lands up to', `${formatWeight(nextRod.limitGrams)} (now ${formatWeight(angler.rod.limitGrams)})`], ['Bite chance', `+${nextRod.biteBonusPercent}% over the Cane Rod`]], buy: () => rod.run({}, `Bought the ${nextRod.name}.`) })}>
                 Buy for {nextRod.price} gold
@@ -103,10 +98,13 @@ function ShopPage() {
       </Card>
 
       <Card title="Cooler">
-        <p>The <strong>{angler.cooler.name}</strong> holds {angler.cooler.capacity} fish. When it is full, new catches are released and earn no gold.</p>
+        <Rows rows={[
+          ['Yours', <><strong>{angler.cooler.name}</strong>, holds {angler.cooler.capacity} fish</>],
+          nextCooler ? ['Next', <><strong>{nextCooler.name}</strong>, holds {nextCooler.capacity} fish</>] : null,
+        ]} />
+        <p className="mt-2 text-sm text-muted">When the cooler is full, new catches are released and earn no gold.</p>
         {nextCooler ? (
           <>
-            <p className="mt-3">Next: the <strong>{nextCooler.name}</strong>, which holds {nextCooler.capacity}.</p>
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <Button disabled={gold < nextCooler.price || buying} onClick={() => setOffer({ title: `Buy the ${nextCooler.name}?`, price: nextCooler.price, rows: [['Replaces', `the ${angler.cooler.name}`], ['Holds', `${nextCooler.capacity} fish (now ${angler.cooler.capacity})`], ['Your catch', 'Moves into the new cooler']], buy: () => cooler.run({}, `Bought the ${nextCooler.name}.`) })}>
                 Buy for {nextCooler.price} gold

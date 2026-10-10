@@ -91,11 +91,30 @@ describe('Slow Cast intents (D115, S2)', () => {
     expect(await as('Nobody').query(api.slowCast.anglers.dock, {})).toEqual({ gameState: null, angler: null })
   })
 
-  it('shows unseen species without their details in the logbook', async () => {
+  it('recaps the last twelve hours on the dock and marks personal bests in the cooler', async () => {
+    const anglerId = await seedAngler(t, { logbook: { roach: { count: 2, bestGrams: 410, firstTick: 1 } } }, 'Pat')
+    await fillCooler(anglerId, [['roach', 410, 12], ['roach', 200, 8]])
+    const now = Date.now()
+    const log = (sequence: number, at: number, kind: 'catch' | 'release' | 'got_away', detail: Record<string, unknown>, xp: number) =>
+      ({ anglerId, source: 'tick' as const, sequence, at, kind, summary: kind, detail: { v: 1 as const, ...detail }, deltas: { xpEarned: xp, gold: 0 } })
+    await t.run(async (ctx) => {
+      await ctx.db.insert('swTickLogs', log(1, now - 3_600_000, 'catch', { speciesId: 'roach', grams: 410, record: true }, 12))
+      await ctx.db.insert('swTickLogs', log(2, now - 7_200_000, 'release', { speciesId: 'perch', grams: 900, firstOfSpecies: true }, 16))
+      await ctx.db.insert('swTickLogs', log(3, now - 1_800_000, 'got_away', { speciesId: 'common_carp', grams: 6000 }, 0))
+      // Older than twelve hours: left out.
+      await ctx.db.insert('swTickLogs', log(4, now - 13 * 3_600_000, 'catch', { speciesId: 'roach', grams: 300 }, 12))
+    })
+    const dock = await as('Pat').query(api.slowCast.anglers.dock, {})
+    expect(dock.recap).toEqual({ landed: 2, released: 1, records: 1, firsts: 1, xp: 28, best: { speciesId: 'perch', grams: 900 }, gotAway: 1, awayGrams: [6000] })
+    expect(dock.catches.map((c: { grams: number; record: boolean }) => [c.grams, c.record])).toEqual(expect.arrayContaining([[410, true], [200, false]]))
+  })
+
+  it('shows unseen species with only their bait, and epics with nothing, in the logbook', async () => {
     await seedAngler(t, { logbook: { roach: { count: 3, bestGrams: 410, firstTick: 2 } } }, 'Pat')
     const book = await as('Pat').query(api.slowCast.anglers.logbook, {})
     const pond = book[0].species
     expect(pond.find((s: { id: string }) => s.id === 'roach')).toMatchObject({ seen: true, name: 'Roach', count: 3, bestGrams: 410 })
-    expect(pond.find((s: { id: string }) => s.id === 'golden_carp')).toEqual({ id: 'golden_carp', seen: false, rarity: 'epic' })
+    expect(pond.find((s: { id: string }) => s.id === 'golden_carp')).toEqual({ id: 'golden_carp', seen: false, rarity: 'epic', baits: null })
+    expect(pond.find((s: { id: string }) => s.id === 'eel')).toEqual({ id: 'eel', seen: false, rarity: 'rare', baits: ['worms'] })
   })
 })

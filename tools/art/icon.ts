@@ -1,9 +1,9 @@
-/** Render the 512x512 marketplace icon: the Warrior's head and blade in a rune circle, in the Party Menu colours. pnpm tsx tools/art/icon.ts <out.png> */
+/** Render a game's 512x512 TRMNL plugin icon (tools/art/gameIcons.ts). pnpm tsx tools/art/icon.ts [desk-crawler|slow-cast] <out.png> */
 import { writeFileSync } from 'node:fs'
-import { colourMark } from './colour'
-import { iconCanvas } from './iconArt'
+import { deskCrawlerIcon, slowCastIcon } from './gameIcons'
 
-const out = process.argv[2] ?? 'icon.png'
-const image = colourMark(iconCanvas()).scaled(16)
+const game = process.argv[2] ?? 'desk-crawler'
+const out = process.argv[3] ?? 'icon.png'
+const image = (game === 'slow-cast' ? slowCastIcon() : deskCrawlerIcon()).scaled(8)
 writeFileSync(out, image.png())
 console.log(`wrote ${out} ${image.width}x${image.height}`)

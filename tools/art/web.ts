@@ -1,14 +1,28 @@
-/** Render the platform's and Desk Crawler's favicons and app icons into public/. pnpm tsx tools/art/web.ts (social cards: tools/art/og.mjs) */
+/** Render the platform's and each game's favicons and app icons into public/, and the games' TRMNL plugin icons into docs/assets/. pnpm tsx tools/art/web.ts (social cards: tools/art/og.mjs) */
 import { mkdirSync, writeFileSync } from 'node:fs'
 import type { Canvas } from '@trmnl-games/desk-crawler/art/canvas'
 import { BRAND, Image, colourMark, markSvg } from './colour'
-import { faviconCanvas, iconCanvas } from './iconArt'
+import { deskCrawlerFavicon, deskCrawlerIcon, slowCastFavicon, slowCastIcon } from './gameIcons'
 import { platformFaviconCanvas, platformIconCanvas } from './platformArt'
 
 function writeIconSet(out: string, iconArt: Canvas, faviconArt: Canvas): void {
-  mkdirSync(out, { recursive: true })
   const icon = colourMark(iconArt)
-  const favicon = colourMark(faviconArt)
+  const touch = new Image(36, 36, BRAND.gold)
+  // Apple touch icon: 180 = 36 x 5, so pad the 32px art by two tile pixels each side.
+  touch.blit(icon, 2, 2)
+  writeImages(out, colourMark(faviconArt), [['apple-touch-icon.png', touch, 5], ['icon-192.png', icon, 6], ['icon-512.png', icon, 16]])
+}
+
+/** A game's colour icon (64px art) and its hand-drawn 16px tab icon (gameIcons.ts). */
+function writeGameIconSet(out: string, icon: Image, favicon: Image, pluginIcon: string): void {
+  // 64 x 3 = 192 for the touch icon too: iOS scales it, and whole-pixel steps keep the art crisp.
+  writeImages(out, favicon, [['apple-touch-icon.png', icon, 3], ['icon-192.png', icon, 3], ['icon-512.png', icon, 8]])
+  writeFileSync(pluginIcon, icon.scaled(8).png())
+  console.log(`wrote ${pluginIcon} 512x512`)
+}
+
+function writeImages(out: string, favicon: Image, sizes: Array<[string, Image, number]>): void {
+  mkdirSync(out, { recursive: true })
 
   function png(name: string, image: Image, factor: number): Uint8Array {
     const scaled = image.scaled(factor)
@@ -42,14 +56,10 @@ function writeIconSet(out: string, iconArt: Canvas, faviconArt: Canvas): void {
   writeFileSync(`${out}/favicon.ico`, Buffer.concat([new Uint8Array(header.buffer), ico16, ico32]))
   console.log(`wrote ${out}/favicon.ico 16x16, 32x32`)
 
-  // Apple touch icon: 180 = 36 x 5, so pad the 32px art by two tile pixels each side.
-  const touch = new Image(36, 36, BRAND.gold)
-  touch.blit(icon, 2, 2)
-  png('apple-touch-icon.png', touch, 5)
-  png('icon-192.png', icon, 6)
-  png('icon-512.png', icon, 16)
+  for (const [name, image, factor] of sizes) png(name, image, factor)
 }
 
-// The platform mark at the site root; Desk Crawler's Warrior under its game path.
+// The platform mark at the site root; each game's colour icon under its game path.
 writeIconSet('apps/web/public', platformIconCanvas(), platformFaviconCanvas())
-writeIconSet('apps/web/public/games/desk-crawler', iconCanvas(), faviconCanvas())
+writeGameIconSet('apps/web/public/games/desk-crawler', deskCrawlerIcon(), deskCrawlerFavicon(), 'docs/assets/plugin-icon.png')
+writeGameIconSet('apps/web/public/games/slow-cast', slowCastIcon(), slowCastFavicon(), 'docs/assets/slow-cast-plugin-icon.png')

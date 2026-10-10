@@ -15,7 +15,7 @@ export const Route = createFileRoute('/games/slow-cast')({
       <PlatformHeader />
       <main id="main" className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-10">
         <header className="flex flex-col gap-3">
-          <h1 className="font-display text-4xl font-bold sm:text-5xl">{games['slow-cast'].name}</h1>
+          <h1 className="flex items-center gap-4 font-display text-4xl font-bold leading-tight sm:text-5xl"><img src="/games/slow-cast/icon-192.png" alt="" width={64} height={64} className="size-14 [image-rendering:pixelated] sm:size-16" />{games['slow-cast'].name}</h1>
           <p className="text-lg text-muted">
             {games['slow-cast'].description} Every fifteen minutes your angler casts. The species depends on the water, the bait, the hour and the weather, and the screen on your desk shows what bit. Every day or two you open the companion to sell the cooler, restock bait and buy the rod that lands the one that got away.
           </p>

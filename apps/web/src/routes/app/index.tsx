@@ -48,7 +48,10 @@ function UpcomingGames() {
   const angler = (dock as { angler?: { activationState: string; status: string; level: number } | null } | undefined)?.angler
   return (
     <section className="window flex flex-col gap-3 p-5" aria-labelledby="library-sc">
-      <h2 id="library-sc" className="font-display text-2xl font-bold">{games['slow-cast'].name}</h2>
+      <div className="flex items-center gap-4">
+        <img src="/games/slow-cast/icon-192.png" alt="" width={64} height={64} className="h-16 w-16 [image-rendering:pixelated]" />
+        <h2 id="library-sc" className="font-display text-2xl font-bold text-gold-ink">{games['slow-cast'].name}</h2>
+      </div>
       {!angler ? <img src="/games/slow-cast/sample.png" alt="A sample Slow Cast screen" width={780} height={460} className="w-full border-2 border-edge bg-white [image-rendering:pixelated]" /> : null}
       <p className="text-muted">{angler ? `Level ${angler.level} · ${angler.activationState !== 'active' ? 'Waiting for TRMNL Save' : angler.status === 'paused' ? 'Paused' : 'Fishing'}` : games['slow-cast'].description}</p>
       {game.status !== 'live' ? <p className="label-px self-start">{game.status === 'hidden' ? 'Hidden: only admins can see this' : 'Coming soon'}</p> : null}

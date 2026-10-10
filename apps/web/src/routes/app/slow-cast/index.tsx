@@ -6,6 +6,7 @@ import { useIntent } from '../../../lib/intent'
 import { preload } from '../../../lib/preload'
 import { BAIT_LABEL, BAND_LABEL, WEATHER_LABEL, type Dock } from '../../../lib/slowCast'
 import { Button, Card, Meter, NoticeBar, useNotice } from '../../../lib/ui'
+import { FishText } from './-fish'
 
 /** The dock: the angler's scene, progress, the bait in use, the waters and the latest stories. The fly box lives in the logbook. */
 export const Route = createFileRoute('/app/slow-cast/')({
@@ -129,7 +130,7 @@ function DockPage() {
           {dock.logs?.slice(0, 10).map((log) => (
             <li key={log.id} className="flex gap-3 text-sm">
               <span className="w-12 shrink-0 tabular-nums text-muted">{time(log.at)}</span>
-              <span className="min-w-0">{log.summary}{log.xp ? <span className="text-xp-ink"> +{log.xp} XP</span> : null}</span>
+              <span className="min-w-0"><FishText text={log.summary} />{log.xp ? <span className="text-xp-ink"> +{log.xp} XP</span> : null}</span>
             </li>
           ))}
         </ol>

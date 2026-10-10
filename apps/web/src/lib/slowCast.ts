@@ -39,14 +39,3 @@ export const formatWeight = (grams: number) => (grams >= 1000 ? `${(Math.round(g
 export const BAND_LABEL: Record<string, string> = { dawn: 'Dawn', day: 'Day', dusk: 'Dusk', night: 'Night' }
 export const WEATHER_LABEL: Record<string, string> = { clear: 'Clear', overcast: 'Overcast', rain: 'Rain', wind: 'Wind', fog: 'Fog' }
 export const BAIT_LABEL: Record<string, string> = { worms: 'Worms', bread: 'Bread', maggots: 'Maggots', spinner: 'Spinner', ragworm: 'Ragworm', strip: 'Mackerel strip' }
-
-/** Who takes a bait, split into the fish that take nothing else and the rest; only fish in `seen` are named. */
-export function baitCatches(species: ReadonlyArray<{ id: string; name: string; baits: readonly string[] }>, bait: string, seen: ReadonlySet<string>) {
-  const takers = species.filter((s) => s.baits.includes(bait))
-  const named = (rows: typeof takers) => ({ names: rows.filter((s) => seen.has(s.id)).map((s) => s.name), unseen: rows.filter((s) => !seen.has(s.id)).length })
-  return { only: named(takers.filter((s) => s.baits.length === 1)), also: named(takers.filter((s) => s.baits.length > 1)) }
-}
-
-/** "Roach, Perch, +2 not caught yet", or "3 fish not caught yet", for a baitCatches group. */
-export const fishList = ({ names, unseen }: { names: string[]; unseen: number }) =>
-  [...names, ...(unseen > 0 ? [names.length > 0 ? `+${unseen} not caught yet` : `${unseen} fish not caught yet`] : [])].join(', ')

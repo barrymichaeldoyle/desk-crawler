@@ -9,6 +9,7 @@ import { BAIT_LABEL, BAND_LABEL, WEATHER_LABEL, formatWeight } from '../../../li
 import { Card, NoticeBar, useNotice } from '../../../lib/ui'
 import { Gem, SpriteIcon } from '../desk-crawler/-bagSlots'
 import { FlyBox } from './-flyBox'
+import { FishName } from './-fish'
 
 /** The logbook: every species by water, then the fly box. A caught fish shows its count, best weight and where to find it; an unseen one is a silhouette. */
 export const Route = createFileRoute('/app/slow-cast/logbook')({
@@ -55,7 +56,7 @@ function LogbookPage() {
               <li key={s.id} className="flex items-start gap-3 border border-rule p-3">
                 <SpriteIcon sprite={s.seen ? fishSprite(s.id, FISH_LARGE.width, FISH_LARGE.height) : silhouette(s.id)} scale={2} className={s.seen ? '' : 'opacity-60'} />
                 <div className="min-w-0">
-                  <p className="flex items-center gap-2 font-semibold"><Gem rarity={s.rarity} scale={2} />{s.seen ? s.name : 'Not caught yet'}</p>
+                  <p className="flex items-center gap-2 font-semibold"><Gem rarity={s.rarity} scale={2} />{s.seen ? <FishName id={s.id}>{s.name}</FishName> : 'Not caught yet'}</p>
                   {s.seen ? (
                     <>
                       <p className="text-sm">{s.count} caught · best {formatWeight(s.bestGrams)} of {formatWeight(s.maxGrams)}</p>

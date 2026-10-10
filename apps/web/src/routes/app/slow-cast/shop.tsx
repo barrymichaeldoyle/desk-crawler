@@ -1,14 +1,14 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, type ReactNode } from 'react'
+import { Fragment, useState, type ReactNode } from 'react'
 import { api } from '@trmnl-games/backend/api'
 import { useIntent } from '../../../lib/intent'
 import { preload } from '../../../lib/preload'
-import { contentV1 } from '@trmnl-games/slow-cast/content'
-import { baitCatches, fishList, formatWeight, type Dock } from '../../../lib/slowCast'
+import { formatWeight, type Dock } from '../../../lib/slowCast'
 import { Button, Card, NoticeBar, useNotice } from '../../../lib/ui'
 import { ConfirmSheet } from '../desk-crawler/-confirm'
+import { FishList, baitCatches } from './-fish'
 
 /** The tackle shop: the next rod and cooler, the passes and bait tubs, each at a fixed price and confirmed before buying. */
 export const Route = createFileRoute('/app/slow-cast/shop')({
@@ -18,8 +18,17 @@ export const Route = createFileRoute('/app/slow-cast/shop')({
 
 const WATER_NAME: Record<string, string> = { river_bend: 'River Bend', harbour_pier: 'the Harbour Pier' }
 
-/** A purchase waiting for its confirmation: a stray tap only opens the sheet. */
-type Offer = { title: string; price: number; detail: ReactNode; buy: () => Promise<boolean> }
+/** A purchase waiting for its confirmation: a stray tap only opens the sheet. Rows say what changes, as label and value. */
+type Offer = { title: string; price: number; rows: ReadonlyArray<readonly [string, ReactNode]>; buy: () => Promise<boolean> }
+
+/** Label and value pairs in two columns, the shop's way of saying what an item does. */
+function Rows({ rows }: { rows: ReadonlyArray<readonly [string, ReactNode]> }) {
+  return (
+    <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+      {rows.map(([label, value]) => <Fragment key={label}><dt className="text-muted">{label}</dt><dd>{value}</dd></Fragment>)}
+    </dl>
+  )
+}
 
 function ShopPage() {
   const { data } = useQuery(convexQuery(api.slowCast.anglers.dock, {}))
@@ -47,22 +56,22 @@ function ShopPage() {
   const laterBait = angler.bait.filter((b) => !usableBait.includes(b))
   const baitRow = (b: (typeof angler.bait)[number]) => {
     const waters = dock.waters?.filter((w) => w.baits.includes(b.class)).map((w) => w.name) ?? []
-    const catches = baitCatches(contentV1.species, b.class, seen)
+    const catches = baitCatches(b.class, seen)
     return (
       <li key={b.class} className="flex flex-col gap-2 border-b border-rule pb-4 last:border-b-0">
         <div className="flex flex-wrap items-baseline justify-between gap-x-3">
           <p className="font-semibold">{b.name}</p>
           <p className="text-sm text-muted">{b.units} held</p>
         </div>
-        <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
-          <dt className="text-muted">Waters</dt><dd>{waters.join(', ')}</dd>
-          {catches.only.names.length + catches.only.unseen > 0 ? <><dt className="text-muted">Only bait for</dt><dd>{fishList(catches.only)}</dd></> : null}
-          {catches.also.names.length + catches.also.unseen > 0 ? <><dt className="text-muted">Also catches</dt><dd>{fishList(catches.also)}</dd></> : null}
-          <dt className="text-muted">Tub</dt><dd>{b.tubSize} for {b.price} gold</dd>
-        </dl>
+        <Rows rows={[
+          ['Waters', waters.join(', ')],
+          ...(catches.only.ids.length + catches.only.unseen > 0 ? [['Only bait for', <FishList {...catches.only} />] as const] : []),
+          ...(catches.also.ids.length + catches.also.unseen > 0 ? [['Also catches', <FishList {...catches.also} />] as const] : []),
+          ['Tub', `${b.tubSize} for ${b.price} gold`],
+        ]} />
         <div className="flex flex-wrap gap-2">
           {[1, 3].filter((n) => n <= b.tubsThatFit).map((n) => (
-            <Button key={n} variant="secondary" disabled={gold < b.price * n || buying} onClick={() => setOffer({ title: `Buy ${n === 1 ? 'a tub' : `${n} tubs`} of ${b.name.toLowerCase()}?`, price: b.price * n, detail: <p>{b.tubSize * n} {b.name.toLowerCase()}, for {b.units + b.tubSize * n} in all.</p>, buy: () => bait.run({ bait: b.class as never, tubs: n }, `Bought ${n} ${n === 1 ? 'tub' : 'tubs'} of ${b.name.toLowerCase()}.`) })}>
+            <Button key={n} variant="secondary" disabled={gold < b.price * n || buying} onClick={() => setOffer({ title: `Buy ${n === 1 ? 'a tub' : `${n} tubs`} of ${b.name.toLowerCase()}?`, price: b.price * n, rows: [['You get', `${b.tubSize * n} ${b.name.toLowerCase()}`], ['You will hold', `${b.units + b.tubSize * n} (now ${b.units})`]], buy: () => bait.run({ bait: b.class as never, tubs: n }, `Bought ${n} ${n === 1 ? 'tub' : 'tubs'} of ${b.name.toLowerCase()}.`) })}>
               {n === 1 ? 'Buy 1 tub' : `Buy ${n} tubs`}
             </Button>
           ))}
@@ -84,7 +93,7 @@ function ShopPage() {
           <>
             <p className="mt-3">Next: the <strong>{nextRod.name}</strong>. It lands fish up to {formatWeight(nextRod.limitGrams)} and gets {nextRod.biteBonusPercent}% more bites than a cane rod.</p>
             <div className="mt-3 flex flex-wrap items-center gap-3">
-              <Button disabled={gold < nextRod.price || buying} onClick={() => setOffer({ title: `Buy the ${nextRod.name}?`, price: nextRod.price, detail: <p>It replaces the {angler.rod.name} and lands fish up to {formatWeight(nextRod.limitGrams)}.</p>, buy: () => rod.run({}, `Bought the ${nextRod.name}.`) })}>
+              <Button disabled={gold < nextRod.price || buying} onClick={() => setOffer({ title: `Buy the ${nextRod.name}?`, price: nextRod.price, rows: [['Replaces', `the ${angler.rod.name}`], ['Lands up to', `${formatWeight(nextRod.limitGrams)} (now ${formatWeight(angler.rod.limitGrams)})`], ['Bite chance', `+${nextRod.biteBonusPercent}% over the Cane Rod`]], buy: () => rod.run({}, `Bought the ${nextRod.name}.`) })}>
                 Buy for {nextRod.price} gold
               </Button>
               {short(nextRod.price)}
@@ -99,7 +108,7 @@ function ShopPage() {
           <>
             <p className="mt-3">Next: the <strong>{nextCooler.name}</strong>, which holds {nextCooler.capacity}.</p>
             <div className="mt-3 flex flex-wrap items-center gap-3">
-              <Button disabled={gold < nextCooler.price || buying} onClick={() => setOffer({ title: `Buy the ${nextCooler.name}?`, price: nextCooler.price, detail: <p>It replaces the {angler.cooler.name} and holds {nextCooler.capacity} fish instead of {angler.cooler.capacity}. The fish in your cooler move across.</p>, buy: () => cooler.run({}, `Bought the ${nextCooler.name}.`) })}>
+              <Button disabled={gold < nextCooler.price || buying} onClick={() => setOffer({ title: `Buy the ${nextCooler.name}?`, price: nextCooler.price, rows: [['Replaces', `the ${angler.cooler.name}`], ['Holds', `${nextCooler.capacity} fish (now ${angler.cooler.capacity})`], ['Your catch', 'Moves into the new cooler']], buy: () => cooler.run({}, `Bought the ${nextCooler.name}.`) })}>
                 Buy for {nextCooler.price} gold
               </Button>
               {short(nextCooler.price)}
@@ -120,7 +129,7 @@ function ShopPage() {
                   <p className="text-sm text-muted">Lets you fish {water}{level ? ` from level ${level}` : ''}.</p>
                 </div>
                 {item.owned ? <span className="label-px text-xp-ink">Owned</span> : (
-                  <Button variant="secondary" disabled={gold < item.price || buying} onClick={() => setOffer({ title: `Buy the ${item.name}?`, price: item.price, detail: <p>You keep it for good. {level && angler.level < level ? `You can fish ${water} once you reach level ${level}.` : `You can fish ${water} straight away.`}</p>, buy: () => access.run({ access: item.id }, `Bought the ${item.name}.`) })}>
+                  <Button variant="secondary" disabled={gold < item.price || buying} onClick={() => setOffer({ title: `Buy the ${item.name}?`, price: item.price, rows: [['Opens', water[0]!.toUpperCase() + water.slice(1)], ['Fish there', level && angler.level < level ? `From level ${level} (you are ${angler.level})` : 'Straight away']], buy: () => access.run({ access: item.id }, `Bought the ${item.name}.`) })}>
                     Buy for {item.price} gold
                   </Button>
                 )}
@@ -154,12 +163,7 @@ function ShopPage() {
           setOffer(null)
         }}
       >
-        {offer ? (
-          <>
-            {offer.detail}
-            <p className="text-sm text-muted">You have {gold} gold and will have {gold - offer.price} left.</p>
-          </>
-        ) : null}
+        {offer ? <Rows rows={[...offer.rows, ['Cost', `${offer.price} gold`], ['Gold left', `${gold - offer.price}`]]} /> : null}
       </ConfirmSheet>
       <NoticeBar notice={notice} onDismiss={dismiss} />
     </>

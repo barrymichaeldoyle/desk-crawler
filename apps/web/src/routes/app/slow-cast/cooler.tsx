@@ -10,6 +10,7 @@ import { formatWeight, type Dock } from '../../../lib/slowCast'
 import { Button, Card, NoticeBar, useNotice } from '../../../lib/ui'
 import { SpriteIcon } from '../desk-crawler/-bagSlots'
 import { ConfirmSheet } from '../desk-crawler/-confirm'
+import { FishName } from './-fish'
 
 /** The cooler: choose fish to sell, or sell them all after a confirmation. Nothing is ever sold automatically. */
 export const Route = createFileRoute('/app/slow-cast/cooler')({
@@ -55,7 +56,7 @@ function CoolerPage() {
                   <input type="checkbox" className="pixel-check size-5 shrink-0" checked={chosen.has(fish.id)} onChange={() => toggle(fish.id)} />
                   <SpriteIcon sprite={fishSprite(fish.speciesId, FISH_SMALL.width, FISH_SMALL.height)} scale={3} />
                   {/* Name over weight: inline, a phone's narrow row split the weight across lines. */}
-                  <span className="flex min-w-0 flex-1 flex-col leading-tight">{fish.name}{' '}<span className="text-sm whitespace-nowrap text-muted">{formatWeight(fish.grams)}</span></span>
+                  <span className="flex min-w-0 flex-1 flex-col leading-tight"><FishName id={fish.speciesId}>{fish.name}</FishName>{' '}<span className="text-sm whitespace-nowrap text-muted">{formatWeight(fish.grams)}</span></span>
                   <span className="shrink-0 tabular-nums text-gold-ink">{fish.value} gold</span>
                 </label>
               </li>

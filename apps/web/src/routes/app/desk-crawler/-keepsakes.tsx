@@ -101,17 +101,18 @@ export function KeepsakeCallout() {
   if (form.collectedThisWeek && !earned) return null
   const shown = earned ?? next
   return <section aria-labelledby="keepsake-callout-title" className="flex min-w-0 flex-col border-[3px] border-night bg-panel outline-4 outline-gold">
-    <div className="flex items-center gap-3 p-3 sm:gap-4 sm:px-4">
+    {/* The title keeps at least a word's width: where the button no longer fits beside it, the button takes its own full row. */}
+    <div className="flex flex-wrap items-center gap-3 p-3 sm:gap-4 sm:px-4">
       <div className="grid size-12 shrink-0 place-items-center border-[3px] border-night bg-night text-gold-ink [&>svg]:size-8">
         <KeepsakeIcon pixels={shown.pixels} />
       </div>
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-[999_1_9rem]">
         <p className="hud text-hud-sm whitespace-nowrap text-gold-ink">{earned ? 'Collected' : 'This week'}</p>
         <h2 id="keepsake-callout-title" className="mt-0.5 font-display text-lg leading-tight font-bold sm:text-2xl">{earned ? `${earned.name} is on your shelf` : 'Keepsake code ready'}</h2>
       </div>
       {earned
-        ? <Link to="/app/desk-crawler/settings" hash="desk-keepsakes" className={`${LINK_BUTTON} ${BUTTON_SECONDARY} shrink-0 whitespace-nowrap`}>Shelf</Link>
-        : <Button allowOffline variant={open ? 'secondary' : 'primary'} className="shrink-0 whitespace-nowrap" aria-expanded={open} aria-controls="keepsake-callout-form" onClick={() => setOpen((value) => !value)}>{open ? 'Later' : 'Enter code'}</Button>}
+        ? <Link to="/app/desk-crawler/settings" hash="desk-keepsakes" className={`${LINK_BUTTON} ${BUTTON_SECONDARY} grow justify-center whitespace-nowrap sm:grow-0`}>Shelf</Link>
+        : <Button allowOffline variant={open ? 'secondary' : 'primary'} className="grow whitespace-nowrap sm:grow-0" aria-expanded={open} aria-controls="keepsake-callout-form" onClick={() => setOpen((value) => !value)}>{open ? 'Later' : 'Enter code'}</Button>}
     </div>
     {open && !earned ? (
       <div id="keepsake-callout-form" className="flex flex-col gap-3 border-t-[3px] border-night p-3 sm:px-4">

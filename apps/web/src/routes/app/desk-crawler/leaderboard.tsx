@@ -19,6 +19,9 @@ const TABS: Array<{ board: Board; label: string }> = [
   { board: 'overall', label: 'Lifetime' },
 ]
 
+/** Player names are often one long token ("Marcus_the_Bold"): offer a line break after each underscore before any mid-word break. */
+const breakable = (name: string) => name.split(/(?<=_)/).flatMap((part, index) => (index ? [<wbr key={index} />, part] : [part]))
+
 const groupLabel = (key: string) => (key === 'all' ? 'All heroes' : `Levels ${key.replace('-', '–')}`)
 
 function Leaderboard() {
@@ -43,7 +46,7 @@ function Leaderboard() {
               setBoard(tab.board)
               setCohortKey(undefined)
             }}
-            className={`menu-cursor flex min-h-11 flex-1 items-center justify-center px-2 py-2 label-px not-last:border-r-2 not-last:border-edge not-aria-pressed:before:hidden ${board === tab.board ? 'bg-navy text-gold' : 'text-muted hover:bg-rule hover:text-ink'}`}
+            className={`menu-cursor flex min-h-11 flex-1 items-center justify-center px-1 py-2 label-px whitespace-nowrap not-last:border-r-2 min-[360px]:px-2 not-last:border-edge not-aria-pressed:before:hidden ${board === tab.board ? 'bg-navy text-gold' : 'text-muted hover:bg-rule hover:text-ink'}`}
           >
             {tab.label}
           </button>
@@ -84,12 +87,12 @@ function Leaderboard() {
                   {/* The podium wears a crown and medals beside its gold numerals; the rest keep a blank column so names stay aligned. */}
                   <span aria-hidden="true" className="flex h-6 w-4 shrink-0 items-center text-gold-ink">{row.rank === 1 ? <Glyph name="crown" /> : row.rank <= 3 ? <Glyph name="medal" /> : null}</span>
                   <span className={`-ml-1 w-7 text-right font-bold tabular-nums ${row.rank <= 3 ? 'hud text-sm leading-6 text-gold-ink' : ''}`}>{row.rank}</span>
-                  <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+                  <span className="min-w-0 flex-1 [overflow-wrap:break-word]">
                     {/* D109: a hero whose owner made its page public links to it. */}
                     {row.profile ? (
-                      <Link to="/desk-crawler/heroes/$alias" params={{ alias: row.name }} className="block font-semibold underline decoration-dotted underline-offset-4">{row.name}</Link>
+                      <Link to="/desk-crawler/heroes/$alias" params={{ alias: row.name }} className="block font-semibold underline decoration-dotted underline-offset-4">{breakable(row.name)}</Link>
                     ) : (
-                      <span className="block font-semibold">{row.name}</span>
+                      <span className="block font-semibold">{breakable(row.name)}</span>
                     )}
                     {row.hero_name ? <span className="block text-sm text-muted">{row.hero_name}</span> : null}
                   </span>

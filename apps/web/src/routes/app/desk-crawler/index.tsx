@@ -229,7 +229,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
         <section aria-labelledby="choice-title" className="flex flex-col gap-3 border-[3px] border-night bg-panel p-4">
           <SectionTitle id="choice-title" glyph="choice" tone="text-sky-ink" size="text-2xl">{hero.choice.title}</SectionTitle>
           <p>{hero.choice.prompt}</p>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid gap-2 sm:flex sm:flex-wrap">
             {hero.choice.options.map((option) => {
               const parts = [option.change.gold ? `${option.change.gold > 0 ? '+' : '−'}${Math.abs(option.change.gold)} gold` : null, option.change.hp ? `${option.change.hp > 0 ? '+' : '−'}${Math.abs(option.change.hp)} HP` : null, option.change.potions ? `+${option.change.potions} ${option.change.potions === 1 ? 'potion' : 'potions'}` : null].filter(Boolean)
               return (
@@ -286,7 +286,7 @@ function HeroSheet({ hero }: { hero: HeroView }) {
                 <span className="flex min-w-0 flex-1 flex-col sm:gap-1">
                   <span className="flex items-center gap-2 font-display text-xl font-bold sm:text-2xl">
                     <span aria-hidden="true" className="hud hidden size-7 shrink-0 place-items-center border-[3px] border-night bg-night text-hud-sm text-gold-ink sm:grid">{index + 1}</span>
-                    <span className="truncate">{biome.name}</span>
+                    <span className="leading-tight [overflow-wrap:normal]">{biome.name}</span>
                   </span>
                   <span className="text-sm font-semibold">{biome.unlocked ? (here ? 'Exploring' : onTheWay ? 'Arriving next adventure' : 'Unlocked') : `Locked until level ${biome.unlockLevel}`}</span>
                 </span>

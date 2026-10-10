@@ -38,11 +38,11 @@ export function FlyBox({ notify }: { notify: Notify }) {
       ) : (
         <p className="mt-3 text-sm text-muted">Connect a TRMNL with Slow Cast to see this week's code.</p>
       )}
-      <ul className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-6" aria-label={`${box.totalCollected} flies collected`}>
+      <ul className="mt-4 grid grid-cols-3 gap-2 min-[400px]:grid-cols-4 sm:grid-cols-6" aria-label={`${box.totalCollected} flies collected`}>
         {box.box.map((fly) => (
           <li key={fly.id} className={`flex flex-col items-center gap-1 border p-2 text-center text-xs ${fly.count > 0 ? 'border-edge' : 'border-rule opacity-40'}`} title={fly.count > 0 ? fly.name : 'Not collected yet'}>
             <SpriteIcon sprite={{ width: fly.rows[0]!.length, height: fly.rows.length, rows: fly.rows }} scale={4} />
-            <span className="leading-tight">{fly.count > 0 ? fly.name : '?'}{fly.count > 1 ? ` ×${fly.count}` : ''}</span>
+            <span className="leading-tight [overflow-wrap:normal]">{fly.count > 0 ? fly.name : '?'}{fly.count > 1 ? ` ×${fly.count}` : ''}</span>
           </li>
         ))}
       </ul>

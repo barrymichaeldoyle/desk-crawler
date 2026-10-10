@@ -97,8 +97,8 @@ export function AdventureLog() {
     <section aria-labelledby="log-title" className="min-w-0">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
         <SectionTitle id="log-title" glyph="quest">Quest log</SectionTitle>
-        {/* Seven 44px badges fit a phone's row, so no filter hides off the edge; the chosen one's name reads below. */}
-        <div role="group" aria-label="Filter adventure log" className="flex flex-wrap gap-1">
+        {/* Seven badges share one row on phones (44px tall, as wide as the row allows), so none drops to a row of its own; the chosen one's name reads below. */}
+        <div role="group" aria-label="Filter adventure log" className="grid w-full grid-cols-7 gap-1 sm:flex sm:w-auto">
           {FILTERS.map((item) => {
             const pressed = filter === item.key
             return (
@@ -109,7 +109,7 @@ export function AdventureLog() {
                 aria-label={item.label}
                 title={item.label}
                 onClick={() => { setFilter(item.key); setLimit(FIRST_VIEW) }}
-                className={`grid size-11 shrink-0 place-items-center border-2 ${pressed ? `border-night outline-2 outline-gold ${item.glyph ? KIND_BADGE[item.glyph] : 'bg-gold'} text-night` : 'border-raised bg-panel text-muted hover:border-edge hover:text-ink active:border-edge'}`}
+                className={`grid h-11 min-w-0 place-items-center border-2 sm:w-11 sm:shrink-0 ${pressed ? `border-night outline-2 outline-gold ${item.glyph ? KIND_BADGE[item.glyph] : 'bg-gold'} text-night` : 'border-raised bg-panel text-muted hover:border-edge hover:text-ink active:border-edge'}`}
               >
                 {item.glyph ? <PixelIcon kind={item.glyph} plain /> : <span className="label-px">All</span>}
               </button>

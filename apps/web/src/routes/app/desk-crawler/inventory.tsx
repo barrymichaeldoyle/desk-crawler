@@ -167,19 +167,19 @@ function Inventory() {
       {reason ? <p className="text-sm">{hero.status === 'paused' && hero.simulationState !== 'quarantined' ? <>Adventures are paused. <Link to="/app/desk-crawler" className="underline underline-offset-4">Resume from Hero</Link> to change or sell gear.</> : reason}</p> : null}
 
       <Card title="Equipped" icon="sword">
-        <div className="grid grid-cols-3 gap-3 sm:max-w-sm sm:gap-5">
+        <div className="grid grid-cols-3 gap-2 min-[375px]:gap-3 sm:max-w-sm sm:gap-5">
           {(['weapon', 'armor'] as const).map((kind) => {
             const item = equippedOf(kind)
             return <div key={kind} className="flex min-w-0 flex-col gap-1.5">
               <h3 className="caps text-sm text-muted">{kind === 'weapon' ? 'Weapon' : 'Armor'}</h3>
               {item ? <Slot item={item} label={`${item.label}, equipped ${kind}, +${statOf(item)} ${statLabel(item)}`} busy={busyId === item.id} onClick={() => setOpenId(item.id)} /> : <EmptySlot />}
-              <p className="truncate text-sm">{item ? <StatOf item={item} /> : <span className="text-muted">Empty</span>}</p>
+              <p className="text-sm leading-snug">{item ? <StatOf item={item} /> : <span className="text-muted">Empty</span>}</p>
             </div>
           })}
           <div className="flex min-w-0 flex-col gap-1.5">
             <h3 className="caps text-sm text-muted">Potions</h3>
             <PotionSlot count={bag.potions} label={`${count(bag.potions, 'potion')}, each heals ${POTION_HEAL_PCT}% of max HP`} onClick={() => setOpenId('potions')} />
-            <p className="truncate text-sm">+{pctOf(hero.maxHp, POTION_HEAL_PCT)} HP each</p>
+            <p className="text-sm leading-snug">+{pctOf(hero.maxHp, POTION_HEAL_PCT)} HP each</p>
           </div>
         </div>
       </Card>

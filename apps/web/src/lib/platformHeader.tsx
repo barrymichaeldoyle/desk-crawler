@@ -5,9 +5,10 @@ import { Link } from '@tanstack/react-router'
 export function PlatformHeader() {
   return (
     <header className="border-b border-rule">
-      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-5">
-      <Link to="/" className="flex min-h-11 items-center gap-2 font-display text-lg font-semibold"><img src="/favicon.svg" alt="" width={24} height={24} className="[image-rendering:pixelated]" />TRMNL Games</Link>
-      <nav aria-label="Platform" className="flex items-center gap-3 text-sm">
+      {/* One row at every width: phones get a slimmer bar, and below 360px the wordmark is read but not shown. */}
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-2 sm:gap-4 sm:py-5">
+      <Link to="/" className="flex min-h-11 min-w-0 items-center gap-2 font-display text-lg font-semibold"><img src="/favicon.svg" alt="" width={24} height={24} className="shrink-0 [image-rendering:pixelated]" /><span className="truncate max-[359px]:sr-only">TRMNL Games</span></Link>
+      <nav aria-label="Platform" className="flex shrink-0 items-center gap-3 text-sm">
         <Link to="/app" className="inline-flex min-h-11 items-center underline underline-offset-4">My games</Link>
         <Link to="/account" className="inline-flex min-h-11 items-center underline underline-offset-4">Account</Link>
         {/* Clerk's avatar button is client-only; its 28px slot is reserved so the links beside it never shift when it appears. */}

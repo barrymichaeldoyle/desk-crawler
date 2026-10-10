@@ -50,9 +50,10 @@ function CoolerPage() {
             {catches.map((fish) => (
               <li key={fish.id}>
                 <label className="flex min-h-12 cursor-pointer items-center gap-3 border-b border-rule py-2 last:border-b-0">
-                  <input type="checkbox" className="size-5 shrink-0" checked={chosen.has(fish.id)} onChange={() => toggle(fish.id)} />
+                  <input type="checkbox" className="pixel-check size-5 shrink-0" checked={chosen.has(fish.id)} onChange={() => toggle(fish.id)} />
                   <SpriteIcon sprite={fishSprite(fish.speciesId, FISH_SMALL.width, FISH_SMALL.height)} scale={3} />
-                  <span className="min-w-0 flex-1">{fish.name} <span className="text-muted">· {formatWeight(fish.grams)}</span></span>
+                  {/* Name over weight: inline, a phone's narrow row split the weight across lines. */}
+                  <span className="flex min-w-0 flex-1 flex-col leading-tight">{fish.name}{' '}<span className="text-sm whitespace-nowrap text-muted">{formatWeight(fish.grams)}</span></span>
                   <span className="shrink-0 tabular-nums text-gold-ink">{fish.value} gold</span>
                 </label>
               </li>

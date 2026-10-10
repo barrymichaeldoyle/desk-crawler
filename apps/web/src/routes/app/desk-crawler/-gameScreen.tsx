@@ -23,8 +23,8 @@ export const latestLogQuery = () => convexQuery(api.heroes.recentLog, { paginati
 
 const HEARTS = 10
 const FALLBACK_BANDS = BIOME_BANDS.office_cubicles!
-/** The scene's box at each width. */
-const SCENE_BOX = 'block h-[160px] w-full object-cover object-[41%_50%] sm:h-auto sm:pt-[9.5rem] lg:mx-auto lg:w-[1064px] lg:pt-28'
+/** The scene's box at each width; below 375px a 3x crop keeps the hero and their foe both in frame. */
+const SCENE_BOX = 'block h-[160px] max-[374px]:h-[120px] w-full object-cover object-[41%_50%] sm:h-auto sm:pt-[9.5rem] lg:mx-auto lg:w-[1064px] lg:pt-28'
 
 /** One pixel heart; each half fills independently so health reads in half-heart steps. */
 function Heart({ left, right }: { left: boolean; right: boolean }) {
@@ -54,7 +54,7 @@ type ScreenHero = PulseHero & { name: string; level: number; hp: number; maxHp: 
  * its biome's bands (D96), with a platformer HUD on top (party, hearts, XP,
  * coins, next adventure) and a dialogue strip saying what is happening.
  * On phones the HUD stacks above the scene so it never covers the art, and the
- * scene is cropped at exactly 4x around the hero and their foe. Wide screens
+ * scene is cropped at exactly 4x (3x below 375px) around the hero and their foe. Wide screens
  * draw it at exactly 7x (152px stage) between full-width bands.
  */
 export function GameScreen({ hero }: { hero: ScreenHero }) {
@@ -68,7 +68,8 @@ export function GameScreen({ hero }: { hero: ScreenHero }) {
   return (
     <section aria-label={`${hero.name}'s game screen`} className="relative overflow-hidden border-4 border-night bg-night">
       <div className="hud relative z-10 flex flex-wrap items-start justify-between gap-3 p-3 sm:absolute sm:inset-x-0 sm:top-0">
-        <div className="flex items-center gap-3 border-[3px] border-night bg-night/85 px-3 py-2.5">
+        {/* On phones the HUD sits on the night frame above the scene, where its panels' fill and edge would only cost width. */}
+        <div className="flex min-w-0 items-center gap-3 sm:border-[3px] sm:border-night sm:bg-night/85 sm:px-3 sm:py-2.5">
           <img src="/games/desk-crawler/icon-192.png" alt="" width={52} height={52} className="size-13 shrink-0 border-[3px] border-cream [image-rendering:pixelated]" />
           <div className="flex min-w-0 flex-col gap-1.5">
             <h2 className="text-sm leading-none">
@@ -88,13 +89,13 @@ export function GameScreen({ hero }: { hero: ScreenHero }) {
             </p>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <p className="flex items-center gap-2 border-[3px] border-night bg-night/85 px-3 py-2.5 text-xs text-gold-ink">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 sm:gap-2">
+          <p className="flex items-center gap-2 text-xs text-gold-ink sm:border-[3px] sm:border-night sm:bg-night/85 sm:px-3 sm:py-2.5">
             <svg key={coinGains} viewBox="0 0 8 8" width={16} height={16} aria-hidden="true" shapeRendering="crispEdges" className={coinGains > 0 ? 'coin-hop' : ''}><path className="fill-gold" d="M2 0h4v1H2zM1 1h6v6H1zM0 2h8v4H0zM2 7h4v1H2z" /><path className="fill-gold-lo" d="M3 2h2v4H3z" /></svg>
             {hero.gold.toLocaleString()}<span className="sr-only"> gold</span>
           </p>
           {pulse.countdown ? (
-            <p className="border-[3px] border-night bg-night/85 px-3 py-2 label-px" aria-live="off">
+            <p className="label-px sm:border-[3px] sm:border-night sm:bg-night/85 sm:px-3 sm:py-2" aria-live="off">
               Next adventure
               <span className="hud block min-w-[5ch] text-sm text-xp-ink">{pulse.countdown}</span>
             </p>

@@ -58,11 +58,12 @@ export function Records({ counters, lifetimeXp, stopped = false }: { counters: C
       </div>
       <Rank stopped={stopped} />
       {/* Two columns even on phones: twelve single rows made the section a screen tall. */}
-      <dl className="grid grid-cols-2 gap-x-4 min-[480px]:gap-x-6">
+      <dl className="grid grid-cols-2 gap-x-3 min-[480px]:gap-x-6">
         {rows.map(([label, value, glyph, tone]) => (
-          <div key={label} className="flex min-w-0 items-center justify-between gap-2 border-t-2 border-dashed border-rule py-2">
-            <dt className="flex min-w-0 items-center gap-2 label-px text-muted"><Glyph name={glyph} className={tone} />{label}</dt>
-            <dd className="font-bold whitespace-nowrap tabular-nums">{value}</dd>
+          // Under 480px a half-width row cannot hold a label like "Time adventuring" beside its figure, so the figure sits under it.
+          <div key={label} className="flex min-w-0 flex-col gap-0.5 border-t-2 border-dashed border-rule py-2 min-[480px]:flex-row min-[480px]:items-center min-[480px]:justify-between min-[480px]:gap-2">
+            <dt className="flex min-w-0 items-center gap-2 label-px text-muted"><Glyph name={glyph} className={`shrink-0 ${tone}`} />{label}</dt>
+            <dd className="pl-6 font-bold whitespace-nowrap tabular-nums min-[480px]:pl-0">{value}</dd>
           </div>
         ))}
       </dl>

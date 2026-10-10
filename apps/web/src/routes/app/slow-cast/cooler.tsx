@@ -65,7 +65,7 @@ function CoolerPage() {
             </Button>
             <Button variant="secondary" disabled={sell.pending} onClick={() => void sellRows(catches)}>Sell all for {total(catches)} gold</Button>
           </div>
-          <p className="mt-3 text-sm text-muted">A fish is worth more the heavier it is, up to double its base price. With the cooler full, new catches still count for XP and the logbook, but go back.</p>
+          <p className="mt-3 text-sm text-muted">A fish is worth more the heavier it is, up to double its base price. When the cooler is full, new catches are released. They still count for XP and the logbook, but earn no gold.</p>
         </Card>
       )}
       <NoticeBar notice={notice} onDismiss={dismiss} />

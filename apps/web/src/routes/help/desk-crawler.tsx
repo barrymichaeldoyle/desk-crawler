@@ -43,7 +43,7 @@ export const Route = createFileRoute('/help/desk-crawler')({
       <ul>
         <li>Install Desk Crawler from the TRMNL plugin marketplace and choose Install.</li>
         <li>Sign in to Desk Crawler, pick a public name and a hero name, and connect the installation.</li>
-        <li>Back in TRMNL, click Save. Saving starts your hero's adventures from the next world tick.</li>
+        <li>Back in TRMNL, click Save. Your hero's first adventure starts within 15 minutes.</li>
         <li>Add the plugin to a playlist, or to a mashup if you want your hero beside other plugins. All four layout sizes are supported.</li>
       </ul>
       <h2 id="if-the-qr-sends-you-back-to-setup">If the QR sends you back to setup</h2>
@@ -111,11 +111,11 @@ export const Route = createFileRoute('/help/desk-crawler')({
       <ol className="[&_li]:list-decimal">
         <li>Open Bag in the companion. Equip any upgrades and sell spare gear to free space.</li>
         <li>If a find is being held, choose Claim find{DRAWER > 0 ? ' (with the bag full, it goes in the desk drawer)' : ''}. Leave at least one free slot after claiming it so adventures can resume.</li>
-        <li>Choose Resume adventures. You can pick an unlocked destination at the same time. Your hero wakes on the next game tick.</li>
+        <li>Choose Resume adventures. You can pick an unlocked destination at the same time. Your hero sets off again within 15 minutes.</li>
       </ol>
       <p>Equipping gear does not free a slot. Selling gear or claiming a find does not wake your hero automatically. Bag sleep is separate from your TRMNL’s Sleep Mode; a sleeping display never stops the game.</p>
       <h2 id="getting-knocked-out">Getting knocked out</h2>
-      <p>Your hero revives automatically after eight game ticks, normally about two hours, and returns to Office Cubicles. You keep your XP and equipment; getting knocked out costs 10% of your current gold. Office Cubicles provides a safe place to recover. You do not need to keep the companion open or press a revive button.</p>
+      <p>Your hero revives automatically after about two hours and returns to Office Cubicles. You keep your XP and equipment; getting knocked out costs 10% of your current gold. You do not need to open the companion or press anything.</p>
       <h2 id="recaps">Recaps</h2>
       <p>Your screen carries a short recap of the last finished night or day, in your TRMNL's local time. At 07:00 the night recap reports 19:00 to 07:00 and stays up all day. At 19:00 the day recap reports 07:00 to 19:00 and stays up all evening and overnight. The office window shows day and night on the same hours. The newest stories above it are always live.</p>
       <h2 id="understanding-rankings">Understanding rankings</h2>

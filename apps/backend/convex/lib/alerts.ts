@@ -141,7 +141,7 @@ export async function queueSlowCastAlerts(ctx: MutationCtx, args: { owner: Doc<'
 
 /** One sentence in the game's voice, with nothing private on a lock screen, and the page it opens. */
 export function alertMessage(row: Pick<Doc<'alertOutbox'>, 'kind' | 'offerName'>, heroName: string): { title: string; body: string; url: string } {
-  if (row.kind === 'cooler_full') return { title: 'Your cooler is full', body: 'New catches are going back. Sell your catch to keep the gold coming.', url: '/app/slow-cast/cooler?alert=cooler_full' }
+  if (row.kind === 'cooler_full') return { title: 'Your cooler is full', body: 'New catches are being released. Sell some fish to make room.', url: '/app/slow-cast/cooler?alert=cooler_full' }
   if (row.kind === 'bait_out') return { title: 'Out of bait', body: 'Your angler is fishing a bare hook. Restock in the tackle shop.', url: '/app/slow-cast/shop?alert=bait_out' }
   if (row.kind === 'asleep') {
     return { title: `${heroName} is napping`, body: `${heroName}'s bag is full and they've sat down for a nap. Make some room to send them back out.`, url: '/app/desk-crawler/inventory?alert=asleep' }

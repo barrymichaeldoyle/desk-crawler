@@ -18,7 +18,7 @@ function Notify() {
       <main id="main" className="mx-auto flex max-w-2xl flex-col gap-10 px-4 py-10">
         <header className="flex flex-col gap-3">
           <h1 className="flex items-center gap-4 font-display text-4xl font-bold leading-tight sm:text-5xl"><img src="/games/desk-crawler/icon-192.png" alt="" width={64} height={64} className="size-14 [image-rendering:pixelated] sm:size-16" />Desk Crawler</h1>
-          <p className="text-lg text-muted">An office RPG that plays itself on your TRMNL. It's waiting on TRMNL marketplace review. Leave your email and you'll hear the moment it's live.</p>
+          <p className="text-lg text-muted">An office RPG that plays itself on your TRMNL. It's waiting on TRMNL marketplace review. Leave your email and we'll send one message when it's live.</p>
         </header>
         <WaitlistForm source="notify" />
         <SampleScreen caption="Sample hero on a TRMNL X. Every fifteen minutes your hero fights, loots or gets knocked out, and the screen shows what happened." />

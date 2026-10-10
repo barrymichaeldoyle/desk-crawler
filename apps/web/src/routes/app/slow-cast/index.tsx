@@ -41,7 +41,7 @@ function DockPage() {
         </div>
         {scene ? <img src={scene} alt={`${angler.alias} fishing at ${here?.name ?? 'the water'}`} width={456} height={120} className="w-full border-2 border-edge bg-white [image-rendering:pixelated]" /> : null}
         <p className="text-lg">
-          {angler.status === 'paused' ? 'Rod on the rest: fishing is paused.' : destination ? `Heading to ${destination.name}: the next tick arrives, the one after casts.` : `Casting at ${here?.name ?? 'the water'}`}
+          {angler.status === 'paused' ? 'Fishing is paused.' : destination ? `Heading to ${destination.name}. First cast there within 30 minutes.` : `Casting at ${here?.name ?? 'the water'}`}
           {here ? <span className="text-muted"> · {BAND_LABEL[here.band]}, {WEATHER_LABEL[here.weather]?.toLowerCase()} · {here.bitePercent}% a bite each cast</span> : null}
         </p>
         {dock.nextTickAt ? <p className="text-sm text-muted">Next cast at {time(dock.nextTickAt)}.</p> : null}
@@ -52,7 +52,7 @@ function DockPage() {
         </div>
         {coolerFull ? (
           <p className="font-semibold text-hp-ink">
-            The cooler is full, so new catches go back. <Link to="/app/slow-cast/cooler" className="underline underline-offset-4">Sell your catch</Link>.
+            The cooler is full, so new catches are released. <Link to="/app/slow-cast/cooler" className="underline underline-offset-4">Sell your catch</Link>.
           </p>
         ) : null}
       </section>
@@ -86,12 +86,12 @@ function DockPage() {
                 </p>
               </div>
               {water.open && water.id !== angler.waterId && water.id !== angler.travelTo ? (
-                <Button variant="secondary" disabled={travel.pending} onClick={() => void travel.run({ waterId: water.id as never }, `Packing up for ${water.name}.`)}>Fish here</Button>
+                <Button variant="secondary" disabled={travel.pending} onClick={() => void travel.run({ waterId: water.id as never }, `Heading to ${water.name}.`)}>Fish here</Button>
               ) : null}
             </li>
           ))}
         </ul>
-        <p className="mt-3 text-sm text-muted">Weather is the same for every angler at a water and changes every six hours. Travelling takes one tick.</p>
+        <p className="mt-3 text-sm text-muted">Weather is the same for every angler at a water and changes every six hours. Moving to another water takes 15 minutes.</p>
       </Card>
 
       <FlyBox notify={notify} />

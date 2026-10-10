@@ -57,21 +57,21 @@ const FAMILIES: AchievementDef[] = [
   ...family('rare_catches', 'Rare catches', 'Fishing', counter('rareCaught'), [
     [1, 'Something Special', 'Not a fish you see every day.'],
     [10, 'Rare Form', 'You know where the good ones hide.'],
-    [100, 'Collector', 'The rare ones come to you now.'],
+    [100, 'Collector', 'A hundred rare fish in the net.'],
   ]),
   ...family('epic_catches', 'Epic catches', 'Fishing', counter('epicCaught'), [
     [1, 'Once in a Season', 'The right bait, hour and weather, all at once.'],
     [3, 'Fisher of Legends', 'Golden, silver and spotted.'],
   ]),
   ...family('got_away', 'Got away', 'Fishing', counter('gotAway'), [
-    [1, 'The One That Got Away', 'It was this big. Honestly.'],
+    [1, 'The One That Got Away', 'The line went slack.'],
     [10, 'Snapped Again', 'A better rod is calling.'],
-    [50, 'Tall Tales', 'Every one of them was huge.'],
+    [50, 'Tall Tales', 'Fifty lost to a snapped line.'],
   ]),
   ...family('night_fishing', 'Night fishing', 'Fishing', counter('nightCatches'), [
     [1, 'After Dark', 'The lamp hisses. Something bites.'],
     [25, 'Night Owl', 'The flask is always full.'],
-    [250, 'Moonlighter', 'You know the stars by name.'],
+    [250, 'Moonlighter', 'Two hundred and fifty fish after dark.'],
   ]),
   ...family('released', 'Released', 'Fishing', counter('released'), [
     [1, 'Catch and Release', 'Back you go.'],

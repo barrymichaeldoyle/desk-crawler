@@ -46,7 +46,7 @@ export function Raids({ enabled }: { enabled: boolean }) {
         ))}
       </dl>
       {raids.length === 0 ? (
-        <p className="text-sm">No raids yet. They happen by themselves; nothing to do here.</p>
+        <p className="text-sm">No raids yet. They happen automatically while your hero explores.</p>
       ) : (
         <ol aria-label="Recent raids" className="flex flex-col gap-2">
           {raids.map((raid) => (

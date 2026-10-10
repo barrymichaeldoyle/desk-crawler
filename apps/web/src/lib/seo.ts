@@ -17,7 +17,7 @@ export const DESK_CRAWLER_JSON_LD = {
   '@type': 'VideoGame',
   name: 'Desk Crawler',
   url: `${SITE_ORIGIN}/games/desk-crawler`,
-  description: 'An office RPG that plays itself on your TRMNL e-ink display. Every fifteen minutes your hero fights, finds or falls, and the screen on your desk shows what happened.',
+  description: 'An office RPG that plays itself on your TRMNL e-ink display. Every fifteen minutes your hero fights, finds loot or gets knocked out, and the screen on your desk shows what happened.',
   image: `${SITE_ORIGIN}${DESK_CRAWLER_OG.path}`,
   genre: ['Role-playing', 'Idle'],
   gamePlatform: 'TRMNL e-ink display',

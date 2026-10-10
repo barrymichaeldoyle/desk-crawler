@@ -28,7 +28,7 @@ const KINDS: readonly AlertKindCopy[] = [
  * Settings → Alerts (P33): off by default, the browser prompt only after a tap, a device list and two switches with
  * quiet hours. The device remains the surface that always works, and the card says so.
  */
-export function AlertsCard({ notify, kinds = KINDS, intro = 'Get a nudge on this phone when your hero needs you.', quietNote = 'A nap alert waits until quiet hours end; a merchant deal that turns up then is skipped, since it is gone by morning.' }: { notify: Notify; kinds?: readonly AlertKindCopy[]; intro?: string; quietNote?: string }) {
+export function AlertsCard({ notify, kinds = KINDS, intro = 'Get a nudge on this phone when your hero needs you.', quietNote = 'A nap alert waits until quiet hours end; a merchant deal during quiet hours is skipped, because it ends before morning.' }: { notify: Notify; kinds?: readonly AlertKindCopy[]; intro?: string; quietNote?: string }) {
   const { data: alerts } = useQuery(convexQuery(api.alerts.mine, {}))
   const subscribe = useIntent(api.alerts.subscribe, { onFeedback: notify })
   const save = useIntent(api.alerts.setPreferences, {
@@ -118,7 +118,7 @@ export function AlertsCard({ notify, kinds = KINDS, intro = 'Get a nudge on this
 
   return (
     <Card title="Alerts" icon="bell"><div id="alerts" className="flex flex-col gap-3">
-      <p>{intro} Off until you turn it on, and never more than two a day across your games. Your TRMNL keeps showing everything either way.</p>
+      <p>{intro} Off by default. At most two alerts a day across all your games.</p>
       {alerts.offReason === 'no_devices' ? <p className="text-sm font-semibold">Alerts turned off because no device could receive them any more. Allow this device to turn them back on.</p> : null}
       {thisDevice ? null : !alerts.vapidPublicKey ? (
         <p className="text-sm text-muted">Alerts are not available yet.</p>

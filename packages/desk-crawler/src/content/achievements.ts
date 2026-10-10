@@ -66,9 +66,9 @@ const counter = (id: string, name: string, category: string, key: NumericCounter
 
 monster('paper_imp', 'Paper Imp', 'Office Cubicles', [
   ['Shredder Duty', 'Fed a Paper Imp to the shredder. It was mostly staples.'],
-  ['Blue Bin Regular', 'Recycling, of course. Always recycling.'],
+  ['Blue Bin Regular', 'Blue bin, not black bin.'],
   ['Imp Exterminator', 'The photocopier has never been quieter.'],
-  ['Paperless Office', 'Management is thrilled. The imps are not.'],
+  ['Paperless Office', 'Management sent a memo about it.'],
   ['Pulp Legend', 'There is a plaque by the shredder now.'],
 ])
 monster('rogue_roomba', 'Rogue Roomba', 'Office Cubicles', [
@@ -82,7 +82,7 @@ monster('stapler_mimic', 'Stapler Mimic', 'Office Cubicles', [
   ['Unjammed', 'Permanently this time.'],
   ['Staple Remover', 'The little metal jaws fear you.'],
   ['Mimic Spotter', 'You check every stapler twice now.'],
-  ['Supplies Auditor', 'Nothing on this floor is what it seems. You checked.'],
+  ['Supplies Auditor', 'You have opened every drawer on the floor.'],
   ['Red Stapler', 'It is yours. Nobody will take it.'],
 ])
 monster('dust_daemon', 'Dust Daemon', 'Office Cubicles', [
@@ -95,16 +95,16 @@ monster('dust_daemon', 'Dust Daemon', 'Office Cubicles', [
 monster('cable_serpent', 'Cable Serpent', 'Server Room', [
   ['Zip-Tied', 'Coiled, tied and labelled.'],
   ['Cable Manager', 'Velcro, never tape.'],
-  ['Labelled Everything', 'Both ends. Every time.'],
+  ['Labelled Everything', 'Both ends of every cable.'],
   ['Patch Panel Pro', 'Colour-coded and alphabetical.'],
   ['Structured Cabling', 'The rack photo went viral internally.'],
 ])
 monster('overheated_rack', 'Overheated Rack', 'Server Room', [
-  ['Room Temperature', 'Talked it down. Calmly.'],
+  ['Room Temperature', 'Talked it down to 21 degrees.'],
   ['Vented', 'Hot air out, cold air in.'],
   ['Thermal Throttler', 'Fans at a reasonable hum.'],
   ['Cold Aisle', 'Jumper required.'],
-  ['Absolute Zero', 'Nothing in here will ever overheat again.'],
+  ['Absolute Zero', 'The thermostat reads 18.'],
 ])
 monster('firewall_gremlin', 'Firewall Gremlin', 'Server Room', [
   ['Port 443', 'Got through. Encrypted, naturally.'],
@@ -115,7 +115,7 @@ monster('firewall_gremlin', 'Firewall Gremlin', 'Server Room', [
 ])
 monster('legacy_mainframe', 'Legacy Mainframe', 'Server Room', [
   ['Decommissioned', 'Finally.'],
-  ['Migration Lead', 'To the cloud. Forever.'],
+  ['Migration Lead', 'Moved to the cloud. The old box stays plugged in, just in case.'],
   ['Cloud Native', 'Nobody remembers the on-prem days.'],
   ['End of Life', 'Extended support declined.'],
   ['Last COBOL Standing', 'Somebody still has to maintain it.'],
@@ -125,12 +125,12 @@ monster('coffee_slime', 'Coffee Slime', 'Cafeteria Depths', [
   ['Down the Sink', 'With the rest of the morning.'],
   ['Decaf Only', "For everyone's safety."],
   ['Barista', 'Latte art of a defeated slime.'],
-  ['Cold Brew Master', 'Steeped for twelve hours. Worth it.'],
+  ['Cold Brew Master', 'Steeped for twelve hours.'],
 ])
 monster('crumb_golem', 'Crumb Golem', 'Cafeteria Depths', [
-  ['Dustpan', 'Into, well, crumbs.'],
+  ['Dustpan', 'Swept into the bin.'],
   ['Crumb Collector', 'The pigeons are furious.'],
-  ['Table Wiper', 'Every table. Every time.'],
+  ['Table Wiper', 'Every table in the canteen.'],
   ['Five-Second Rule', 'Not applicable to golems.'],
   ['Breadwinner', 'You earned the loaf.'],
 ])
@@ -139,14 +139,14 @@ monster('microwave_wraith', 'Microwave Wraith', 'Cafeteria Depths', [
   ['Unplugged', 'Try turning it off and leaving it off.'],
   ['Thirty Seconds More', 'It was still cold in the middle.'],
   ['Fish Curry Day', 'You have smelled things.'],
-  ['Ding', 'The last ding. Ever.'],
+  ['Ding', 'The microwave is finally quiet.'],
 ])
 monster('leftovers_hydra', 'Leftovers Hydra', 'Cafeteria Depths', [
-  ['Nobody Claimed It', 'So it was binned. Every head.'],
+  ['Nobody Claimed It', 'Every head went in the bin.'],
   ['Fridge Cleaner', "Friday, four o'clock, no mercy."],
   ['Tupperware Hero', 'Returned to its rightful owner.'],
   ['Friday Purge', 'A passive-aggressive note was not needed.'],
-  ['Sell-By Legend', 'The fridge is empty. The fridge stays empty.'],
+  ['Sell-By Legend', 'The fridge has been empty for a week.'],
 ])
 
 // ---------------------------------------------------------------- set pieces
@@ -166,7 +166,7 @@ counter('elites', 'Elites', 'Lifetime', 'eliteWins', [1, 5, 25, 100], [
   ['Head of Department', 'Elites report to you now.'],
 ])
 counter('jackpots', 'Jackpots', 'Lifetime', 'jackpots', [1, 5, 25], [
-  ['Lucky Break', 'Ten times the gold. Pure luck. Say thank you.'],
+  ['Lucky Break', 'Ten times the gold from one find.'],
   ['Expense Approved', 'No receipts required.'],
   ['Petty Cash Tin', 'You know where it is kept.'],
 ])
@@ -177,7 +177,7 @@ counter('rare_finds', 'Rare finds', 'Lifetime', 'rareFinds', [1, 5, 25, 100], [
   ['The Vault', 'Nobody else has a drawer like this.'],
 ])
 counter('adventures', 'Adventures', 'Lifetime', 'ticksExplored', [1, 100, 500, 2500, 10000], [
-  ['First Day', 'Found the kitchen. Found the desk. Survived.'],
+  ['First Day', 'Found the kitchen and your desk.'],
   ['Probation Passed', 'A day and a bit of adventuring.'],
   ['Weekly Standup', 'Roughly a week on the clock.'],
   ['Monthly Report', 'A full month of fifteen-minute quests.'],
@@ -192,26 +192,26 @@ counter('finds', 'Finds', 'Lifetime', 'itemsFound', [10, 100, 1000, 5000], [
 counter('gold', 'Gold earned', 'Lifetime', 'goldEarned', [100, 1000, 10000, 100000], [
   ['Coins in the Couch', 'Lifetime gold, not current balance.'],
   ['Expense Claim', 'Approved, eventually.'],
-  ['Bonus Season', 'Discretionary. Very discretionary.'],
-  ['Golden Handshake', 'You could retire. You will not.'],
+  ['Bonus Season', 'Discretionary, apparently.'],
+  ['Golden Handshake', 'Enough to retire on. You stay anyway.'],
 ])
 family('levels', 'Levels', 'Lifetime', [
   ['Promoted', 'The Server Room is open.'],
   ['Team Lead', 'The Cafeteria Depths are open.'],
   ['Middle Management', 'Rolling Suitcase territory.'],
   ['Director', 'Nobody is quite sure what you do.'],
-  ['Corner Office', 'It has a window. The window has a blind.'],
+  ['Corner Office', 'It has a window, and the blind works.'],
 ], (i) => ({ kind: 'level', atLeast: [4, 8, 12, 16, 20][i]! }))
 counter('knockouts', 'Knock-outs', 'Lifetime', 'deaths', [1, 5, 25, 100], [
-  ['Out Cold', 'Back in two hours. Nothing lost but gold and dignity.'],
+  ['Out Cold', 'Back in two hours, a little poorer.'],
   ['Sick Note', 'Signed by the first-aider.'],
   ['Regular at HR', 'They have a chair with your name on it.'],
   ['Nine Lives (Expired)', 'And then some.'],
 ])
 counter('rescues', 'Rescues', 'Lifetime', 'rescues', [1, 5, 25], [
-  ['Fire Drill', 'Saved by the alarm. Best drill ever.'],
+  ['Fire Drill', 'The alarm went off mid-fight.'],
   ["First-Aider's Friend", 'On first-name terms with the green box.'],
-  ['Coworker of the Year', 'Not you. The one who keeps saving you.'],
+  ['Coworker of the Year', 'Awarded to whoever keeps rescuing you.'],
 ])
 counter('retreats', 'Retreats', 'Lifetime', 'retreats', [1, 5, 25, 100], [
   ['Rain Check', 'Fight another day.'],
@@ -220,20 +220,20 @@ counter('retreats', 'Retreats', 'Lifetime', 'retreats', [1, 5, 25, 100], [
   ['Diary Full', 'Could not possibly fit the fight in.'],
 ])
 counter('potions', 'Potions', 'Lifetime', 'potionsUsed', [1, 10, 100, 500], [
-  ['First Aid', 'Tasted of strawberry and regret.'],
+  ['First Aid', 'Tasted of strawberry.'],
   ['Kit Raider', 'The first-aid box has a lock now.'],
   ['Pharmacy', 'Prescriptions on request.'],
   ['Self-Medicated', 'Not medical advice.'],
 ])
 counter('traps', 'Traps avoided', 'Lifetime', 'trapsAvoided', [1, 25, 100, 500], [
-  ['Watch Your Step', 'Saw it coming. Not today.'],
-  ['Wet Floor Sign', 'You put it there. You step around it.'],
+  ['Watch Your Step', 'Spotted the trap in time.'],
+  ['Wet Floor Sign', 'You put it there yourself.'],
   ['Health and Safety', 'Completed the e-learning. Twice.'],
   ['Risk Assessed', 'Every corridor has a laminated form.'],
 ])
 counter('breaks', 'Breaks', 'Lifetime', 'restTicks', [10, 100, 1000], [
   ['Coffee Break', 'Status set to "out of office".'],
-  ['Power Nap', 'Feet up. Eyes closed. Heroic.'],
+  ['Power Nap', 'Feet up under the desk.'],
   ['Out of Office', 'Back on the twelfth. Ish.'],
 ])
 counter('trips', 'Trips', 'Lifetime', 'trips', [1, 10, 100], [
@@ -243,18 +243,18 @@ counter('trips', 'Trips', 'Lifetime', 'trips', [1, 10, 100], [
 ])
 family('bags', 'Bag ladder', 'Lifetime', [
   ['Tote-ally Prepared', 'The Paper Bag is retired with honours.'],
-  ['Backpacker', 'Padded straps. Laptop sleeve. Purpose.'],
+  ['Backpacker', 'Padded straps and a laptop sleeve.'],
   ['Messenger', 'Worn across the body for maximum urgency.'],
-  ['Rolling Suitcase', 'Wheels. The dream.'],
+  ['Rolling Suitcase', 'It has wheels.'],
 ], (i) => ({ kind: 'bag', atLeast: [10, 13, 16, 20][i]! }))
 counter('sales', 'Sales', 'Lifetime', 'itemsSold', [1, 25, 250, 1000], [
   ['Car Boot Sale', 'One careful owner.'],
-  ['Declutter', 'Does it spark joy? It sparks gold.'],
+  ['Declutter', 'Sold what you did not need.'],
   ['Procurement', 'A spreadsheet is involved.'],
-  ['Liquidation', 'Everything must go. Everything went.'],
+  ['Liquidation', 'Everything must go, and it did.'],
 ])
 family('keepsakes', 'Keepsakes', 'Lifetime', [
-  ['Desk Ornament', 'A small thing in the corner of the desk.'],
+  ['Desk Ornament', 'Your first keepsake, propped by the monitor.'],
   ['Shelf Life', 'Half a shelf and counting.'],
   ['Full Set', 'Every design, once.'],
   ['Second Shelf', 'Facilities have been informed.'],
@@ -275,30 +275,30 @@ counter('merchants', 'Merchants met', 'Decisions', 'merchantVisits', [1, 10, 50]
 counter('stances', 'Stance changes', 'Decisions', 'stanceChanges', [1, 5, 25], [
   ['New Posture', 'Tried a different approach.'],
   ['Mood Board', 'Five changes of heart.'],
-  ['Agile', 'Pivots weekly. Sometimes daily.'],
+  ['Agile', 'Pivots weekly.'],
 ])
 counter('choices', 'Decisions made', 'Decisions', 'choicesMade', [1, 5, 25, 100], [
-  ['Decider', 'Made one call. It counts.'],
+  ['Decider', 'Answered your first decision.'],
   ['Executive Function', 'Five decisions, all on time.'],
   ['Steering Committee', 'Twenty-five decisions and a slide deck.'],
-  ['Chief Decision Officer', 'The role exists now. It is you.'],
+  ['Chief Decision Officer', 'A job title made up just for you.'],
 ])
 counter('epics', 'Epic finds', 'Lifetime', 'epicFinds', [1, 5], [
   ['Legendary Stationery', 'Epic gear. One in a hundred.'],
-  ['The Good Drawer', 'Five epics. It locks, obviously.'],
+  ['The Good Drawer', 'Five epics, under lock and key.'],
 ])
 
 // ---------------------------------------------------------------- v1.2 Other people (catalog version 3, D110; appended, never edited)
 
 counter('office_raider', 'Office raider', 'Raids', 'raidsWon', [1, 10, 50], [
   ['Light Fingers', "Came back from someone else's desk with their petty cash."],
-  ['Desk Burglar', 'Ten desks lighter. Yours is heavier.'],
-  ['Cat Burglar', 'Fifty raids won across the open-plan. Nobody saw a thing.'],
+  ['Desk Burglar', 'Ten other desks are a little lighter.'],
+  ['Cat Burglar', 'Fifty raids won across the open-plan.'],
 ])
 counter('desk_defender', 'Desk defender', 'Raids', 'raidsRepelled', [1, 10, 50], [
   ['Not Today', 'Caught a raider at the drawers and showed them out.'],
   ['Neighbourhood Watch', 'Ten raiders sent packing.'],
-  ['Fort Knox Desk', 'Fifty raids repelled. The drawers have a reputation.'],
+  ['Fort Knox Desk', 'Fifty raiders shown out.'],
 ])
 
 // ---------------------------------------------------------------- v1.1 To-do list (catalog version 4, D112; appended, never edited)

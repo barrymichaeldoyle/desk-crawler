@@ -16,7 +16,7 @@ export const Route = createFileRoute('/app/slow-cast/settings')({
 })
 
 const SLOW_CAST_ALERTS: readonly AlertKindCopy[] = [
-  { id: 'coolerFull', name: 'Cooler full', blurb: 'New catches are going back. Sent half an hour after it fills, once per fill.' },
+  { id: 'coolerFull', name: 'Cooler full', blurb: 'New catches are being released. Sent half an hour after the cooler fills, once each time.' },
   { id: 'baitOut', name: 'Out of bait', blurb: 'The bait on the hook ran out and the angler is fishing a bare hook.' },
 ]
 
@@ -37,18 +37,18 @@ function SettingsPage() {
       <h1 className="font-display text-3xl font-bold">Slow Cast settings</h1>
       {active ? (
         <Card title="Fishing">
-          <p>{angler.status === 'paused' ? 'The rod is on the rest. Nothing is caught and nothing is lost while paused.' : 'Your angler casts every fifteen minutes, day and night.'}</p>
+          <p>{angler.status === 'paused' ? 'Fishing is paused. Your angler catches nothing until you resume, and keeps everything they have.' : 'Your angler casts every fifteen minutes, day and night.'}</p>
           <div className="mt-3">
             {angler.status === 'paused'
-              ? <Button pending={resume.pending} onClick={() => void resume.run({}, 'Line back in the water.')}>Resume fishing</Button>
-              : <Button variant="secondary" pending={pause.pending} onClick={() => void pause.run({}, 'Rod on the rest.')}>Pause fishing</Button>}
+              ? <Button pending={resume.pending} onClick={() => void resume.run({}, 'Fishing resumed.')}>Resume fishing</Button>
+              : <Button variant="secondary" pending={pause.pending} onClick={() => void pause.run({}, 'Fishing paused.')}>Pause fishing</Button>}
           </div>
           <ActionFeedback error={pause.error ?? resume.error} message={pause.message ?? resume.message} />
         </Card>
       ) : null}
       {active ? (
         <Card title="Public profile">
-          <p>{angler.publicProfile ? 'Your Slow Cast level, rank and logbook count show on your public profile.' : 'Your Slow Cast progress is private.'} Leaderboards show your public name either way.</p>
+          <p>{angler.publicProfile ? 'Your Slow Cast level, rank and logbook count show on your public profile.' : 'Your Slow Cast progress is private.'} Leaderboards always show your public name.</p>
           <div className="mt-3">
             <Button variant="secondary" pending={profile.pending} onClick={() => void profile.run({ visible: !angler.publicProfile }, angler.publicProfile ? 'Slow Cast is now private on your profile.' : 'Slow Cast now shows on your profile.')}>
               {angler.publicProfile ? 'Make private' : 'Show on my profile'}
@@ -58,7 +58,7 @@ function SettingsPage() {
           <ActionFeedback error={profile.error} message={profile.message} />
         </Card>
       ) : null}
-      {active ? <AlertsCard notify={notify} kinds={SLOW_CAST_ALERTS} intro="Get a nudge on this phone when your angler needs you." quietNote="A cooler alert waits until quiet hours end; an out-of-bait alert that turns up then is skipped." /> : null}
+      {active ? <AlertsCard notify={notify} kinds={SLOW_CAST_ALERTS} intro="Get a nudge on this phone when your angler needs you." quietNote="A cooler alert waits until quiet hours end; an out-of-bait alert during quiet hours is skipped." /> : null}
       <Card title="Delete Slow Cast progress">
         <p>This removes your angler, cooler, logbook and Slow Cast connections. Your TRMNL Games account and your other games stay. It cannot be undone.</p>
         <label className="mt-3 flex flex-col gap-1">

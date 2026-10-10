@@ -116,7 +116,7 @@ export function KeepsakeCallout() {
     </div>
     {open && !earned ? (
       <div id="keepsake-callout-form" className="flex flex-col gap-3 border-t-[3px] border-night p-3 sm:px-4">
-        <p className="max-w-prose text-sm">Glance at your TRMNL for the six-digit code beside “Keepsake”, then enter it here to add <strong>{next.name}</strong> to your shelf. {next.description}</p>
+        <p className="max-w-prose text-sm">Enter the six-digit code beside “Keepsake” on your TRMNL to add <strong>{next.name}</strong> to your shelf. {next.description}</p>
         <KeepsakeCodeForm form={form} inputId="keepsake-callout-code" />
         <p id="keepsake-callout-code-help" className="text-sm text-muted">Only your TRMNL shows the code. The preview on this site leaves it out.</p>
         <ActionFeedback error={form.error} message={form.message} />
@@ -134,7 +134,7 @@ export function DeskKeepsakes() {
       <h2 id="keepsakes-title" className="flex items-center gap-3 font-display text-2xl font-bold"><Glyph name="keepsake" size={24} className="text-gold-ink" />Desk keepsakes</h2>
       {collection ? <p className="text-sm tabular-nums">{collection.totalCollected.toLocaleString()} collected</p> : null}
     </div>
-    <p className="mt-3 max-w-prose text-sm text-muted">A souvenir for keeping Desk Crawler on your desk. Once a week your TRMNL shows a keepsake code. Enter it here to add the design to your shelf.</p>
+    <p className="mt-3 max-w-prose text-sm text-muted">Once a week your TRMNL shows a keepsake code. Enter it here to add that week’s design to your shelf.</p>
     {!collection ? <p role="status" className="mt-4 text-sm">Loading your collection…</p> : <>
       <div className="my-5 flex items-center gap-4">
         <KeepsakeIcon pixels={next.pixels} />
@@ -150,7 +150,7 @@ export function DeskKeepsakes() {
           <div className="min-w-0"><p className="text-sm font-semibold">{item.name}</p><p className="mt-0.5 text-sm tabular-nums">{item.count ? `${item.count.toLocaleString()} collected` : 'Not collected yet'}</p></div>
         </li>)}
       </ul>
-      <p className="mt-5 max-w-prose text-sm text-muted">Keepsakes are for your shelf only. Skip a week and the next design waits for you. After a full set, the designs come round again.</p>
+      <p className="mt-5 max-w-prose text-sm text-muted">Keepsakes don’t change the game. Miss a week and you get the same design the week after. Once you have the full set, the designs repeat.</p>
     </>}
   </section>
 }

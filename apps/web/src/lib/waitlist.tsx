@@ -47,7 +47,7 @@ export function WaitlistForm({ source }: { source: 'notify' | 'pitch' | 'landing
       <div ref={confirmation} tabIndex={-1} className="flex flex-col gap-4 outline-none" role="status">
         <p><strong>You're on the list.</strong> We'll send one email to {joined} when Desk Crawler is in the TRMNL marketplace, then delete your address.</p>
         <div className="flex flex-col gap-2 border-l-4 border-rule pl-4">
-          <p className="text-sm text-muted">Want to get ahead? Create your TRMNL Games account now. You'll still install Desk Crawler from TRMNL at launch, and the account signs you straight in.</p>
+          <p className="text-sm text-muted">You can also create your TRMNL Games account now. You'll still install Desk Crawler from TRMNL at launch, and you'll already be signed in.</p>
           <div><SignUpButton mode="modal" forceRedirectUrl="/app/desk-crawler"><Button variant="secondary">Create account (optional)</Button></SignUpButton></div>
         </div>
       </div>

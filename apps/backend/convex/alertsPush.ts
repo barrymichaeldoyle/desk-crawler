@@ -67,7 +67,7 @@ export const sendTest = internalAction({
     const vapidDetails = vapid()
     const devices: Array<{ endpoint: string; p256dh: string; auth: string }> = await ctx.runQuery(internal.alerts.devicesForTest, { tokenIdentifier })
     if (vapidDetails === null) return { devices: devices.length, sent: 0, gone: 0 }
-    const payload = JSON.stringify({ title: 'Desk Crawler test alert', body: 'Alerts reach this device. Nothing needs doing.', url: '/app/desk-crawler/settings', tag: 'test' })
+    const payload = JSON.stringify({ title: 'Desk Crawler test alert', body: 'Alerts work on this device.', url: '/app/desk-crawler/settings', tag: 'test' })
     let sent = 0
     let gone = 0
     for (const device of devices) {

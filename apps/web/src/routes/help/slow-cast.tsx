@@ -30,12 +30,12 @@ export const Route = createFileRoute('/help/slow-cast')({
       <h2 id="getting-started">Getting started</h2>
       <ul>
         <li>Install Slow Cast from the TRMNL plugin marketplace and choose Install.</li>
-        <li>Sign in to TRMNL Games and connect the installation. Your angler is you: it shows your public name.</li>
+        <li>Sign in to TRMNL Games and connect the installation. Your angler uses your public name.</li>
         <li>Back in TRMNL, click Save. Your angler casts the first line within fifteen minutes.</li>
         <li>Add the plugin to a playlist or a mashup. All four layout sizes are supported in both orientations.</li>
       </ul>
       <h2 id="how-fishing-works">How fishing works</h2>
-      <p>Every fifteen minutes, day and night, your angler casts once. Sometimes a fish bites. Which fish depends on the water, the bait on the hook, the time of day and the weather; how heavy it is decides its price and whether it is a personal best. Your TRMNL shows the scene and the latest stories. Nothing needs a tap: open the companion when you want to sell, restock or move on.</p>
+      <p>Every fifteen minutes, day and night, your angler casts once. Sometimes a fish bites. Which fish depends on the water, the bait on the hook, the time of day and the weather; how heavy it is decides its price and whether it is a personal best. Your TRMNL shows the scene and the latest stories. You never have to open the companion; come by when you want to sell, restock or move on.</p>
       <h2 id="time-and-weather">Time and weather</h2>
       <p>Dawn runs from 05:00 to 08:00, day to 17:00, dusk to 20:00, then night, in the timezone your TRMNL reports. Fish feed more at dawn and dusk. Weather is the same for every angler at a water and changes every six hours: clear, overcast, rain, wind or fog. Overcast and rain bring more bites at River Bend, wind brings fewer, and fog makes dawn and dusk dark enough for night fish.</p>
       <h2 id="bait">Bait</h2>
@@ -50,13 +50,13 @@ export const Route = createFileRoute('/help/slow-cast')({
         <li><strong>{water('river_bend').name}</strong>: level {water('river_bend').unlockLevel} and the {access('waders').name}. Trout, chub and barbel; pike and zander on the spinner.</li>
         <li><strong>{water('harbour_pier').name}</strong>: level {water('harbour_pier').unlockLevel} and the {access('pier_permit').name}. Sea fish, bigger and worth more; most need the Carbon Rod or better.</li>
       </ul>
-      <p>Moving takes one tick, then the angler casts at the new water. You can go back whenever you like.</p>
+      <p>Moving takes 15 minutes, then the angler casts at the new water. You can go back whenever you like.</p>
       <h2 id="the-logbook">The logbook</h2>
       <p>Every species you land is logged with its count and your best weight, and the logbook says which bait, hours and weather it takes. Fish you have not caught show as silhouettes. Three epic fish need the right bait, hour and weather together.</p>
       <h2 id="rankings">Rankings</h2>
       <p>Slow Cast has its own leaderboards by XP, separate from your other games. Released fish earn full XP, so an angler you leave alone still climbs.</p>
       <h2 id="pausing-and-removing">Pausing and removing</h2>
-      <p>Pause fishing in Settings: nothing is caught and nothing is lost. Removing the plugin from TRMNL keeps your angler. Deleting Slow Cast progress in Settings removes your angler, cooler and logbook and leaves your account and your other games alone.</p>
+      <p>Pause fishing in Settings: no catches until you resume, and you keep everything. Removing the plugin from TRMNL keeps your angler. Deleting Slow Cast progress in Settings removes your angler, cooler and logbook and leaves your account and your other games alone.</p>
       <h2 id="help">Help</h2>
       <p>Email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> with what your screen shows and when you last saw it change.</p>
     </ProsePage>

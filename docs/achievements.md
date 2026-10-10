@@ -49,9 +49,9 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 | Tier | Wins | Name | Blurb |
 | --- | --- | --- | --- |
 | I | 1 | Shredder Duty | Fed a Paper Imp to the shredder. It was mostly staples. |
-| II | 5 | Blue Bin Regular | Recycling, of course. Always recycling. |
+| II | 5 | Blue Bin Regular | Blue bin, not black bin. |
 | III | 25 | Imp Exterminator | The photocopier has never been quieter. |
-| IV | 100 | Paperless Office | Management is thrilled. The imps are not. |
+| IV | 100 | Paperless Office | Management sent a memo about it. |
 | V | 500 | Pulp Legend | There is a plaque by the shredder now. |
 
 **Rogue Roomba** (Office Cubicles)
@@ -71,7 +71,7 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 | I | 1 | Unjammed | Permanently this time. |
 | II | 5 | Staple Remover | The little metal jaws fear you. |
 | III | 25 | Mimic Spotter | You check every stapler twice now. |
-| IV | 100 | Supplies Auditor | Nothing on this floor is what it seems. You checked. |
+| IV | 100 | Supplies Auditor | You have opened every drawer on the floor. |
 | V | 500 | Red Stapler | It is yours. Nobody will take it. |
 
 **Dust Daemon** (Office Cubicles)
@@ -90,7 +90,7 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 | --- | --- | --- | --- |
 | I | 1 | Zip-Tied | Coiled, tied and labelled. |
 | II | 5 | Cable Manager | Velcro, never tape. |
-| III | 25 | Labelled Everything | Both ends. Every time. |
+| III | 25 | Labelled Everything | Both ends of every cable. |
 | IV | 100 | Patch Panel Pro | Colour-coded and alphabetical. |
 | V | 500 | Structured Cabling | The rack photo went viral internally. |
 
@@ -98,11 +98,11 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 
 | Tier | Wins | Name | Blurb |
 | --- | --- | --- | --- |
-| I | 1 | Room Temperature | Talked it down. Calmly. |
+| I | 1 | Room Temperature | Talked it down to 21 degrees. |
 | II | 5 | Vented | Hot air out, cold air in. |
 | III | 25 | Thermal Throttler | Fans at a reasonable hum. |
 | IV | 100 | Cold Aisle | Jumper required. |
-| V | 500 | Absolute Zero | Nothing in here will ever overheat again. |
+| V | 500 | Absolute Zero | The thermostat reads 18. |
 
 **Firewall Gremlin** (Server Room)
 
@@ -119,7 +119,7 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 | Tier | Wins | Name | Blurb |
 | --- | --- | --- | --- |
 | I | 1 | Decommissioned | Finally. |
-| II | 5 | Migration Lead | To the cloud. Forever. |
+| II | 5 | Migration Lead | Moved to the cloud. The old box stays plugged in, just in case. |
 | III | 25 | Cloud Native | Nobody remembers the on-prem days. |
 | IV | 100 | End of Life | Extended support declined. |
 | V | 500 | Last COBOL Standing | Somebody still has to maintain it. |
@@ -132,15 +132,15 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 | II | 5 | Down the Sink | With the rest of the morning. |
 | III | 25 | Decaf Only | For everyone's safety. |
 | IV | 100 | Barista | Latte art of a defeated slime. |
-| V | 500 | Cold Brew Master | Steeped for twelve hours. Worth it. |
+| V | 500 | Cold Brew Master | Steeped for twelve hours. |
 
 **Crumb Golem** (Cafeteria Depths)
 
 | Tier | Wins | Name | Blurb |
 | --- | --- | --- | --- |
-| I | 1 | Dustpan | Into, well, crumbs. |
+| I | 1 | Dustpan | Swept into the bin. |
 | II | 5 | Crumb Collector | The pigeons are furious. |
-| III | 25 | Table Wiper | Every table. Every time. |
+| III | 25 | Table Wiper | Every table in the canteen. |
 | IV | 100 | Five-Second Rule | Not applicable to golems. |
 | V | 500 | Breadwinner | You earned the loaf. |
 
@@ -152,17 +152,17 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 | II | 5 | Unplugged | Try turning it off and leaving it off. |
 | III | 25 | Thirty Seconds More | It was still cold in the middle. |
 | IV | 100 | Fish Curry Day | You have smelled things. |
-| V | 500 | Ding | The last ding. Ever. |
+| V | 500 | Ding | The microwave is finally quiet. |
 
 **Leftovers Hydra** (Cafeteria Depths)
 
 | Tier | Wins | Name | Blurb |
 | --- | --- | --- | --- |
-| I | 1 | Nobody Claimed It | So it was binned. Every head. |
+| I | 1 | Nobody Claimed It | Every head went in the bin. |
 | II | 5 | Fridge Cleaner | Friday, four o'clock, no mercy. |
 | III | 25 | Tupperware Hero | Returned to its rightful owner. |
 | IV | 100 | Friday Purge | A passive-aggressive note was not needed. |
-| V | 500 | Sell-By Legend | The fridge is empty. The fridge stays empty. |
+| V | 500 | Sell-By Legend | The fridge has been empty for a week. |
 
 ### Set pieces
 
@@ -186,14 +186,14 @@ Set pieces are recomputed when the catalog version changes, so adding a biome in
 | | | II | 5 | Elite Problem | They keep sending senior ones. |
 | | | III | 25 | Senior Exterminator | Title confirmed by email. |
 | | | IV | 100 | Head of Department | Elites report to you now. |
-| Jackpots | `jackpots` | I | 1 | Lucky Break | Ten times the gold. Pure luck. Say thank you. |
+| Jackpots | `jackpots` | I | 1 | Lucky Break | Ten times the gold from one find. |
 | | | II | 5 | Expense Approved | No receipts required. |
 | | | III | 25 | Petty Cash Tin | You know where it is kept. |
 | Rare finds | `rareFinds` | I | 1 | Shiny | Rare gear. Hold it up to the light. |
 | | | II | 5 | Collector | A small, strange and growing pile. |
 | | | III | 25 | Curator | Labelled, catalogued, insured. |
 | | | IV | 100 | The Vault | Nobody else has a drawer like this. |
-| Adventures | `ticksExplored` | I | 1 | First Day | Found the kitchen. Found the desk. Survived. |
+| Adventures | `ticksExplored` | I | 1 | First Day | Found the kitchen and your desk. |
 | | | II | 100 | Probation Passed | A day and a bit of adventuring. |
 | | | III | 500 | Weekly Standup | Roughly a week on the clock. |
 | | | IV | 2,500 | Monthly Report | A full month of fifteen-minute quests. |
@@ -204,47 +204,47 @@ Set pieces are recomputed when the catalog version changes, so adding a biome in
 | | | IV | 5,000 | Lost Property Office | It all ends up with you. |
 | Gold earned | `goldEarned` | I | 100 | Coins in the Couch | Lifetime gold, not current balance. |
 | | | II | 1,000 | Expense Claim | Approved, eventually. |
-| | | III | 10,000 | Bonus Season | Discretionary. Very discretionary. |
-| | | IV | 100,000 | Golden Handshake | You could retire. You will not. |
+| | | III | 10,000 | Bonus Season | Discretionary, apparently. |
+| | | IV | 100,000 | Golden Handshake | Enough to retire on. You stay anyway. |
 | Levels | `level` | I | 4 | Promoted | The Server Room is open. |
 | | | II | 8 | Team Lead | The Cafeteria Depths are open. |
 | | | III | 12 | Middle Management | Rolling Suitcase territory. |
 | | | IV | 16 | Director | Nobody is quite sure what you do. |
-| | | V | 20 | Corner Office | It has a window. The window has a blind. |
-| Knock-outs | `deaths` | I | 1 | Out Cold | Back in two hours. Nothing lost but gold and dignity. |
+| | | V | 20 | Corner Office | It has a window, and the blind works. |
+| Knock-outs | `deaths` | I | 1 | Out Cold | Back in two hours, a little poorer. |
 | | | II | 5 | Sick Note | Signed by the first-aider. |
 | | | III | 25 | Regular at HR | They have a chair with your name on it. |
 | | | IV | 100 | Nine Lives (Expired) | And then some. |
-| Rescues | `rescues` | I | 1 | Fire Drill | Saved by the alarm. Best drill ever. |
+| Rescues | `rescues` | I | 1 | Fire Drill | The alarm went off mid-fight. |
 | | | II | 5 | First-Aider's Friend | On first-name terms with the green box. |
-| | | III | 25 | Coworker of the Year | Not you. The one who keeps saving you. |
+| | | III | 25 | Coworker of the Year | Awarded to whoever keeps rescuing you. |
 | Retreats | `retreats` | I | 1 | Rain Check | Fight another day. |
 | | | II | 5 | Night Shift's Problem | Left it for them. Twice this week. |
 | | | III | 25 | Strategic Withdrawal | Put it in the slide deck. |
 | | | IV | 100 | Diary Full | Could not possibly fit the fight in. |
-| Potions | `potionsUsed` | I | 1 | First Aid | Tasted of strawberry and regret. |
+| Potions | `potionsUsed` | I | 1 | First Aid | Tasted of strawberry. |
 | | | II | 10 | Kit Raider | The first-aid box has a lock now. |
 | | | III | 100 | Pharmacy | Prescriptions on request. |
 | | | IV | 500 | Self-Medicated | Not medical advice. |
-| Traps avoided | `trapsAvoided` | I | 1 | Watch Your Step | Saw it coming. Not today. |
-| | | II | 25 | Wet Floor Sign | You put it there. You step around it. |
+| Traps avoided | `trapsAvoided` | I | 1 | Watch Your Step | Spotted the trap in time. |
+| | | II | 25 | Wet Floor Sign | You put it there yourself. |
 | | | III | 100 | Health and Safety | Completed the e-learning. Twice. |
 | | | IV | 500 | Risk Assessed | Every corridor has a laminated form. |
 | Breaks | `restTicks` | I | 10 | Coffee Break | Status set to "out of office". |
-| | | II | 100 | Power Nap | Feet up. Eyes closed. Heroic. |
+| | | II | 100 | Power Nap | Feet up under the desk. |
 | | | III | 1,000 | Out of Office | Back on the twelfth. Ish. |
 | Trips | `trips` | I | 1 | Commuter | Took the stairs to another floor. |
 | | | II | 10 | Hot Desker | No fixed address. |
 | | | III | 100 | Frequent Flyer | Lounge access to the Server Room. |
 | Bag ladder | `bagCapacity` | I | 10 | Tote-ally Prepared | The Paper Bag is retired with honours. |
-| | | II | 13 | Backpacker | Padded straps. Laptop sleeve. Purpose. |
+| | | II | 13 | Backpacker | Padded straps and a laptop sleeve. |
 | | | III | 16 | Messenger | Worn across the body for maximum urgency. |
-| | | IV | 20 | Rolling Suitcase | Wheels. The dream. |
+| | | IV | 20 | Rolling Suitcase | It has wheels. |
 | Sales | `itemsSold` | I | 1 | Car Boot Sale | One careful owner. |
-| | | II | 25 | Declutter | Does it spark joy? It sparks gold. |
+| | | II | 25 | Declutter | Sold what you did not need. |
 | | | III | 250 | Procurement | A spreadsheet is involved. |
-| | | IV | 1,000 | Liquidation | Everything must go. Everything went. |
-| Keepsakes | `deskKeepsakes.totalCollected` | I | 1 | Desk Ornament | A small thing in the corner of the desk. |
+| | | IV | 1,000 | Liquidation | Everything must go, and it did. |
+| Keepsakes | `deskKeepsakes.totalCollected` | I | 1 | Desk Ornament | Your first keepsake, propped by the monitor. |
 | | | II | 6 | Shelf Life | Half a shelf and counting. |
 | | | III | 12 | Full Set | Every design, once. |
 | | | IV | 24 | Second Shelf | Facilities have been informed. |

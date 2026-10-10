@@ -52,7 +52,7 @@ function Home() {
           <SampleScreen />
           <div className="flex flex-col gap-2">
             <h2 id="desk-crawler-heading" className="font-display text-3xl font-bold text-gold-ink">{game.name}</h2>
-            <p className="max-w-prose leading-relaxed">{game.description} Every fifteen minutes your hero fights, finds or falls, and the screen on your desk shows what happened.</p>
+            <p className="max-w-prose leading-relaxed">{game.description} Every fifteen minutes your hero fights, finds loot or gets knocked out, and the screen on your desk shows what happened.</p>
             <p className="text-sm text-muted">{RELEASE_STATUS}</p>
           </div>
           <WaitlistForm source="home" />

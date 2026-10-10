@@ -906,7 +906,7 @@
    {
     "category": "Lifetime",
     "earned": {
-     "blurb": "Found the kitchen. Found the desk. Survived.",
+     "blurb": "Found the kitchen and your desk.",
      "id": "adventures_1",
      "name": "First Day",
      "tier": 1,
@@ -1072,7 +1072,7 @@
    {
     "category": "Lifetime",
     "earned": {
-     "blurb": "Padded straps. Laptop sleeve. Purpose.",
+     "blurb": "Padded straps and a laptop sleeve.",
      "id": "bags_2",
      "name": "Backpacker",
      "tier": 2,

@@ -1,7 +1,6 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { ConvexError } from 'convex/values'
 import { useMutation } from 'convex/react'
 import { useEffect, useRef, useState } from 'react'
 import { api } from '@trmnl-games/backend/api'
@@ -44,10 +43,8 @@ export function ReturnRecap() {
       if (document.visibilityState !== 'visible') return
       acknowledged.current = true
       try {
-        await record({ operationId: crypto.randomUUID(), expectedLogSequence: sequence })
-      } catch (error) {
-        const code = error instanceof ConvexError ? (error.data as { code?: string }).code : undefined
-        if (code === 'RECAP_CHANGED' && retries.current < 1) {
+        const result = await record({ operationId: crypto.randomUUID(), expectedLogSequence: sequence })
+        if (result.recapChanged && retries.current < 1) {
           retries.current += 1
           // Newer events exist: show them before acknowledging (bounded retry).
           try {
@@ -60,6 +57,8 @@ export function ReturnRecap() {
             // Keep this visit's recap. The next visit can acknowledge fresh data.
           }
         }
+      } catch {
+        // A failed acknowledgement leaves the baseline alone; the next visit tries again.
       }
     }
     const stop = afterVisibleVisit(() => { if (!acknowledged.current) void acknowledge(shown.observed.logSequence) })

@@ -31,6 +31,7 @@ const intentResult = v.object({
   hp: v.optional(v.number()),
   count: v.optional(v.number()),
   tick: v.optional(v.number()),
+  recapChanged: v.optional(v.boolean()),
 })
 
 /** The owner's hero with derived stats, biome unlocks and world health. Null when signed out or without a hero. */
@@ -387,8 +388,10 @@ export const returnSummary = query({
 
 /**
  * Acknowledge a visibly rendered recap. Captures current server values only if
- * the rendered log sequence is still current (RECAP_CHANGED otherwise), so
- * unseen progress is never hidden; baselines never move backwards.
+ * the rendered log sequence is still current, so unseen progress is never
+ * hidden; baselines never move backwards. A stale sequence is an ordinary race
+ * (a tick landed while the page was open), so it returns `recapChanged` rather
+ * than throwing, which would report every such visit to Sentry.
  */
 export const recordCompanionVisit = mutation({
   args: { operationId: v.string(), expectedLogSequence: v.number() },
@@ -397,7 +400,7 @@ export const recordCompanionVisit = mutation({
     await runIntent(ctx, args.operationId, 'heroes.recordCompanionVisit', { expectedLogSequence: args.expectedLogSequence }, async (user) => {
       const hero = await currentHero(ctx, user)
       if (hero === null || hero.activationState !== 'active') throw appError('TRMNL_REQUIRED', 'No active hero yet.')
-      if (hero.logSequence !== args.expectedLogSequence) throw appError('RECAP_CHANGED', 'New adventures arrived. Refreshing.')
+      if (hero.logSequence !== args.expectedLogSequence) return { changed: false, recapChanged: true }
       const previous = hero.companionVisitBaseline
       if (previous && previous.logSequence > hero.logSequence) return { changed: false }
       await ctx.db.patch(hero._id, { companionVisitBaseline: { at: Date.now(), level: hero.level, lifetimeXp: hero.lifetimeXp, logSequence: hero.logSequence, counters: hero.counters } })

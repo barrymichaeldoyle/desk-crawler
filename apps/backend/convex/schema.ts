@@ -475,6 +475,7 @@ export default defineSchema({
       count: v.optional(v.number()),
       tick: v.optional(v.number()),
       keepsakeOutcome: v.optional(v.union(v.literal('claimed'), v.literal('already_claimed'), v.literal('invalid_code'))),
+      recapChanged: v.optional(v.boolean()),
     }),
     createdAt: v.number(),
     expiresAt: v.number(),

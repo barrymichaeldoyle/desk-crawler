@@ -35,7 +35,8 @@ describe('return recap (D25)', () => {
     const user = t.withIdentity({ issuer: 'issuer', subject: 'Bo' })
     const seen = await user.query(api.heroes.returnSummary, {})
     await t.run(async (ctx) => await ctx.db.patch(heroId, { logSequence: seen.observed.logSequence + 1 }))
-    await expect(user.mutation(api.heroes.recordCompanionVisit, { operationId: 'visit-0002', expectedLogSequence: seen.observed.logSequence })).rejects.toThrow()
+    // A stale sequence is a normal race, answered with a result rather than an error (which Convex would report to Sentry).
+    expect(await user.mutation(api.heroes.recordCompanionVisit, { operationId: 'visit-0002', expectedLogSequence: seen.observed.logSequence })).toMatchObject({ changed: false, recapChanged: true })
     expect((await t.run(async (ctx) => await ctx.db.get(heroId)))?.companionVisitBaseline).toBeUndefined()
   })
 })

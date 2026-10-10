@@ -23,7 +23,8 @@ describe('Slow Cast alerts (D115, S6)', () => {
     const anglerId = await seedAngler(t, { achievementsVersion: 1 }, 'Kit')
     const kit = t.withIdentity({ issuer: 'issuer', subject: 'Kit' })
     await kit.mutation(api.alerts.subscribe, { operationId: 'sub-kit-001', endpoint: 'https://push.example/kit', p256dh: 'BKey', auth: 'Auth', label: 'Phone' })
-    await kit.mutation(api.alerts.setPreferences, { operationId: 'pref-kit-01', ...prefs, quietStart: 21, quietEnd: 8, timezone: 'UTC' })
+    // Quiet hours outside the test's span (10:05 to at most 01:05 the next day), so which tick fills the cooler never matters.
+    await kit.mutation(api.alerts.setPreferences, { operationId: 'pref-kit-01', ...prefs, quietStart: 3, quietEnd: 4, timezone: 'UTC' })
     // Five fish already in the six-fish bucket.
     await t.run(async (ctx) => { for (let i = 0; i < 5; i += 1) await ctx.db.insert('catches', { anglerId, speciesId: 'roach', grams: 200, value: 12, caughtTick: 1, contentVersion: 'v1', createdAt: Date.now() }) })
     return { anglerId, kit }

@@ -29,8 +29,8 @@ const office: BiomeNarrative = {
     `Filed a {monster} under 'defeated'.${win}`,
     `Beat a {monster} near the water cooler.${win}`,
     `Escalated a {monster} straight to the bin.${win}`,
-    `Put a {monster} on a permanent break.${win}`,
-    `Won the meeting against a {monster}.${win}`,
+    `Beat a {monster} in the break room.${win}`,
+    `Beat a {monster} in a meeting room.${win}`,
     `Sent a {monster} home early.${win}`,
   ],
   lootGold: [
@@ -73,15 +73,15 @@ const office: BiomeNarrative = {
   ],
   eliteVictory: [
     `An elite {monster} fell in the cubicles.${win}`,
-    `Took down an elite {monster}. The floor clapped.${win}`,
-    `An elite {monster} got the out-of-office treatment.${win}`,
+    `Took down an elite {monster} in the open-plan.${win}`,
+    `An elite {monster} was sent home.${win}`,
   ],
   jackpot: [
     'Jackpot! A lost expense refund: {gold} gold.',
     'Jackpot! An unclaimed bonus envelope: {gold} gold.',
     'Jackpot! The office lottery pool came in: {gold} gold.',
   ],
-  lootGear: ['Found a {item} in the supply closet.', 'A {item} was left on a hot desk. Finders keepers.', 'Unboxed a {item} from facilities.'],
+  lootGear: ['Found a {item} in the supply closet.', 'Picked up a {item} left on a hot desk.', 'Unboxed a {item} from facilities.'],
   arrive: ['Badge accepted. Back in the {destination}.', 'Returned to the {destination}. The printer is still jammed.'],
 }
 
@@ -134,7 +134,7 @@ const serverRoom: BiomeNarrative = {
   ],
   eliteVictory: [
     `An elite {monster} went offline for good.${win}`,
-    `Took down an elite {monster}. The floor heard it.${win}`,
+    `Took down an elite {monster} by the racks.${win}`,
     `An elite {monster} reached end of life.${win}`,
   ],
   jackpot: [
@@ -153,7 +153,7 @@ const cafeteria: BiomeNarrative = {
     `Defeated a {monster} by the deep fryer.${win}`,
     `Bagged a {monster} for the compost.${win}`,
     `Sent a {monster} back with the dirty trays.${win}`,
-    `Served a {monster} its final course.${win}`,
+    `Beat a {monster} at the food hatch.${win}`,
     `Locked a {monster} in the walk-in freezer.${win}`,
     `Microwaved a {monster} on high.${win}`,
   ],
@@ -173,7 +173,7 @@ const cafeteria: BiomeNarrative = {
     'Something in the fridge lunged. -{damage} HP.',
     'Tried the mystery-meat special. -{damage} HP.',
     'Tripped over the wet-floor sign. -{damage} HP.',
-    'A tray stack collapsed at the worst moment. -{damage} HP.',
+    'A stack of trays fell over. -{damage} HP.',
     'The toaster fired out a crust. -{damage} HP.',
     'A freezer door clipped an elbow. -{damage} HP.',
     'Stepped on an upturned fork. -{damage} HP.',
@@ -181,7 +181,7 @@ const cafeteria: BiomeNarrative = {
     'Lost footing in a puddle of custard. -{damage} HP.',
     'A bag of flour burst overhead. -{damage} HP.',
     'Hurt a hand on the vending machine. -{damage} HP.',
-    'A swinging kitchen door landed first. -{damage} HP.',
+    'Hit by a swinging kitchen door. -{damage} HP.',
     'The blender lid flew off. -{damage} HP.',
     'Caught a rolling pin with a shin. -{damage} HP.',
   ],
@@ -233,13 +233,13 @@ const shared: SharedNarrative = {
     'Took a rain check on a {monster}.',
   ],
   // The status line shows when the hero is back, in the owner's time.
-  death: ['Knocked out by a {monster}.', 'A {monster} won this round. Out cold.', 'Flattened by a {monster}.'],
+  death: ['Knocked out by a {monster}.', 'Knocked out cold by a {monster}.', 'Flattened by a {monster}.'],
   rescue: [
     'A {monster} nearly won; a coworker came to the rescue.',
     'A {monster} nearly won; the first-aider stepped in.',
     'Saved from a {monster} by a surprise fire drill.',
   ],
-  trapDeath: ['Knocked out by a nasty trap.', 'A trap got the better of this one. Out cold.'],
+  trapDeath: ['Knocked out by a nasty trap.', 'Knocked out cold by a trap.'],
   trapRescue: ['A trap nearly won; a coworker came to the rescue.', 'A trap nearly won; the first-aider stepped in.'],
   restFull: ['Took a quiet break at full health.', 'Took a coffee break anyway.', 'Refilled the water bottle and carried on.'],
   trapAvoided: [
@@ -251,7 +251,7 @@ const shared: SharedNarrative = {
   lootGear: ['Found a {item}.'],
   lootPotion: [
     'Found a healing potion.',
-    'Someone left a healing potion on their desk. Finders keepers.',
+    'Picked up a healing potion left on a desk.',
     'Found a healing potion in the first-aid kit.',
     'A healing potion rolled out from under a desk.',
   ],

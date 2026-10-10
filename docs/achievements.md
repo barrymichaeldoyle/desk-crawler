@@ -52,7 +52,7 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 | II | 5 | Blue Bin Regular | Blue bin, not black bin. |
 | III | 25 | Imp Exterminator | The photocopier has never been quieter. |
 | IV | 100 | Paperless Office | Management sent a memo about it. |
-| V | 500 | Pulp Legend | There is a plaque by the shredder now. |
+| V | 500 | Pulp Legend | A plaque hangs by the shredder. |
 
 **Rogue Roomba** (Office Cubicles)
 
@@ -60,7 +60,7 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 | --- | --- | --- | --- |
 | I | 1 | Flipped It | Like a turtle, but with more beeping. |
 | II | 5 | Bin Emptier | Someone had to do it. |
-| III | 25 | Roomba Wrangler | They know your footsteps now. |
+| III | 25 | Roomba Wrangler | Twenty-five roombas flipped. |
 | IV | 100 | Floor Supervisor | Every carpet tile answers to you. |
 | V | 500 | Clean Sweep | The cleaners sent a thank-you card. |
 
@@ -70,7 +70,7 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 | --- | --- | --- | --- |
 | I | 1 | Unjammed | Permanently this time. |
 | II | 5 | Staple Remover | The little metal jaws fear you. |
-| III | 25 | Mimic Spotter | You check every stapler twice now. |
+| III | 25 | Mimic Spotter | You check every stapler twice. |
 | IV | 100 | Supplies Auditor | You have opened every drawer on the floor. |
 | V | 500 | Red Stapler | It is yours. Nobody will take it. |
 
@@ -185,7 +185,7 @@ Set pieces are recomputed when the catalog version changes, so adding a biome in
 | Elites | `eliteWins` | I | 1 | The Floor Clapped | Took down an elite. Someone whistled. |
 | | | II | 5 | Elite Problem | They keep sending senior ones. |
 | | | III | 25 | Senior Exterminator | Title confirmed by email. |
-| | | IV | 100 | Head of Department | Elites report to you now. |
+| | | IV | 100 | Head of Department | Elites are your department. |
 | Jackpots | `jackpots` | I | 1 | Lucky Break | Ten times the gold from one find. |
 | | | II | 5 | Expense Approved | No receipts required. |
 | | | III | 25 | Petty Cash Tin | You know where it is kept. |
@@ -223,7 +223,7 @@ Set pieces are recomputed when the catalog version changes, so adding a biome in
 | | | III | 25 | Strategic Withdrawal | Put it in the slide deck. |
 | | | IV | 100 | Diary Full | Could not possibly fit the fight in. |
 | Potions | `potionsUsed` | I | 1 | First Aid | Tasted of strawberry. |
-| | | II | 10 | Kit Raider | The first-aid box has a lock now. |
+| | | II | 10 | Kit Raider | Facilities put a lock on the first-aid box. |
 | | | III | 100 | Pharmacy | Prescriptions on request. |
 | | | IV | 500 | Self-Medicated | Not medical advice. |
 | Traps avoided | `trapsAvoided` | I | 1 | Watch Your Step | Spotted the trap in time. |

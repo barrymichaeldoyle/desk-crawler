@@ -69,19 +69,19 @@ monster('paper_imp', 'Paper Imp', 'Office Cubicles', [
   ['Blue Bin Regular', 'Blue bin, not black bin.'],
   ['Imp Exterminator', 'The photocopier has never been quieter.'],
   ['Paperless Office', 'Management sent a memo about it.'],
-  ['Pulp Legend', 'There is a plaque by the shredder now.'],
+  ['Pulp Legend', 'A plaque hangs by the shredder.'],
 ])
 monster('rogue_roomba', 'Rogue Roomba', 'Office Cubicles', [
   ['Flipped It', 'Like a turtle, but with more beeping.'],
   ['Bin Emptier', 'Someone had to do it.'],
-  ['Roomba Wrangler', 'They know your footsteps now.'],
+  ['Roomba Wrangler', 'Twenty-five roombas flipped.'],
   ['Floor Supervisor', 'Every carpet tile answers to you.'],
   ['Clean Sweep', 'The cleaners sent a thank-you card.'],
 ])
 monster('stapler_mimic', 'Stapler Mimic', 'Office Cubicles', [
   ['Unjammed', 'Permanently this time.'],
   ['Staple Remover', 'The little metal jaws fear you.'],
-  ['Mimic Spotter', 'You check every stapler twice now.'],
+  ['Mimic Spotter', 'You check every stapler twice.'],
   ['Supplies Auditor', 'You have opened every drawer on the floor.'],
   ['Red Stapler', 'It is yours. Nobody will take it.'],
 ])
@@ -163,7 +163,7 @@ counter('elites', 'Elites', 'Lifetime', 'eliteWins', [1, 5, 25, 100], [
   ['The Floor Clapped', 'Took down an elite. Someone whistled.'],
   ['Elite Problem', 'They keep sending senior ones.'],
   ['Senior Exterminator', 'Title confirmed by email.'],
-  ['Head of Department', 'Elites report to you now.'],
+  ['Head of Department', 'Elites are your department.'],
 ])
 counter('jackpots', 'Jackpots', 'Lifetime', 'jackpots', [1, 5, 25], [
   ['Lucky Break', 'Ten times the gold from one find.'],
@@ -221,7 +221,7 @@ counter('retreats', 'Retreats', 'Lifetime', 'retreats', [1, 5, 25, 100], [
 ])
 counter('potions', 'Potions', 'Lifetime', 'potionsUsed', [1, 10, 100, 500], [
   ['First Aid', 'Tasted of strawberry.'],
-  ['Kit Raider', 'The first-aid box has a lock now.'],
+  ['Kit Raider', 'Facilities put a lock on the first-aid box.'],
   ['Pharmacy', 'Prescriptions on request.'],
   ['Self-Medicated', 'Not medical advice.'],
 ])

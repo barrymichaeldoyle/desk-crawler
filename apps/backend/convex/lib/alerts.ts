@@ -144,7 +144,7 @@ export function alertMessage(row: Pick<Doc<'alertOutbox'>, 'kind' | 'offerName'>
   if (row.kind === 'cooler_full') return { title: 'Your cooler is full', body: 'New catches are being released. Sell some fish to make room.', url: '/app/slow-cast/cooler?alert=cooler_full' }
   if (row.kind === 'bait_out') return { title: 'Out of bait', body: 'Your angler is fishing a bare hook. Restock in the tackle shop.', url: '/app/slow-cast/shop?alert=bait_out' }
   if (row.kind === 'asleep') {
-    return { title: `${heroName} is napping`, body: `${heroName}'s bag is full and they've sat down for a nap. Make some room to send them back out.`, url: '/app/desk-crawler/inventory?alert=asleep' }
+    return { title: `${heroName} is napping`, body: `${heroName}'s bag is full, so they've stopped for a nap. Make room to send them back out.`, url: '/app/desk-crawler/inventory?alert=asleep' }
   }
   return { title: 'A merchant is visiting', body: `A merchant is selling ${heroName} a ${row.offerName ?? 'bigger bag'}, and they have the gold. The offer lasts about an hour.`, url: '/app/desk-crawler/inventory?alert=merchant' }
 }

@@ -29,7 +29,7 @@ Email is out (Barry, 2026-10-09). A push lands on the phone the player already u
   - "Hero asleep: the bag and drawer are full and adventures have stopped. Once per nap."
   - "Merchant deal: a bag or pouch you can afford is on sale for about an hour. At most once a day."
   - Quiet hours, on by default from 21:00 to 08:00 in the browser's timezone, editable in whole hours.
-- **The alert itself:** short, in the game's voice, and it carries no data that would be a privacy problem on a lock screen: "Baz's bag is full and they've sat down for a nap. Make some room to send them back out." or "A merchant is selling Baz a Messenger Bag, and they have the gold. The offer lasts about an hour." Tapping opens the right companion page (Bag or Merchant).
+- **The alert itself:** short, in the game's voice, and it carries no data that would be a privacy problem on a lock screen: "Baz's bag is full, so they've stopped for a nap. Make room to send them back out." or "A merchant is selling Baz a Messenger Bag, and they have the gold. The offer lasts about an hour." Tapping opens the right companion page (Bag or Merchant).
 - **Nothing on the device changes.**
 
 ## Rules

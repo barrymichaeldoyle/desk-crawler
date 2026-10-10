@@ -22,10 +22,10 @@ export const contentV5: ContentCatalog = {
       {
         id: 'misfiled_expense',
         title: 'A misfiled expense form',
-        prompt: 'An intern hands over an expense form nobody ever filed. It is made out to no one.',
+        prompt: 'An intern found an unfiled expense form with no name on it.',
         options: [
           { id: 'file', label: 'File it under your name', story: 'Filed the stray expense form. Finance paid out without a question.', effect: { goldPerTier: 12 } },
-          { id: 'return', label: 'Hand it back', story: 'Handed the expense form back to the intern. Somebody will claim it eventually.', effect: {} },
+          { id: 'return', label: 'Hand it back', story: 'Handed the expense form back to the intern.', effect: {} },
         ],
         defaultOptionId: 'return',
       },
@@ -35,7 +35,7 @@ export const contentV5: ContentCatalog = {
         prompt: 'The break room is collecting for a birthday cake. The jar is already half full.',
         options: [
           { id: 'chip_in', label: 'Chip in 15 gold', story: 'Chipped in for the cake. Had two slices and felt much better.', effect: { gold: -15, hpPct: 15 } },
-          { id: 'pass', label: 'Keep walking', story: 'Walked past the cake collection. The jar did not notice.', effect: {} },
+          { id: 'pass', label: 'Keep walking', story: 'Walked past the cake collection without chipping in.', effect: {} },
         ],
         defaultOptionId: 'pass',
       },
@@ -52,20 +52,20 @@ export const contentV5: ContentCatalog = {
       {
         id: 'overtime_request',
         title: 'An overtime request',
-        prompt: 'A manager wants the back corridor cleared tonight. Good pay, bad corridor.',
+        prompt: 'A manager will pay overtime to clear the back corridor tonight.',
         options: [
           { id: 'stay', label: 'Stay late', story: 'Worked late, cleared the corridor and got paid overtime.', effect: { goldPerTier: 25, hpPct: -10 } },
-          { id: 'clock_out', label: 'Clock out on time', story: 'Clocked out on time. The corridor can wait for someone else.', effect: {} },
+          { id: 'clock_out', label: 'Clock out on time', story: 'Clocked out on time and left the corridor for someone else.', effect: {} },
         ],
         defaultOptionId: 'clock_out',
       },
       {
         id: 'stuck_vending_machine',
         title: 'A stuck vending machine',
-        prompt: 'The vending machine has eaten a coin and is holding a snack hostage. It looks sturdy.',
+        prompt: 'The vending machine ate a coin and a snack is stuck behind the glass.',
         options: [
-          { id: 'kick', label: 'Kick it', story: 'Kicked the vending machine. Two snacks and a handful of change fell out. So did a bruise.', effect: { goldPerTier: 6, hpPct: -5 } },
-          { id: 'walk_on', label: 'Walk on', story: 'Left the vending machine to its own devices.', effect: {} },
+          { id: 'kick', label: 'Kick it', story: 'Kicked the vending machine: two snacks, some change and a bruised toe.', effect: { goldPerTier: 6, hpPct: -5 } },
+          { id: 'walk_on', label: 'Walk on', story: 'Left the vending machine alone.', effect: {} },
         ],
         defaultOptionId: 'walk_on',
       },
@@ -75,7 +75,7 @@ export const contentV5: ContentCatalog = {
         prompt: 'A wallet is lying by the lifts, full of gold, with a photo of a cat inside.',
         options: [
           { id: 'hand_in', label: 'Hand it in at reception', story: 'Handed the wallet in. The owner came by later with a thank-you potion.', effect: { potions: 1 } },
-          { id: 'keep', label: 'Keep the gold', story: 'Kept the gold from the wallet. The cat in the photo looked disappointed.', effect: { goldPerTier: 30 } },
+          { id: 'keep', label: 'Keep the gold', story: 'Kept the gold and left the empty wallet by the lifts.', effect: { goldPerTier: 30 } },
         ],
         defaultOptionId: 'hand_in',
       },

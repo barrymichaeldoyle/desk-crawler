@@ -43,7 +43,7 @@ const counter = (name: keyof AnglerCounters) => (atLeast: number): Predicate => 
 const FAMILIES: AchievementDef[] = [
   ...family('catches', 'Catches', 'Fishing', counter('fishCaught'), [
     [1, 'First Bite', 'Something on the end of the line.'],
-    [10, 'Tight Lines', 'The float knows what to do now.'],
+    [10, 'Tight Lines', 'Ten fish on the float.'],
     [100, 'Regular on the Bank', 'The heron nods as you arrive.'],
     [1000, 'Old Hand', 'You can tie a knot in the dark.'],
     [10000, 'Legend of the Water', 'They name a swim after you.'],
@@ -110,7 +110,7 @@ const FAMILIES: AchievementDef[] = [
     [1, 'First Sale', 'Fresh today.'],
     [25, 'Regular Supplier', 'They know your cooler.'],
     [250, 'Wholesale', 'Restaurants call ahead.'],
-    [1000, 'Fish Market', 'You set the price now.'],
+    [1000, 'Fish Market', 'A thousand fish sold.'],
   ]),
 ]
 

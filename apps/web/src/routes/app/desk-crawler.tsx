@@ -98,7 +98,7 @@ function SignedInApp() {
           ))}
         </ul>
       </nav>
-      <main id="main" className={`mx-auto flex w-full min-w-0 flex-col gap-8 px-4 pt-6 pb-[max(2rem,env(safe-area-inset-bottom))] ${wide ? 'max-w-6xl' : 'max-w-3xl'}`}>
+      <main id="main" className={`mx-auto flex w-full min-w-0 flex-col gap-8 px-3 pt-6 min-[375px]:px-4 pb-[max(2rem,env(safe-area-inset-bottom))] ${wide ? 'max-w-6xl' : 'max-w-3xl'}`}>
         {me.user?.nameRepairRequired ? <NameRepair /> : null}
         <Outlet />
       </main>

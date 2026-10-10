@@ -21,7 +21,7 @@ export function Button({ variant = 'primary', className = '', pending = false, b
     danger: 'hud text-hud-sm border-[3px] border-hp text-hp-ink hover:bg-hp hover:text-night active:bg-hp active:text-night',
   }[variant]
   // A busy button stays focusable (aria-disabled, clicks swallowed): disabling it would drop keyboard focus to the page.
-  return <button type="button" {...props} aria-busy={pending || undefined} aria-disabled={pending || undefined} disabled={!pending && (disabled || (!online && !allowOffline))} onClick={(event) => { if (pending) { event.preventDefault(); return } onClick?.(event) }} className={`min-h-11 px-4 py-2 ${icon ? 'inline-flex items-center justify-center gap-2.5' : ''} ${styles} disabled:cursor-not-allowed disabled:border-dashed disabled:border-faint disabled:bg-transparent disabled:text-muted disabled:shadow-none disabled:no-underline disabled:active:translate-y-0 aria-busy:cursor-wait aria-busy:active:translate-y-0 ${className}`}>{icon ? <Glyph name={icon} className={pending ? 'invisible' : ''} /> : null}{pending ? busyLabel : children}</button>
+  return <button type="button" {...props} aria-busy={pending || undefined} aria-disabled={pending || undefined} disabled={!pending && (disabled || (!online && !allowOffline))} onClick={(event) => { if (pending) { event.preventDefault(); return } onClick?.(event) }} className={`min-h-11 px-3 py-2 min-[375px]:px-4 ${icon ? 'inline-flex items-center justify-center gap-2.5' : ''} ${styles} disabled:cursor-not-allowed disabled:border-dashed disabled:border-faint disabled:bg-transparent disabled:text-muted disabled:shadow-none disabled:no-underline disabled:active:translate-y-0 aria-busy:cursor-wait aria-busy:active:translate-y-0 ${className}`}>{icon ? <Glyph name={icon} className={pending ? 'invisible' : ''} /> : null}{pending ? busyLabel : children}</button>
 }
 
 /**
@@ -104,7 +104,7 @@ function NoticePanel({ text, tone, onDismiss }: { text: string; tone: string; on
 export function Card({ title, icon, children, className = '' }: { title?: string; icon?: GlyphName; children: ReactNode; className?: string }) {
   const id = useId()
   return (
-    <section aria-labelledby={title ? id : undefined} className={`window min-w-0 px-4 pt-3 pb-4 sm:px-5 ${className}`}>
+    <section aria-labelledby={title ? id : undefined} className={`window min-w-0 px-3 pt-3 pb-4 min-[375px]:px-4 sm:px-5 ${className}`}>
       {title ? icon ? <h2 id={id} className="mb-3 flex items-center gap-3 font-display text-2xl font-bold"><Glyph name={icon} size={24} className="text-gold-ink" /><span className="min-w-0">{title}</span></h2> : <h2 id={id} className="mb-3 font-display text-2xl font-bold">{title}</h2> : null}
       {children}
     </section>

@@ -87,7 +87,7 @@ function Shell() {
         </ul>
       </nav>
       {banner}
-      <main id="main" className="mx-auto flex w-full max-w-3xl min-w-0 flex-col gap-6 px-4 pt-6 pb-[max(2rem,env(safe-area-inset-bottom))]">
+      <main id="main" className="mx-auto flex w-full max-w-3xl min-w-0 flex-col gap-6 px-3 pt-6 min-[375px]:px-4 pb-[max(2rem,env(safe-area-inset-bottom))]">
         <Outlet />
       </main>
     </>

@@ -27,7 +27,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
       </Show>
       <Show when="signed-in">{children}</Show>
       <div className="mt-auto border-t border-rule">
-        <SiteLinks className="mx-auto w-full max-w-6xl px-4 py-6" />
+        <SiteLinks className="mx-auto w-full max-w-6xl px-3 py-6 min-[375px]:px-4" />
       </div>
     </div>
   )

@@ -112,7 +112,7 @@ export function Achievements() {
   const locked = view.families.filter((f) => f.earned === null)
   const opened = earned.find((f) => f.family === openId) ?? null
   return (
-    <section aria-labelledby="achievements-title" className="window flex min-w-0 flex-col gap-3 px-4 pt-3 pb-4 sm:px-5">
+    <section aria-labelledby="achievements-title" className="window flex min-w-0 flex-col gap-3 px-3 pt-3 pb-4 min-[375px]:px-4 sm:px-5">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4">
         <SectionTitle id="achievements-title" glyph="achievement">Achievements</SectionTitle>
         <span className="text-sm text-muted tabular-nums">{view.unlocked.length} of {ACHIEVEMENTS.length}</span>

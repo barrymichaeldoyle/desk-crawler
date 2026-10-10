@@ -106,7 +106,7 @@ export function Sheet({ open, onClose, label, children }: { open: boolean; onClo
   return (
     // Named by its title (the piece's name); `label` stands in while no title is rendered.
     <dialog ref={ref} aria-labelledby={titleId} aria-label={label} onClose={onClose} onClick={(event) => { if (event.target === ref.current) onClose() }} className="sheet">
-      {open ? <div className="window px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-5"><SheetTitleId.Provider value={titleId}>{children}</SheetTitleId.Provider></div> : null}
+      {open ? <div className="window px-3 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] min-[375px]:px-4 sm:px-5"><SheetTitleId.Provider value={titleId}>{children}</SheetTitleId.Provider></div> : null}
     </dialog>
   )
 }

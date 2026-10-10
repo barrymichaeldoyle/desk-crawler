@@ -89,7 +89,7 @@ function Ledger({ summary }: { summary: Summary }) {
 
   if (summary.baseline === null) {
     return (
-      <section aria-labelledby="ledger-title" className="min-w-0 border-4 border-gold bg-night px-4 pt-4 pb-4 sm:px-5">
+      <section aria-labelledby="ledger-title" className="min-w-0 border-4 border-gold bg-night px-3 pt-4 pb-4 min-[375px]:px-4 sm:px-5">
         <h2 id="ledger-title" className="hud text-sm text-gold-ink">
           Your first visit
         </h2>
@@ -115,7 +115,7 @@ function Ledger({ summary }: { summary: Summary }) {
   const quiet = rows.every(([, value]) => value === 0)
   const tone: Record<string, string> = { XP: 'text-xp-ink', Levels: 'text-gold-ink', 'Gold earned': 'text-gold-ink', 'Items found': 'text-rare-ink', Knockouts: 'text-hp-ink' }
   return (
-    <section aria-labelledby="ledger-title" className="min-w-0 border-4 border-gold bg-night px-4 pt-4 pb-4 sm:px-5">
+    <section aria-labelledby="ledger-title" className="min-w-0 border-4 border-gold bg-night px-3 pt-4 pb-4 min-[375px]:px-4 sm:px-5">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4">
         <h2 id="ledger-title" className="hud text-sm text-gold-ink">
           While you were away

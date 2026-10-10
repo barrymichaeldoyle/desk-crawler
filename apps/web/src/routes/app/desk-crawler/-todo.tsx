@@ -34,7 +34,7 @@ export function TodoCard({ todo, biomes, healthy, notify }: { todo: TodoView; bi
   const done = todo.tasks.filter((task) => task.done).length
   const biomeName = (id: string | null) => biomes.find((biome) => biome.id === id)?.name ?? ''
   return (
-    <section aria-labelledby="todo-title" className="window flex min-w-0 flex-col gap-3 px-4 pt-3 pb-4 sm:px-5">
+    <section aria-labelledby="todo-title" className="window flex min-w-0 flex-col gap-3 px-3 pt-3 pb-4 min-[375px]:px-4 sm:px-5">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4">
         <SectionTitle id="todo-title" glyph="todo" tone="text-xp-ink">To-do</SectionTitle>
         <p className="text-sm text-muted">{done === 0 ? `Finished tasks get new ones at the ${clock(todo.refillHour)} stand-up.` : `New tasks at the ${clock(todo.refillHour)} stand-up.`}</p>

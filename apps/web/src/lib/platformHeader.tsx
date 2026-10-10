@@ -6,7 +6,7 @@ export function PlatformHeader() {
   return (
     <header className="border-b border-rule">
       {/* One row at every width: phones get a slimmer bar, and below 360px the wordmark is read but not shown. */}
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-2 sm:gap-4 sm:py-5">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-3 py-2 min-[375px]:px-4 sm:gap-4 sm:py-5">
       <Link to="/" className="flex min-h-11 min-w-0 items-center gap-2 font-display text-lg font-semibold"><img src="/favicon.svg" alt="" width={24} height={24} className="shrink-0 [image-rendering:pixelated]" /><span className="truncate max-[359px]:sr-only">TRMNL Games</span></Link>
       <nav aria-label="Platform" className="flex shrink-0 items-center gap-3 text-sm">
         <Link to="/app" className="inline-flex min-h-11 items-center underline underline-offset-4">My games</Link>

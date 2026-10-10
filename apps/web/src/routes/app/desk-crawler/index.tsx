@@ -234,7 +234,8 @@ function HeroSheet({ hero }: { hero: HeroView }) {
               const parts = [option.change.gold ? `${option.change.gold > 0 ? '+' : '−'}${Math.abs(option.change.gold)} gold` : null, option.change.hp ? `${option.change.hp > 0 ? '+' : '−'}${Math.abs(option.change.hp)} HP` : null, option.change.potions ? `+${option.change.potions} ${option.change.potions === 1 ? 'potion' : 'potions'}` : null].filter(Boolean)
               return (
                 <Button key={option.id} variant={option.id === hero.choice!.defaultOptionId ? 'secondary' : 'primary'} pending={choose.pending} busyLabel="Deciding…" disabled={!healthy} onClick={() => (option.change.gold < 0 || option.change.hp < 0 ? setAsk({ kind: 'choice', optionId: option.id }) : choose.run({ optionId: option.id }, 'Decided.'))}>
-                  {option.label}{parts.length ? ` (${parts.join(', ')})` : ''}
+                  {/* The stakes sit on their own small line, so a long option never wraps mid-figure in the pixel face. */}
+                  <span className="flex flex-col items-center gap-1">{option.label}{parts.length ? <>{' '}<span className="label-px">{parts.join(', ')}</span></> : null}</span>
                 </Button>
               )
             })}

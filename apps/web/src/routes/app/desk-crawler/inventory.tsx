@@ -184,7 +184,7 @@ function Inventory() {
         </div>
       </Card>
 
-      <section aria-labelledby="bag-gear-title" className="window min-w-0 px-4 pt-3 pb-4 sm:px-5">
+      <section aria-labelledby="bag-gear-title" className="window min-w-0 px-3 pt-3 pb-4 min-[375px]:px-4 sm:px-5">
         {/* The title stays one line beside either button, so the header holds still when Sell gear becomes Done. */}
         <div className="flex min-h-11 items-center justify-between gap-3">
           {/* The page header already names the bag; this window is its gear. */}
@@ -205,7 +205,7 @@ function Inventory() {
         </ul>
       </section>
 
-      {hasDrawer ? <section aria-labelledby="drawer-title" className="window min-w-0 px-4 pt-3 pb-4 sm:px-5">
+      {hasDrawer ? <section aria-labelledby="drawer-title" className="window min-w-0 px-3 pt-3 pb-4 min-[375px]:px-4 sm:px-5">
         <div className="flex min-h-11 items-center justify-between gap-3">
           <h2 id="drawer-title" className="min-w-0 truncate font-display text-xl font-bold sm:text-2xl">Desk drawer</h2>
           <p className="shrink-0 text-sm tabular-nums text-muted">{drawer.length} of {drawerView.capacity}</p>
@@ -225,7 +225,7 @@ function Inventory() {
         <PotionPouch pouch={bag.pouch} potions={bag.potions} gold={hero.gold} disabled={!manageable || busy} intent={buyPouch} />
       </div>
 
-      {mode === 'sell' ? <div className="window sticky bottom-0 z-20 -mx-4 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:mx-0">
+      {mode === 'sell' ? <div className="window sticky bottom-0 z-20 -mx-3 px-3 pt-3 min-[375px]:-mx-4 min-[375px]:px-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:mx-0">
         <div className="flex items-center justify-between gap-3">
           <p role="status" className="min-w-0 text-sm tabular-nums">{chosen.length === 0 ? 'Nothing selected' : <>{count(chosen.length, 'item')} for <span className="text-gold-ink">{goldOf(chosen)} gold</span>{rareOf(chosen) > 0 ? `, ${rareOf(chosen)} rare` : ''}</>}</p>
           <Button allowOffline disabled={!manageable || busy || chosen.length === 0} onClick={() => setSale(chosen)}>Sell {chosen.length > 0 ? chosen.length : ''}</Button>

@@ -49,7 +49,7 @@ export function Records({ counters, lifetimeXp, stopped = false }: { counters: C
     ['Items sold', counters.itemsSold.toLocaleString(), 'tag', 'text-gold-ink'],
   ]
   return (
-    <section aria-labelledby="records-title" className="window flex min-w-0 flex-col gap-3 px-4 pt-3 pb-4 sm:px-5">
+    <section aria-labelledby="records-title" className="window flex min-w-0 flex-col gap-3 px-3 pt-3 pb-4 min-[375px]:px-4 sm:px-5">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4">
         <SectionTitle id="records-title" glyph="medal">Records</SectionTitle>
         <Link to="/app/desk-crawler/leaderboard" className="inline-flex min-h-11 items-center text-sm underline underline-offset-4">

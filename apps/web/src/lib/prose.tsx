@@ -15,7 +15,7 @@ export function ProsePage({ title, updated, contents, children }: { title: strin
         <h1 className="font-display text-4xl font-bold">{title}</h1>
         {updated ? <p className="text-sm text-muted">Last updated {updated}</p> : null}
         {contents ? (
-          <nav aria-labelledby="contents-title" className="window px-4 pt-3 pb-2 sm:px-5">
+          <nav aria-labelledby="contents-title" className="window px-3 pt-3 pb-2 min-[375px]:px-4 sm:px-5">
             <h2 id="contents-title" className="!mt-0 !text-xl">On this page</h2>
             {/* Two columns even on phones, so twenty sections stay about half a screen; each link keeps a 44px row so it is an easy tap. */}
             <ul className="mt-1 grid grid-cols-2 gap-x-4 sm:gap-x-6">

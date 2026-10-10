@@ -129,7 +129,7 @@ export function DeskKeepsakes() {
   const form = useKeepsakeClaim()
   const { collection, collectedThisWeek, next, error, message } = form
 
-  return <section id="desk-keepsakes" aria-labelledby="keepsakes-title" className="window min-w-0 scroll-mt-20 px-4 pt-3 pb-4 sm:px-5">
+  return <section id="desk-keepsakes" aria-labelledby="keepsakes-title" className="window min-w-0 scroll-mt-20 px-3 pt-3 pb-4 min-[375px]:px-4 sm:px-5">
     <div className="flex flex-wrap items-baseline justify-between gap-2">
       <h2 id="keepsakes-title" className="flex items-center gap-3 font-display text-2xl font-bold"><Glyph name="keepsake" size={24} className="text-gold-ink" />Desk keepsakes</h2>
       {collection ? <p className="text-sm tabular-nums">{collection.totalCollected.toLocaleString()} collected</p> : null}

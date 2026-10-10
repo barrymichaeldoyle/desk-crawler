@@ -2,12 +2,12 @@ import { currentHero, gameProfile } from './lib/gameProfile'
 import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import type { Doc } from './_generated/dataModel'
-import { internalQuery, mutation, query, type MutationCtx, type QueryCtx } from './_generated/server'
+import { internalMutation, internalQuery, mutation, query, type MutationCtx, type QueryCtx } from './_generated/server'
 import { appError } from './lib/errors'
 import { requireAdmin } from './lib/adminAccess'
 import { sha256Hex } from './lib/hash'
 import { normalizeAlias } from './lib/names'
-import { readWorld } from './world'
+import { getOrCreateWorld, readWorld } from './world'
 
 /**
  * Owner-run support and moderation (D23). Admin authority comes only from the
@@ -150,6 +150,20 @@ export const releaseHero = mutation({
     await ctx.db.patch(heroId, { simulationState: 'healthy', quarantineReasonCode: undefined })
     await audit(ctx, actor, 'release_hero', heroId, reasonCode, 'healthy')
     return null
+  },
+})
+
+/**
+ * Stop or restart new Desk Crawler tick starts (operations.md "Content releases"); Slow Cast has its own in
+ * slowCast/operations.ts. `npx convex run --prod admin:setTicksPaused '{"paused":true}'`.
+ */
+export const setTicksPaused = internalMutation({
+  args: { paused: v.boolean() },
+  returns: v.object({ paused: v.boolean() }),
+  handler: async (ctx, { paused }) => {
+    const world = await getOrCreateWorld(ctx)
+    await ctx.db.patch(world._id, { ticksPaused: paused })
+    return { paused }
   },
 })
 

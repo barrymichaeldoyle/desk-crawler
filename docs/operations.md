@@ -155,3 +155,17 @@ D27 selects email to Barry for five-minute run stalls and recovery, suppressing 
 Account deletion persists denial plus a guarded durable deletion job before provider calls. Purge held gear, XP history and copied names; delete the dedicated Clerk user and verify completion. Record retry/blocked phase and scrub references from retained diagnostics; minimal revoked hashes persist while credentials remain usable. V09 proves replay-safe returning-player authorization. Public names use version masking so repair cannot reveal an old offending generation.
 
 At the 40 KiB envelope ceiling, 1,000 continuously polling instances yield about 110 GiB/month response volume before sprites/retries. Measure actual bytes, relevant billing and clustered requests; this is an upper-budget scenario, not predicted traffic or a price quote. Measure score-history overhead and inventory-sleep cohorts rather than claim sleep removes all simulation cost.
+
+## Slow Cast operations (D115)
+
+Slow Cast runs its own world on the shared engine, ticking at minutes 5, 20, 35 and 50 (cron `slow cast tick`, watchdog `slow cast watchdog`). Its controls mirror Desk Crawler's:
+
+| Need | How |
+| --- | --- |
+| Health, blocked run, quarantined anglers | Admin page, "Slow Cast health" card (`slowCast.operations.health`, `resumeBlockedRun`, `releaseAngler`; audited) |
+| Switch the content catalog | `npx convex run --prod slowCast/operations:setActiveContentVersion '{"contentVersion":"v2"}'` (refused while a run is active) |
+| Stop new ticks for a breaking change | `npx convex run --prod slowCast/operations:setTicksPaused '{"paused":true}'`, then `false`; Desk Crawler's is `admin:setTicksPaused` |
+| Engagement report | `npx convex run --prod slowCast/operations:engagement` (counters only, stops at 5,000 anglers) |
+| Game visibility | Admin page "Games" card, or `platform:setGameStatusInternal` |
+
+Incident emails name the game whose run stalled. Daily cleanup keeps Slow Cast's logs, failures and runs on Desk Crawler's windows. Platform achievement rarity is tallied daily at 03:27 UTC (`platformProfile.tally`).

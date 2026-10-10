@@ -37,6 +37,7 @@ function AdminGate() {
   return (
     <>
       <Health />
+      <SlowCastHealth />
       <GameStatuses />
       <UserTools />
     </>
@@ -196,6 +197,54 @@ function GameStatuses() {
           </li>
         ))}
       </ul>
+      <ErrorNote message={error} />
+    </Card>
+  )
+}
+
+/** Slow Cast's world (D115): its own tick, run, publication and quarantined anglers, with the same recovery actions. */
+function SlowCastHealth() {
+  const { data } = useQuery(convexQuery(api.slowCast.operations.health, {}))
+  const resume = useMutation(api.slowCast.operations.resumeBlockedRun)
+  const release = useMutation(api.slowCast.operations.releaseAngler)
+  const [error, setError] = useState<string | null>(null)
+  if (!data) return null
+  const act = async (fn: () => Promise<unknown>) => {
+    setError(null)
+    try {
+      await fn()
+    } catch (e) {
+      setError(errorMessage(e))
+    }
+  }
+  return (
+    <Card title="Slow Cast health">
+      <dl className="grid grid-cols-2 gap-2 text-sm">
+        <dt>World tick</dt>
+        <dd>{data.world?.currentTick ?? 'none'}{data.world?.ticksPaused ? ' · paused' : ''}</dd>
+        <dt>Content</dt>
+        <dd>{data.world?.contentVersion ?? 'none'}</dd>
+        <dt>Last completed</dt>
+        <dd>tick {data.world?.lastCompletedTick ?? 'none'} at {when(data.world?.lastCompletedAt)}</dd>
+        <dt>Last ranking publication</dt>
+        <dd>{when(data.world?.lastPublishedAt)}</dd>
+        <dt>Active run</dt>
+        <dd>{data.activeRun ? `tick ${data.activeRun.tick} · ${data.activeRun.state}${data.activeRun.failureCode ? ` · ${data.activeRun.failureCode}` : ''}` : 'none'}</dd>
+      </dl>
+      {data.activeRun?.state === 'blocked' ? <Button className="mt-3" onClick={() => act(() => resume({ reasonCode: 'admin_resume' }))}>Resume blocked run</Button> : null}
+      {data.quarantined.length > 0 ? (
+        <div className="mt-4">
+          <h3 className="font-semibold">Quarantined anglers</h3>
+          <ul>
+            {data.quarantined.map((a: { id: Id<'anglers'>; name: string; reasonCode: string | null }) => (
+              <li key={a.id} className="flex items-center justify-between gap-2 py-1">
+                <span>{a.name} · {a.reasonCode}</span>
+                <Button variant="secondary" onClick={() => act(() => release({ anglerId: a.id, reasonCode: 'diagnosed' }))}>Release</Button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
       <ErrorNote message={error} />
     </Card>
   )

@@ -23,7 +23,7 @@ function FeedbackPage() {
   const { from } = Route.useSearch()
   return (
     <ProsePage title="Send feedback">
-      <p>Ideas, bugs, balance gripes or things you enjoy: every message goes straight to Barry, who builds TRMNL Games.</p>
+      <p>Send ideas, bug reports, balance complaints or things you enjoy. Barry, who builds TRMNL Games, reads every message.</p>
       <Show when="signed-in"><FeedbackForm page={from} /></Show>
       <Show when="signed-out">
         <p>Sign in first, so a reply can reach you.</p>

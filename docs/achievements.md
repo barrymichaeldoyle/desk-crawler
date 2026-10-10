@@ -30,7 +30,7 @@ Achievements are content, versioned like the monster catalog, in `packages/desk-
 
 ```ts
 { id: 'slay_paper_imp_3', family: 'slay_paper_imp', tier: 3, name: 'Imp Exterminator',
-  blurb: 'The photocopier has never been quieter.', predicate: { counter: 'monsterWins.paper_imp', atLeast: 25 } }
+  blurb: 'The photocopier room is clear of imps.', predicate: { counter: 'monsterWins.paper_imp', atLeast: 25 } }
 ```
 
 - Predicates are pure functions of the hero's bounded state: lifetime counters, per-monster wins, level, bag capacity and keepsake total. No log scans, no history reads, no wall-clock. The evaluator lives in the pure core beside the simulator, so unit tests and the balance harness cover it.
@@ -50,7 +50,7 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 | --- | --- | --- | --- |
 | I | 1 | Shredder Duty | Fed a Paper Imp to the shredder. It was mostly staples. |
 | II | 5 | Blue Bin Regular | Blue bin, not black bin. |
-| III | 25 | Imp Exterminator | The photocopier has never been quieter. |
+| III | 25 | Imp Exterminator | The photocopier room is clear of imps. |
 | IV | 100 | Paperless Office | Management sent a memo about it. |
 | V | 500 | Pulp Legend | A plaque hangs by the shredder. |
 
@@ -72,16 +72,16 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 | II | 5 | Staple Remover | Pulled the staples out. |
 | III | 25 | Mimic Spotter | You check every stapler twice. |
 | IV | 100 | Supplies Auditor | You have opened every drawer on the floor. |
-| V | 500 | Red Stapler | It is yours. Nobody will take it. |
+| V | 500 | Red Stapler | The red stapler is yours to keep. |
 
 **Dust Daemon** (Office Cubicles)
 
 | Tier | Wins | Name | Blurb |
 | --- | --- | --- | --- |
-| I | 1 | Canned Air | One short blast. Problem solved. |
+| I | 1 | Canned Air | Cleared one with a blast of canned air. |
 | II | 5 | Dust Buster | Gesundheit. |
 | III | 25 | Allergy Season | Tissues on expenses. |
-| IV | 100 | Spring Cleaning | The vents have never been this clear. |
+| IV | 100 | Spring Cleaning | Every vent dusted. |
 | V | 500 | Spotless | You can see your reflection in the keyboard. |
 
 **Cable Serpent** (Server Room)
@@ -112,7 +112,7 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 | II | 5 | Patch Tuesday | Reboot required. |
 | III | 25 | Deny All | Then allow exactly what you mean. |
 | IV | 100 | Zero Trust | Every port closed by default. |
-| V | 500 | Air Gapped | The safest network is the one you unplugged. |
+| V | 500 | Air Gapped | Unplugged from every network. |
 
 **Legacy Mainframe** (Server Room)
 
@@ -159,7 +159,7 @@ One family per authored monster, counter `monsterWins[id]`, ladder 1 / 5 / 25 / 
 | Tier | Wins | Name | Blurb |
 | --- | --- | --- | --- |
 | I | 1 | Nobody Claimed It | Every head went in the bin. |
-| II | 5 | Fridge Cleaner | Friday, four o'clock, no mercy. |
+| II | 5 | Fridge Cleaner | Cleared the fridge at four on a Friday. |
 | III | 25 | Tupperware Hero | Returned to its rightful owner. |
 | IV | 100 | Friday Purge | A passive-aggressive note was not needed. |
 | V | 500 | Sell-By Legend | The fridge has been empty for a week. |
@@ -182,7 +182,7 @@ Set pieces are recomputed when the catalog version changes, so adding a biome in
 
 | Family | Counter | Tier | Threshold | Name | Blurb |
 | --- | --- | --- | --- | --- | --- |
-| Elites | `eliteWins` | I | 1 | The Floor Clapped | Took down an elite. Someone whistled. |
+| Elites | `eliteWins` | I | 1 | The Floor Clapped | Took down your first elite. |
 | | | II | 5 | Elite Problem | Five elites beaten. |
 | | | III | 25 | Senior Exterminator | Title confirmed by email. |
 | | | IV | 100 | Head of Department | Elites are your department. |
@@ -190,17 +190,17 @@ Set pieces are recomputed when the catalog version changes, so adding a biome in
 | | | II | 5 | Expense Approved | No receipts required. |
 | | | III | 25 | Petty Cash Tin | You know where it is kept. |
 | Rare finds | `rareFinds` | I | 1 | Shiny | Found your first rare piece of gear. |
-| | | II | 5 | Collector | A small, strange and growing pile. |
-| | | III | 25 | Curator | Labelled, catalogued, insured. |
-| | | IV | 100 | The Vault | Nobody else has a drawer like this. |
+| | | II | 5 | Collector | Five rare finds and counting. |
+| | | III | 25 | Curator | Twenty-five rare finds, all catalogued. |
+| | | IV | 100 | The Vault | A hundred rare finds in one drawer. |
 | Adventures | `ticksExplored` | I | 1 | First Day | Found the kitchen and your desk. |
 | | | II | 100 | Probation Passed | A day and a bit of adventuring. |
 | | | III | 500 | Weekly Standup | Roughly a week on the clock. |
 | | | IV | 2,500 | Monthly Report | A full month of fifteen-minute quests. |
 | | | V | 10,000 | Long Service Award | A carriage clock would be appropriate. |
 | Finds | `itemsFound` | I | 10 | Finders Keepers | Someone left it on their desk. |
-| | | II | 100 | Drawer of Things | Everyone has one. Yours is bigger. |
-| | | III | 1,000 | Supply Cupboard | The quartermaster of the open-plan. |
+| | | II | 100 | Drawer of Things | A hundred finds and a full drawer. |
+| | | III | 1,000 | Supply Cupboard | Colleagues borrow from your thousand finds. |
 | | | IV | 5,000 | Lost Property Office | It all ends up with you. |
 | Gold earned | `goldEarned` | I | 100 | Coins in the Couch | Lifetime gold, not current balance. |
 | | | II | 1,000 | Expense Claim | Approved, eventually. |
@@ -214,12 +214,12 @@ Set pieces are recomputed when the catalog version changes, so adding a biome in
 | Knock-outs | `deaths` | I | 1 | Out Cold | Back in two hours, a little poorer. |
 | | | II | 5 | Sick Note | Signed by the first-aider. |
 | | | III | 25 | Regular at HR | They have a chair with your name on it. |
-| | | IV | 100 | Nine Lives (Expired) | And then some. |
+| | | IV | 100 | Nine Lives (Expired) | A hundred knockouts. |
 | Rescues | `rescues` | I | 1 | Fire Drill | The alarm went off mid-fight. |
 | | | II | 5 | First-Aider's Friend | On first-name terms with the green box. |
 | | | III | 25 | Coworker of the Year | Awarded to whoever keeps rescuing you. |
 | Retreats | `retreats` | I | 1 | Rain Check | Fight another day. |
-| | | II | 5 | Night Shift's Problem | Left it for them. Twice this week. |
+| | | II | 5 | Night Shift's Problem | Left five fights for the night shift. |
 | | | III | 25 | Strategic Withdrawal | Put it in the slide deck. |
 | | | IV | 100 | Diary Full | Could not possibly fit the fight in. |
 | Potions | `potionsUsed` | I | 1 | First Aid | Tasted of strawberry. |
@@ -228,11 +228,11 @@ Set pieces are recomputed when the catalog version changes, so adding a biome in
 | | | IV | 500 | Self-Medicated | Not medical advice. |
 | Traps avoided | `trapsAvoided` | I | 1 | Watch Your Step | Spotted the trap in time. |
 | | | II | 25 | Wet Floor Sign | You put it there yourself. |
-| | | III | 100 | Health and Safety | Completed the e-learning. Twice. |
+| | | III | 100 | Health and Safety | Completed the safety e-learning. |
 | | | IV | 500 | Risk Assessed | Every corridor has a laminated form. |
 | Breaks | `restTicks` | I | 10 | Coffee Break | Status set to "out of office". |
 | | | II | 100 | Power Nap | Feet up under the desk. |
-| | | III | 1,000 | Out of Office | Back on the twelfth. Ish. |
+| | | III | 1,000 | Out of Office | Back on the twelfth, roughly. |
 | Trips | `trips` | I | 1 | Commuter | Took the stairs to another floor. |
 | | | II | 10 | Hot Desker | No fixed address. |
 | | | III | 100 | Frequent Flyer | Lounge access to the Server Room. |

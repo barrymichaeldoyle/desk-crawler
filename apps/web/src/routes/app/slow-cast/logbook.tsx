@@ -56,7 +56,7 @@ function LogbookPage() {
                         {s.weather ? ` · ${s.weather.map((w) => WEATHER_LABEL[w]).join(' or ')}` : ''}
                       </p>
                     </>
-                  ) : <p className="text-sm text-muted">{s.rarity === 'epic' ? 'An epic fish: it wants the right bait, hour and weather.' : `A ${s.rarity} fish of ${water.name}.`}</p>}
+                  ) : <p className="text-sm text-muted">{s.rarity === 'epic' ? 'An epic fish. It needs the right bait, hour and weather.' : `A ${s.rarity} fish of ${water.name}.`}</p>}
                 </div>
               </li>
             ))}

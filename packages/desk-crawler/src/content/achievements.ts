@@ -67,7 +67,7 @@ const counter = (id: string, name: string, category: string, key: NumericCounter
 monster('paper_imp', 'Paper Imp', 'Office Cubicles', [
   ['Shredder Duty', 'Fed a Paper Imp to the shredder. It was mostly staples.'],
   ['Blue Bin Regular', 'Blue bin, not black bin.'],
-  ['Imp Exterminator', 'The photocopier has never been quieter.'],
+  ['Imp Exterminator', 'The photocopier room is clear of imps.'],
   ['Paperless Office', 'Management sent a memo about it.'],
   ['Pulp Legend', 'A plaque hangs by the shredder.'],
 ])
@@ -83,13 +83,13 @@ monster('stapler_mimic', 'Stapler Mimic', 'Office Cubicles', [
   ['Staple Remover', 'Pulled the staples out.'],
   ['Mimic Spotter', 'You check every stapler twice.'],
   ['Supplies Auditor', 'You have opened every drawer on the floor.'],
-  ['Red Stapler', 'It is yours. Nobody will take it.'],
+  ['Red Stapler', 'The red stapler is yours to keep.'],
 ])
 monster('dust_daemon', 'Dust Daemon', 'Office Cubicles', [
-  ['Canned Air', 'One short blast. Problem solved.'],
+  ['Canned Air', 'Cleared one with a blast of canned air.'],
   ['Dust Buster', 'Gesundheit.'],
   ['Allergy Season', 'Tissues on expenses.'],
-  ['Spring Cleaning', 'The vents have never been this clear.'],
+  ['Spring Cleaning', 'Every vent dusted.'],
   ['Spotless', 'You can see your reflection in the keyboard.'],
 ])
 monster('cable_serpent', 'Cable Serpent', 'Server Room', [
@@ -111,7 +111,7 @@ monster('firewall_gremlin', 'Firewall Gremlin', 'Server Room', [
   ['Patch Tuesday', 'Reboot required.'],
   ['Deny All', 'Then allow exactly what you mean.'],
   ['Zero Trust', 'Every port closed by default.'],
-  ['Air Gapped', 'The safest network is the one you unplugged.'],
+  ['Air Gapped', 'Unplugged from every network.'],
 ])
 monster('legacy_mainframe', 'Legacy Mainframe', 'Server Room', [
   ['Decommissioned', 'Finally.'],
@@ -143,7 +143,7 @@ monster('microwave_wraith', 'Microwave Wraith', 'Cafeteria Depths', [
 ])
 monster('leftovers_hydra', 'Leftovers Hydra', 'Cafeteria Depths', [
   ['Nobody Claimed It', 'Every head went in the bin.'],
-  ['Fridge Cleaner', "Friday, four o'clock, no mercy."],
+  ['Fridge Cleaner', "Cleared the fridge at four on a Friday."],
   ['Tupperware Hero', 'Returned to its rightful owner.'],
   ['Friday Purge', 'A passive-aggressive note was not needed.'],
   ['Sell-By Legend', 'The fridge has been empty for a week.'],
@@ -160,7 +160,7 @@ family('floor_cleared_3', 'Cafeteria Cleared', 'Set piece', [['Cafeteria Cleared
 // ---------------------------------------------------------------- counter families
 
 counter('elites', 'Elites', 'Lifetime', 'eliteWins', [1, 5, 25, 100], [
-  ['The Floor Clapped', 'Took down an elite. Someone whistled.'],
+  ['The Floor Clapped', 'Took down your first elite.'],
   ['Elite Problem', 'Five elites beaten.'],
   ['Senior Exterminator', 'Title confirmed by email.'],
   ['Head of Department', 'Elites are your department.'],
@@ -172,9 +172,9 @@ counter('jackpots', 'Jackpots', 'Lifetime', 'jackpots', [1, 5, 25], [
 ])
 counter('rare_finds', 'Rare finds', 'Lifetime', 'rareFinds', [1, 5, 25, 100], [
   ['Shiny', 'Found your first rare piece of gear.'],
-  ['Collector', 'A small, strange and growing pile.'],
-  ['Curator', 'Labelled, catalogued, insured.'],
-  ['The Vault', 'Nobody else has a drawer like this.'],
+  ['Collector', 'Five rare finds and counting.'],
+  ['Curator', 'Twenty-five rare finds, all catalogued.'],
+  ['The Vault', 'A hundred rare finds in one drawer.'],
 ])
 counter('adventures', 'Adventures', 'Lifetime', 'ticksExplored', [1, 100, 500, 2500, 10000], [
   ['First Day', 'Found the kitchen and your desk.'],
@@ -185,8 +185,8 @@ counter('adventures', 'Adventures', 'Lifetime', 'ticksExplored', [1, 100, 500, 2
 ])
 counter('finds', 'Finds', 'Lifetime', 'itemsFound', [10, 100, 1000, 5000], [
   ['Finders Keepers', 'Someone left it on their desk.'],
-  ['Drawer of Things', 'Everyone has one. Yours is bigger.'],
-  ['Supply Cupboard', 'The quartermaster of the open-plan.'],
+  ['Drawer of Things', 'A hundred finds and a full drawer.'],
+  ['Supply Cupboard', 'Colleagues borrow from your thousand finds.'],
   ['Lost Property Office', 'It all ends up with you.'],
 ])
 counter('gold', 'Gold earned', 'Lifetime', 'goldEarned', [100, 1000, 10000, 100000], [
@@ -206,7 +206,7 @@ counter('knockouts', 'Knock-outs', 'Lifetime', 'deaths', [1, 5, 25, 100], [
   ['Out Cold', 'Back in two hours, a little poorer.'],
   ['Sick Note', 'Signed by the first-aider.'],
   ['Regular at HR', 'They have a chair with your name on it.'],
-  ['Nine Lives (Expired)', 'And then some.'],
+  ['Nine Lives (Expired)', 'A hundred knockouts.'],
 ])
 counter('rescues', 'Rescues', 'Lifetime', 'rescues', [1, 5, 25], [
   ['Fire Drill', 'The alarm went off mid-fight.'],
@@ -215,7 +215,7 @@ counter('rescues', 'Rescues', 'Lifetime', 'rescues', [1, 5, 25], [
 ])
 counter('retreats', 'Retreats', 'Lifetime', 'retreats', [1, 5, 25, 100], [
   ['Rain Check', 'Fight another day.'],
-  ["Night Shift's Problem", 'Left it for them. Twice this week.'],
+  ["Night Shift's Problem", 'Left five fights for the night shift.'],
   ['Strategic Withdrawal', 'Put it in the slide deck.'],
   ['Diary Full', 'Could not possibly fit the fight in.'],
 ])
@@ -228,13 +228,13 @@ counter('potions', 'Potions', 'Lifetime', 'potionsUsed', [1, 10, 100, 500], [
 counter('traps', 'Traps avoided', 'Lifetime', 'trapsAvoided', [1, 25, 100, 500], [
   ['Watch Your Step', 'Spotted the trap in time.'],
   ['Wet Floor Sign', 'You put it there yourself.'],
-  ['Health and Safety', 'Completed the e-learning. Twice.'],
+  ['Health and Safety', 'Completed the safety e-learning.'],
   ['Risk Assessed', 'Every corridor has a laminated form.'],
 ])
 counter('breaks', 'Breaks', 'Lifetime', 'restTicks', [10, 100, 1000], [
   ['Coffee Break', 'Status set to "out of office".'],
   ['Power Nap', 'Feet up under the desk.'],
-  ['Out of Office', 'Back on the twelfth. Ish.'],
+  ['Out of Office', 'Back on the twelfth, roughly.'],
 ])
 counter('trips', 'Trips', 'Lifetime', 'trips', [1, 10, 100], [
   ['Commuter', 'Took the stairs to another floor.'],
@@ -264,7 +264,7 @@ family('keepsakes', 'Keepsakes', 'Lifetime', [
 
 counter('purchases', 'Purchases', 'Decisions', 'purchases', [1, 5, 25], [
   ['Impulse Buy', 'Bought from the merchant.'],
-  ['Loyalty Card', 'Fifth stamp. The sixth is not free.'],
+  ['Loyalty Card', 'Five stamps on the loyalty card.'],
   ['Preferred Customer', 'The merchant waves from across the floor.'],
 ])
 counter('merchants', 'Merchants met', 'Decisions', 'merchantVisits', [1, 10, 50], [
@@ -284,7 +284,7 @@ counter('choices', 'Decisions made', 'Decisions', 'choicesMade', [1, 5, 25, 100]
   ['Chief Decision Officer', 'A job title made up just for you.'],
 ])
 counter('epics', 'Epic finds', 'Lifetime', 'epicFinds', [1, 5], [
-  ['Legendary Stationery', 'Epic gear. One in a hundred.'],
+  ['Legendary Stationery', 'Found an epic piece, about one find in a hundred.'],
   ['The Good Drawer', 'Five epics, under lock and key.'],
 ])
 
@@ -305,9 +305,9 @@ counter('desk_defender', 'Desk defender', 'Raids', 'raidsRepelled', [1, 10, 50],
 
 counter('tasks_done', 'Tasks done', 'Lifetime', 'tasksCompleted', [1, 10, 50, 250], [
   ['Ticked Off', 'Crossed the first task off the office to-do list.'],
-  ['Inbox Zero-ish', 'Ten tasks done. The list keeps coming.'],
+  ['Inbox Zero-ish', 'Ten tasks ticked off.'],
   ['Getting Things Done', 'Fifty tasks ticked off without a single reminder.'],
-  ['Employee of the Month', 'Two hundred and fifty tasks. Framed photo pending.'],
+  ['Employee of the Month', 'Two hundred and fifty tasks ticked off.'],
 ])
 
 /** Families in display order. */

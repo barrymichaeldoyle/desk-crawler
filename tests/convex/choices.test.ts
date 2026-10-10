@@ -60,7 +60,7 @@ describe('narrative choice intent (D79)', () => {
     const hero = await heroDoc(t, heroId)
     expect(hero?.effects).toEqual([{ id: 'well_fed', untilTick: 18 }])
     const view = await user.query(api.heroes.mine, {})
-    expect(view.effects).toEqual([{ id: 'well_fed', name: 'Well fed', blurb: 'Cake. Learns a little more from each win.', kind: 'boon', ticksLeft: 8 }])
+    expect(view.effects).toEqual([{ id: 'well_fed', name: 'Well fed', blurb: 'Learns a little more from each win.', kind: 'boon', ticksLeft: 8 }])
     const log = (await t.run(async (ctx) => await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', heroId)).order('desc').take(5))).find((entry) => entry.source === 'command')
     expect(log?.detail).toMatchObject({ operation: 'choose', effectGained: 'well_fed' })
   })

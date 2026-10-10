@@ -27,7 +27,7 @@ export const contentV6: ContentCatalog = {
   effects: [
     { id: 'fired_up', name: 'Fired up', blurb: 'Hits harder after beating an elite.', kind: 'boon', durationTicks: 8, modifiers: { attackPct: 10 } },
     { id: 'bruised', name: 'Bruised', blurb: 'A trap left a mark; defense is down until a rest.', kind: 'bane', durationTicks: 4, modifiers: { defensePct: -15 } },
-    { id: 'well_fed', name: 'Well fed', blurb: 'Cake. Learns a little more from each win.', kind: 'boon', durationTicks: 8, modifiers: { xpPct: 10 } },
+    { id: 'well_fed', name: 'Well fed', blurb: 'Learns a little more from each win.', kind: 'boon', durationTicks: 8, modifiers: { xpPct: 10 } },
   ],
   effectSources: { trapHit: 'bruised', eliteVictory: 'fired_up' },
   choices: {

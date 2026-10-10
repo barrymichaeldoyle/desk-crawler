@@ -196,7 +196,7 @@ const cafeteria: BiomeNarrative = {
   eliteVictory: [
     `Sent an elite {monster} back to the kitchen.${win}`,
     `Took an elite {monster} off the menu.${win}`,
-    `An elite {monster} was 86'd for good.${win}`,
+    `Beat an elite {monster} at the fryer.${win}`,
   ],
   jackpot: [
     'Jackpot! The vending machine paid out: {gold} gold.',
@@ -221,7 +221,7 @@ const monsters: Record<string, MonsterNarrative> = {
   coffee_slime: signature('Mopped up a {monster}.', 'Poured a {monster} down the sink.'),
   crumb_golem: signature('Broke a {monster} into crumbs.', 'Swept a {monster} into the dustpan.'),
   microwave_wraith: signature('Hit cancel on a {monster}.', 'Unplugged a {monster} mid-ding.'),
-  leftovers_hydra: signature('Cleared out a {monster}. Nobody claimed it.', 'Binned every head of a {monster}.'),
+  leftovers_hydra: signature('Cleared out an unclaimed {monster}.', 'Binned every head of a {monster}.'),
 }
 
 const shared: SharedNarrative = {

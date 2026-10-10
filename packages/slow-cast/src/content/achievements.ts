@@ -82,11 +82,11 @@ const FAMILIES: AchievementDef[] = [
     [5, 'Five in the Book', 'The pages start to fill.'],
     [10, 'Naturalist', 'You know a rudd from a roach.'],
     [20, 'Field Guide', 'Other anglers ask you what they caught.'],
-    [30, 'Every Fish in the Book', 'Every species, every water.'],
+    [30, 'Every Fish in the Book', 'Every species at every water.'],
   ]),
   ...family('waters', 'Waters', 'Progress', (n) => ({ kind: 'waters', atLeast: n }), [
     [2, 'Down to the River', 'Waders on, into the current.'],
-    [3, 'Salt Water', 'Gulls, tide and a pier to call home.'],
+    [3, 'Salt Water', 'Fishing off the Harbour Pier.'],
   ]),
   ...family('levels', 'Levels', 'Progress', (n) => ({ kind: 'level', atLeast: n }), [
     [4, 'Getting the Hang of It', 'River Bend is open.'],

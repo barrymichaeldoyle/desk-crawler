@@ -68,7 +68,7 @@ export const Route = createRootRouteWithContext<{
 function NotFound() {
   return (
     <main id="main" className="mx-auto flex max-w-2xl flex-col gap-4 px-4 py-16">
-      <h1 className="font-display text-3xl font-bold">This corridor is empty</h1>
+      <h1 className="font-display text-3xl font-bold">Page not found</h1>
       <p>There's no page at this address. It may have moved, or the link may be mistyped.</p>
       <p>
         <Link to="/" className="underline underline-offset-4">

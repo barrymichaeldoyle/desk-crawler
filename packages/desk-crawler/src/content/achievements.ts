@@ -193,7 +193,7 @@ counter('gold', 'Gold earned', 'Lifetime', 'goldEarned', [100, 1000, 10000, 1000
   ['Coins in the Couch', 'Lifetime gold, not current balance.'],
   ['Expense Claim', 'Approved, eventually.'],
   ['Bonus Season', 'Discretionary, apparently.'],
-  ['Golden Handshake', 'Enough to retire on. You stay anyway.'],
+  ['Golden Handshake', 'Enough gold to retire on.'],
 ])
 family('levels', 'Levels', 'Lifetime', [
   ['Promoted', 'The Server Room is open.'],

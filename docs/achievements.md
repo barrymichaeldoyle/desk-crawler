@@ -205,7 +205,7 @@ Set pieces are recomputed when the catalog version changes, so adding a biome in
 | Gold earned | `goldEarned` | I | 100 | Coins in the Couch | Lifetime gold, not current balance. |
 | | | II | 1,000 | Expense Claim | Approved, eventually. |
 | | | III | 10,000 | Bonus Season | Discretionary, apparently. |
-| | | IV | 100,000 | Golden Handshake | Enough to retire on. You stay anyway. |
+| | | IV | 100,000 | Golden Handshake | Enough gold to retire on. |
 | Levels | `level` | I | 4 | Promoted | The Server Room is open. |
 | | | II | 8 | Team Lead | The Cafeteria Depths are open. |
 | | | III | 12 | Middle Management | Rolling Suitcase territory. |

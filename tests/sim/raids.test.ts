@@ -171,7 +171,7 @@ describe('desk raids (D110)', () => {
     const { hero, inventory } = ready({ hp: 10, status: 'resting', gold: 99999 })
     const dead = tick(hero, inventory, contentV7, 1, { incomingRaid: incoming({ raiderName: 'W'.repeat(20), gold: 4999 }) })
     expect(codePoints(dead.event!.summary)).toBeLessThanOrEqual(contentV7.constants.summaryMaxCodePoints)
-    expect(dead.event!.summary).toContain('Knocked out for 8 ticks.')
+    expect(dead.event!.summary).toContain('Out cold for 2 hours.')
   })
 })
 

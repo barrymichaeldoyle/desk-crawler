@@ -181,7 +181,7 @@ export function simulateAngler(input: CastInput): CastResult {
     event = { kind: 'catch', summary: `${lead} took ${baitPhrase} ${BAND_PHRASE[conditions.band]}.${tail}`, detail, deltas: { xpEarned, gold: 0 } }
   } else {
     angler = { ...angler, counters: bump(angler.counters, { released: 1 }) }
-    event = { kind: 'release', summary: `Cooler full. ${lead} goes back.${tail}`, detail, deltas: { xpEarned, gold: 0 } }
+    event = { kind: 'release', summary: `Cooler full. Released ${lead.charAt(0).toLowerCase()}${lead.slice(1)}.${tail}`, detail, deltas: { xpEarned, gold: 0 } }
   }
   if (levelled.levelsGained > 0) extraEvents.push(levelUpEvent(content, levelled.level))
   return {

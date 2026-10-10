@@ -120,7 +120,7 @@ describe('the cast', () => {
     const result = simulateAngler(input({ streams, coolerCount: 6 }))
     expect(result.catch).toBeUndefined()
     expect(result.event?.kind).toBe('release')
-    expect(result.event?.summary).toMatch(/^Cooler full\. An? .+ goes back\./)
+    expect(result.event?.summary).toMatch(/^Cooler full\. Released an? .+\./)
     expect(result.event?.deltas.xpEarned).toBeGreaterThan(0)
     expect(result.angler.counters.released).toBe(1)
     expect(result.metrics).toMatchObject({ landed: 1, released: 1 })

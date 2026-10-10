@@ -100,12 +100,13 @@ function Settings() {
           <ul className="flex flex-col divide-y divide-rule">
             {connections.map((c) => (
               <li key={c.id} className="flex items-center justify-between gap-2 py-2">
-                <span className="min-w-0">
+                {/* Name over status, beside a button that keeps its width: inline, the status ran under the button on phones. */}
+                <span className="flex min-w-0 flex-col">
                   <span className="font-semibold">Installation {c.uuid.slice(0, 8)}</span>
-                  <span className="ml-2 text-sm text-muted">{c.state === 'active' ? 'Connected' : c.state === 'uninstalled' ? 'Uninstalled' : 'Disconnected'}</span>
+                  <span className="text-sm text-muted">{c.state === 'active' ? 'Connected' : c.state === 'uninstalled' ? 'Uninstalled' : 'Disconnected'}</span>
                 </span>
                 {c.state === 'active' ? (
-                  <Button allowOffline icon="plug" variant="secondary" disabled={disconnect.pending} onClick={() => { disconnect.clearFeedback(); setDisconnectId(c.id) }}>
+                  <Button allowOffline icon="plug" variant="secondary" className="shrink-0" disabled={disconnect.pending} onClick={() => { disconnect.clearFeedback(); setDisconnectId(c.id) }}>
                     Disconnect
                   </Button>
                 ) : null}

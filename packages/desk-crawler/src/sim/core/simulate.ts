@@ -557,7 +557,7 @@ class TickRun {
         goldPenalty = this.knockOut()
         logKind = 'death'
         primary = this.narrate(isCombat ? shared.death : shared.trapDeath, { ...vars, ticks })
-        compact = fill('Knocked out. Revives in {ticks} ticks.', { ticks })
+        compact = fill('Knocked out for about {hours} hours.', { hours: Math.max(1, Math.round(ticks / 4)) })
         outcome = { ...outcome, outcome: 'death' } as OutcomeDetail
         if (goldPenalty > 0) consequences.push(`Lost ${goldPenalty} gold.`)
       }
@@ -757,7 +757,7 @@ class TickRun {
         outcome = 'death'
         kind = 'death'
         // Fixed and short, so the knockout survives the budget beside the longest name and purse.
-        consequences.push(fill('Knocked out for {ticks} ticks.', { ticks }))
+        consequences.push(fill('Out cold for {hours} hours.', { hours: Math.max(1, Math.round(ticks / 4)) }))
         if (goldPenalty > 0) consequences.push(`Lost ${goldPenalty} gold.`)
       }
     }

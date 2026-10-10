@@ -63,7 +63,7 @@ export function previewScenarios(artBaseUrl: string): Record<string, SlowCastPay
     catch: b,
     waiting: { ...b, stories: [{ kind: 'ambient', summary: 'The float trots down the crease.', at: minutes(3) }, ...stories.slice(1)] },
     gotAway: { ...b, stories: [stories[3]!, ...stories.slice(0, 3)] },
-    coolerFull: { ...b, coolerUsed: 18, stories: [{ kind: 'release', summary: 'Cooler full. A 1.2 kg Chub goes back.', at: minutes(4), speciesId: 'chub', grams: 1200 }, ...stories] },
+    coolerFull: { ...b, coolerUsed: 18, stories: [{ kind: 'release', summary: 'Cooler full. Released a 1.2 kg Chub.', at: minutes(4), speciesId: 'chub', grams: 1200 }, ...stories] },
     bareHook: { ...b, angler: { ...angler, bait: { maggots: 0, worms: 12 } } },
     paused: { ...b, angler: { ...angler, status: 'paused' } },
     travelling: { ...b, angler: { ...angler, travelTo: 'harbour_pier' }, stories: [{ kind: 'system', summary: 'Packing up for the Harbour Pier.', at: minutes(2) }, ...stories] },

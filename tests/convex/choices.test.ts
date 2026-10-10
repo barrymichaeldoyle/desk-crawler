@@ -48,7 +48,7 @@ describe('narrative choice intent (D79)', () => {
     expect(hero?.counters.goldEarned).toBe(50)
     // The level-5 fixture also earns its first achievement on this intent; the command story is the one to check.
     const log = (await t.run(async (ctx) => await ctx.db.query('tickLogs').withIndex('by_heroId_and_at_and_sequence', (q) => q.eq('heroId', heroId)).order('desc').take(5))).find((entry) => entry.source === 'command')
-    expect(log).toMatchObject({ source: 'command', summary: 'Worked the late shift. Cleared the corridor, collected the overtime, lost some sleep.', detail: { operation: 'choose', eventId: 'overtime_request', optionId: 'stay' }, deltas: { xpEarned: 0, gold: 50, hp: -15 } })
+    expect(log).toMatchObject({ source: 'command', summary: 'Worked late, cleared the corridor and got paid overtime.', detail: { operation: 'choose', eventId: 'overtime_request', optionId: 'stay' }, deltas: { xpEarned: 0, gold: 50, hp: -15 } })
     expect(await errorCode(user.mutation(api.heroes.choose, { operationId: opId(), optionId: 'stay' }))).toBe('NO_CHOICE')
     expect((await user.query(api.heroes.mine, {})).choice).toBeNull()
   })

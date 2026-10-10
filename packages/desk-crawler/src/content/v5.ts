@@ -45,7 +45,7 @@ export const contentV5: ContentCatalog = {
         prompt: 'The first-aid kit is being restocked. A potion sits on top and the clerk is looking away.',
         options: [
           { id: 'take', label: 'Take one, leave 8 gold in the tin', story: 'Took a potion from the restock and left some gold in the honesty tin.', effect: { gold: -8, potions: 1 } },
-          { id: 'leave', label: 'Leave it for whoever needs it', story: 'Left the restocked first-aid kit alone. Very noble. Slightly regretted it.', effect: {} },
+          { id: 'leave', label: 'Leave it for whoever needs it', story: 'Left the restocked first-aid kit alone.', effect: {} },
         ],
         defaultOptionId: 'leave',
       },
@@ -54,7 +54,7 @@ export const contentV5: ContentCatalog = {
         title: 'An overtime request',
         prompt: 'A manager wants the back corridor cleared tonight. Good pay, bad corridor.',
         options: [
-          { id: 'stay', label: 'Stay late', story: 'Worked the late shift. Cleared the corridor, collected the overtime, lost some sleep.', effect: { goldPerTier: 25, hpPct: -10 } },
+          { id: 'stay', label: 'Stay late', story: 'Worked late, cleared the corridor and got paid overtime.', effect: { goldPerTier: 25, hpPct: -10 } },
           { id: 'clock_out', label: 'Clock out on time', story: 'Clocked out on time. The corridor can wait for someone else.', effect: {} },
         ],
         defaultOptionId: 'clock_out',

@@ -234,7 +234,7 @@ export function buildPayload(input: PayloadInput) {
     last_completed_at: lastCompletedAt === undefined ? null : iso(lastCompletedAt),
     stale,
     plugin_instance_name: sanitizeLabel(input.instanceName, 40, 'Desk Crawler'),
-    game_as_of_label: gameAsOf ? `${gameAsOf.label} ${gameAsOf.offset}` : 'Awaiting first game tick',
+    game_as_of_label: gameAsOf ? `${gameAsOf.label} ${gameAsOf.offset}` : 'Waiting for the first adventure',
     recap: hero !== null && input.activity ? activityRecap(input.activity.entries, recapPeriod(now, input.utcOffset ?? null), content, input.activity.truncated) : null,
     ...rankingFields(input.ranking, hero === null, input.timezone),
   }
@@ -345,7 +345,7 @@ export function buildPayload(input: PayloadInput) {
     case 'sleeping':
       if (hero.wakeAtTick !== undefined) {
         etaTicks = eta(hero.wakeAtTick)
-        statusLabel = etaTicks === 0 ? 'Resume pending' : 'Adventures resume next tick'
+        statusLabel = etaTicks === 0 ? 'Resume pending' : 'Adventures resume soon'
         etaLabel = 'Adventures resume at'
       } else if (input.heldItemName) {
         statusLabel = 'Bag full, holding a new find'

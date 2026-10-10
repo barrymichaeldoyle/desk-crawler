@@ -32,7 +32,9 @@ export const swLogKind = v.union(
   v.literal('ambient'),
   v.literal('travel'),
   v.literal('bait_out'),
+  /** Older stories only: level-ups were retired with XP (2026-10-10). */
   v.literal('levelup'),
+  v.literal('milestone'),
   v.literal('achievement'),
   v.literal('system'),
 )
@@ -47,6 +49,7 @@ export const swLogDetail = v.object({
   firstOfSpecies: v.optional(v.boolean()),
   waterId: v.optional(waterId),
   bait: v.optional(baitClass),
+  /** Older level-up stories only. */
   level: v.optional(v.number()),
   weather: v.optional(weather),
   band: v.optional(timeBand),

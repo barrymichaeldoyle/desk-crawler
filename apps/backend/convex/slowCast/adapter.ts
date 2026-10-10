@@ -4,11 +4,7 @@ import type { Doc } from '../_generated/dataModel'
 /** Stored angler to the pure core's state. */
 export function toAnglerState(doc: Doc<'anglers'>): AnglerState {
   return {
-    level: doc.level,
-    xp: doc.xp,
-    lifetimeXp: doc.lifetimeXp,
     gold: doc.gold,
-    lastLevelUpTick: doc.lastLevelUpTick,
     status: doc.status,
     waterId: doc.waterId,
     ...(doc.travelTo === undefined ? {} : { travelTo: doc.travelTo }),
@@ -26,11 +22,7 @@ export function toAnglerState(doc: Doc<'anglers'>): AnglerState {
 /** The pure core's state back to stored fields. Absent optionals are written as undefined so a cleared travel or bait clears. */
 export function fromAnglerState(state: AnglerState): Partial<Doc<'anglers'>> {
   return {
-    level: state.level,
-    xp: state.xp,
-    lifetimeXp: state.lifetimeXp,
     gold: state.gold,
-    lastLevelUpTick: state.lastLevelUpTick,
     status: state.status,
     waterId: state.waterId,
     travelTo: state.travelTo,
@@ -57,7 +49,6 @@ export function storedDetail(event: TickEvent): Doc<'swTickLogs'>['detail'] {
     ...(d.firstOfSpecies ? { firstOfSpecies: true } : {}),
     ...(d.waterId === undefined ? {} : { waterId: d.waterId }),
     ...(d.bait === undefined ? {} : { bait: d.bait }),
-    ...(d.level === undefined ? {} : { level: d.level }),
     ...(d.weather === undefined ? {} : { weather: d.weather }),
     ...(d.band === undefined ? {} : { band: d.band }),
   }

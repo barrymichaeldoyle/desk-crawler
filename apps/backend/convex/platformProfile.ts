@@ -1,4 +1,5 @@
 import { v } from 'convex/values'
+import { titleFor } from '@trmnl-games/slow-cast/sim'
 import { paginator } from 'convex-helpers/server/pagination'
 import { platformAchievements, PLATFORM_ACHIEVEMENTS } from '@trmnl-games/platform'
 import schema from './schema'
@@ -14,7 +15,6 @@ import { adminRef } from './lib/adminAccess'
 import { gameStatusOf } from './platform'
 import { MAX_SW_UNLOCKS } from './slowCast/achievements'
 import { currentAngler } from './slowCast/profile'
-import { SLOW_CAST_RUNTIME } from './slowCast/runtime'
 import type { EngineRuntime } from './lib/engine/runtime'
 
 /**
@@ -63,7 +63,7 @@ export const view = query({
       alias: user.publicAlias,
       games: [
         ...(showDesk ? [{ slug: 'desk-crawler' as const, name: hero.name, level: hero.level, since: hero.activatedAt ?? hero.createdAt, rank: await overallRank(ctx, DESK_CRAWLER_RUNTIME, hero._id), achievements: dcUnlocks, page: `/desk-crawler/heroes/${encodeURIComponent(user.publicAlias)}` }] : []),
-        ...(showSlowCast ? [{ slug: 'slow-cast' as const, name: user.publicAlias, level: angler.level, since: angler.activatedAt ?? angler.createdAt, rank: await overallRank(ctx, SLOW_CAST_RUNTIME, angler._id), achievements: scUnlocks, species: Object.keys(angler.logbook).length, page: null }] : []),
+        ...(showSlowCast ? [{ slug: 'slow-cast' as const, name: user.publicAlias, title: titleFor(Object.keys(angler.logbook).length).name, since: angler.activatedAt ?? angler.createdAt, rank: null, achievements: scUnlocks, species: Object.keys(angler.logbook).length, page: null }] : []),
       ],
       platform: platformAchievements({ games, collected }).map((a) => ({ id: a.id, name: a.name, blurb: a.blurb, family: a.family, tier: a.tier, share: current && current.totalPlayers > 0 ? Math.max(1, Math.round(((current.counts[a.id] ?? 0) * 100) / current.totalPlayers)) : null })),
     }

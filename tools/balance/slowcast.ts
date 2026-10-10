@@ -5,7 +5,7 @@
  *   pnpm balance:slowcast -- --json  (machine-readable report)
  */
 import { contentV1 } from '@trmnl-games/slow-cast/content'
-import { canFish, coolerOf, simulateAngler, starterAngler, waterOf, type AnglerState, type BaitClass, type SlowCastCatalog, type WaterId } from '@trmnl-games/slow-cast/sim'
+import { canFish, coolerOf, speciesLogged, simulateAngler, starterAngler, waterOf, type AnglerState, type BaitClass, type SlowCastCatalog, type WaterId } from '@trmnl-games/slow-cast/sim'
 import { buyAccess, buyBait, buyCooler, buyRod, nextCooler, nextRod, sell, tubsThatFit } from '@trmnl-games/slow-cast/sim/shop'
 import { deriveAnglerSeeds, forecast } from '@trmnl-games/slow-cast/sim/seed'
 
@@ -29,10 +29,10 @@ export const POLICY_BAIT: Readonly<Record<WaterId, BaitClass>> = { millpond: 'wo
 
 export interface AnglerLog {
   readonly dailyLanded: number[]
-  readonly dailyXp: number[]
   readonly dailyGoldEarned: number[]
   readonly dailyBaitSpend: number[]
-  levelFourDay: number | null
+  /** When six Millpond species were logged: River Bend's logbook gate. */
+  riverGateDay: number | null
   pierDay: number | null
   riverDay: number | null
   firstBucketFillHours: number | null
@@ -68,11 +68,11 @@ function visit(content: SlowCastCatalog, angler: AnglerState, cooler: number[], 
   for (;;) {
     const options: Array<() => ReturnType<typeof buyRod>> = []
     if (nextCooler(content, next)?.tier === 2) options.push(() => buyCooler(content, next))
-    if (next.level >= 4 && !next.access.includes('waders')) options.push(() => buyAccess(content, next, 'waders'))
+    if (speciesLogged(content, next.logbook, 'millpond') >= 6 && !next.access.includes('waders')) options.push(() => buyAccess(content, next, 'waders'))
     if (nextRod(content, next)?.tier === 2) options.push(() => buyRod(content, next))
     if (nextCooler(content, next)?.tier === 3) options.push(() => buyCooler(content, next))
     if (nextRod(content, next)?.tier === 3) options.push(() => buyRod(content, next))
-    if (next.level >= 8 && !next.access.includes('pier_permit')) options.push(() => buyAccess(content, next, 'pier_permit'))
+    if (speciesLogged(content, next.logbook, 'river_bend') >= 5 && !next.access.includes('pier_permit')) options.push(() => buyAccess(content, next, 'pier_permit'))
     if (nextCooler(content, next)?.tier === 4) options.push(() => buyCooler(content, next))
     if (nextRod(content, next)?.tier === 4) options.push(() => buyRod(content, next))
     const first = options[0]
@@ -101,15 +101,14 @@ export function simulateAnglerRun(policy: Policy, index: number, days: number, c
   const id = `angler-${policy.name}-${index}`
   let angler = starterAngler(content, 0)
   if (policy.fixed) {
-    angler = { ...angler, level: 20, rodTier: 4, coolerTier: 4, access: ['waders', 'pier_permit'], waterId: policy.fixed.water, baitOnHook: policy.fixed.bait, bait: { [policy.fixed.bait]: content.baitCap } }
+    angler = { ...angler, rodTier: 4, coolerTier: 4, access: ['waders', 'pier_permit'], waterId: policy.fixed.water, baitOnHook: policy.fixed.bait, bait: { [policy.fixed.bait]: content.baitCap } }
   }
   let cooler: number[] = []
   const log: AnglerLog = {
     dailyLanded: Array(days).fill(0),
-    dailyXp: Array(days).fill(0),
     dailyGoldEarned: Array(days).fill(0),
     dailyBaitSpend: Array(days).fill(0),
-    levelFourDay: null,
+    riverGateDay: null,
     pierDay: null,
     riverDay: null,
     firstBucketFillHours: null,
@@ -145,11 +144,10 @@ export function simulateAnglerRun(policy: Policy, index: number, days: number, c
     angler = result.angler
     if (result.catch) cooler.push(result.catch.value)
     log.dailyLanded[day]! += result.metrics.landed
-    log.dailyXp[day]! += result.event?.deltas.xpEarned ?? 0
     if (result.event?.detail.speciesId && result.metrics.landed && content.species.find((s) => s.id === result.event!.detail.speciesId)?.rarity === 'epic') {
       log.epicsCaught[result.event.detail.speciesId] = (log.epicsCaught[result.event.detail.speciesId] ?? 0) + 1
     }
-    if (log.levelFourDay === null && angler.level >= 4) log.levelFourDay = tick / TICKS_PER_DAY
+    if (log.riverGateDay === null && speciesLogged(content, angler.logbook, 'millpond') >= 6) log.riverGateDay = tick / TICKS_PER_DAY
     if (log.riverDay === null && angler.waterId === 'river_bend') log.riverDay = tick / TICKS_PER_DAY
     if (log.pierDay === null && angler.waterId === 'harbour_pier') log.pierDay = tick / TICKS_PER_DAY
     if (log.firstBucketFillHours === null && cooler.length >= 6 && angler.coolerTier === 1) log.firstBucketFillHours = tick / 4
@@ -200,7 +198,8 @@ export function runHarness(anglers = 200, days = 30, content: SlowCastCatalog = 
   const baitShare = sum(daily.map((log) => sum(log.dailyBaitSpend))) / Math.max(1, sum(daily.map((log) => sum(log.dailyGoldEarned))))
   const gates = [
     gate('Millpond fish a day, first two days (daily player)', millpondFishPerDay, 10, 14),
-    gate('Days to level 4 (daily player)', median(daily.map((log) => log.levelFourDay ?? days + 1)), 2, 3),
+    // 2026-10-10: waters open by the logbook, not levels. Six Millpond species stand where level 4 did.
+    gate('Days to log six Millpond species (daily player)', median(daily.map((log) => log.riverGateDay ?? days + 1)), 1.5, 4),
     gate('Days to reach the Harbour Pier (daily player)', median(daily.map((log) => log.pierDay ?? days + 1)), 10, 16),
     gate('Hours to fill the Bucket the first time', median(daily.map((log) => log.firstBucketFillHours ?? days * 24)), 8, 14),
     // A daily seller never lets the crate fill, so the gate reads the end-game catch rate: hours for 24 fish.
@@ -209,12 +208,10 @@ export function runHarness(anglers = 200, days = 30, content: SlowCastCatalog = 
     // Added in S1: a player who visits every three days still moves on, more slowly.
     gate('Days to reach River Bend (three-day player)', median(threeDay.map((log) => log.riverDay ?? days + 1)), 3, 12),
     gate('Days to reach the Harbour Pier (three-day player)', median(threeDay.map((log) => log.pierDay ?? days + 1)), 14, 30),
-    gate('Level after 30 days, never visiting', median(never.map((log) => log.final!.level)), 4, 99),
     gate('Species logged after 30 days, never visiting', median(never.map((log) => Object.keys(log.final!.logbook).length)), 3, 99),
     ...epics.map((epic) => gate(`Share catching a ${epic.name} in 30 days at its water`, epicShare[epic.id]!, 0.5, 1)),
   ]
   const policyDetail = (logs: AnglerLog[]) => ({
-    level: median(logs.map((log) => log.final!.level)),
     species: median(logs.map((log) => Object.keys(log.final!.logbook).length)),
     gold: median(logs.map((log) => log.final!.gold)),
     rodTier: median(logs.map((log) => log.final!.rodTier)),
@@ -222,7 +219,6 @@ export function runHarness(anglers = 200, days = 30, content: SlowCastCatalog = 
     released: median(logs.map((log) => log.final!.counters.released)),
     gotAway: median(logs.map((log) => log.final!.counters.gotAway)),
     landedPerDayLastWeek: round(median(logs.map((log) => sum(log.dailyLanded.slice(-7)) / 7))),
-    xpPerDayLastWeek: round(median(logs.map((log) => sum(log.dailyXp.slice(-7)) / 7))),
     riverDay: round(median(logs.map((log) => log.riverDay ?? days + 1))),
     pierDay: round(median(logs.map((log) => log.pierDay ?? days + 1))),
   })

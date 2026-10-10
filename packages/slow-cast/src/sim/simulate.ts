@@ -1,12 +1,13 @@
 import { createRng, pickOne, pickWeighted, type Rng } from '@trmnl-games/engine/rng'
 import { BAND_PHRASE, effectiveBands, localHour, timeBand } from './conditions'
-import { applyXp, articleFor, fishValue, fishXp, formatWeight } from './progress'
+import { articleFor, fishValue, formatWeight } from './progress'
+import { speciesLogged, titleFor } from './titles'
 import type { AnglerCounters, AnglerState, BaitClass, CastInput, CastResult, Conditions, SlowCastCatalog, SpeciesDef, TickEvent, WaterDef } from './types'
 
 /**
  * The Slow Cast pure core (slow-cast.md "The cast"). One evaluation per eligible
  * tick, in a fixed order: conditions, bite, species, weight, landing, logbook and
- * XP, cooler, bait. Pure: no clock, no network, no storage; the adapter passes
+ * milestones, cooler, bait. Pure: no clock, no network, no storage; the adapter passes
  * the wall slot, offset, weather and stream seeds in. A kept fish or one that
  * gets away uses one unit of bait; a quiet cast or a release uses none.
  *
@@ -77,7 +78,7 @@ export function drawGrams(rng: Rng, species: SpeciesDef): number {
   return species.minGrams + Math.floor((species.maxGrams - species.minGrams) * u * u)
 }
 
-const NO_METRICS = { landed: 0, released: 0, gotAway: 0, levelUps: 0 } as const
+const NO_METRICS = { landed: 0, released: 0, gotAway: 0 } as const
 
 function bump(counters: AnglerCounters, patch: Partial<Record<keyof AnglerCounters, number>>): AnglerCounters {
   const next = { ...counters } as Record<keyof AnglerCounters, number>
@@ -101,7 +102,7 @@ export function simulateAngler(input: CastInput): CastResult {
     const to = waterOf(content, angler.travelTo)
     const { travelTo: _drop, ...rest } = angler
     angler = { ...rest, waterId: to.id, quietTicks: 0, counters: bump(angler.counters, { trips: 1 }) }
-    const event: TickEvent = { kind: 'travel', summary: `You set up on the bank at ${to.the}.`.replace('on the bank at the Harbour Pier', 'at the end of the Harbour Pier'), detail: { waterId: to.id }, deltas: { xpEarned: 0, gold: 0 } }
+    const event: TickEvent = { kind: 'travel', summary: `You set up on the bank at ${to.the}.`.replace('on the bank at the Harbour Pier', 'at the end of the Harbour Pier'), detail: { waterId: to.id }, deltas: { gold: 0 } }
     return { angler, event, conditions, metrics: NO_METRICS, disposition: 'travelled' }
   }
 
@@ -120,7 +121,7 @@ export function simulateAngler(input: CastInput): CastResult {
     angler = { ...angler, quietTicks: quietTicks % content.ambientEvery }
     const event: TickEvent | undefined =
       quietTicks % content.ambientEvery === 0
-        ? { kind: 'ambient', summary: pickOne(createRng(input.streams.narrative), content.ambient[water.id]), detail: { waterId: water.id, ...conditions }, deltas: { xpEarned: 0, gold: 0 } }
+        ? { kind: 'ambient', summary: pickOne(createRng(input.streams.narrative), content.ambient[water.id]), detail: { waterId: water.id, ...conditions }, deltas: { gold: 0 } }
         : undefined
     return { angler, ...(event ? { event } : {}), ...(extraEvents.length ? { extraEvents } : {}), conditions, metrics: NO_METRICS, disposition: 'cast' }
   }
@@ -139,18 +140,18 @@ export function simulateAngler(input: CastInput): CastResult {
     angler = { ...angler, bait: { ...angler.bait, [bait]: left } }
     if (left === 0) {
       angler = { ...angler, counters: bump(angler.counters, { baitRunOuts: 1 }) }
-      extraEvents.push({ kind: 'bait_out', summary: `The ${baitOf(content, bait).name.toLowerCase()} ran out. Fishing a bare hook.`, detail: { bait }, deltas: { xpEarned: 0, gold: 0 } })
+      extraEvents.push({ kind: 'bait_out', summary: `The ${baitOf(content, bait).name.toLowerCase()} ran out. Fishing a bare hook.`, detail: { bait }, deltas: { gold: 0 } })
     }
   }
   const baitPhrase = bait === undefined ? 'a bare hook' : baitOf(content, bait).the
 
   if (escapes) {
     angler = { ...angler, counters: bump(angler.counters, { gotAway: 1 }) }
-    const event: TickEvent = { kind: 'got_away', summary: `Something heavy took ${baitPhrase} and kept going.`, detail: { speciesId: species.id, grams, waterId: water.id, ...conditions }, deltas: { xpEarned: 0, gold: 0 } }
+    const event: TickEvent = { kind: 'got_away', summary: `Something heavy took ${baitPhrase} and kept going.`, detail: { speciesId: species.id, grams, waterId: water.id, ...conditions }, deltas: { gold: 0 } }
     return { angler, event, ...(extraEvents.length ? { extraEvents } : {}), conditions, metrics: { ...NO_METRICS, gotAway: 1 }, disposition: 'cast' }
   }
 
-  // Landed: logbook, XP and level, then the cooler or a release.
+  // Landed: logbook, then the cooler or a release.
   const previous = angler.logbook[species.id]
   const record = previous !== undefined && grams > previous.bestGrams
   const firstOfSpecies = previous === undefined
@@ -165,9 +166,6 @@ export function simulateAngler(input: CastInput): CastResult {
     }),
   }
   if (grams > angler.counters.heaviestGrams) angler = { ...angler, counters: { ...angler.counters, heaviestGrams: grams } }
-  const xpEarned = fishXp(species.xp, grams, species.maxGrams)
-  const levelled = applyXp(angler.level, angler.xp, xpEarned)
-  angler = { ...angler, level: levelled.level, xp: levelled.xp, lifetimeXp: angler.lifetimeXp + xpEarned, ...(levelled.levelsGained > 0 ? { lastLevelUpTick: tick } : {}) }
 
   const value = fishValue(species.price, grams, species.maxGrams)
   const weight = formatWeight(grams)
@@ -178,26 +176,38 @@ export function simulateAngler(input: CastInput): CastResult {
   let catchRecord
   if (kept) {
     catchRecord = { speciesId: species.id, grams, value, caughtTick: tick }
-    event = { kind: 'catch', summary: `${lead} took ${baitPhrase} ${BAND_PHRASE[conditions.band]}.${tail}`, detail, deltas: { xpEarned, gold: 0 } }
+    event = { kind: 'catch', summary: `${lead} took ${baitPhrase} ${BAND_PHRASE[conditions.band]}.${tail}`, detail, deltas: { gold: 0 } }
   } else {
     angler = { ...angler, counters: bump(angler.counters, { released: 1 }) }
-    event = { kind: 'release', summary: `Cooler full. Released ${lead.charAt(0).toLowerCase()}${lead.slice(1)}.${tail}`, detail, deltas: { xpEarned, gold: 0 } }
+    event = { kind: 'release', summary: `Cooler full. Released ${lead.charAt(0).toLowerCase()}${lead.slice(1)}.${tail}`, detail, deltas: { gold: 0 } }
   }
-  if (levelled.levelsGained > 0) extraEvents.push(levelUpEvent(content, levelled.level))
+  if (firstOfSpecies) extraEvents.push(...logbookEvents(content, angler, species))
   return {
     angler,
     ...(catchRecord ? { catch: catchRecord } : {}),
     event,
     ...(extraEvents.length ? { extraEvents } : {}),
     conditions,
-    metrics: { landed: 1, released: kept ? 0 : 1, gotAway: 0, levelUps: levelled.levelsGained },
+    metrics: { landed: 1, released: kept ? 0 : 1, gotAway: 0 },
     disposition: 'cast',
   }
 }
 
-function levelUpEvent(content: SlowCastCatalog, level: number): TickEvent {
-  const opens = content.waters.find((w) => w.unlockLevel === level)
-  const access = opens?.access ? content.access.find((a) => a.id === opens.access) : undefined
-  const tail = opens ? (access ? ` ${opens.name} is open with the ${access.name}.` : ` ${opens.name} is open.`) : ''
-  return { kind: 'levelup', summary: `Level ${level}.${tail}`, detail: { level }, deltas: { xpEarned: 0, gold: 0 } }
+/**
+ * A new species can earn a title and open a water (titles.ts), each told as its own milestone story.
+ */
+function logbookEvents(content: SlowCastCatalog, angler: AnglerState, species: SpeciesDef): TickEvent[] {
+  const events: TickEvent[] = []
+  const total = speciesLogged(content, angler.logbook)
+  const title = titleFor(total)
+  if (titleFor(total - 1).id !== title.id) events.push({ kind: 'milestone', summary: `Now a ${title.name}, with ${total} species in the logbook.`, detail: {}, deltas: { gold: 0 } })
+  const here = speciesLogged(content, angler.logbook, species.water)
+  for (const water of content.waters) {
+    if (water.opensAfter?.water !== species.water || water.opensAfter.species !== here) continue
+    const access = water.access ? content.access.find((a) => a.id === water.access) : undefined
+    const from = waterOf(content, species.water).name
+    const needs = access && !angler.access.includes(access.id) ? ` with the ${access.name}` : ''
+    events.push({ kind: 'milestone', summary: `${here} ${from} species logged. ${water.name} is open${needs}.`, detail: { waterId: water.id }, deltas: { gold: 0 } })
+  }
+  return events
 }

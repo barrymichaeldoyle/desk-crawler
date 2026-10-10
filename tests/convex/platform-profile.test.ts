@@ -29,7 +29,7 @@ describe('shared public profile (D115, S5)', () => {
     await seedHero(t, { publicProfile: true }, 'Both')
     await seedAngler(t, { publicProfile: true }, 'Both')
     const profile = await t.query(api.platformProfile.view, { alias: 'both' })
-    expect(profile).toMatchObject({ alias: 'Both', games: [{ slug: 'desk-crawler', name: 'Baz' }, { slug: 'slow-cast', level: 1, species: 0 }], platform: [{ id: 'regular_1', name: 'Regular', share: null }] })
+    expect(profile).toMatchObject({ alias: 'Both', games: [{ slug: 'desk-crawler', name: 'Baz' }, { slug: 'slow-cast', title: 'Newcomer', species: 0 }], platform: [{ id: 'regular_1', name: 'Regular', share: null }] })
   })
 
   it('keeps a game that is not live off the profile for everyone but admins', async () => {

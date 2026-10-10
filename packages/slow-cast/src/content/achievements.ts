@@ -6,14 +6,13 @@ import { contentV1 } from './v1'
  * families under a new version and never edits an existing id. Every predicate reads bounded angler state, so a
  * new achievement is earned retroactively at the next evaluation.
  */
-/** v2 (S6) appends the Flies family. */
-export const ACHIEVEMENTS_VERSION = 2
+/** v2 (S6) appends the Flies family; v3 retires the Levels family with XP and levels (titles replace them). */
+export const ACHIEVEMENTS_VERSION = 3
 
 export type AchievementCategory = 'Fishing' | 'Logbook' | 'Trade' | 'Progress' | 'Species'
 
 export type Predicate =
   | { readonly kind: 'counter'; readonly counter: keyof AnglerCounters; readonly atLeast: number }
-  | { readonly kind: 'level'; readonly atLeast: number }
   | { readonly kind: 'rod'; readonly atLeast: number }
   | { readonly kind: 'logbook'; readonly atLeast: number }
   | { readonly kind: 'waters'; readonly atLeast: number }
@@ -88,13 +87,6 @@ const FAMILIES: AchievementDef[] = [
     [2, 'Down to the River', 'Waders on, into the current.'],
     [3, 'Salt Water', 'Fishing off the Harbour Pier.'],
   ]),
-  ...family('levels', 'Levels', 'Progress', (n) => ({ kind: 'level', atLeast: n }), [
-    [4, 'Getting the Hang of It', 'River Bend is open.'],
-    [8, 'Seasoned', 'The Harbour Pier is open.'],
-    [12, 'Expert', 'The tackle shop greets you by name.'],
-    [16, 'Master Angler', 'The club wants you on the committee.'],
-    [20, 'Grand Master', 'There is a plaque by the gate.'],
-  ]),
   ...family('rods', 'Rods', 'Progress', (n) => ({ kind: 'rod', atLeast: n }), [
     [2, 'Fibreglass', 'Lighter and stronger than the old cane.'],
     [3, 'Carbon Fibre', 'You can feel every nibble.'],
@@ -133,7 +125,6 @@ export const ACHIEVEMENT_BY_ID: ReadonlyMap<string, AchievementDef> = new Map(AC
 
 /** The bounded state predicates read. */
 export interface AchievementState {
-  readonly level: number
   readonly rodTier: number
   readonly counters: AnglerCounters
   readonly logbook: Readonly<Record<string, { readonly count: number; readonly bestGrams: number }>>
@@ -145,8 +136,6 @@ export function measure(predicate: Predicate, state: AchievementState, content: 
   switch (predicate.kind) {
     case 'counter':
       return { value: state.counters[predicate.counter], target: predicate.atLeast }
-    case 'level':
-      return { value: state.level, target: predicate.atLeast }
     case 'rod':
       return { value: state.rodTier, target: predicate.atLeast }
     case 'logbook':

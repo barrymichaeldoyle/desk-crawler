@@ -31,8 +31,6 @@ export interface SpeciesDef {
   readonly weather?: readonly Weather[]
   /** Base sale price in gold; a fish sells for between this and double it by weight. */
   readonly price: number
-  /** Base XP; a fish earns between this and double it by weight. */
-  readonly xp: number
 }
 
 export interface WaterDef {
@@ -40,7 +38,8 @@ export interface WaterDef {
   readonly name: string
   /** Short name for device lines ("the Millpond"). */
   readonly the: string
-  readonly unlockLevel: number
+  /** Species of another water the logbook needs before this one opens; absent for the starting water. */
+  readonly opensAfter?: { readonly water: WaterId; readonly species: number }
   readonly access?: AccessId
   /** Chance a cast gets a bite before multipliers, in permille. */
   readonly biteBasePermille: number
@@ -133,11 +132,7 @@ export interface AnglerCounters {
 export type AnglerStatus = 'fishing' | 'paused'
 
 export interface AnglerState {
-  readonly level: number
-  readonly xp: number
-  readonly lifetimeXp: number
   readonly gold: number
-  readonly lastLevelUpTick: number
   readonly status: AnglerStatus
   readonly waterId: WaterId
   /** Set by the travel intent; the next evaluation moves there instead of casting. */
@@ -160,7 +155,7 @@ export interface CatchRecord {
   readonly caughtTick: number
 }
 
-export type EventKind = 'catch' | 'release' | 'got_away' | 'ambient' | 'travel' | 'bait_out' | 'levelup' | 'system'
+export type EventKind = 'catch' | 'release' | 'got_away' | 'ambient' | 'travel' | 'bait_out' | 'milestone' | 'system'
 
 export interface EventDetail {
   readonly speciesId?: string
@@ -170,7 +165,6 @@ export interface EventDetail {
   readonly firstOfSpecies?: boolean
   readonly waterId?: WaterId
   readonly bait?: BaitClass
-  readonly level?: number
   readonly weather?: Weather
   readonly band?: TimeBand
 }
@@ -179,7 +173,7 @@ export interface TickEvent {
   readonly kind: EventKind
   readonly summary: string
   readonly detail: EventDetail
-  readonly deltas: { readonly xpEarned: number; readonly gold: number }
+  readonly deltas: { readonly gold: number }
 }
 
 export interface Conditions {
@@ -206,7 +200,6 @@ export interface CastMetrics {
   readonly landed: number
   readonly released: number
   readonly gotAway: number
-  readonly levelUps: number
 }
 
 export interface CastResult {

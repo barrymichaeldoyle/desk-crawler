@@ -105,10 +105,10 @@ describe('Slow Cast payload', () => {
     expect(buildPayload(scenarios.stale!).attention_kind).toBe('service')
   })
 
-  it('keeps a catch on screen when it also levelled up and earned achievements', () => {
-    // Barry's log on 2026-10-10: the Perch fell sixth behind its own level-up and three achievements.
+  it('keeps a catch on screen when it also earned a title and achievements', () => {
+    // Barry's log on 2026-10-10: the Perch fell sixth behind its own level-up (now a title) and three achievements.
     const payload = buildPayload(scenarios.achievements!)
-    expect(payload.stories.map((s) => s.kind)).toEqual(['ambient', 'catch', 'levelup', 'achievement', 'ambient'])
+    expect(payload.stories.map((s) => s.kind)).toEqual(['ambient', 'catch', 'milestone', 'achievement', 'ambient'])
     expect(payload.stories[1]!.summary).toContain('1.3 kg Perch')
     expect(payload.stories[3]!.summary).toBe('3 achievements: Specimen Perch, First Perch, A Kilo Fish')
     expect(payload.newest_catch).toMatchObject({ name: 'Perch', weight_label: '1.3 kg' })
@@ -173,7 +173,12 @@ describe('Slow Cast markup', () => {
     expect(html).toContain('data-band="dusk"')
     expect(html).toContain('data-weather="overcast"')
     expect(html).toContain('data-catch="true"')
-    expect(html).toMatch(/data-xp-ticks="7"/)
+    // Old Hand at 14 species, Specimen Hunter at 20: 17 logged fills half the bar.
+    expect(html).toMatch(/data-xp-ticks="10"/)
+    expect(html).toContain('Old Hand')
+    expect(buildPayload(scenarios.catch!)).toMatchObject({ title: 'Old Hand', title_next_at: 20, board: { label: 'This week', rank_label: '#3, best 1.9 kg', rows: [{ rank: 1, weight_label: '5.2 kg' }, {}, { rank: 3, own: true }, {}, {}] } })
+    expect(buildPayload(scenarios.outsideTop!).board?.rows.at(-1)).toMatchObject({ rank: 19, weight_label: '610 g', own: true })
+    expect(buildPayload(scenarios.unranked!).board?.rank_label).toBe('No fish here this week yet')
     const full = await liquid.parseAndRender(screenMarkup.markup, { ...buildPayload(scenarios.coolerFull!), fly_code: null })
     expect(full).toContain('data-attention="cooler"')
   })

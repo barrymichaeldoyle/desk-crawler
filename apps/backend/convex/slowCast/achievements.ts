@@ -15,7 +15,7 @@ import { SLOW_CAST_RUNTIME } from './runtime'
  */
 export const MAX_SW_UNLOCKS = 512
 
-export const stateOf = (a: Pick<Doc<'anglers'>, 'level' | 'rodTier' | 'counters' | 'logbook'>, flies = 0): AchievementState => ({ level: a.level, rodTier: a.rodTier, counters: a.counters, logbook: a.logbook, flies })
+export const stateOf = (a: Pick<Doc<'anglers'>, 'rodTier' | 'counters' | 'logbook'>, flies = 0): AchievementState => ({ rodTier: a.rodTier, counters: a.counters, logbook: a.logbook, flies })
 
 export async function awardAngler(ctx: MutationCtx, angler: Doc<'anglers'>, before: AchievementState, after: AchievementState, content: SlowCastCatalog, now: number, tick: number): Promise<AchievementDef[]> {
   const fullPass = needsFullPass(angler.achievementsVersion)

@@ -57,7 +57,7 @@ function DockPage() {
       <section aria-labelledby="dock-title" className="flex flex-col gap-4">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h1 id="dock-title" className="font-display text-3xl font-bold">{angler.alias}</h1>
-          <span className="label-px text-muted">Level {angler.level} · {angler.gold} gold</span>
+          <span className="label-px text-muted">{angler.title} · {angler.gold} gold</span>
         </div>
         {scene ? <img src={scene} alt={`${angler.alias} fishing at ${here?.name ?? 'the water'}`} width={456} height={120} className="w-full border-2 border-edge bg-white [image-rendering:pixelated]" /> : null}
         {/* Status, conditions and timing on their own lines: run together, a phone wrapped them mid-phrase. */}
@@ -69,7 +69,7 @@ function DockPage() {
           {dock.nextTickAt && !destination && angler.status !== 'paused' ? <p className="text-sm text-muted">Next cast at {time(dock.nextTickAt)}.</p> : null}
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Meter label="XP" value={angler.xp} max={angler.xpToNext} tone="xp" />
+          <Meter label={angler.nextTitle ? `Logbook · ${angler.nextTitle.name} at ${angler.nextTitle.species}` : 'Logbook'} value={angler.speciesLogged} max={angler.nextTitle?.species ?? angler.speciesTotal} tone="xp" />
           <Meter label={angler.cooler.name} value={angler.cooler.used} max={angler.cooler.capacity} tone="gold" />
         </div>
         {!coolerFull && catches.length > 0 ? (
@@ -90,7 +90,6 @@ function DockPage() {
             recap.best ? ['Heaviest', <>{formatWeight(recap.best.grams)} <FishName id={recap.best.speciesId} /></>] : null,
             recap.records ? ['Personal bests', `${recap.records}`] : null,
             recap.firsts ? ['New species', `${recap.firsts}`] : null,
-            recap.xp ? ['XP', <span className="text-xp-ink">+{recap.xp}</span>] : null,
             recap.gotAway ? ['Got away', `${recap.gotAway}, too heavy for the ${angler.rod.name}`] : null,
           ]} />
           {nextRod && rodWouldLand > 0 ? (
@@ -134,7 +133,7 @@ function DockPage() {
                     <p className="text-sm text-muted">Bait: {water.baits.map((b) => BAIT_LABEL[b]).join(', ')}</p>
                     {held(water).length === 0 ? <p className="text-sm text-hp-ink">You have none of its bait.</p> : null}
                   </>
-                ) : <p className="text-sm text-muted">Opens at level {water.unlockLevel}{water.access ? ` with the ${water.access === 'waders' ? 'Waders' : 'Pier Permit'}` : ''}</p>}
+                ) : <p className="text-sm text-muted">{water.opensAfter ? `Opens after ${water.opensAfter.species} ${water.opensAfter.waterName} species (${Math.min(water.opensAfter.logged, water.opensAfter.species)} logged)` : 'Opens later'}{water.access ? `, with the ${water.access === 'waders' ? 'Waders' : 'Pier Permit'}` : ''}</p>}
               </div>
               {water.open && water.id !== angler.waterId && water.id !== angler.travelTo ? (
                 <Button variant="secondary" disabled={travel.pending} onClick={() => {
@@ -153,7 +152,7 @@ function DockPage() {
           {dock.logs?.slice(0, 10).map((log) => (
             <li key={log.id} className="flex gap-3 text-sm">
               <span className="w-12 shrink-0 tabular-nums text-muted">{time(log.at)}</span>
-              <span className="min-w-0"><FishText text={log.summary} />{log.xp ? <span className="text-xp-ink"> +{log.xp} XP</span> : null}</span>
+              <span className="min-w-0"><FishText text={log.summary} /></span>
             </li>
           ))}
         </ol>
@@ -164,17 +163,18 @@ function DockPage() {
 }
 
 /**
- * The one thing to work towards next: the nearest locked water (its level, then its pass), else the next rod, else
- * the next cooler. Null once everything is owned.
+ * The one thing to work towards next: the nearest locked water (the species its logbook gate needs, then its pass),
+ * else the next rod, else the next cooler. Null once everything is owned.
  */
 function nextGoal(dock: Dock): string | null {
   const angler = dock.angler!
   const gold = angler.gold
   const afford = (price: number) => (gold >= price ? `${price} gold (you have it)` : `${price - gold} gold to go`)
-  const locked = dock.waters?.filter((w) => !w.open).sort((a, b) => a.unlockLevel - b.unlockLevel)[0]
+  const locked = dock.waters?.find((w) => !w.open)
   if (locked) {
     const pass = dock.shop?.access.find((a) => a.water === locked.id && !a.owned)
-    if (angler.level < locked.unlockLevel) return `${locked.name} at level ${locked.unlockLevel}${pass ? ` and the ${pass.name} (${pass.price} gold)` : ''}`
+    const gate = locked.opensAfter
+    if (gate && gate.logged < gate.species) return `${locked.name}: log ${gate.species - gate.logged} more ${gate.waterName} species${pass ? ` and get the ${pass.name}` : ''}`
     if (pass) return `${pass.name} to fish ${locked.name}, ${afford(pass.price)}`
   }
   if (dock.shop?.rod) return `${dock.shop.rod.name}, ${afford(dock.shop.rod.price)}`

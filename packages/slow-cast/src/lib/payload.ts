@@ -1,8 +1,8 @@
-import { xpToLeave } from '@trmnl-games/engine/levels'
 import { fishBase, qrBase, sceneBase } from '../art/route'
 import { poseFor } from '../art/scene'
 import { WEATHER_WORD } from '../sim/conditions'
 import { formatWeight } from '../sim/progress'
+import { nextTitle, titleFor } from '../sim/titles'
 import type { AnglerStatus, BaitClass, SlowCastCatalog, TimeBand, WaterId, Weather } from '../sim/types'
 
 /**
@@ -24,8 +24,6 @@ export interface PayloadAngler {
   readonly activationState: 'pending_trmnl' | 'active'
   readonly status: AnglerStatus
   readonly quarantined: boolean
-  readonly level: number
-  readonly xp: number
   readonly gold: number
   readonly waterId: WaterId
   readonly travelTo?: WaterId
@@ -48,8 +46,8 @@ export interface PayloadStory {
   readonly title?: string
 }
 
-/** Within one cast, the fish comes first, then the level-up, then what it earned. */
-const STORY_RANK: Readonly<Record<string, number>> = { catch: 0, release: 0, got_away: 0, levelup: 1, achievement: 2 }
+/** Within one cast, the fish comes first, then its milestones (a title, a water opening), then what it earned. */
+const STORY_RANK: Readonly<Record<string, number>> = { catch: 0, release: 0, got_away: 0, milestone: 1, levelup: 1, achievement: 2 }
 
 /**
  * The stories as the device lists them (newest first). Lines written at the same moment belong to one cast: the catch
@@ -91,15 +89,16 @@ export interface SlowCastPayloadInput {
   readonly stories: readonly PayloadStory[]
   /** The Convex site origin that serves `/art/sc/`; null leaves image fields empty. */
   readonly artBaseUrl: string | null
-  /** The seven-day board for the angler's level group, from the published set; null before the first one. */
+  /** This week's heaviest fish at the angler's water (records.ts); null leaves the board off. */
   readonly board?: PayloadBoard | null
 }
 
 export interface PayloadBoard {
+  /** The angler's rank when within the board's depth; null when not ranked or further down. */
   readonly rank: number | null
-  readonly cohortLabel: string
-  readonly totalPlayers: number
-  readonly top: ReadonlyArray<{ readonly rank: number; readonly name: string; readonly level: number; readonly score: number; readonly own: boolean }>
+  readonly top: ReadonlyArray<{ readonly rank: number; readonly name: string; readonly grams: number; readonly own: boolean }>
+  /** The angler's own heaviest fish this week at this water, for a row below the top; null before one. */
+  readonly ownGrams?: number | null
 }
 
 const BAND_WORD: Readonly<Record<TimeBand, string>> = { dawn: 'dawn', day: 'day', dusk: 'dusk', night: 'night' }
@@ -172,7 +171,10 @@ export function buildPayload(input: SlowCastPayloadInput) {
     newest && newestSpecies
       ? { name: newestSpecies.name, weight_label: newest.grams === undefined ? null : formatWeight(newest.grams), released: newest.kind === 'release', fish_base: input.artBaseUrl ? `${input.artBaseUrl}${fishBase(newestSpecies.id)}` : '' }
       : null
-  const toNext = xpToLeave(angler.level)
+  // Standing (titles.ts): the title, and the ticks filled toward the next one by species logged.
+  const title = titleFor(angler.speciesLogged)
+  const next = nextTitle(angler.speciesLogged)
+  const titlePct = next ? Math.floor(((angler.speciesLogged - title.species) * 100) / (next.species - title.species)) : 100
   const status = angler.status === 'paused' ? ('paused' as const) : travelling ? ('travelling' as const) : ('fishing' as const)
   const pose = poseFor(status, latest?.kind ?? null)
   const scene = sceneBase({ water: (destination ?? water).id, band: input.band, weather: input.weather, pose, fish: latestCatch?.species_id ?? null, fly: angler.fly ?? null })
@@ -186,10 +188,9 @@ export function buildPayload(input: SlowCastPayloadInput) {
     weather: input.weather,
     band: input.band,
     alias: angler.alias,
-    level: angler.level,
-    xp: angler.xp,
-    xp_to_next: toNext,
-    xp_pct: Math.min(100, Math.floor((angler.xp / toNext) * 100)),
+    title: title.name,
+    title_pct: titlePct,
+    title_next_at: next?.species ?? null,
     gold: angler.gold,
     water_id: water.id,
     water_name: water.name,
@@ -206,14 +207,14 @@ export function buildPayload(input: SlowCastPayloadInput) {
     stories: stories.map((s) => ({ kind: s.kind, summary: s.summary })),
     recap,
     recap_items: recapItems,
-    // The board shows the group's first rows; an angler outside them gets its own row appended.
+    // This week's heaviest fish at this water: the first rows, then the angler's own when it is further down.
     board: input.board
       ? {
-          label: `${input.board.cohortLabel}, 7 days`,
-          rank_label: input.board.rank === null ? 'Ranked at the next hourly update' : `#${input.board.rank} of ${input.board.totalPlayers}`,
+          label: 'This week',
+          rank_label: input.board.ownGrams == null ? 'No fish here this week yet' : input.board.rank === null ? `Your best ${formatWeight(input.board.ownGrams)}` : `#${input.board.rank}, best ${formatWeight(input.board.ownGrams)}`,
           rows: [
-            ...input.board.top.map((row) => ({ rank: row.rank, name: row.name, level: row.level, score: row.score, own: row.own })),
-            ...(input.board.rank !== null && !input.board.top.some((row) => row.own) ? [{ rank: input.board.rank, name: angler.alias, level: angler.level, score: null, own: true }] : []),
+            ...input.board.top.map((row) => ({ rank: row.rank, name: row.name, weight_label: formatWeight(row.grams), own: row.own })),
+            ...(input.board.rank !== null && input.board.ownGrams != null && !input.board.top.some((row) => row.own) ? [{ rank: input.board.rank, name: angler.alias, weight_label: formatWeight(input.board.ownGrams), own: true }] : []),
           ],
         }
       : null,

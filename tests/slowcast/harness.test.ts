@@ -24,7 +24,7 @@ describe('Slow Cast balance harness', () => {
 
   it('reports every gate with a value', () => {
     const report = runHarness(6, 6)
-    expect(report.gates.length).toBeGreaterThanOrEqual(13)
+    expect(report.gates.length).toBeGreaterThanOrEqual(12)
     expect(report.gates.filter((g) => g.name.startsWith('Millpond')).every((g) => g.value !== null)).toBe(true)
   }, 60_000)
 })

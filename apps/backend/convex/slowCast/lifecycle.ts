@@ -20,11 +20,7 @@ export async function prepareAngler(ctx: MutationCtx, user: Doc<'users'>, now: n
     createdAt: now,
     isActive: true,
     activationState: 'pending_trmnl',
-    level: base.level,
-    xp: base.xp,
-    lifetimeXp: base.lifetimeXp,
     gold: base.gold,
-    lastLevelUpTick: world.currentTick,
     status: base.status,
     waterId: base.waterId,
     rodTier: base.rodTier,
@@ -40,7 +36,6 @@ export async function prepareAngler(ctx: MutationCtx, user: Doc<'users'>, now: n
     lastProgressTick: world.currentTick,
     logSequence: 1,
     simulationState: 'healthy',
-    scoreHourXp: 0,
   })
   await setCurrentAngler(ctx, user, anglerId)
   await ctx.db.insert('swTickLogs', { anglerId, source: 'lifecycle', sequence: 1, at: now, kind: 'system', summary: FIRST_LOG, detail: { v: 1, operation: 'angler_created' }, deltas: { xpEarned: 0, gold: 0 } })

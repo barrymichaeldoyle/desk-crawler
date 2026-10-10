@@ -1,4 +1,5 @@
 import { coolerOf, rodOf, waterOf } from './simulate'
+import { waterKnown } from './titles'
 import type { AccessId, AnglerState, BaitClass, SlowCastCatalog, WaterId } from './types'
 
 /**
@@ -56,10 +57,10 @@ export function buyBait(content: SlowCastCatalog, angler: AnglerState, cls: Bait
   return { ok: true, angler: { ...angler, bait: { ...angler.bait, [cls]: (angler.bait[cls] ?? 0) + bait.castsPerTub * tubs }, gold: angler.gold - cost }, spent: cost }
 }
 
-/** Whether the angler may fish a water: its level and its access item. */
-export function canFish(content: SlowCastCatalog, angler: Pick<AnglerState, 'level' | 'access'>, waterId: WaterId): boolean {
+/** Whether the angler may fish a water: its access item, and a logbook that knows the water before it (titles.ts). */
+export function canFish(content: SlowCastCatalog, angler: Pick<AnglerState, 'access' | 'logbook' | 'waterId'>, waterId: WaterId): boolean {
   const water = waterOf(content, waterId)
-  return angler.level >= water.unlockLevel && (water.access === undefined || angler.access.includes(water.access))
+  return (water.access === undefined || angler.access.includes(water.access)) && waterKnown(content, angler, water)
 }
 
 /**

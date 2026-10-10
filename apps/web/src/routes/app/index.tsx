@@ -45,7 +45,7 @@ function UpcomingGames() {
   const game = data?.games.find((g) => g.slug === 'slow-cast')
   const { data: dock } = useQuery({ ...convexQuery(api.slowCast.anglers.dock, {}), enabled: game?.canOpen === true })
   if (!game) return null
-  const angler = (dock as { angler?: { activationState: string; status: string; level: number } | null } | undefined)?.angler
+  const angler = (dock as { angler?: { activationState: string; status: string; title: string } | null } | undefined)?.angler
   return (
     <section className="window flex flex-col gap-3 p-5" aria-labelledby="library-sc">
       <div className="flex items-center gap-4">
@@ -53,7 +53,7 @@ function UpcomingGames() {
         <h2 id="library-sc" className="font-display text-2xl font-bold text-gold-ink">{games['slow-cast'].name}</h2>
       </div>
       {!angler ? <img src="/games/slow-cast/sample.png" alt="A sample Slow Cast screen" width={780} height={460} className="w-full border-2 border-edge bg-white [image-rendering:pixelated]" /> : null}
-      <p className="text-muted">{angler ? `Level ${angler.level} · ${angler.activationState !== 'active' ? 'Waiting for TRMNL Save' : angler.status === 'paused' ? 'Paused' : 'Fishing'}` : games['slow-cast'].description}</p>
+      <p className="text-muted">{angler ? `${angler.title} · ${angler.activationState !== 'active' ? 'Waiting for TRMNL Save' : angler.status === 'paused' ? 'Paused' : 'Fishing'}` : games['slow-cast'].description}</p>
       {game.status !== 'live' ? <p className="label-px self-start">{game.status === 'hidden' ? 'Hidden: only admins can see this' : 'Coming soon'}</p> : null}
       {game.canOpen ? <Link to="/app/slow-cast" className={`self-start ${LINK_BUTTON} ${BUTTON_PRIMARY}`}>{angler ? 'Open Slow Cast' : 'About Slow Cast'}</Link> : null}
     </section>

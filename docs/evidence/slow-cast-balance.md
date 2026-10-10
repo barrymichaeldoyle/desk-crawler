@@ -4,24 +4,25 @@ Recorded 2026-10-09 for D115. The [harness](../../tools/balance/slowcast.ts) run
 
 ## Policies
 
-- **Daily:** visits once a day at 19:00 local. Sells the whole cooler, buys bait for about two coolers of kept fish, then upgrades in order (Cool Box, Waders at level 4, Fibreglass Rod, Chest Cooler, Carbon Rod, Pier Permit at level 8, Dockside Crate, Beachcaster), saving for the next when it cannot afford it. Moves to River Bend once it can, and to the Pier once it has the permit and the Carbon Rod. Bait on the hook: worms at the Millpond, maggots at River Bend, ragworm at the Pier.
+- **Daily:** visits once a day at 19:00 local. Sells the whole cooler, buys bait for about two coolers of kept fish, then upgrades in order (Cool Box, Waders once six Millpond species are logged, Fibreglass Rod, Chest Cooler, Carbon Rod, Pier Permit once five River Bend species are logged, Dockside Crate, Beachcaster), saving for the next when it cannot afford it. Moves to River Bend once it can, and to the Pier once it has the permit and the Carbon Rod. Bait on the hook: worms at the Millpond, maggots at River Bend, ragworm at the Pier.
 - **Three-day:** the same, every third day.
 - **Never:** never opens the companion after setup. Fishes the starter tub, then a bare hook, at the Millpond.
 - **Epic checks:** for each epic, 50 anglers with every upgrade fish its water with its bait for 30 days, selling and restocking every tick, so only the species window limits the catch.
 
 ## Gates
 
+Rerun 2026-10-10 for D116: waters open by the logbook (six Millpond species for River Bend, five River Bend species for the Pier) and Slow Cast has no XP or levels, so the level gates are replaced by the logbook gate. A five-species River Bend gate came in at 1.24 days, faster than level 4 had (2.27); six puts it at 3.04 while the Waders' price keeps arrival at River Bend near day 4. A six-species Pier gate stalled the maggots-only policy (it takes five River Bend species), so the Pier stays at five. Every other value is unchanged.
+
 | Gate | Value | Target | Result |
 | --- | --- | --- | --- |
 | Millpond fish a day, first two days (daily player) | 12.5 | 10 to 14 | Pass |
-| Days to level 4 (daily player) | 2.27 | 2 to 3 | Pass |
+| Days to log six Millpond species (daily player) | 3.04 | 1.5 to 4 | Pass |
 | Days to reach the Harbour Pier (daily player) | 10.8 | 10 to 16 | Pass |
 | Hours to fill the Bucket the first time | 10.88 | 8 to 14 | Pass |
 | Hours to fill the Dockside Crate at the last week's catch rate (daily player) | 41.14 | 36 to 60 | Pass |
-| Bait spend as a share of fish sales (daily player) | 0.17 | 0.15 to 0.4 | Pass |
+| Bait spend as a share of fish sales (daily player) | 0.18 | 0.15 to 0.4 | Pass |
 | Days to reach River Bend (three-day player) | 6.8 | 3 to 12 | Pass |
 | Days to reach the Harbour Pier (three-day player) | 24.8 | 14 to 30 | Pass |
-| Level after 30 days, never visiting | 8 | 4 to 99 | Pass |
 | Species logged after 30 days, never visiting | 7 | 3 to 99 | Pass |
 | Share catching a Golden Carp in 30 days at its water | 0.66 | 0.5 to 1 | Pass |
 | Share catching a Salmon in 30 days at its water | 0.84 | 0.5 to 1 | Pass |
@@ -31,11 +32,11 @@ The last two "three-day" gates were added during S1: the first harness showed a 
 
 ## Outcomes after 30 days (medians)
 
-| Policy | Level | Species logged | Rod tier | Cooler tier | Fish a day, last week | River Bend day | Pier day |
+| Policy | Title | Species logged | Rod tier | Cooler tier | Fish a day, last week | River Bend day | Pier day |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Daily | 11 | 17 | 4 | 4 | 14 | 3.8 | 10.8 |
-| Three-day | 11 | 15 | 3 | 3 | 11.64 | 6.8 | 24.8 |
-| Never | 8 | 7 | 1 | 1 | 5.14 | not reached | not reached |
+| Daily | Old Hand | 18 | 4 | 4 | 14 | 3.8 | 10.8 |
+| Three-day | Old Hand | 15 | 3 | 3 | 11.64 | 6.8 | 24.8 |
+| Never | Regular | 7 | 1 | 1 | 5.14 | not reached | not reached |
 
 ## Changes from the first draft
 

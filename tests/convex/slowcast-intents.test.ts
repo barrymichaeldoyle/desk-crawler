@@ -65,7 +65,8 @@ describe('Slow Cast intents (D115, S2)', () => {
   it('travels only to an open water, arriving after one tick', async () => {
     const anglerId = await seedAngler(t, {}, 'Pat')
     await expect(as('Pat').mutation(api.slowCast.anglers.travelTo, { operationId: 'trip-00001', waterId: 'river_bend' })).rejects.toThrow(/not open/)
-    await t.run(async (ctx) => await ctx.db.patch(anglerId, { level: 4, access: ['waders'] }))
+    const five = Object.fromEntries(['minnow', 'roach', 'rudd', 'perch', 'bream', 'tench'].map((id) => [id, { count: 1, bestGrams: 100, firstTick: 1 }]))
+    await t.run(async (ctx) => await ctx.db.patch(anglerId, { logbook: five, access: ['waders'] }))
     await as('Pat').mutation(api.slowCast.anglers.travelTo, { operationId: 'trip-00002', waterId: 'river_bend' })
     await nextSlowCastTick(t)
     expect(await t.run(async (ctx) => await ctx.db.get(anglerId))).toMatchObject({ waterId: 'river_bend', counters: { trips: 1, casts: 0 } })
@@ -83,7 +84,7 @@ describe('Slow Cast intents (D115, S2)', () => {
   it('reads the dock: cooler, bait, shop, forecast and stories', async () => {
     await seedAngler(t, { gold: 42 }, 'Pat')
     const dock = await as('Pat').query(api.slowCast.anglers.dock, {})
-    expect(dock.angler).toMatchObject({ alias: 'Pat', level: 1, gold: 42, waterId: 'millpond', cooler: { name: 'Bucket', capacity: 6 }, rod: { name: 'Cane Rod' } })
+    expect(dock.angler).toMatchObject({ alias: 'Pat', title: 'Newcomer', nextTitle: { name: 'Regular', species: 4 }, gold: 42, waterId: 'millpond', cooler: { name: 'Bucket', capacity: 6 }, rod: { name: 'Cane Rod' } })
     expect(dock.waters.map((w: { id: string; open: boolean }) => [w.id, w.open])).toEqual([['millpond', true], ['river_bend', false], ['harbour_pier', false]])
     expect(dock.shop.rod).toMatchObject({ name: 'Fibreglass Rod', price: 250 })
     expect(dock.angler.bait.find((b: { class: string }) => b.class === 'worms')).toMatchObject({ units: 12, tubsThatFit: 5 })
@@ -105,8 +106,18 @@ describe('Slow Cast intents (D115, S2)', () => {
       await ctx.db.insert('swTickLogs', log(4, now - 13 * 3_600_000, 'catch', { speciesId: 'roach', grams: 300 }, 12))
     })
     const dock = await as('Pat').query(api.slowCast.anglers.dock, {})
-    expect(dock.recap).toEqual({ landed: 2, released: 1, records: 1, firsts: 1, xp: 28, best: { speciesId: 'perch', grams: 900 }, gotAway: 1, awayGrams: [6000] })
+    expect(dock.recap).toEqual({ landed: 2, released: 1, records: 1, firsts: 1, best: { speciesId: 'perch', grams: 900 }, gotAway: 1, awayGrams: [6000] })
     expect(dock.catches.map((c: { grams: number; record: boolean }) => [c.grams, c.record])).toEqual(expect.arrayContaining([[410, true], [200, false]]))
+  })
+
+  it('clears the retired XP fields from an older angler', async () => {
+    const anglerId = await seedAngler(t, { level: 6, xp: 312, lifetimeXp: 4000, lastLevelUpTick: 90, scoreHourXp: 12 }, 'Pat')
+    const { internal } = await import('../../apps/backend/convex/_generated/api')
+    expect(await t.mutation(internal.slowCast.migrations.clearRetiredFields, {})).toEqual({ cleared: 1, done: true, cursor: null })
+    const angler = await t.run(async (ctx) => await ctx.db.get(anglerId))
+    expect(angler).not.toHaveProperty('level')
+    expect(angler).not.toHaveProperty('scoreHourXp')
+    expect(await t.mutation(internal.slowCast.migrations.clearRetiredFields, {})).toMatchObject({ cleared: 0 })
   })
 
   it('shows unseen species with only their bait, and epics with nothing, in the logbook', async () => {

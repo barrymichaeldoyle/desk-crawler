@@ -6,13 +6,14 @@
  * every pixel stays crisp: `lg:` swaps in the TRMNL X's larger scales. User text arrives only as escaped variables.
  *
  * Template v2 (2026-10-10) brings the screen up to Desk Crawler's HUD: marks instead of words for the counters
- * (cooler, bait, gold, logbook), XP as ten half-step ticks, the time of day and weather as marks, a glyph before every
- * story, the attention line inverted behind its mark, the board's 7-day XP, and the recap as facts behind their marks.
+ * (cooler, bait, gold, logbook), progress to the next title as ten half-step ticks, the time of day and weather as marks,
+ * a glyph before every story, the attention line inverted behind its mark, the water's weekly board of heaviest fish,
+ * and the recap as facts behind their marks.
  * The OG's full landscape shows five stories where three left the foot empty; the X's sets its stories beside the board.
  */
 import { markUri, STORY_GLYPHS, type ScMark } from '../art/marks'
 
-export const TEMPLATE_VERSION = 2
+export const TEMPLATE_VERSION = 3
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -61,9 +62,12 @@ const counters = (fit: 'all' | 'short' | 'compact' = 'all') =>
     'data-counters="true"',
   )}{% endif %}`
 
-/** XP as ten half-step ticks with the numbers after them, Desk Crawler's bar (same rounding, so both Liquids agree). */
+/**
+ * Progress to the next title as ten half-step ticks with the species count after them (titles.ts). Desk Crawler's bar
+ * and rounding, so both Liquids agree; at the last title there is nothing left to fill and the bar is left off.
+ */
 const xpTicks = (count = true) =>
-  `{% if xp_to_next %}{% assign xp_halves = xp_pct | default: 0 | times: 20 | plus: 50 | divided_by: 100 | floor %}<div class="flex flex--row flex--wrap flex--left flex--center-y gap--small no-shrink" data-xp-ticks="{{ xp_halves }}"><div class="flex flex--row gap--[2px] no-shrink">{% for i in (1..10) %}{% assign tick_right = i | times: 2 %}{% assign tick_left = tick_right | minus: 1 %}<img class="w--[18px] h--[8px] lg:w--[22px] lg:h--[10px] no-shrink" src="{% if xp_halves >= tick_right %}{{ m_tickFull }}{% elsif xp_halves >= tick_left %}{{ m_tickHalf }}{% else %}{{ m_tickEmpty }}{% endif %}" alt="">{% endfor %}</div>${count ? `<span class="${LABEL} no-shrink">{{ xp }}/{{ xp_to_next }} XP</span>` : ''}</div>{% endif %}`
+  `{% if title_next_at %}{% assign xp_halves = title_pct | default: 0 | times: 20 | plus: 50 | divided_by: 100 | floor %}<div class="flex flex--row flex--wrap flex--left flex--center-y gap--small no-shrink" data-xp-ticks="{{ xp_halves }}"><div class="flex flex--row gap--[2px] no-shrink">{% for i in (1..10) %}{% assign tick_right = i | times: 2 %}{% assign tick_left = tick_right | minus: 1 %}<img class="w--[18px] h--[8px] lg:w--[22px] lg:h--[10px] no-shrink" src="{% if xp_halves >= tick_right %}{{ m_tickFull }}{% elsif xp_halves >= tick_left %}{{ m_tickHalf }}{% else %}{{ m_tickEmpty }}{% endif %}" alt="">{% endfor %}</div>${count ? `<span class="${LABEL} no-shrink">{{ species_logged }}/{{ title_next_at }}</span>` : ''}</div>{% endif %}`
 
 /**
  * The title bar with the weekly fly code. A narrow portrait column (side, quarter) cannot fit the name beside the
@@ -90,34 +94,34 @@ const scene = (og: number, x: number, classes = 'stretch-x') =>
 const qr = (og: number, x: number) =>
   `{% if qr_base != "" %}<div class="no-shrink" data-companion-qr="true"><img class="image lg:hidden" src="{{ qr_base }}/${og}.png" alt=""><img class="image hidden lg:block" src="{{ qr_base }}/${x}.png" alt=""></div>{% endif %}`
 
-/** The angler's name, then the level beside it. */
+/** The angler's name, then the title beside it. */
 const nameLine = (classes = 'title title--small lg:title') =>
-  `<span class="${classes} w--min-0" data-clamp="1">{{ alias | escape }}</span>{% if level %}<span class="${LABEL} no-shrink">Level {{ level }}</span>{% endif %}`
+  `<span class="${classes} w--min-0" data-clamp="1">{{ alias | escape }}</span>{% if title %}<span class="${LABEL} no-shrink">{{ title | escape }}</span>{% endif %}`
 
 /** The cooler, bait or service line, inverted behind its mark so it reads first. */
 const attention = (clamp = 2) =>
   `{% if attention %}{% case attention_kind %}{% when "cooler" %}{% assign m_attention = m_cooler %}{% when "bait" %}{% assign m_attention = m_bait_out %}{% else %}{% assign m_attention = m_system %}{% endcase %}` +
   `<div class="flex flex--row flex--left flex--center-y gap--small no-shrink stretch-x" data-attention="{{ attention_kind }}"><img class="${ICON}" src="{{ m_attention }}" alt=""><span class="${LABEL} label--inverted" data-clamp="${clamp}">{{ attention | escape }}</span></div>{% endif %}`
 
-/** One story's glyph: its kind's, a star for a level-up, a dot for anything else. */
+/** One story's glyph: its kind's, a star for a milestone, a dot for anything else. */
 const storyGlyph = `{% case story.kind %}${STORY_GLYPHS.filter((kind) => kind !== 'system')
   .map((kind) => `{% when "${kind}" %}{% assign m_story = m_${kind} %}`)
-  .join('')}{% when "levelup" %}{% assign m_story = m_star %}{% else %}{% assign m_story = m_system %}{% endcase %}`
+  .join('')}{% when "milestone" %}{% assign m_story = m_star %}{% when "levelup" %}{% assign m_story = m_star %}{% else %}{% assign m_story = m_system %}{% endcase %}`
 
 /** The newest stories, each behind its glyph. */
 const stories = (limit: number, clamp = 1, classes = 'description lg:title--small') =>
   `<div class="flex flex--col flex--left gap--xsmall stretch-x h--min-0" data-stories="true">{% for story in stories limit:${limit} %}${storyGlyph}<div class="flex flex--row flex--top gap--small stretch-x" data-story="{{ story.kind }}"><img class="${ICON} mt--[1px]" src="{{ m_story }}" alt=""><span class="${classes} grow w--min-0" data-clamp="${clamp}">{{ story.summary | escape }}</span></div>{% endfor %}</div>`
 
 /**
- * The seven-day board of the angler's level group: the trophy and group, the angler's rank, then each row's name and
- * 7-day XP. Each row is itself the label, so an inverted own row keeps its text white (a `.label` child would set its
- * own colour), as Desk Crawler's board does. An own row appended below the top shows its level.
+ * This week's heaviest fish at the angler's water: the trophy and water, the angler's rank and best, then each row's
+ * name and weight. Each row is itself the label, so an inverted own row keeps its text white (a `.label` child would
+ * set its own colour), as Desk Crawler's board does.
  */
 const board = (rows: number) =>
   `{% if board %}<div class="no-shrink flex flex--col gap--xsmall w--full" data-board="true">` +
   `<div class="flex flex--row flex--center-y gap--[3px] w--full"><img class="${ICON}" src="{{ m_trophy }}" alt=""><span class="${LABEL} grow w--min-0" data-clamp="1">{{ board.label | escape }}</span></div>` +
   `<span class="${LABEL} w--full" data-clamp="1">{{ board.rank_label | escape }}</span>` +
-  `{% for row in board.rows limit:${rows} %}<div class="${LABEL} flex flex--row flex--between flex--center-y gap--small w--full{% if row.own %} label--inverted{% endif %}" data-rank-row="{{ row.rank }}"><span class="grow w--min-0" data-clamp="1">{{ row.rank }}. {{ row.name | escape }}</span><span class="no-shrink">{% if row.score %}{{ row.score }}{% else %}L{{ row.level }}{% endif %}</span></div>{% endfor %}</div>{% endif %}`
+  `{% for row in board.rows limit:${rows} %}<div class="${LABEL} flex flex--row flex--between flex--center-y gap--small w--full{% if row.own %} label--inverted{% endif %}" data-rank-row="{{ row.rank }}"><span class="grow w--min-0" data-clamp="1">{{ row.rank }}. {{ row.name | escape }}</span><span class="no-shrink">{{ row.weight_label }}</span></div>{% endfor %}</div>{% endif %}`
 
 /**
  * The twelve-hour recap as Desk Crawler's ribbon: a rule, then its name in bold and each fact behind its mark. Each
@@ -153,7 +157,7 @@ const welcome = (compact: boolean) => `
 
 const ready = (body: string, compact = false) => `{% if status == "unlinked" or status == "pending" %}${welcome(compact)}{% else %}${body}{% endif %}`
 
-/** The full header: name, level and XP; where and when; the counters; the code in the corner. */
+/** The full header: name, title and progress; where and when; the counters; the code in the corner. */
 const header = (qrOg: number, qrX: number) => `
     <div class="no-shrink flex flex--row flex--between flex--top gap--small stretch-x">
       <div class="flex flex--col flex--left gap--xsmall grow w--min-0">

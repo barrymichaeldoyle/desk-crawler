@@ -1,4 +1,5 @@
 import { v } from 'convex/values'
+import { titleFor } from '@trmnl-games/slow-cast/sim'
 import type { Doc, Id } from '../_generated/dataModel'
 import { internalMutation, internalQuery, mutation, query } from '../_generated/server'
 import { audit } from '../admin'
@@ -108,7 +109,7 @@ export const engagement = internalQuery({
       activeAnglers: anglers.length,
       paused: anglers.filter((a) => a.status === 'paused').length,
       waters: tally(anglers.map((a) => a.waterId)),
-      levels: tally(anglers.map((a) => a.level)),
+      titles: tally(anglers.map((a) => titleFor(Object.keys(a.logbook).length).name)),
       rods: tally(anglers.map((a) => a.rodTier)),
       coolers: tally(anglers.map((a) => a.coolerTier)),
       bareHook: anglers.filter((a) => !a.baitOnHook || (a.bait[a.baitOnHook] ?? 0) === 0).length,

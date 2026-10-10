@@ -17,7 +17,7 @@ export const Route = createFileRoute('/games/slow-cast')({
         <header className="flex flex-col gap-3">
           <h1 className="flex items-center gap-4 font-display text-4xl font-bold leading-tight sm:text-5xl"><img src="/games/slow-cast/icon-192.png" alt="" width={64} height={64} className="size-14 [image-rendering:pixelated] sm:size-16" />{games['slow-cast'].name}</h1>
           <p className="text-lg text-muted">
-            {games['slow-cast'].description} Every fifteen minutes your angler casts. The species depends on the water, the bait, the hour and the weather, and the screen on your desk shows what bit. Every day or two you open the companion to sell the cooler, restock bait and buy a stronger rod for heavier fish.
+            {games['slow-cast'].description} Every fifteen minutes your angler casts. What bites depends on the water, the bait, the hour and the weather, and the screen on your desk shows the catch. Every day or two, open the companion to sell your catch, restock bait and save for a stronger rod that holds heavier fish.
           </p>
         </header>
         <figure className="flex flex-col gap-2">
@@ -26,8 +26,9 @@ export const Route = createFileRoute('/games/slow-cast')({
         </figure>
         <ul className="flex flex-col gap-2 [&_li]:ml-5 [&_li]:list-disc">
           <li>Three waters and thirty species to log, from minnows to a thornback ray.</li>
-          <li>Weather shared by every angler at a water, changing every six hours.</li>
-          <li>Bait never spoils. When the cooler is full, new catches are released instead of lost.</li>
+          <li>Your logbook opens the next water and earns your title, from Newcomer to Master Angler.</li>
+          <li>Each water has a weekly board for the heaviest fish, shown on your screen.</li>
+          <li>Weather is shared by every angler at a water and changes every six hours.</li>
         </ul>
         <div className="flex flex-wrap items-center gap-4">
           <Link to="/help/slow-cast" className={`${LINK_BUTTON} ${BUTTON_SECONDARY}`}>How it plays</Link>

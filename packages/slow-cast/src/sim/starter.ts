@@ -20,11 +20,7 @@ export const zeroCounters = (): AnglerCounters => ({
 export function starterAngler(content: SlowCastCatalog, tick: number): AnglerState {
   const worms = content.baits.find((b) => b.class === 'worms')
   return {
-    level: 1,
-    xp: 0,
-    lifetimeXp: 0,
     gold: 0,
-    lastLevelUpTick: tick,
     status: 'fishing',
     waterId: 'millpond',
     rodTier: 1,

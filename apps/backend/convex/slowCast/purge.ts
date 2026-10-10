@@ -20,6 +20,11 @@ export async function purgeAngler(ctx: MutationCtx, anglerId: Id<'anglers'>, bat
     await ctx.db.delete(row._id)
     removed += 1
   }
+  // Board rows: the angler's records at every water, weekly and all time.
+  for (const row of await ctx.db.query('swCatchRecords').withIndex('by_anglerId_and_waterId_and_period', (q) => q.eq('anglerId', anglerId)).take(batch)) {
+    await ctx.db.delete(row._id)
+    removed += 1
+  }
   if (removed > 0) return removed
   const angler = await ctx.db.get(anglerId)
   if (angler) {

@@ -8,7 +8,7 @@ import { SiteLinks } from '../../lib/prose'
 import { seo } from '../../lib/seo'
 import { Card } from '../../lib/ui'
 
-type Game = { slug: 'desk-crawler' | 'slow-cast'; name: string; level: number; since: number; rank: { rank: number; totalPlayers: number } | null; achievements: number; species?: number; page: string | null }
+type Game = { slug: 'desk-crawler' | 'slow-cast'; name: string; level?: number; title?: string; since: number; rank: { rank: number; totalPlayers: number } | null; achievements: number; species?: number; page: string | null }
 type Profile = { alias: string; games: Game[]; platform: Array<{ id: string; name: string; blurb: string; share: number | null }> } | null
 
 const profileQuery = (alias: string) => convexQuery(api.platformProfile.view, { alias })
@@ -43,7 +43,7 @@ function ProfilePage() {
             <h1 className="font-display text-4xl font-bold">{profile.alias}</h1>
             {profile.games.map((game) => (
               <Card key={game.slug} title={games[game.slug].name}>
-                <p className="text-lg">{game.slug === 'desk-crawler' ? `${game.name}, level ${game.level}` : `Angler, level ${game.level}`}</p>
+                <p className="text-lg">{game.slug === 'desk-crawler' ? `${game.name}, level ${game.level}` : `${game.title ?? 'Angler'}`}</p>
                 <p className="text-sm text-muted">
                   Playing since {since(game.since)}
                   {game.rank ? ` · #${game.rank.rank} of ${game.rank.totalPlayers} all time` : ''} · {game.achievements} achievements

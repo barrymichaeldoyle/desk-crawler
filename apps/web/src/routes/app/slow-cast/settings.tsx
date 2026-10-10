@@ -22,7 +22,7 @@ const SLOW_CAST_ALERTS: readonly AlertKindCopy[] = [
 ]
 
 const MORE_LINKS = [
-  { to: '/app/slow-cast/rankings', label: 'Rankings', blurb: 'Where you stand on the XP boards.' },
+  { to: '/app/slow-cast/rankings', label: 'Rankings', blurb: 'The heaviest fish at each water, this week and all time.' },
   { to: '/app/slow-cast/achievements', label: 'Achievements', blurb: 'Every tier you have earned and what comes next.' },
   { to: '/help/slow-cast', label: 'How Slow Cast works', blurb: 'Bait, weather, waters and the cooler.' },
 ] as const
@@ -69,7 +69,7 @@ function SettingsPage() {
       ) : null}
       {active ? (
         <Card title="Public profile">
-          <p>{angler.publicProfile ? 'Your Slow Cast level, rank and logbook count show on your public profile.' : 'Your Slow Cast progress is private.'} Leaderboards always show your public name.</p>
+          <p>{angler.publicProfile ? 'Your Slow Cast title, achievements and logbook count show on your public profile.' : 'Your Slow Cast progress is private.'} Leaderboards always show your public name.</p>
           <div className="mt-3">
             <Button variant="secondary" pending={profile.pending} onClick={() => void profile.run({ visible: !angler.publicProfile }, angler.publicProfile ? 'Slow Cast is now private on your profile.' : 'Slow Cast now shows on your profile.')}>
               {angler.publicProfile ? 'Make private' : 'Show on my profile'}
@@ -107,8 +107,8 @@ function SettingsPage() {
         }}
       >
         <Consequences>
-          <li>No casts, fish or XP until you resume, and missed casts are not made up later.</li>
-          <li>Your 24-hour and 7-day XP keeps ageing out, so you can drop down those boards.</li>
+          <li>No casts or fish until you resume, and missed casts are not made up later.</li>
+          <li>Your fish stay on the boards, but you can't add to this week's while paused.</li>
           <li>Your cooler, bait and gold stay as they are. Resume any time.</li>
         </Consequences>
       </ConfirmSheet>

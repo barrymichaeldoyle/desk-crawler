@@ -14,9 +14,9 @@ function SlowCastPrivacy() {
   return (
     <>
       <h2>Slow Cast</h2>
-      <p>Slow Cast stores your angler: level, gold, the water and bait, your cooler, your logbook of species and best weights, your fishing history, achievements and fly box. Your angler appears under your public name on Slow Cast's leaderboards and on other players' TRMNL screens. If you show Slow Cast on your public profile, anyone with the link sees its level, start date, rank, achievement count and species logged.</p>
+      <p>Slow Cast stores your angler: gold, the water and bait, your cooler, your logbook of species and best weights, your fishing history, your heaviest fish at each water, achievements and fly box. Your heaviest fish appear under your public name on Slow Cast's leaderboards and on other players' TRMNL screens. If you show Slow Cast on your public profile, anyone with the link sees your title, start date, achievement count and species logged.</p>
       <p>If you turn on Slow Cast alerts, they use the same devices and quiet hours as your other games' alerts. The weekly fly code on your TRMNL is keyed to your installation and never shown in the companion.</p>
-      <p>In <Link to="/app/slow-cast/settings">Slow Cast settings</Link>, Delete Slow Cast progress removes your angler, cooler, logbook, fly box, achievements, Slow Cast connections and Slow Cast alert settings. Your account and other games stay. Deleting your TRMNL Games account removes Slow Cast with everything else.</p>
+      <p>In <Link to="/app/slow-cast/settings">Slow Cast settings</Link>, Delete Slow Cast progress removes your angler, cooler, logbook, leaderboard records, fly box, achievements, Slow Cast connections and Slow Cast alert settings. Your account and other games stay. Deleting your TRMNL Games account removes Slow Cast with everything else.</p>
     </>
   )
 }

@@ -1,7 +1,6 @@
 import { v } from 'convex/values'
-import { xpToLeave } from '@trmnl-games/engine/levels'
 import { contentV1 } from '@trmnl-games/slow-cast/content'
-import { activeBait, baitOf, bitePermille, canFish, coolerOf, forecastBlock, rodOf, waterOf, type AnglerState, type SlowCastCatalog, type WaterId } from '@trmnl-games/slow-cast/sim'
+import { activeBait, baitOf, bitePermille, canFish, coolerOf, forecastBlock, nextTitle, rodOf, speciesLogged, titleFor, waterOf, type AnglerState, type SlowCastCatalog, type WaterId } from '@trmnl-games/slow-cast/sim'
 import { buyAccess, buyBait, buyCooler, buyRod, nextCooler, nextRod, sell, setBait, travel, tubsThatFit, type ShopResult } from '@trmnl-games/slow-cast/sim/shop'
 import { conditionsAt } from '@trmnl-games/slow-cast/sim/simulate'
 import { forecastFor } from '@trmnl-games/slow-cast/sim/seed'
@@ -210,6 +209,7 @@ export const dock = query({
     const { world, content } = await worldContentOf(ctx)
     const now = Date.now()
     const state = toAnglerState(angler)
+    const logged = speciesLogged(content, angler.logbook)
     const catches = await ctx.db.query('catches').withIndex('by_anglerId', (q) => q.eq('anglerId', angler._id)).take(32)
     // The recap reads as many stories as the device's (MAX_RECAP_STORIES); the Latest list shows the newest 20.
     const recentLogs = await ctx.db.query('swTickLogs').withIndex('by_anglerId_and_at_and_sequence', (q) => q.eq('anglerId', angler._id)).order('desc').take(MAX_RECAP_STORIES)
@@ -228,7 +228,8 @@ export const dock = query({
       return {
         id: w.id,
         name: w.name,
-        unlockLevel: w.unlockLevel,
+        // Logbook gate (titles.ts): species of the previous water needed, and how many are logged.
+        opensAfter: w.opensAfter ? { waterId: w.opensAfter.water, waterName: waterOf(content, w.opensAfter.water).name, species: w.opensAfter.species, logged: speciesLogged(content, angler.logbook, w.opensAfter.water) } : null,
         access: w.access ?? null,
         open: canFish(content, state, w.id),
         weather: weatherNow,
@@ -246,9 +247,8 @@ export const dock = query({
         alias: user.publicAlias,
         activationState: angler.activationState,
         status: angler.status,
-        level: angler.level,
-        xp: angler.xp,
-        xpToNext: xpToLeave(angler.level),
+        title: titleFor(logged).name,
+        nextTitle: nextTitle(logged),
         gold: angler.gold,
         waterId: angler.waterId,
         travelTo: angler.travelTo ?? null,
@@ -259,7 +259,7 @@ export const dock = query({
         access: angler.access,
         counters: angler.counters,
         publicProfile: angler.publicProfile ?? false,
-        speciesLogged: Object.keys(angler.logbook).length,
+        speciesLogged: logged,
         speciesTotal: content.species.length,
       },
       catches: catches
@@ -272,14 +272,13 @@ export const dock = query({
         cooler: next.cooler && { name: next.cooler.name, price: next.cooler.price, capacity: next.cooler.capacity },
         access: content.access.map((a) => ({ id: a.id, name: a.name, price: a.price, water: a.water, owned: angler.access.includes(a.id) })),
       },
-      logs: logs.map((l) => ({ id: l._id, at: l.at, kind: l.kind, summary: l.summary, xp: l.deltas.xpEarned, gold: l.deltas.gold })),
+      logs: logs.map((l) => ({ id: l._id, at: l.at, kind: l.kind, summary: l.summary, gold: l.deltas.gold })),
       // The device's twelve-hour recap (payload.ts), with fish that broke free for the rod nudge.
       recap: {
         landed: landed.length,
         released: landed.filter((l) => l.kind === 'release').length,
         records: landed.filter((l) => l.detail.record === true).length,
         firsts: landed.filter((l) => l.detail.firstOfSpecies === true).length,
-        xp: window.reduce((sum, l) => sum + l.deltas.xpEarned, 0),
         best: best?.detail.speciesId && best.detail.grams !== undefined ? { speciesId: best.detail.speciesId, grams: best.detail.grams } : null,
         gotAway: away.length,
         awayGrams: away.flatMap((l) => (l.detail.grams === undefined ? [] : [l.detail.grams])),

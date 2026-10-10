@@ -5,7 +5,6 @@ import { deriveAnglerSeeds, forecastFor } from '@trmnl-games/slow-cast/sim/seed'
 import type { Doc, Id } from '../_generated/dataModel'
 import { internalMutation, type MutationCtx } from '../_generated/server'
 import { runBatch, startRun, watchdogStep, type SubjectStep } from '../lib/engine/runner'
-import { accumulatorOf, addBucket, creditTick, foldScore, writeEngineRankInput, type RankSubject } from '../lib/engine/scores'
 import { fromAnglerState, progressed, storedDetail, toAnglerState } from './adapter'
 import { currentAngler } from './profile'
 import { awardAngler, stateOf, tallyAnglerUnlocks } from './achievements'
@@ -13,11 +12,14 @@ import { needsFullPass } from '@trmnl-games/slow-cast/content/achievements'
 import { coolerOf } from '@trmnl-games/slow-cast/sim'
 import { queueSlowCastAlerts } from '../lib/alerts'
 import { SLOW_CAST_RUNTIME } from './runtime'
+import { recordCatch } from './records'
 
 /**
  * Slow Cast's tick (slow-cast.md "The cast"), on the shared engine run frame:
  * cron at minutes 5, 20, 35 and 50 (crons.ts), the same guards, pages,
- * publication and watchdog as Desk Crawler, and this per-angler step.
+ * publication and watchdog as Desk Crawler, and this per-angler step. Slow Cast
+ * has no XP, so it writes no rank inputs: the hourly publication carries only
+ * achievement rarity, and the boards are the catch records (records.ts).
  */
 
 export const startTick = internalMutation({
@@ -38,17 +40,8 @@ export const watchdog = internalMutation({
   handler: async (ctx) => await watchdogStep(ctx, SLOW_CAST_RUNTIME),
 })
 
-/** The engine's rank view of an angler: anglers carry no name of their own, so the board shows the owner's public alias. */
-function rankSubject(angler: Doc<'anglers'>, owner: Doc<'users'>): RankSubject {
-  return { ...angler, _id: angler._id as unknown as Id<'heroes'>, name: owner.publicAlias }
-}
-
-async function publishInputs(ctx: MutationCtx, angler: Doc<'anglers'>, owner: Doc<'users'>, step: SubjectStep<SlowCastCatalog>, accumulator = accumulatorOf(angler)) {
-  const id = angler._id as unknown as Id<'heroes'>
-  const scores = await foldScore(ctx, SLOW_CAST_RUNTIME, id, step.run, accumulator)
-  const fresh = (await ctx.db.get(angler._id))!
-  await writeEngineRankInput(ctx, SLOW_CAST_RUNTIME, step.run, rankSubject(fresh, owner), owner, scores, fresh.status === 'paused')
-  // Rarity is published from the same generation as the boards (D65).
+/** A publication run's share for one angler: achievement rarity, published with the hourly set (D65). */
+async function publishInputs(ctx: MutationCtx, owner: Doc<'users'>, step: SubjectStep<SlowCastCatalog>) {
   await tallyAnglerUnlocks(ctx, owner._id, step.tally.unlocks)
   step.tally.population += 1
 }
@@ -57,7 +50,7 @@ async function publishInputs(ctx: MutationCtx, angler: Doc<'anglers'>, owner: Do
 async function simulateAnglerStep(ctx: MutationCtx, subject: Doc<'heroes'>, step: SubjectStep<SlowCastCatalog>): Promise<void> {
   const angler = subject as unknown as Doc<'anglers'>
   const { run, world, content, now, tally } = step
-  const counts = tally.counts as Record<'eligible' | 'skippedDormant' | 'quarantined' | 'landed' | 'released' | 'gotAway' | 'levelUps', number>
+  const counts = tally.counts as Record<'eligible' | 'skippedDormant' | 'quarantined' | 'landed' | 'released' | 'gotAway', number>
   if (!angler.isActive || angler.activationState !== 'active' || angler.eligibleFromTick > run.tick || angler.lastTick >= run.tick) return
   const owner = await ctx.db.get(angler.userId)
   if (owner === null || (await currentAngler(ctx, owner))?._id !== angler._id) return
@@ -71,7 +64,7 @@ async function simulateAnglerStep(ctx: MutationCtx, subject: Doc<'heroes'>, step
   if (angler.simulationState === 'quarantined') {
     counts.quarantined += 1
     await ctx.db.patch(angler._id, { lastTick: run.tick })
-    if (run.publishes) await publishInputs(ctx, angler, owner, step)
+    if (run.publishes) await publishInputs(ctx, owner, step)
     return
   }
 
@@ -104,7 +97,7 @@ async function simulateAnglerStep(ctx: MutationCtx, subject: Doc<'heroes'>, step
       message: error.message.slice(0, 500),
       createdAt: now,
     })
-    if (run.publishes) await publishInputs(ctx, angler, owner, step)
+    if (run.publishes) await publishInputs(ctx, owner, step)
     return
   }
 
@@ -139,11 +132,10 @@ async function simulateAnglerStep(ctx: MutationCtx, subject: Doc<'heroes'>, step
     })
   }
   if (sequence !== angler.logSequence) patch.logSequence = sequence
-  const credited = creditTick(accumulatorOf(angler), run.scoreAt, result.event?.deltas.xpEarned ?? 0)
-  if (credited.fold) await addBucket(ctx, SLOW_CAST_RUNTIME, angler._id as unknown as Id<'heroes'>, credited.fold)
-  patch.scoreHourXp = credited.accumulator.scoreHourXp
-  patch.scoreHour = credited.accumulator.scoreHour
   await ctx.db.patch(angler._id, patch)
+  // The boards: a landed fish, kept or released, may be the angler's heaviest at this water this week or ever.
+  const landed = result.event && (result.event.kind === 'catch' || result.event.kind === 'release') ? result.event.detail : undefined
+  if (landed?.speciesId !== undefined && landed.grams !== undefined && landed.waterId !== undefined) await recordCatch(ctx, angler, { waterId: landed.waterId, speciesId: landed.speciesId, grams: landed.grams }, run.wallSlot)
   // Achievements: diff lifetime state; an angler behind the catalog version gets one full pass.
   if (result.event !== undefined || result.extraEvents !== undefined || needsFullPass(angler.achievementsVersion)) {
     const updated = (await ctx.db.get(angler._id))!
@@ -151,10 +143,9 @@ async function simulateAnglerStep(ctx: MutationCtx, subject: Doc<'heroes'>, step
     const flies = needsFullPass(angler.achievementsVersion) ? ((await ctx.db.query('flyBoxes').withIndex('by_userId', (q) => q.eq('userId', owner._id)).unique())?.totalCollected ?? 0) : 0
     await awardAngler(ctx, updated, stateOf(angler, flies), stateOf(updated, flies), content, now, run.tick)
   }
-  if (run.publishes) await publishInputs(ctx, angler, owner, step, credited.accumulator)
+  if (run.publishes) await publishInputs(ctx, owner, step)
 
   counts.landed += result.metrics.landed
   counts.released += result.metrics.released
   counts.gotAway += result.metrics.gotAway
-  counts.levelUps += result.metrics.levelUps
 }

@@ -43,26 +43,42 @@ describe('Slow Cast tick on the shared engine (D115, S2)', () => {
     expect(state.runs.every((r) => r.state === 'completed' && r.eligible === 1)).toBe(true)
   })
 
-  it('publishes boards with the owner alias at the end of the hour', async () => {
-    const anglerId = await seedAngler(t, {}, 'Reel')
+  it('publishes hourly with no XP rank inputs, and boards each water by the heaviest fish', async () => {
+    // Paused, so the ticks publish without landing fish of their own; the records below are the only ones.
+    const anglerId = await seedAngler(t, { status: 'paused' }, 'Reel')
+    const rival = await seedAngler(t, { status: 'paused' }, 'Mo')
     // Slots 06:20, 06:35, 06:50: 06:50 is the hour's last slot for a five-past world.
     for (let i = 0; i < 3; i += 1) await nextSlowCastTick(t)
     const sets = await t.run(async (ctx) => ({
       published: await ctx.db.query('swLeaderboardPublications').withIndex('by_state', (q) => q.eq('state', 'published')).collect(),
-      world: await ctx.db.query('swWorldState').first(),
       inputs: await ctx.db.query('swRankInputs').collect(),
-      generations: await ctx.db.query('swLeaderboardGenerations').collect(),
     }))
+    // The hourly set still carries achievement rarity; Slow Cast has no XP, so nothing is ranked by it.
     expect(sets.published.length).toBeGreaterThanOrEqual(1)
-    expect(sets.world?.publishedPublicationId).toBe(sets.published.at(-1)!._id)
-    expect(sets.inputs.at(-1)).toMatchObject({ heroId: anglerId, heroName: 'Reel', ownerAlias: 'Reel' })
-    expect(sets.generations.some((g) => g.board === 'overall' && g.entries[0]?.heroId === anglerId)).toBe(true)
-    // The companion and device read the same set, with the alias as the name and the angler's own row.
+    expect(sets.inputs).toEqual([])
+    // A heavier fish replaces the angler's row; a lighter one does not.
+    const { recordCatch, weekKey } = await import('../../apps/backend/convex/slowCast/records')
+    const at = Date.UTC(2026, 9, 7, 12)
+    await t.run(async (ctx) => {
+      const reel = (await ctx.db.get(anglerId))!
+      const mo = (await ctx.db.get(rival))!
+      await recordCatch(ctx, reel, { waterId: 'millpond', speciesId: 'roach', grams: 400 }, at)
+      await recordCatch(ctx, reel, { waterId: 'millpond', speciesId: 'common_carp', grams: 6100 }, at + 1)
+      await recordCatch(ctx, reel, { waterId: 'millpond', speciesId: 'perch', grams: 900 }, at + 2)
+      await recordCatch(ctx, mo, { waterId: 'millpond', speciesId: 'bream', grams: 2400 }, at)
+    })
+    const rows = await t.run(async (ctx) => await ctx.db.query('swCatchRecords').collect())
+    expect(rows.filter((r) => r.anglerId === anglerId).map((r) => [r.period, r.speciesId, r.grams])).toEqual([[weekKey(at), 'common_carp', 6100], ['all', 'common_carp', 6100]])
     const { api } = await import('@trmnl-games/backend/api')
-    const view = await t.withIdentity({ issuer: 'issuer', subject: 'Reel' }).query(api.slowCast.leaderboard.view, { board: 'overall' })
-    expect(view).toMatchObject({ published: true, cohortLabel: 'All anglers', entries: [{ rank: 1, name: 'Reel' }], own: { rank: 1 } })
-    const preview = await t.withIdentity({ issuer: 'issuer', subject: 'Reel' }).query(api.slowCast.payload.preview, {})
-    expect(preview.board).toMatchObject({ rank_label: '#1 of 1', rows: [{ rank: 1, name: 'Reel', own: true }] })
+    const view = await t.withIdentity({ issuer: 'issuer', subject: 'Mo' }).query(api.slowCast.leaderboard.view, { waterId: 'millpond', period: 'all' })
+    expect(view).toMatchObject({ waterId: 'millpond', period: 'all', entries: [{ rank: 1, name: 'Reel', speciesId: 'common_carp', grams: 6100, own: false }, { rank: 2, name: 'Mo', grams: 2400, own: true }], own: { rank: 2, grams: 2400 } })
+  })
+
+  it('starts the weekly board on Monday in UTC', async () => {
+    const { weekKey, weekEndsAt } = await import('../../apps/backend/convex/slowCast/records')
+    expect(weekKey(Date.UTC(2026, 9, 11, 23, 59))).toBe('w2026-10-05')
+    expect(weekKey(Date.UTC(2026, 9, 12, 0, 0))).toBe('w2026-10-12')
+    expect(weekEndsAt(Date.UTC(2026, 9, 7))).toBe(Date.UTC(2026, 9, 12))
   })
 
   it('skips a paused angler between publications without writing', async () => {

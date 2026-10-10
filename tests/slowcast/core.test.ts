@@ -102,26 +102,26 @@ describe('the cast', () => {
     expect(ids('day', 'clear')).toEqual(['minnow', 'roach'])
   })
 
-  it('lands a fish into the cooler with XP, logbook and story', () => {
+  it('lands a fish into the cooler with logbook and story', () => {
     const streams = seedsWhere((s) => {
       const r = simulateAngler(input({ streams: s }))
       return r.event?.kind === 'catch'
     })
     const result = simulateAngler(input({ streams }))
     expect(result.catch).toMatchObject({ caughtTick: 10 })
-    expect(result.event?.deltas.xpEarned).toBeGreaterThan(0)
+    expect(result.event?.deltas).toEqual({ gold: 0 })
     expect(result.event?.summary).toMatch(/^An? .+ took the worm in the day\. First .+ in the logbook\.$/)
     expect(result.angler.logbook[result.catch!.speciesId]).toMatchObject({ count: 1, firstTick: 10 })
     expect(result.angler.counters).toMatchObject({ fishCaught: 1, bites: 1, casts: 1 })
   })
 
-  it('releases a landed fish when the cooler is full, still counting XP and logbook', () => {
+  it('releases a landed fish when the cooler is full, still counting it in the logbook', () => {
     const streams = seedsWhere((s) => simulateAngler(input({ streams: s })).event?.kind === 'catch')
     const result = simulateAngler(input({ streams, coolerCount: 6 }))
     expect(result.catch).toBeUndefined()
     expect(result.event?.kind).toBe('release')
     expect(result.event?.summary).toMatch(/^Cooler full\. Released an? .+\./)
-    expect(result.event?.deltas.xpEarned).toBeGreaterThan(0)
+    expect(result.angler.logbook[result.event!.detail.speciesId!]).toMatchObject({ count: 1 })
     expect(result.angler.counters.released).toBe(1)
     expect(result.metrics).toMatchObject({ landed: 1, released: 1 })
   })
@@ -130,7 +130,7 @@ describe('the cast', () => {
     // Carp at dawn on bread reach 12 kg; the Cane Rod lands 1.5 kg.
     const streams = seedsWhere((s) => simulateAngler(input({ streams: s, tickAt: DAWN }, { baitOnHook: 'bread', bait: { bread: 24 } })).event?.kind === 'got_away')
     const result = simulateAngler(input({ streams, tickAt: DAWN }, { baitOnHook: 'bread', bait: { bread: 24 } }))
-    expect(result.event).toMatchObject({ kind: 'got_away', deltas: { xpEarned: 0, gold: 0 } })
+    expect(result.event).toMatchObject({ kind: 'got_away', deltas: { gold: 0 } })
     expect(result.catch).toBeUndefined()
     expect(result.angler.counters.gotAway).toBe(1)
   })
@@ -148,7 +148,7 @@ describe('the cast', () => {
   })
 
   it('travels for a whole tick without casting', () => {
-    const result = simulateAngler(input({}, { travelTo: 'river_bend', level: 4, access: ['waders'] }))
+    const result = simulateAngler(input({}, { travelTo: 'river_bend', access: ['waders'] }))
     expect(result).toMatchObject({ disposition: 'travelled', angler: { waterId: 'river_bend' }, event: { kind: 'travel', summary: 'You set up on the bank at River Bend.' } })
     expect(result.angler.travelTo).toBeUndefined()
     expect(result.angler.counters).toMatchObject({ casts: 0, trips: 1 })
@@ -160,10 +160,26 @@ describe('the cast', () => {
     expect(result.event).toBeUndefined()
   })
 
-  it('announces a level that opens a water', () => {
-    const streams = seedsWhere((s) => simulateAngler(input({ streams: s })).event?.kind === 'catch')
-    const result = simulateAngler(input({ streams }, { level: 3, xp: 289 }))
-    expect(result.extraEvents?.find((e) => e.kind === 'levelup')?.summary).toBe('Level 4. River Bend is open with the Waders.')
+  it('announces a title and a water opening when a new species fills the logbook gate', () => {
+    // Five Millpond species logged: the next new one makes six, River Bend's gate (the title came at four).
+    const known = { minnow: { count: 1, bestGrams: 20, firstTick: 1 }, rudd: { count: 1, bestGrams: 60, firstTick: 1 }, perch: { count: 1, bestGrams: 200, firstTick: 1 }, bream: { count: 1, bestGrams: 400, firstTick: 1 }, tench: { count: 1, bestGrams: 900, firstTick: 1 } }
+    const streams = seedsWhere((s) => {
+      const r = simulateAngler(input({ streams: s }, { logbook: known }))
+      return r.event?.kind === 'catch' && r.event.detail.firstOfSpecies === true
+    })
+    const result = simulateAngler(input({ streams }, { logbook: known }))
+    const milestones = result.extraEvents?.filter((e) => e.kind === 'milestone').map((e) => e.summary)
+    expect(milestones).toEqual(['6 Millpond species logged. River Bend is open with the Waders.'])
+  })
+
+  it('names the title earned by the fourth species', () => {
+    const known = { minnow: { count: 1, bestGrams: 20, firstTick: 1 }, rudd: { count: 1, bestGrams: 60, firstTick: 1 }, perch: { count: 1, bestGrams: 200, firstTick: 1 } }
+    const streams = seedsWhere((s) => {
+      const r = simulateAngler(input({ streams: s }, { logbook: known }))
+      return r.event?.kind === 'catch' && r.event.detail.firstOfSpecies === true
+    })
+    const result = simulateAngler(input({ streams }, { logbook: known }))
+    expect(result.extraEvents?.find((e) => e.kind === 'milestone')?.summary).toBe('Now a Regular, with 4 species in the logbook.')
   })
 })
 
@@ -181,16 +197,21 @@ describe('shop and setup', () => {
     expect(buyBait(content, angler, 'worms', 5)).toMatchObject({ ok: true, spent: 125, angler: { bait: { worms: 72 } } })
   })
 
-  it('needs both the level and the access item to travel', () => {
+  it('needs both the logbook gate and the access item to travel', () => {
     const angler = starterAngler(content, 0)
+    const five = Object.fromEntries(['minnow', 'roach', 'rudd', 'perch', 'bream', 'tench'].map((id) => [id, { count: 1, bestGrams: 100, firstTick: 1 }]))
     expect(travel(content, angler, 'river_bend')).toEqual({ ok: false, code: 'LOCKED' })
-    expect(canFish(content, { level: 4, access: [] }, 'river_bend')).toBe(false)
-    expect(travel(content, { ...angler, level: 4, access: ['waders'] }, 'river_bend')).toMatchObject({ ok: true, angler: { travelTo: 'river_bend' } })
+    expect(canFish(content, { logbook: five, access: [], waterId: 'millpond' }, 'river_bend')).toBe(false)
+    expect(canFish(content, { logbook: {}, access: ['waders'], waterId: 'millpond' }, 'river_bend')).toBe(false)
+    expect(travel(content, { ...angler, logbook: five, access: ['waders'] }, 'river_bend')).toMatchObject({ ok: true, angler: { travelTo: 'river_bend' } })
+    // An angler who already fished River Bend keeps it, whatever the Millpond count.
+    expect(canFish(content, { logbook: { chub: { count: 1, bestGrams: 300, firstTick: 1 } }, access: ['waders'], waterId: 'millpond' }, 'river_bend')).toBe(true)
     expect(travel(content, angler, 'millpond')).toEqual({ ok: false, code: 'SAME_WATER' })
   })
 
   it('switches to a held bait the destination takes when the chosen one does not work there', () => {
-    const angler = { ...starterAngler(content, 0), level: 4, access: ['waders' as const] }
+    const five = Object.fromEntries(['minnow', 'roach', 'rudd', 'perch', 'bream', 'tench'].map((id) => [id, { count: 1, bestGrams: 100, firstTick: 1 }]))
+    const angler = { ...starterAngler(content, 0), logbook: five, access: ['waders' as const] }
     expect(travel(content, { ...angler, baitOnHook: 'bread', bait: { bread: 12, maggots: 24, spinner: 72 } }, 'river_bend')).toMatchObject({ ok: true, angler: { baitOnHook: 'spinner' } })
     expect(travel(content, { ...angler, baitOnHook: 'worms', bait: { worms: 12, maggots: 24 } }, 'river_bend')).toMatchObject({ ok: true, angler: { baitOnHook: 'worms' } })
     expect(travel(content, { ...angler, baitOnHook: 'worms', bait: { worms: 0, maggots: 24 } }, 'river_bend')).toMatchObject({ ok: true, angler: { baitOnHook: 'maggots' } })

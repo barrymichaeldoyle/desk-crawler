@@ -8,7 +8,7 @@ import { accessId, anglerCounters, baitClass, logbookEntry, swLogDetail, swLogKi
 const deskCrawlerEngine = engineTables(DESK_CRAWLER_TABLES, ['deaths', 'levelUps', 'heldFinds'])
 
 /** Slow Cast's engine tables, prefixed `sw` so retention and deletion stay per game (slow-cast.md "Data"). */
-const slowCastEngine = engineTables(SLOW_CAST_TABLES, ['landed', 'released', 'gotAway', 'levelUps'])
+const slowCastEngine = engineTables(SLOW_CAST_TABLES, ['landed', 'released', 'gotAway'], ['levelUps'])
 
 /**
  * Current-release schema only (data-model.md). Tables arrive with the work
@@ -193,11 +193,7 @@ export default defineSchema({
     isActive: v.boolean(),
     activationState: v.union(v.literal('pending_trmnl'), v.literal('active')),
     activatedAt: v.optional(v.number()),
-    level: v.number(),
-    xp: v.number(),
-    lifetimeXp: v.number(),
     gold: v.number(),
-    lastLevelUpTick: v.number(),
     status: v.union(v.literal('fishing'), v.literal('paused')),
     waterId,
     travelTo: v.optional(waterId),
@@ -218,8 +214,16 @@ export default defineSchema({
     simulationState: v.union(v.literal('healthy'), v.literal('quarantined')),
     quarantineReasonCode: v.optional(v.string()),
     achievementsVersion: v.optional(v.number()),
+    /**
+     * Retired 2026-10-10: Slow Cast has no XP or levels (titles and the logbook replace them). Nothing writes these;
+     * `slowCast/migrations:clearRetiredFields` unsets them, then they leave the schema.
+     */
+    level: v.optional(v.number()),
+    xp: v.optional(v.number()),
+    lifetimeXp: v.optional(v.number()),
+    lastLevelUpTick: v.optional(v.number()),
     scoreHour: v.optional(v.number()),
-    scoreHourXp: v.number(),
+    scoreHourXp: v.optional(v.number()),
   })
     .index('by_userId_and_isActive', ['userId', 'isActive'])
     .index('by_createdAt', ['createdAt'])
@@ -256,6 +260,25 @@ export default defineSchema({
     createdAt: v.number(),
   }).index('by_anglerId', ['anglerId']),
 
+  /**
+   * Slow Cast boards (2026-10-10): each angler's heaviest fish per water, once for the week (`period` is the Monday,
+   * "w2026-10-05", UTC) and once for all time ("all"). A landed fish, kept or released, replaces the row when heavier.
+   * `earlierFirst` is minus the catch time, so equal weights rank the earlier catch first.
+   */
+  swCatchRecords: defineTable({
+    waterId,
+    period: v.string(),
+    anglerId: v.id('anglers'),
+    userId: v.id('users'),
+    speciesId: v.string(),
+    grams: v.number(),
+    at: v.number(),
+    earlierFirst: v.number(),
+  })
+    .index('by_waterId_and_period_and_grams', ['waterId', 'period', 'grams', 'earlierFirst'])
+    .index('by_anglerId_and_waterId_and_period', ['anglerId', 'waterId', 'period'])
+    .index('by_period', ['period']),
+
   swTickLogs: defineTable({
     anglerId: v.id('anglers'),
     source: v.union(v.literal('tick'), v.literal('command'), v.literal('lifecycle')),
@@ -266,7 +289,7 @@ export default defineSchema({
     kind: swLogKind,
     summary: v.string(),
     detail: swLogDetail,
-    deltas: v.object({ xpEarned: v.number(), gold: v.number() }),
+    deltas: v.object({ gold: v.number(), /** Older stories only (XP retired 2026-10-10). */ xpEarned: v.optional(v.number()) }),
   })
     .index('by_anglerId_and_at_and_sequence', ['anglerId', 'at', 'sequence'])
     .index('by_at', ['at']),

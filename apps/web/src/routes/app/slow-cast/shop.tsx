@@ -39,7 +39,7 @@ function ShopPage() {
   const gold = angler.gold
   const buying = rod.pending || cooler.pending || access.pending || bait.pending
   const short = (price: number) => (gold < price ? <span className="text-sm text-muted">{price - gold} gold short</span> : null)
-  const levelOf = (water: string) => dock.waters?.find((w) => w.id === water)?.unlockLevel
+  const gateOf = (water: string) => dock.waters?.find((w) => w.id === water)?.opensAfter ?? null
   const nextRod = dock.shop.rod
   const nextCooler = dock.shop.cooler
   // Bait for waters the angler can fish comes first; the rest waits under its own heading.
@@ -119,15 +119,16 @@ function ShopPage() {
         <ul className="flex flex-col gap-3">
           {dock.shop.access.map((item) => {
             const water = WATER_NAME[item.water] ?? item.water
-            const level = levelOf(item.water)
+            const gate = gateOf(item.water)
+            const missing = gate ? Math.max(0, gate.species - gate.logged) : 0
             return (
               <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-rule pb-3 last:border-b-0">
                 <div className="min-w-0">
                   <p className="font-semibold">{item.name}</p>
-                  <p className="text-sm text-muted">Lets you fish {water}{level ? ` from level ${level}` : ''}.</p>
+                  <p className="text-sm text-muted">Lets you fish {water}{gate ? `, which opens after ${gate.species} ${gate.waterName} species (${gate.species - missing} logged)` : ''}.</p>
                 </div>
                 {item.owned ? <span className="label-px text-xp-ink">Owned</span> : (
-                  <Button variant="secondary" disabled={gold < item.price || buying} onClick={() => setOffer({ title: `Buy the ${item.name}?`, price: item.price, rows: [['Opens', water[0]!.toUpperCase() + water.slice(1)], ['Fish there', level && angler.level < level ? `From level ${level} (you are ${angler.level})` : 'Straight away']], buy: () => access.run({ access: item.id }, `Bought the ${item.name}.`) })}>
+                  <Button variant="secondary" disabled={gold < item.price || buying} onClick={() => setOffer({ title: `Buy the ${item.name}?`, price: item.price, rows: [['Opens', water[0]!.toUpperCase() + water.slice(1)], ['Fish there', gate && missing > 0 ? `After ${missing} more ${gate.waterName} species` : 'Straight away']], buy: () => access.run({ access: item.id }, `Bought the ${item.name}.`) })}>
                     Buy for {item.price} gold
                   </Button>
                 )}

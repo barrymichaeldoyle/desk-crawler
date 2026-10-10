@@ -90,13 +90,21 @@ for (const file of files.sort()) {
     const scene = Array.from(layoutEl.querySelectorAll('img')).filter(visible).find((e) => e.naturalWidth > 200)
     const recaps = Array.from(layoutEl.querySelectorAll('[data-recap-items]')).filter(visible).map((e) => ({ lines: Number(e.dataset.recapItems), fit: e.dataset.recapFit, shown: Number(e.dataset.recapCount), items: e.querySelectorAll('[data-recap-item]').length, marks: Array.from(e.querySelectorAll('[data-recap-item]')).filter(visible).filter((i) => i.querySelector('img')).length, text: e.innerText.replace(/\s+/g, ' ').trim() }))
     const chips = Array.from(layoutEl.querySelectorAll('.label--outline')).filter(visible).length
+    // The title bar sits outside the layout: its title, instance text and icon must stay inside the view (D115 found a
+    // fly code running off a narrow portrait bar that the layout checks could not see).
+    const titleOverflow = Array.from(footer.querySelectorAll('span,img')).filter(visible).filter((e) => {
+      const r = e.getBoundingClientRect()
+      // The framework ellipsizes `.instance` text, which hides a code's last digits, so any truncated instance fails.
+      const truncated = e.tagName === 'SPAN' && e.scrollWidth > e.clientWidth + 2 && (e.classList.contains('instance') || getComputedStyle(e).textOverflow !== 'ellipsis')
+      return r.width > 0 && (r.right > v.right + 2 || r.left < v.left - 2 || truncated)
+    }).map((e) => ({ tag: e.tagName, text: (e.innerText || '').slice(0, 40), right: e.getBoundingClientRect().right, viewRight: v.right }))
     // Nothing above the recap ribbon may run into it: every visible text or image outside it ends above its top.
     const ribbon = Array.from(layoutEl.querySelectorAll('[data-recap-ribbon]')).find(visible)
     const ribbonTop = ribbon ? ribbon.getBoundingClientRect().top : null
     const underRibbon = ribbon ? Array.from(layoutEl.querySelectorAll('span,img')).filter(visible).filter((e) => !ribbon.contains(e) && e.getBoundingClientRect().height > 0 && e.getBoundingClientRect().bottom > ribbonTop + 1).map((e) => ({ tag: e.tagName, text: (e.innerText || '').slice(0, 40), bottom: e.getBoundingClientRect().bottom, ribbonTop })) : []
-    return { bound, overflow, broken, textOverflow, underRibbon, lists, recaps, hearts, ticks, counters, rankRows, chips, sceneTop: scene ? scene.getBoundingClientRect().top : null, storyTop: lists.length ? layoutEl.querySelector('[data-story-list]').getBoundingClientRect().top : null }
+    return { bound, overflow, broken, textOverflow, titleOverflow, underRibbon, lists, recaps, hearts, ticks, counters, rankRows, chips, sceneTop: scene ? scene.getBoundingClientRect().top : null, storyTop: lists.length ? layoutEl.querySelector('[data-story-list]').getBoundingClientRect().top : null }
   })
-  const ok = !result.error && result.overflow.length === 0 && result.underRibbon.length === 0 && result.broken.length === 0 && result.textOverflow.length === 0 && result.lists.every((l) => l.fit === 'complete') && result.recaps.every((r) => r.fit === 'complete') && result.hearts.every((h) => h.images === 10 && h.wrappedRows === 1 && h.rows === 1) && result.ticks.every((t) => t.images === 10 && t.tickRows === 1)
+  const ok = !result.error && result.overflow.length === 0 && result.titleOverflow.length === 0 && result.underRibbon.length === 0 && result.broken.length === 0 && result.textOverflow.length === 0 && result.lists.every((l) => l.fit === 'complete') && result.recaps.every((r) => r.fit === 'complete') && result.hearts.every((h) => h.images === 10 && h.wrappedRows === 1 && h.rows === 1) && result.ticks.every((t) => t.images === 10 && t.tickRows === 1)
   if (!ok) failures++
   results.push({ file, state, device, portrait, layout, ok, ...result })
   // The plugin's own view: in portrait the mashup slots are not the landscape box turned on its side.

@@ -70,6 +70,7 @@ function HeroProfile() {
           </header>
         )}
         <div className="flex flex-wrap items-center gap-4">
+          {profile ? <Link to="/profile/$alias" params={{ alias: profile.alias }} className="inline-flex min-h-11 items-center underline underline-offset-4">{profile.alias}'s profile</Link> : null}
           <Link to="/games/desk-crawler" className="inline-flex min-h-11 items-center underline underline-offset-4">What is Desk Crawler?</Link>
         </div>
         <SiteLinks />

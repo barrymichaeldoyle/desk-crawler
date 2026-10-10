@@ -37,17 +37,48 @@ export async function currentSubscription(): Promise<PushSubscription | null> {
   return (await registration?.pushManager.getSubscription()) ?? null
 }
 
+/** How long one step of setting up alerts may take before the button gives up and offers a retry. */
+export const PUSH_STEP_MS = 15_000
+
+/** Reject after `ms`, so a browser step that never settles cannot leave the button spinning. */
+function within<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('timed out')), ms)
+    promise.then((value) => { clearTimeout(timer); resolve(value) }, (error: unknown) => { clearTimeout(timer); reject(error) })
+  })
+}
+
+/**
+ * Register the worker and wait for this registration's own worker to activate. `navigator.serviceWorker.ready` is not
+ * used: on a first registration it waited for a worker controlling the page and, in Chrome on a Mac (2026-10-10),
+ * never settled, leaving Settings on "Allowing…" until a reload.
+ */
+export async function activeRegistration(container: ServiceWorkerContainer = navigator.serviceWorker): Promise<ServiceWorkerRegistration> {
+  const registration = await container.register(PUSH_WORKER, { scope: PUSH_SCOPE })
+  if (registration.active) return registration
+  const worker = registration.installing ?? registration.waiting
+  if (worker === null) throw new Error('no worker')
+  await new Promise<void>((resolve, reject) => {
+    const check = () => {
+      if (worker.state === 'activated') resolve()
+      else if (worker.state === 'redundant') reject(new Error('worker redundant'))
+    }
+    worker.addEventListener('statechange', check)
+    check()
+  })
+  return registration
+}
+
 /**
  * Ask for permission (only ever from a tap), register the worker and subscribe. Returns the parts the backend
- * stores, or the reason it could not.
+ * stores, or the reason it could not. Every step is bounded, so the caller always hears back.
  */
-export async function subscribePush(vapidPublicKey: string): Promise<{ endpoint: string; p256dh: string; auth: string } | 'denied' | 'failed'> {
+export async function subscribePush(vapidPublicKey: string, container: ServiceWorkerContainer = navigator.serviceWorker, stepMs = PUSH_STEP_MS): Promise<{ endpoint: string; p256dh: string; auth: string } | 'denied' | 'failed'> {
   const permission = await Notification.requestPermission()
   if (permission !== 'granted') return permission === 'denied' ? 'denied' : 'failed'
   try {
-    const registration = await navigator.serviceWorker.register(PUSH_WORKER, { scope: PUSH_SCOPE })
-    await navigator.serviceWorker.ready
-    const subscription = (await registration.pushManager.getSubscription()) ?? (await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(vapidPublicKey) }))
+    const registration = await within(activeRegistration(container), stepMs)
+    const subscription = (await within(registration.pushManager.getSubscription(), stepMs)) ?? (await within(registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(vapidPublicKey) }), stepMs))
     const p256dh = toBase64url(subscription.getKey('p256dh'))
     const auth = toBase64url(subscription.getKey('auth'))
     if (!p256dh || !auth) return 'failed'

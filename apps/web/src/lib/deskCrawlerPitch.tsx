@@ -32,7 +32,7 @@ export function DeskCrawlerSignedOut() {
       <header className="flex flex-col gap-3">
         <h1 className="flex items-center gap-4 font-display text-3xl font-bold leading-tight sm:text-4xl"><img src="/games/desk-crawler/icon-192.png" alt="" width={64} height={64} className="size-12 [image-rendering:pixelated] sm:size-14" />Desk Crawler</h1>
         <p className="text-lg">An office RPG that plays itself on a TRMNL e-ink display.</p>
-        <p className="text-muted">Every fifteen minutes the hero fights, loots or gets knocked out, and the screen shows what happened. The player drops in here every few days to sort gear and pick the next floor.</p>
+        <p className="text-muted">Every fifteen minutes a hero fights, finds loot or gets knocked out, and the screen shows what happened. Players open this companion every few days to sort gear and pick the next floor.</p>
       </header>
       <SampleScreen caption="Sample hero on a TRMNL X." />
       <section className="flex flex-col gap-3" aria-labelledby="play-heading">

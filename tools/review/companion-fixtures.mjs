@@ -91,7 +91,7 @@ if (raidsOn) {
   data.log.unshift(
     { id: 'raid1', at: now - 6e5, tick: 906, kind: 'raid', summary: "Raided [[Quill]]'s desk while they were at lunch.", source: 'tick', deltas: { xpEarned: 0, gold: 14, hp: -9 } },
     { id: 'raid2', at: now - 9e5, tick: 905, kind: 'raid', summary: 'Came back to find [[Quillfeather_Longname]] had been through the drawers.', source: 'tick', deltas: { xpEarned: 0, gold: -1240, hp: -30 } },
-    { id: 'raid3', at: now - 12e5, tick: 904, kind: 'death', summary: '[[Mo]] made off with the petty cash. Knocked out for 8 ticks. Lost 30 gold.', source: 'tick', deltas: { xpEarned: 0, gold: -52, hp: -18 } },
+    { id: 'raid3', at: now - 12e5, tick: 904, kind: 'death', summary: '[[Mo]] made off with the petty cash. Out cold for 2 hours. Lost 30 gold.', source: 'tick', deltas: { xpEarned: 0, gold: -52, hp: -18 } },
   );
 }
 if (long) inventory.gear.filter((g) => !g.equipped).slice(0, 2).forEach((g) => { g.label = 'Rare Microwave-Slaying ' + g.name + ' of the Cafeteria Depths'; g.rarity = 'rare' });

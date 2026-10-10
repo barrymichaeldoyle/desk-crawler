@@ -79,7 +79,7 @@ export const Route = createFileRoute('/privacy')({
           <strong>Clerk</strong> runs sign-in and holds your email address and sign-in method, plus your Google or GitHub profile if you sign in with one.
         </li>
         <li>
-          <strong>Convex</strong> hosts the game database, scheduled game ticks and daily backups.
+          <strong>Convex</strong> hosts the game database, the 15-minute game updates and daily backups.
         </li>
         <li>
           <strong>Cloudflare</strong> hosts this website and keeps standard request logs.

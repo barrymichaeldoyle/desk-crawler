@@ -189,6 +189,14 @@ describe('shop and setup', () => {
     expect(travel(content, angler, 'millpond')).toEqual({ ok: false, code: 'SAME_WATER' })
   })
 
+  it('switches to a held bait the destination takes when the chosen one does not work there', () => {
+    const angler = { ...starterAngler(content, 0), level: 4, access: ['waders' as const] }
+    expect(travel(content, { ...angler, baitOnHook: 'bread', bait: { bread: 12, maggots: 24, spinner: 72 } }, 'river_bend')).toMatchObject({ ok: true, angler: { baitOnHook: 'spinner' } })
+    expect(travel(content, { ...angler, baitOnHook: 'worms', bait: { worms: 12, maggots: 24 } }, 'river_bend')).toMatchObject({ ok: true, angler: { baitOnHook: 'worms' } })
+    expect(travel(content, { ...angler, baitOnHook: 'worms', bait: { worms: 0, maggots: 24 } }, 'river_bend')).toMatchObject({ ok: true, angler: { baitOnHook: 'maggots' } })
+    expect(travel(content, { ...angler, baitOnHook: 'bread', bait: { bread: 12 } }, 'river_bend')).toMatchObject({ ok: true, angler: { baitOnHook: 'bread' } })
+  })
+
   it('sells for the summed value and counts it', () => {
     expect(sell(starterAngler(content, 0), [5, 7])).toMatchObject({ gold: 12, counters: { goldEarned: 12, fishSold: 2 } })
   })

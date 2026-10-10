@@ -9,8 +9,9 @@ import { preload } from '../../../lib/preload'
 import { formatWeight, type Dock } from '../../../lib/slowCast'
 import { Button, Card, NoticeBar, useNotice } from '../../../lib/ui'
 import { SpriteIcon } from '../desk-crawler/-bagSlots'
+import { ConfirmSheet } from '../desk-crawler/-confirm'
 
-/** The cooler: choose fish to sell, or sell them all. Nothing is ever sold automatically. */
+/** The cooler: choose fish to sell, or sell them all after a confirmation. Nothing is ever sold automatically. */
 export const Route = createFileRoute('/app/slow-cast/cooler')({
   loader: ({ context }) => preload(context, convexQuery(api.slowCast.anglers.dock, {})),
   component: CoolerPage,
@@ -22,6 +23,7 @@ function CoolerPage() {
   const { notice, notify, dismiss } = useNotice()
   const sell = useIntent(api.slowCast.anglers.sellCatches, { onFeedback: notify })
   const [chosen, setChosen] = useState<ReadonlySet<string>>(new Set())
+  const [askingAll, setAskingAll] = useState(false)
   if (!dock?.angler) return null
   const catches = dock.catches ?? []
   const picked = catches.filter((c) => chosen.has(c.id))
@@ -63,11 +65,27 @@ function CoolerPage() {
             <Button disabled={picked.length === 0} pending={sell.pending} busyLabel="Selling…" onClick={() => void sellRows(picked)}>
               {picked.length === 0 ? 'Choose fish to sell' : `Sell ${picked.length} for ${total(picked)} gold`}
             </Button>
-            <Button variant="secondary" disabled={sell.pending} onClick={() => void sellRows(catches)}>Sell all for {total(catches)} gold</Button>
+            <Button variant="secondary" disabled={sell.pending} onClick={() => setAskingAll(true)}>Sell all for {total(catches)} gold</Button>
           </div>
           <p className="mt-3 text-sm text-muted">A fish is worth more the heavier it is, up to double its base price. When the cooler is full, new catches are released. They still count for XP and the logbook, but earn no gold.</p>
         </Card>
       )}
+      <ConfirmSheet
+        open={askingAll}
+        title={`Sell all ${catches.length} fish?`}
+        confirmLabel={`Sell for ${total(catches)} gold`}
+        busyLabel="Selling…"
+        cancelLabel="Cancel"
+        pending={sell.pending}
+        onClose={() => setAskingAll(false)}
+        onConfirm={async () => {
+          if (sell.pending) return
+          await sellRows(catches)
+          setAskingAll(false)
+        }}
+      >
+        <p>Every fish in the {dock.angler.cooler.name.toLowerCase()} goes, and you get {total(catches)} gold. Your logbook and personal bests stay as they are.</p>
+      </ConfirmSheet>
       <NoticeBar notice={notice} onDismiss={dismiss} />
     </>
   )

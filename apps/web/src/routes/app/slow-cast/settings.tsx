@@ -9,7 +9,7 @@ import type { Dock } from '../../../lib/slowCast'
 import { ActionFeedback, Button, Card, NoticeBar, useNotice } from '../../../lib/ui'
 import { AlertsCard, type AlertKindCopy } from '../desk-crawler/-alerts'
 
-/** Slow Cast settings: pause, the public profile switch and deleting Slow Cast progress alone. */
+/** The More tab: links to rankings, achievements and help, then settings (pause, public profile, alerts, deleting Slow Cast progress alone). */
 export const Route = createFileRoute('/app/slow-cast/settings')({
   loader: ({ context }) => preload(context, convexQuery(api.slowCast.anglers.dock, {})),
   component: SettingsPage,
@@ -19,6 +19,12 @@ const SLOW_CAST_ALERTS: readonly AlertKindCopy[] = [
   { id: 'coolerFull', name: 'Cooler full', blurb: 'New catches are being released. Sent half an hour after the cooler fills, once each time.' },
   { id: 'baitOut', name: 'Out of bait', blurb: 'Your angler used up the bait they were fishing with and is on a bare hook.' },
 ]
+
+const MORE_LINKS = [
+  { to: '/app/slow-cast/rankings', label: 'Rankings', blurb: 'Where you stand on the XP boards.' },
+  { to: '/app/slow-cast/achievements', label: 'Achievements', blurb: 'Every tier you have earned and what comes next.' },
+  { to: '/help/slow-cast', label: 'How Slow Cast works', blurb: 'Bait, weather, waters and the cooler.' },
+] as const
 
 function SettingsPage() {
   const { notice, notify, dismiss } = useNotice()
@@ -34,7 +40,20 @@ function SettingsPage() {
   const active = angler.activationState === 'active'
   return (
     <>
-      <h1 className="font-display text-3xl font-bold">Slow Cast settings</h1>
+      <h1 className="font-display text-3xl font-bold">More</h1>
+      <Card>
+        <ul className="flex flex-col">
+          {MORE_LINKS.map((link) => (
+            <li key={link.to} className="border-b border-rule last:border-b-0">
+              <Link to={link.to} className="flex min-h-12 flex-col justify-center py-2">
+                <span className="font-semibold underline underline-offset-4">{link.label}</span>
+                <span className="text-sm text-muted">{link.blurb}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </Card>
+      <h2 className="font-display text-2xl font-bold">Settings</h2>
       {active ? (
         <Card title="Fishing">
           <p>{angler.status === 'paused' ? 'Fishing is paused. Your angler catches nothing until you resume, and keeps everything they have.' : 'Your angler casts every fifteen minutes, day and night.'}</p>

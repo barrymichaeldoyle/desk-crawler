@@ -37,6 +37,31 @@ function ShopPage() {
   const levelOf = (water: string) => dock.waters?.find((w) => w.id === water)?.unlockLevel
   const nextRod = dock.shop.rod
   const nextCooler = dock.shop.cooler
+  // Bait for waters the angler can fish comes first; the rest waits under its own heading.
+  const openWaters = new Set(dock.waters?.filter((w) => w.open).map((w) => w.id))
+  const usableBait = angler.bait.filter((b) => dock.waters?.some((w) => openWaters.has(w.id) && w.baits.includes(b.class)))
+  const laterBait = angler.bait.filter((b) => !usableBait.includes(b))
+  const baitRow = (b: (typeof angler.bait)[number]) => {
+    const waters = dock.waters?.filter((w) => w.baits.includes(b.class)).map((w) => w.name) ?? []
+    return (
+      <li key={b.class} className="flex flex-col gap-2 border-b border-rule pb-3 last:border-b-0">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3">
+          <p className="font-semibold">{b.name}</p>
+          <p className="text-sm text-muted">{b.units} held</p>
+        </div>
+        <p className="text-sm">{BAIT_BLURB[b.class]}</p>
+        <p className="text-sm text-muted">Used at {waters.join(', ')}. A tub of {b.tubSize} costs {b.price} gold.</p>
+        <div className="flex flex-wrap gap-2">
+          {[1, 3].filter((n) => n <= b.tubsThatFit).map((n) => (
+            <Button key={n} variant="secondary" disabled={gold < b.price * n || buying} onClick={() => setOffer({ title: `Buy ${n === 1 ? 'a tub' : `${n} tubs`} of ${b.name.toLowerCase()}?`, price: b.price * n, detail: <p>{b.tubSize * n} {b.name.toLowerCase()}, for {b.units + b.tubSize * n} in all.</p>, buy: () => bait.run({ bait: b.class as never, tubs: n }, `Bought ${n} ${n === 1 ? 'tub' : 'tubs'} of ${b.name.toLowerCase()}.`) })}>
+              {n === 1 ? 'Buy 1 tub' : `Buy ${n} tubs`}
+            </Button>
+          ))}
+          {b.tubsThatFit === 0 ? <span className="label-px text-muted">Full</span> : null}
+        </div>
+      </li>
+    )
+  }
   return (
     <>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -97,29 +122,13 @@ function ShopPage() {
       </Card>
 
       <Card title="Bait">
-        <ul className="flex flex-col gap-3">
-          {angler.bait.map((b) => {
-            const waters = dock.waters?.filter((w) => w.baits.includes(b.class)).map((w) => w.name) ?? []
-            return (
-              <li key={b.class} className="flex flex-col gap-2 border-b border-rule pb-3 last:border-b-0">
-                <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-                  <p className="font-semibold">{b.name}</p>
-                  <p className="text-sm text-muted">{b.units} held</p>
-                </div>
-                <p className="text-sm">{BAIT_BLURB[b.class]}</p>
-                <p className="text-sm text-muted">Used at {waters.join(', ')}. A tub of {b.tubSize} costs {b.price} gold.</p>
-                <div className="flex flex-wrap gap-2">
-                  {[1, 3].filter((n) => n <= b.tubsThatFit).map((n) => (
-                    <Button key={n} variant="secondary" disabled={gold < b.price * n || buying} onClick={() => setOffer({ title: `Buy ${n === 1 ? 'a tub' : `${n} tubs`} of ${b.name.toLowerCase()}?`, price: b.price * n, detail: <p>{b.tubSize * n} {b.name.toLowerCase()}, for {b.units + b.tubSize * n} in all.</p>, buy: () => bait.run({ bait: b.class as never, tubs: n }, `Bought ${n} ${n === 1 ? 'tub' : 'tubs'} of ${b.name.toLowerCase()}.`) })}>
-                      {n === 1 ? 'Buy 1 tub' : `Buy ${n} tubs`}
-                    </Button>
-                  ))}
-                  {b.tubsThatFit === 0 ? <span className="label-px text-muted">Full</span> : null}
-                </div>
-              </li>
-            )
-          })}
-        </ul>
+        <ul className="flex flex-col gap-3">{usableBait.map(baitRow)}</ul>
+        {laterBait.length > 0 ? (
+          <>
+            <h3 className="mt-5 mb-3 font-semibold">For waters you can't fish yet</h3>
+            <ul className="flex flex-col gap-3">{laterBait.map(baitRow)}</ul>
+          </>
+        ) : null}
         <p className="mt-3 text-sm text-muted">You can hold up to 72 of each bait. Bait never spoils.</p>
       </Card>
       <ConfirmSheet

@@ -62,11 +62,25 @@ export function canFish(content: SlowCastCatalog, angler: Pick<AnglerState, 'lev
   return angler.level >= water.unlockLevel && (water.access === undefined || angler.access.includes(water.access))
 }
 
+/**
+ * The bait to switch to when moving: none while the chosen bait works at the destination and has units left, otherwise
+ * the held bait that water takes with the most units (the water's order breaks ties). Without it, an angler who moved
+ * with bread to River Bend fished a bare hook until the player noticed. The travel cast casts nothing, so the switch
+ * never touches a cast at the old water.
+ */
+export function baitForTravel(content: SlowCastCatalog, angler: Pick<AnglerState, 'baitOnHook' | 'bait'>, waterId: WaterId): BaitClass | undefined {
+  const to = waterOf(content, waterId)
+  const held = (cls: BaitClass) => angler.bait[cls] ?? 0
+  if (angler.baitOnHook !== undefined && to.baits.includes(angler.baitOnHook) && held(angler.baitOnHook) > 0) return undefined
+  return to.baits.filter((cls) => held(cls) > 0).sort((a, b) => held(b) - held(a))[0]
+}
+
 export function travel(content: SlowCastCatalog, angler: AnglerState, waterId: WaterId): ShopResult {
   if (!content.waters.some((w) => w.id === waterId)) return refuse('UNKNOWN')
   if (angler.waterId === waterId && angler.travelTo === undefined) return refuse('SAME_WATER')
   if (!canFish(content, angler, waterId)) return refuse('LOCKED')
-  return { ok: true, angler: { ...angler, travelTo: waterId }, spent: 0 }
+  const swap = baitForTravel(content, angler, waterId)
+  return { ok: true, angler: { ...angler, travelTo: waterId, ...(swap ? { baitOnHook: swap } : {}) }, spent: 0 }
 }
 
 /** Put a bait class on the hook. Any owned class may be chosen; an unused one at this water fishes as a bare hook. */

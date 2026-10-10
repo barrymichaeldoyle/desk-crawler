@@ -6,12 +6,13 @@ import { fishSprite, FISH_LARGE } from '@trmnl-games/slow-cast/art/fish'
 import { preload } from '../../../lib/preload'
 import { useAnalyticsView } from '../../../lib/analyticsProvider'
 import { BAIT_LABEL, BAND_LABEL, WEATHER_LABEL, formatWeight } from '../../../lib/slowCast'
-import { Card } from '../../../lib/ui'
+import { Card, NoticeBar, useNotice } from '../../../lib/ui'
 import { Gem, SpriteIcon } from '../desk-crawler/-bagSlots'
+import { FlyBox } from './-flyBox'
 
-/** The logbook: every species by water. A caught one shows its count, best weight and where to find it; an unseen one is a silhouette. */
+/** The logbook: every species by water, then the fly box. A caught fish shows its count, best weight and where to find it; an unseen one is a silhouette. */
 export const Route = createFileRoute('/app/slow-cast/logbook')({
-  loader: ({ context }) => preload(context, convexQuery(api.slowCast.anglers.logbook, {})),
+  loader: ({ context }) => preload(context, convexQuery(api.slowCast.anglers.logbook, {}), convexQuery(api.slowCast.flies.mine, {})),
   component: LogbookPage,
 })
 
@@ -25,8 +26,11 @@ function silhouette(id: string) {
   return { ...sprite, rows: sprite.rows.map((row) => row.replace(/[^ ]/g, ':')) }
 }
 
+const RARITIES = ['common', 'uncommon', 'rare', 'epic'] as const
+
 function LogbookPage() {
   const { data } = useQuery(convexQuery(api.slowCast.anglers.logbook, {}))
+  const { notice, notify, dismiss } = useNotice()
   const book = data as Array<{ water: { id: string; name: string }; species: Entry[] }> | null | undefined
   useAnalyticsView('logbook viewed', { species_logged: book ? book.flatMap((w) => w.species).filter((s) => s.seen).length : 0 }, Boolean(book))
   if (!book) return null
@@ -38,7 +42,12 @@ function LogbookPage() {
         <h1 className="font-display text-3xl font-bold">Logbook</h1>
         <span className="label-px text-muted">{seen} of {total} species</span>
       </div>
-      <p className="text-sm"><Link to="/app/slow-cast/achievements" className="underline underline-offset-4">Achievements</Link></p>
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm">
+        <Link to="/app/slow-cast/achievements" className="underline underline-offset-4">Achievements</Link>
+        <ul className="flex flex-wrap gap-x-3 gap-y-1 text-muted" aria-label="Rarity key">
+          {RARITIES.map((rarity) => <li key={rarity} className="flex items-center gap-1.5"><Gem rarity={rarity} scale={2} />{rarity[0]!.toUpperCase() + rarity.slice(1)}</li>)}
+        </ul>
+      </div>
       {book.map(({ water, species }) => (
         <Card key={water.id} title={water.name}>
           <ul className="grid gap-3 sm:grid-cols-2">
@@ -63,6 +72,8 @@ function LogbookPage() {
           </ul>
         </Card>
       ))}
+      <FlyBox notify={notify} />
+      <NoticeBar notice={notice} onDismiss={dismiss} />
     </>
   )
 }

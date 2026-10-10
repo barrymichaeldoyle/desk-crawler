@@ -49,6 +49,3 @@ export const BAIT_BLURB: Record<string, string> = {
   ragworm: 'Whiting, flounder and wrasse take only ragworm. Pollock, sea bass and smoothhounds take it too.',
   strip: 'Conger eels take only mackerel strip. Mackerel and smoothhounds take it too.',
 }
-
-/** "About 1 cast in 5 gets a bite": easier to picture than a percentage. */
-export const biteOdds = (percent: number) => (percent > 0 ? `About 1 cast in ${Math.max(1, Math.round(100 / percent))} gets a bite.` : 'No bites are possible right now.')

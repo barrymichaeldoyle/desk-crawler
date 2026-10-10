@@ -50,13 +50,13 @@ export const Route = createFileRoute('/help/slow-cast')({
         <li><strong>{water('river_bend').name}</strong>: level {water('river_bend').unlockLevel} and the {access('waders').name}. Trout, chub and barbel; pike and zander on the spinner.</li>
         <li><strong>{water('harbour_pier').name}</strong>: level {water('harbour_pier').unlockLevel} and the {access('pier_permit').name}. Sea fish, bigger and worth more; most need the Carbon Rod or better.</li>
       </ul>
-      <p>Moving takes 15 minutes, then the angler casts at the new water. You can go back whenever you like.</p>
+      <p>Moving skips one cast, then the angler fishes the new water. If the bait you are using does not work there, the angler switches to the bait you hold most of that does. You can go back whenever you like.</p>
       <h2 id="the-logbook">The logbook</h2>
       <p>Every species you land is logged with its count and your best weight, and the logbook says which bait, hours and weather it takes. Fish you have not caught show as silhouettes. Three epic fish need the right bait, hour and weather together.</p>
       <h2 id="rankings">Rankings</h2>
       <p>Slow Cast has its own leaderboards by XP, separate from your other games. Released fish earn full XP, so an angler you leave alone still climbs.</p>
       <h2 id="pausing-and-removing">Pausing and removing</h2>
-      <p>Pause fishing in Settings: no catches until you resume, and you keep everything. Removing the plugin from TRMNL keeps your angler. Deleting Slow Cast progress in Settings removes your angler, cooler and logbook and leaves your account and your other games alone.</p>
+      <p>Pause fishing under Settings on the More page: no catches until you resume, and you keep everything. Removing the plugin from TRMNL keeps your angler. Deleting Slow Cast progress under Settings removes your angler, cooler and logbook and leaves your account and your other games alone.</p>
       <h2 id="help">Help</h2>
       <p>Email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> with what your screen shows and when you last saw it change.</p>
     </ProsePage>

@@ -1,18 +1,11 @@
 /**
- * Slow Cast screen markup (slow-cast.md "Device"). TRMNL framework 3.4 Liquid over the flat payload. TRMNL wraps
+ * Slow Cast screen markup v1 (slow-cast.md "Device"). TRMNL framework 3.4 Liquid over the flat payload. TRMNL wraps
  * each layout in its own `.view`, so markup starts at the layout and closes with the title bar (the framework sizes a
  * layout only when the title bar is its next sibling). Each layout has a landscape and a portrait arrangement; images
  * are whole-number scales of 1-bit art (`scene_base` and `qr_base` plus `/<scale>.png`), chosen per size and screen so
  * every pixel stays crisp: `lg:` swaps in the TRMNL X's larger scales. User text arrives only as escaped variables.
- *
- * Template v2 (2026-10-10) brings the screen up to Desk Crawler's HUD: marks instead of words for the counters
- * (cooler, bait, gold, logbook), XP as ten half-step ticks, the time of day and weather as marks, a glyph before every
- * story, the attention line inverted behind its mark, the board's 7-day XP, and the recap as facts behind their marks.
- * The OG's full landscape shows five stories where three left the foot empty; the X's sets its stories beside the board.
  */
-import { markUri, STORY_GLYPHS, type ScMark } from '../art/marks'
-
-export const TEMPLATE_VERSION = 2
+export const TEMPLATE_VERSION = 1
 
 const svgDataUri = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
 
@@ -21,42 +14,6 @@ const TITLE_ICON = svgDataUri(
   '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="square">' +
     '<path d="M12 3v4"/><circle cx="12" cy="11" r="4"/><path d="M12 9v4" stroke="black"/><path d="M3 19c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg>',
 )
-
-/** Every mark a layout uses, assigned once at its top so the markup repeats a variable rather than the SVG. */
-const MARKS: readonly ScMark[] = ['cooler', 'hook', 'coin', 'book', 'pin', 'trophy', 'star', 'day', 'dawn', 'dusk', 'night', 'clear', 'overcast', 'rain', 'wind', 'fog', 'tickEmpty', 'tickHalf', 'tickFull', ...STORY_GLYPHS]
-const ASSIGNS = MARKS.map((mark) => `{% assign m_${mark} = "${mark.startsWith('tick') ? markUri(mark, 36, 16) : markUri(mark, 32)}" %}`).join('')
-
-const ICON = 'w--[16px] h--[16px] no-shrink'
-const LABEL = 'label lg:title--small'
-
-/** One count behind its mark; the mark sits three pixels from its text. */
-const counter = (mark: string, text: string, data = '') => `<div class="flex flex--row flex--center-y gap--[3px] no-shrink w--min-0"${data}><img class="${ICON}" src="{{ ${mark} }}" alt=""><span class="${LABEL}" data-clamp="1">${text}</span></div>`
-
-/** A wrapping row of counters a medium gap apart, so each number reads as its own mark's. */
-const row = (inner: string, data: string) => `<div class="flex flex--row flex--wrap flex--left flex--center-y gap--medium stretch-x" ${data}>${inner}</div>`
-
-/** The time of day and the weather, each behind its mark ("Dusk", "Overcast"). */
-const conditionMarks =
-  `{% if band %}{% case band %}{% when "dawn" %}{% assign m_band = m_dawn %}{% when "dusk" %}{% assign m_band = m_dusk %}{% when "night" %}{% assign m_band = m_night %}{% else %}{% assign m_band = m_day %}{% endcase %}` +
-  `{% case weather %}{% when "overcast" %}{% assign m_weather = m_overcast %}{% when "rain" %}{% assign m_weather = m_rain %}{% when "wind" %}{% assign m_weather = m_wind %}{% when "fog" %}{% assign m_weather = m_fog %}{% else %}{% assign m_weather = m_clear %}{% endcase %}` +
-  `${counter('m_band', '{{ band | capitalize }}', ' data-band="{{ band }}"')}${counter('m_weather', '{{ weather | capitalize }}', ' data-weather="{{ weather }}"')}{% endif %}`
-
-/** Where the angler is, then the conditions. */
-const statusRow = (withConditions = true) => row(`${counter('m_pin', '{{ status_label | escape }}')}${withConditions ? conditionMarks : ''}`, 'data-status-row="true"')
-
-/** Cooler, bait, gold and logbook. `compact` drops the bait's name and the logbook for the narrowest columns. */
-const counters = (compact = false) =>
-  `{% if cooler_label %}${row(
-    counter('m_cooler', '{{ cooler_label }}', ' data-cooler="{{ cooler_label }}"') +
-      (compact ? '' : counter('m_hook', '{% if bait_count %}{{ bait_name | escape }} {{ bait_count }}{% else %}Bare hook{% endif %}', ' data-bait="true"')) +
-      counter('m_coin', '{{ gold }}') +
-      (compact ? '' : counter('m_book', '{{ species_logged }}/{{ species_total }}', ' data-logbook="true"')),
-    'data-counters="true"',
-  )}{% endif %}`
-
-/** XP as ten half-step ticks with the numbers after them, Desk Crawler's bar (same rounding, so both Liquids agree). */
-const xpTicks = (count = true) =>
-  `{% if xp_to_next %}{% assign xp_halves = xp_pct | default: 0 | times: 20 | plus: 50 | divided_by: 100 | floor %}<div class="flex flex--row flex--wrap flex--left flex--center-y gap--small no-shrink" data-xp-ticks="{{ xp_halves }}"><div class="flex flex--row gap--[2px] no-shrink">{% for i in (1..10) %}{% assign tick_right = i | times: 2 %}{% assign tick_left = tick_right | minus: 1 %}<img class="w--[18px] h--[8px] no-shrink" src="{% if xp_halves >= tick_right %}{{ m_tickFull }}{% elsif xp_halves >= tick_left %}{{ m_tickHalf }}{% else %}{{ m_tickEmpty }}{% endif %}" alt="">{% endfor %}</div>${count ? `<span class="${LABEL} no-shrink">{{ xp }}/{{ xp_to_next }} XP</span>` : ''}</div>{% endif %}`
 
 /**
  * The title bar with the weekly fly code. A narrow portrait column (side, quarter) cannot fit the name beside the
@@ -69,8 +26,8 @@ const titleBar = (orientation: 'landscape' | 'portrait', narrow = false) => `
   {% if fly_code %}<span class="instance">${narrow ? 'Fly' : 'Fly code'} {{ fly_code | escape }}</span>{% endif %}
 </div>`
 
-/** One layout in both orientations, each followed by its own title bar; the marks are assigned once ahead of both. */
-const oriented = (classes: string, landscape: string, portrait: string, narrowPortrait = false) => `${ASSIGNS}
+/** One layout in both orientations, each followed by its own title bar. */
+const oriented = (classes: string, landscape: string, portrait: string, narrowPortrait = false) => `
 <div class="${classes} portrait:hidden">${landscape}
 </div>${titleBar('landscape')}
 <div class="${classes} landscape:hidden">${portrait}
@@ -83,38 +40,32 @@ const scene = (og: number, x: number, classes = 'stretch-x') =>
 const qr = (og: number, x: number) =>
   `{% if qr_base != "" %}<div class="no-shrink" data-companion-qr="true"><img class="image lg:hidden" src="{{ qr_base }}/${og}.png" alt=""><img class="image hidden lg:block" src="{{ qr_base }}/${x}.png" alt=""></div>{% endif %}`
 
-/** The angler's name, then the level beside it. */
 const nameLine = (classes = 'title title--small lg:title') =>
-  `<span class="${classes} w--min-0" data-clamp="1">{{ alias | escape }}</span>{% if level %}<span class="${LABEL} no-shrink">Level {{ level }}</span>{% endif %}`
+  `<span class="${classes} grow w--min-0" data-clamp="1">{{ alias | escape }}{% if level %}, level {{ level }}{% endif %}</span>`
 
-/** The cooler, bait or service line, inverted behind its mark so it reads first. */
-const attention = (clamp = 2) =>
-  `{% if attention %}{% case attention_kind %}{% when "cooler" %}{% assign m_attention = m_cooler %}{% when "bait" %}{% assign m_attention = m_bait_out %}{% else %}{% assign m_attention = m_system %}{% endcase %}` +
-  `<div class="flex flex--row flex--center-y gap--small no-shrink stretch-x" data-attention="{{ attention_kind }}"><img class="${ICON}" src="{{ m_attention }}" alt=""><span class="${LABEL} label--inverted" data-clamp="${clamp}">{{ attention | escape }}</span></div>{% endif %}`
+const status = (classes = 'label lg:title--small') =>
+  `<span class="${classes} w--full" data-clamp="1">{{ status_label | escape }}{% if conditions_label %} · {{ conditions_label | escape }}{% endif %}</span>`
 
-/** One story's glyph: its kind's, a star for a level-up, a dot for anything else. */
-const storyGlyph = `{% case story.kind %}${STORY_GLYPHS.filter((kind) => kind !== 'system')
-  .map((kind) => `{% when "${kind}" %}{% assign m_story = m_${kind} %}`)
-  .join('')}{% when "levelup" %}{% assign m_story = m_star %}{% else %}{% assign m_story = m_system %}{% endcase %}`
+/** The counters line: cooler, bait, gold and logbook. Wraps rather than clipping on narrow columns. */
+const counters = (classes = 'label lg:title--small') =>
+  `{% if cooler_label %}<div class="flex flex--row flex--wrap flex--left gap--xsmall stretch-x" data-counters="true"><span class="${classes}">Cooler {{ cooler_label }} ·</span><span class="${classes}">{{ bait_label | escape }} ·</span><span class="${classes}">{{ gold }} gold ·</span><span class="${classes}">Logbook {{ species_logged }}/{{ species_total }}</span></div>{% endif %}`
 
-/** The newest stories, each behind its glyph. */
-const stories = (limit: number, clamp = 1, classes = 'description lg:title--small') =>
-  `<div class="flex flex--col flex--left gap--xsmall stretch-x h--min-0" data-stories="true">{% for story in stories limit:${limit} %}${storyGlyph}<div class="flex flex--row flex--top gap--small stretch-x" data-story="{{ story.kind }}"><img class="${ICON} mt--[1px]" src="{{ m_story }}" alt=""><span class="${classes} grow w--min-0" data-clamp="${clamp}">{{ story.summary | escape }}</span></div>{% endfor %}</div>`
+const xpLine = (classes = 'label lg:title--small') => `{% if xp_to_next %}<span class="${classes} no-shrink">XP {{ xp }}/{{ xp_to_next }}</span>{% endif %}`
+
+const attention = (classes = 'label lg:title--small', clamp = 2) =>
+  `{% if attention %}<span class="${classes} label--underline no-shrink" data-clamp="${clamp}">{{ attention | escape }}</span>{% endif %}`
 
 /**
- * The seven-day board of the angler's level group: the trophy and group, the angler's rank, then each row's name and
- * 7-day XP. Each row is itself the label, so an inverted own row keeps its text white (a `.label` child would set its
- * own colour), as Desk Crawler's board does. An own row appended below the top shows its level.
+ * The seven-day Top 5 of the angler's level group. Each row is itself the label, so an inverted own row keeps its
+ * text white (a `.label` child would set its own colour), as Desk Crawler's board does.
  */
-const board = (rows: number) =>
-  `{% if board %}<div class="no-shrink flex flex--col gap--xsmall w--full" data-board="true">` +
-  `<div class="flex flex--row flex--center-y gap--[3px] w--full"><img class="${ICON}" src="{{ m_trophy }}" alt=""><span class="${LABEL} grow w--min-0" data-clamp="1">{{ board.label | escape }}</span></div>` +
-  `<span class="${LABEL} w--full" data-clamp="1">{{ board.rank_label | escape }}</span>` +
-  `{% for row in board.rows limit:${rows} %}<div class="${LABEL} flex flex--row flex--between flex--center-y gap--small w--full{% if row.own %} label--inverted{% endif %}" data-rank-row="{{ row.rank }}"><span class="grow w--min-0" data-clamp="1">{{ row.rank }}. {{ row.name | escape }}</span><span class="no-shrink">{% if row.score %}{{ row.score }}{% else %}L{{ row.level }}{% endif %}</span></div>{% endfor %}</div>{% endif %}`
+const board = (rows: number) => `{% if board %}<div class="no-shrink flex flex--col gap--xsmall w--full" data-board="true"><span class="label lg:title--small w--full" data-clamp="2">{{ board.label | escape }} · {{ board.rank_label | escape }}</span>{% for row in board.rows limit:${rows} %}<div class="label lg:title--small flex flex--row flex--between flex--center-y gap--small w--full{% if row.own %} label--inverted{% endif %}" data-rank-row="{{ row.rank }}"><span class="grow w--min-0" data-clamp="1">{{ row.rank }}. {{ row.name | escape }}</span><span class="no-shrink">L{{ row.level }}</span></div>{% endfor %}</div>{% endif %}`
 
-/** The twelve-hour recap: its name, then each fact behind its mark, outlined at the foot of the tall layouts. */
-const recap = () =>
-  `{% if recap_items %}<div class="${LABEL} label--outline flex flex--row flex--wrap flex--left flex--center-y gap--medium no-shrink stretch-x" data-recap="true"><span class="no-shrink">Last 12 hours</span>{% for item in recap_items %}{% case item.k %}{% when "best" %}{% assign m_recap = m_trophy %}{% when "got_away" %}{% assign m_recap = m_got_away %}{% else %}{% assign m_recap = m_catch %}{% endcase %}<span class="flex flex--row flex--center-y gap--[3px] no-shrink"><img class="${ICON}" src="{{ m_recap }}" alt="">{{ item.text | escape }}</span>{% endfor %}</div>{% endif %}`
+/** The twelve-hour recap, outlined at the foot of the tall layouts. */
+const recap = (classes = 'label lg:title--small') => `{% if recap %}<span class="${classes} label--outline no-shrink" data-clamp="1" data-recap="true">{{ recap | escape }}</span>{% endif %}`
+
+const stories = (limit: number, classes = 'description lg:title--small', clamp = 2) =>
+  `<div class="flex flex--col flex--left gap--xsmall stretch-x h--min-0" data-stories="true">{% for story in stories limit:${limit} %}<span class="${classes}" data-clamp="${clamp}">{{ story.summary | escape }}</span>{% endfor %}</div>`
 
 /** Before activation: what to do next and the code to the companion. */
 const welcome = (compact: boolean) => `
@@ -129,12 +80,11 @@ const welcome = (compact: boolean) => `
 
 const ready = (body: string, compact = false) => `{% if status == "unlinked" or status == "pending" %}${welcome(compact)}{% else %}${body}{% endif %}`
 
-/** The full header: name, level and XP; where and when; the counters; the code in the corner. */
 const header = (qrOg: number, qrX: number) => `
     <div class="no-shrink flex flex--row flex--between flex--top gap--small stretch-x">
       <div class="flex flex--col flex--left gap--xsmall grow w--min-0">
-        <div class="flex flex--row flex--wrap flex--center-y gap--small stretch-x" data-name-row="true">${nameLine()}${xpTicks()}</div>
-        ${statusRow()}
+        <div class="flex flex--row flex--center-y gap--small stretch-x">${nameLine()}${xpLine()}</div>
+        ${status()}
         ${counters()}
       </div>
       ${qr(qrOg, qrX)}
@@ -143,16 +93,15 @@ const header = (qrOg: number, qrX: number) => `
 const full = oriented(
   'layout layout--col layout--top layout--stretch-x gap--small',
   ready(`${header(2, 4)}
-    <div class="lg:hidden no-shrink stretch-x">{% if board %}<div class="flex flex--row flex--top gap--medium stretch-x">${scene(4, 4, '')}<div class="grow w--min-0">${board(5)}</div></div>{% else %}${scene(5, 5)}{% endif %}</div>
-    <div class="lg:hidden flex flex--col gap--small stretch-x grow h--min-0">${attention(1)}${stories(5)}</div>
-    <div class="hidden lg:flex flex--col gap--medium stretch-x grow h--min-0">${scene(6, 6)}${attention(1)}
-      <div class="flex flex--row flex--top gap--large stretch-x"><div class="grow w--min-0">${stories(5, 2)}</div><div class="no-shrink w--[38%]">${board(6)}</div></div>
-    </div>
+    <div class="lg:hidden no-shrink stretch-x">{% if board %}<div class="flex flex--row flex--top gap--small stretch-x">${scene(4, 4, '')}<div class="grow w--min-0">${board(6)}</div></div>{% else %}${scene(5, 5)}{% endif %}</div>
+    <div class="hidden lg:flex flex--col gap--small stretch-x no-shrink">${scene(6, 6)}${board(6)}</div>
+    ${attention()}
+    ${stories(3, 'description lg:title--small', 1)}
     ${recap()}`),
   ready(`${header(2, 4)}
     ${scene(3, 8)}
-    ${attention(3)}
-    ${stories(4, 2)}
+    ${attention('label lg:title--small', 3)}
+    ${stories(4)}
     ${board(6)}
     ${recap()}`),
 )
@@ -162,40 +111,39 @@ const halfHorizontal = oriented(
   ready(`
     <div class="no-shrink flex flex--col flex--center-y gap--small">${scene(2, 4)}</div>
     <div class="flex flex--col flex--left gap--xsmall grow w--min-0 h--full">
-      <div class="flex flex--row flex--center-y gap--small stretch-x">${nameLine()}${xpTicks()}</div>
-      ${statusRow()}
+      <div class="flex flex--row flex--center-y gap--small stretch-x">${nameLine()}${xpLine()}</div>
+      ${status()}
       ${counters()}
-      {% if attention %}${attention(1)}{% else %}${stories(1, 2)}{% endif %}
+      {% if attention %}${attention('label lg:title--small', 1)}{% else %}${stories(1, 'description lg:title--small', 2)}{% endif %}
     </div>
     ${qr(2, 4)}`, true),
   ready(`
     <div class="flex flex--col flex--left gap--small grow w--min-0 h--full">
-      <div class="flex flex--row flex--center-y gap--small stretch-x"><div class="flex flex--row flex--center-y gap--small grow w--min-0">${nameLine()}</div>${qr(2, 4)}</div>
+      <div class="flex flex--row flex--center-y gap--small stretch-x">${nameLine()}${qr(2, 4)}</div>
       ${scene(2, 6)}
-      ${statusRow()}
+      ${status()}
       ${counters()}
-      {% if attention %}${attention()}{% else %}${stories(2, 2)}{% endif %}
+      {% if attention %}${attention()}{% else %}${stories(2)}{% endif %}
     </div>`),
 )
 
 const halfVertical = oriented(
   'layout layout--col layout--top layout--stretch-x gap--small',
   ready(`
-    <div class="no-shrink flex flex--row flex--center-y gap--small stretch-x"><div class="flex flex--row flex--center-y gap--small grow w--min-0">${nameLine()}</div>${qr(2, 4)}</div>
+    <div class="no-shrink flex flex--row flex--center-y gap--small stretch-x">${nameLine()}${qr(2, 4)}</div>
     ${scene(2, 5)}
-    ${xpTicks()}
-    ${statusRow()}
+    ${status('label lg:title--small')}
     ${counters()}
     ${attention()}
-    ${stories(3, 2)}
+    ${stories(3)}
     ${recap()}`),
   ready(`
     <div class="no-shrink flex flex--row flex--center-y gap--small stretch-x">${nameLine('title title--small')}</div>
     ${scene(1, 4)}
-    ${statusRow(false)}
-    ${counters(true)}
-    ${attention(3)}
-    ${stories(4, 3, 'description')}
+    ${status('label')}
+    ${counters('label')}
+    ${attention('label', 3)}
+    ${stories(4, 'description', 3)}
     <div class="grow"></div>
     <div class="no-shrink flex flex--row flex--center-x stretch-x">${qr(2, 4)}</div>`),
   true,
@@ -206,18 +154,18 @@ const quadrant = oriented(
   ready(`
     <div class="no-shrink flex flex--row flex--top gap--small stretch-x">
       <div class="flex flex--col flex--left gap--xsmall grow w--min-0">
-        <div class="flex flex--row flex--center-y gap--small stretch-x">${nameLine('title title--small lg:title')}</div>
-        ${statusRow(false)}
-        ${counters(true)}
+        ${nameLine('title title--small lg:title')}
+        ${status('label lg:title--small')}
+        <span class="label lg:title--small">{% if cooler_label %}Cooler {{ cooler_label }} · {{ gold }} gold{% endif %}</span>
       </div>
       ${qr(2, 4)}
     </div>
-    {% if attention %}${attention(2)}{% else %}${stories(1, 2)}{% endif %}`, true),
+    {% if attention %}${attention('label lg:title--small', 2)}{% else %}${stories(1, 'description lg:title--small', 2)}{% endif %}`, true),
   ready(`
-    <div class="no-shrink flex flex--row flex--center-y gap--small stretch-x">${nameLine('title title--small')}</div>
-    ${statusRow(false)}
-    ${counters(true)}
-    {% if attention %}${attention(3)}{% else %}${stories(2, 3, 'description')}{% endif %}
+    <div class="no-shrink flex flex--row stretch-x">${nameLine('title title--small')}</div>
+    ${status('label')}
+    <span class="label">{% if cooler_label %}Cooler {{ cooler_label }} · {{ gold }} gold{% endif %}</span>
+    {% if attention %}${attention('label', 3)}{% else %}${stories(2, 'description', 3)}{% endif %}
     <div class="grow"></div>
     <div class="no-shrink flex flex--row flex--center-x stretch-x">${qr(2, 4)}</div>`, true),
   true,

@@ -81,7 +81,7 @@ export async function payloadFor(ctx: QueryCtx, user: Doc<'users'>, now: number,
     band,
     artBaseUrl: process.env.CONVEX_SITE_URL ?? null,
     board: angler && angler.activationState === 'active' ? await readDeviceBoard(ctx, angler) : null,
-    stories: logs.map((log) => ({ kind: log.kind, summary: log.summary, at: log.at, ...(log.detail.speciesId === undefined ? {} : { speciesId: log.detail.speciesId }), ...(log.detail.grams === undefined ? {} : { grams: log.detail.grams }) })),
+    stories: logs.map((log) => ({ kind: log.kind, summary: log.summary, at: log.at, ...(log.detail.speciesId === undefined ? {} : { speciesId: log.detail.speciesId }), ...(log.detail.grams === undefined ? {} : { grams: log.detail.grams }), ...(log.kind === 'achievement' && log.detail.name !== undefined ? { title: log.detail.name } : {}) })),
   })
 }
 

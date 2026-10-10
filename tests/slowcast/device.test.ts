@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { Liquid } from 'liquidjs'
 import { contentV1 } from '@trmnl-games/slow-cast/content'
-import { buildPayload } from '@trmnl-games/slow-cast/payload'
+import { buildPayload, deviceStories } from '@trmnl-games/slow-cast/payload'
 import { fishBase, parseScenePath, renderSlowCastArt, sceneBase, SCENE_SCALES } from '@trmnl-games/slow-cast/art/route'
 import { SC_MARKS, STORY_GLYPHS } from '@trmnl-games/slow-cast/art/marks'
 import { composeScene, poseFor, STAGE_HEIGHT, STAGE_WIDTH } from '@trmnl-games/slow-cast/art/scene'
@@ -103,6 +103,21 @@ describe('Slow Cast payload', () => {
     expect(buildPayload(scenarios.coolerFull!)).toMatchObject({ attention_kind: 'cooler', newest_catch: { name: 'Chub', released: true } })
     expect(buildPayload(scenarios.bareHook!)).toMatchObject({ bait_name: 'Bare hook', bait_count: null, attention_kind: 'bait' })
     expect(buildPayload(scenarios.stale!).attention_kind).toBe('service')
+  })
+
+  it('keeps a catch on screen when it also levelled up and earned achievements', () => {
+    // Barry's log on 2026-10-10: the Perch fell sixth behind its own level-up and three achievements.
+    const payload = buildPayload(scenarios.achievements!)
+    expect(payload.stories.map((s) => s.kind)).toEqual(['ambient', 'catch', 'levelup', 'achievement', 'ambient'])
+    expect(payload.stories[1]!.summary).toContain('1.3 kg Perch')
+    expect(payload.stories[3]!.summary).toBe('3 achievements: Specimen Perch, First Perch, A Kilo Fish')
+    expect(payload.newest_catch).toMatchObject({ name: 'Perch', weight_label: '1.3 kg' })
+    // When the cast is the newest moment, the angler holds the fish.
+    const fresh = buildPayload({ ...scenarios.achievements!, stories: scenarios.achievements!.stories.slice(1) })
+    expect(fresh.stories[0]!.kind).toBe('catch')
+    expect(fresh.scene_base).toContain('/holding/perch/')
+    // A lone achievement keeps its own line, and lines from different moments keep their order.
+    expect(deviceStories([{ kind: 'achievement', summary: 'Achievement: First Bite', at: 2 }, { kind: 'catch', summary: 'x', at: 1 }]).map((s) => s.summary)).toEqual(['Achievement: First Bite', 'x'])
   })
 
   it('says what needs a hand, most urgent first', () => {

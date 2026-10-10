@@ -44,6 +44,39 @@ export interface PayloadStory {
   readonly at: number
   readonly speciesId?: string
   readonly grams?: number
+  /** An achievement's name, so several earned on one cast can share a line. */
+  readonly title?: string
+}
+
+/** Within one cast, the fish comes first, then the level-up, then what it earned. */
+const STORY_RANK: Readonly<Record<string, number>> = { catch: 0, release: 0, got_away: 0, levelup: 1, achievement: 2 }
+
+/**
+ * The stories as the device lists them (newest first). Lines written at the same moment belong to one cast: the catch
+ * leads them, and its achievements share one line. Otherwise a catch that earned a level and three achievements fell
+ * sixth, off every layout and out of the scene's hands (Barry, 2026-10-10: "it doesn't show logs of fish that I caught").
+ */
+export function deviceStories(stories: readonly PayloadStory[]): PayloadStory[] {
+  const out: PayloadStory[] = []
+  for (let start = 0; start < stories.length; ) {
+    let end = start
+    while (end < stories.length && stories[end]!.at === stories[start]!.at) end += 1
+    const group = stories
+      .slice(start, end)
+      .map((story, index) => ({ story, index }))
+      .sort((a, b) => (STORY_RANK[a.story.kind] ?? 3) - (STORY_RANK[b.story.kind] ?? 3) || a.index - b.index)
+      .map(({ story }) => story)
+    const earned = group.filter((story) => story.kind === 'achievement')
+    for (const story of group) {
+      if (story.kind !== 'achievement') out.push(story)
+      else if (story === earned[0]) {
+        const names = earned.map((a) => a.title ?? a.summary.replace(/^Achievement: /, '').replace(/\.$/, ''))
+        out.push(earned.length === 1 ? story : { kind: 'achievement', at: story.at, summary: `${earned.length} achievements: ${names.join(', ')}` })
+      }
+    }
+    start = end
+  }
+  return out
 }
 
 export interface SlowCastPayloadInput {
@@ -109,7 +142,7 @@ export function buildPayload(input: SlowCastPayloadInput) {
   else if (stale) [attention, attentionKind] = ['Updates delayed. Nothing is lost.', 'service']
   else if (coolerFull) [attention, attentionKind] = ['Cooler full: sell in the companion.', 'cooler']
   else if (!hookUsedHere) [attention, attentionKind] = [hook && hookUnits === 0 ? `Out of ${hook.name.toLowerCase()}: bare hook.` : 'Fishing a bare hook.', 'bait']
-  const stories = input.stories.slice(0, MAX_STORIES)
+  const stories = deviceStories(input.stories).slice(0, MAX_STORIES)
   // Twelve-hour recap: fish landed (kept or released), the heaviest, and any that got away.
   const recent = input.stories.filter((story) => now - story.at <= RECAP_MS)
   const landed = recent.filter((story) => story.kind === 'catch' || story.kind === 'release')

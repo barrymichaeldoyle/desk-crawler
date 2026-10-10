@@ -4,9 +4,9 @@ Recorded 2026-10-09 for D115 and updated 2026-10-10 for template v2 (`packages/s
 
 ## What was checked
 
-`pnpm preview:slowcast` renders 16 device states through the real payload builder and templates, with the art drawn locally, for the OG, the X and the BWRY panel in landscape and portrait, in all four layouts: 384 pages. `pnpm sweep:trmnl <out> --filter sc-` loaded each in the pinned framework 3.4.0 and checked that nothing runs past the view or under the title bar, no image is broken and no unclamped text overflows. Result: **384 pages, 0 failures** ([results](slow-cast-layout-results.json)). The full layout, the half and side views and the quarter were also inspected by eye on the OG and the X in both orientations.
+`pnpm preview:slowcast` renders 17 device states through the real payload builder and templates, with the art drawn locally, for the OG, the X and the BWRY panel in landscape and portrait, in all four layouts: 408 pages. `pnpm sweep:trmnl <out> --filter sc-` loaded each in the pinned framework 3.4.0 and checked that nothing runs past the view or under the title bar, no image is broken and no unclamped text overflows. Result: **408 pages, 0 failures** ([results](slow-cast-layout-results.json)). The full layout, the half and side views and the quarter were also inspected by eye on the OG and the X in both orientations.
 
-States: bareHook, catch, coolerFull, gotAway, longText, millpondDawn, outsideTop, paused, pending, pier, servicePaused, stale, travelling, unlinked, unranked, waiting.
+States: achievements, bareHook, catch, coolerFull, gotAway, longText, millpondDawn, outsideTop, paused, pending, pier, servicePaused, stale, travelling, unlinked, unranked, waiting.
 
 ## Layouts
 
@@ -23,7 +23,7 @@ The newest-catch panel draws the fish alone (`/art/sc/fish/v1/<species>/<scale>.
 
 A held fish is drawn at the angler's hands when the newest story is a catch or a release; one that got away bends the rod. The code opens the dock, or the cooler when it is full. Attention lines, most urgent first: a service pause, delayed updates, a full cooler, a bare hook.
 
-**Parity and lint.** `pnpm crosscheck:trmnl` now renders every Slow Cast scenario, with and without a fly code, in liquidjs and in Ruby Liquid through `trmnlp`: all 524 renders of both games match. `pnpm lint:trmnl` runs the official linter over both games' templates: both pass.
+**Parity and lint.** `pnpm crosscheck:trmnl` now renders every Slow Cast scenario, with and without a fly code, in liquidjs and in Ruby Liquid through `trmnlp`: all 532 renders of both games match. `pnpm lint:trmnl` runs the official linter over both games' templates: both pass.
 
 ## Notes
 

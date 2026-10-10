@@ -69,6 +69,19 @@ export function previewScenarios(artBaseUrl: string): Record<string, SlowCastPay
     travelling: { ...b, angler: { ...angler, travelTo: 'harbour_pier' }, stories: [{ kind: 'system', summary: 'Packing up for the Harbour Pier.', at: minutes(2) }, ...stories] },
     pier: { ...b, angler: { ...angler, level: 11, waterId: 'harbour_pier', rodTier: 4, coolerTier: 4, baitOnHook: 'strip', bait: { strip: 48 }, gold: 18450, speciesLogged: 26 }, coolerUsed: 23, band: 'night', weather: 'fog', stories: [{ kind: 'catch', summary: 'An 8.4 kg Thornback Ray took the mackerel strip in the dark. First Thornback Ray in the logbook.', at: minutes(6), speciesId: 'thornback_ray', grams: 8400 }, ...stories] },
     millpondDawn: { ...b, angler: { ...angler, level: 1, xp: 12, gold: 0, waterId: 'millpond', rodTier: 1, coolerTier: 1, baitOnHook: 'worms', bait: { worms: 11 }, speciesLogged: 1 }, coolerUsed: 1, band: 'dawn', weather: 'clear', stories: [{ kind: 'catch', summary: 'A 140 g Roach took the worm at first light. First Roach in the logbook.', at: minutes(1), speciesId: 'roach', grams: 140 }, { kind: 'system', summary: 'You set up on the bank of the Millpond.', at: minutes(30) }] },
+    // Barry's first morning (2026-10-10): a catch that levelled up and earned three achievements, then a quiet hour.
+    achievements: {
+      ...b,
+      stories: [
+        { kind: 'ambient', summary: 'Midges hang over the water.', at: minutes(2) },
+        { kind: 'achievement', summary: 'Achievement: Specimen Perch', title: 'Specimen Perch', at: minutes(62) },
+        { kind: 'achievement', summary: 'Achievement: First Perch', title: 'First Perch', at: minutes(62) },
+        { kind: 'achievement', summary: 'Achievement: A Kilo Fish', title: 'A Kilo Fish', at: minutes(62) },
+        { kind: 'levelup', summary: 'Level 2.', at: minutes(62) },
+        { kind: 'catch', summary: 'A 1.3 kg Perch took the worm in the day. First Perch in the logbook.', at: minutes(62), speciesId: 'perch', grams: 1325 },
+        ...stories.slice(1),
+      ],
+    },
     outsideTop: { ...b, board: { ...b.board!, rank: 19, top: b.board!.top.map((row) => ({ ...row, own: false })) } },
     unranked: { ...b, board: { ...b.board!, rank: null, top: b.board!.top.map((row) => ({ ...row, own: false })) } },
     longText: { ...b, angler: { ...angler, alias: 'WWWWWWWWWWWWWWWWWWWW', level: 20, gold: 999999, coolerTier: 4, speciesLogged: 30 }, coolerUsed: 23, stories: stories.map((s) => ({ ...s, summary: 'An 18.0 kg Conger Eel took the mackerel strip in the dark. A new personal best.' })) },
